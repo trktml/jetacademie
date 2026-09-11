@@ -1,4 +1,5 @@
 import { CounterDemo } from "@/components/counter-demo";
+import { QueryDemo } from "@/components/query-demo";
 import { AuthZodDemo } from "@/components/auth-zod-demo";
 
 export default function Home() {
@@ -9,6 +10,10 @@ export default function Home() {
     {
       name: "Zustand 5",
       color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200",
+    },
+    {
+      name: "TanStack Query 5",
+      color: "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200",
     },
     { name: "Zod 4", color: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200" },
     {
@@ -32,8 +37,8 @@ export default function Home() {
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">JetAcademie</h1>
           <p className="max-w-2xl text-base text-zinc-600 dark:text-zinc-400">
-            Next.js, Bun, Tailwind CSS v4, Zustand, Zod, Better-Auth, Prettier ve Dokploy için
-            Docker hazır tam konfigürasyonlu modern geliştirme çatısı.
+            Next.js, Bun, Tailwind CSS v4, Zustand, TanStack Query, Zod, Better-Auth, Prettier ve
+            Dokploy için Docker hazır tam konfigürasyonlu modern geliştirme çatısı.
           </p>
 
           <div className="flex flex-wrap gap-2 pt-2">
@@ -51,7 +56,10 @@ export default function Home() {
         {/* Interactive Demos Grid */}
         <div className="grid gap-6 md:grid-cols-2">
           <CounterDemo />
-          <AuthZodDemo />
+          <QueryDemo />
+          <div className="md:col-span-2">
+            <AuthZodDemo />
+          </div>
         </div>
 
         {/* dokploy & Docker info */}
