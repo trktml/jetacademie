@@ -6,7 +6,8 @@ JetAcademie, modern web standartları ve yüksek performans hedeflenerek oluştu
 
 - **Çalışma Zamanı (Runtime):** [Bun](https://bun.sh/) (v1.3+)
 - **Web Çatısı:** [Next.js](https://nextjs.org/) (v16 App Router, Turbopack, React 19, standalone derleme çıktısı)
-- **Stil & Tasarım:** [Tailwind CSS](https://tailwindcss.com/) (v4)
+- **PWA & Mobil Mimarisi:** Mobile-First, Web App Manifest (`manifest.ts`), Safe Area desteği, [Vaul](https://vaul.emilkowal.ski/) Bottom Sheet Drawer, Mobil Alt Navigasyon ve 44px dokunma hedefleri
+- **Stil & Tasarım:** [Tailwind CSS](https://tailwindcss.com/) (v4) & [Lucide React](https://lucide.dev/)
 - **İstemci Durum Yönetimi (Client State):** [Zustand](https://zustand-demo.pmnd.rs/) (v5)
 - **Sunucu Durum Yönetimi & Önbellek (Server State):** [TanStack Query](https://tanstack.com/query/latest) (React Query v5 + DevTools)
 - **Veri & Şema Doğrulama:** [Zod](https://zod.dev/) (v4)
@@ -28,18 +29,32 @@ jetacademie/
 ├── .prettierrc.json            # Sabit Prettier kuralları
 ├── .prettierignore             # Prettier hariç tutma listesi
 ├── .env.example                # Çevre değişkenleri şablonu
+├── public/                     # PWA ikonları & statik varlıklar
+│   ├── icon-192.png            # PWA 192x192 ikonu
+│   ├── icon-512.png            # PWA 512x512 ikonu
+│   ├── icon-maskable-512.png   # PWA 512x512 maskelenebilir ikon
+│   ├── apple-touch-icon.png    # iOS ana ekran ikonu (180x180)
+│   └── icon.svg                # Vektörel uygulama logosu
 ├── src/
 │   ├── app/                    # Next.js App Router sayfaları ve layout
 │   │   ├── api/
 │   │   │   ├── auth/[...all]/  # Better-Auth API uç noktası
 │   │   │   └── health/         # Konteyner sağlık kontrolü (/api/health)
-│   │   ├── globals.css         # Tailwind v4 tema stilleri
-│   │   ├── layout.tsx          # Kök yerleşim (QueryProvider sarmalayıcısı ile)
-│   │   └── page.tsx            # Başlangıç ve demo vitrini
+│   │   ├── globals.css         # Tailwind v4 tema stilleri & mobil safe area yardımcıları
+│   │   ├── layout.tsx          # Kök yerleşim (Viewport, PWA meta etiketleri ve QueryProvider)
+│   │   ├── manifest.ts         # Dinamik PWA Web App Manifest yapılandırması
+│   │   ├── manifest.test.ts    # PWA Web App Manifest birim testleri
+│   │   └── page.tsx            # Başlangıç ve demo vitrini (Header, Nav & Drawer entegreli)
 │   ├── components/             # React arayüz bileşenleri
+│   │   ├── app-header.tsx      # Masaüstü ve mobil uyumlu üst navigasyon çubuğu
+│   │   ├── bottom-nav.tsx      # Mobil alt navigasyon çubuğu (Safe-area destekli)
+│   │   ├── quick-actions-drawer.tsx # Vaul alt çekmece (mobilde bottom sheet, masaüstünde floating diyalog)
 │   │   ├── auth-zod-demo.tsx   # Zod ve Better-Auth kayıt/giriş formu ve oturum yönetimi
-│   │   ├── counter-demo.tsx    # Zustand istemci durumu demosu
+│   │   ├── counter-demo.tsx    # Zustand istemci durumu demosu (min 44px butonlar)
 │   │   └── query-demo.tsx      # TanStack Query sunucu durumu, refetch ve mutasyon demosu
+│   ├── hooks/                  # Özel React kancaları
+│   │   ├── use-active-section.ts # Sayfa kaydırma ile aktif bölümü izleyen IntersectionObserver kancası
+│   │   └── use-active-section.test.ts # Aktif bölüm kancası birim testleri
 │   ├── lib/
 │   │   ├── auth.ts             # Better-Auth sunucu & otomatik SQLite şema ilklendirmesi
 │   │   ├── auth.test.ts        # Better-Auth sunucu ve API testleri
@@ -57,7 +72,9 @@ jetacademie/
 │   │   └── query-provider.test.tsx # QueryProvider birim testleri
 │   └── store/
 │       ├── use-counter-store.ts      # Zustand sayaç deposu
-│       └── use-counter-store.test.ts # Zustand depo testleri
+│       ├── use-counter-store.test.ts # Zustand sayaç testleri
+│       ├── use-ui-store.ts           # Zustand arayüz / drawer yönetim deposu
+│       └── use-ui-store.test.ts      # Zustand UI depo testleri
 └── tsconfig.json
 ```
 
@@ -96,6 +113,28 @@ Projeye iki net durum ayrımı uygulanmıştır:
 - **İzomorfik API İstekleri (Isomorphic Fetching):** Sunucu tarafında SSR sırasında göreceli (relative) URL hatalarını (`fetch() URL is invalid`) önlemek için `getBaseUrl()` fonksiyonu sunucuda `NEXT_PUBLIC_APP_URL` / `BETTER_AUTH_URL` / `http://localhost:3000` kullanır, tarayıcıda ise doğrudan `/api/...` göreceli adresini döndürür.
 - **Tipten Güvenli Sorgular:** `queryOptions` deseni kullanılarak sorgu anahtarları ve fonksiyonları `src/lib/queries/` altında modüler tanımlanır.
 - **DevTools:** Geliştirme ortamında tarayıcıda sağ alt köşede TanStack Query DevTools otomatik olarak hazırdır.
+
+---
+
+## 📱 Mobile-First PWA Mimarisi & Standartları
+
+JetAcademie, hem mobil cihazlarda (iOS & Android) yerel uygulama hissi verecek şekilde, hem de masaüstü ekranlarında geniş, ferah ve modern bir web arayüzü sunacak şekilde tasarlanmıştır:
+
+1. **Next.js 16 Viewport & PWA Başlıkları (`src/app/layout.tsx`):**
+   - `viewportFit: "cover"`: Ekran çentiklerini (notch) ve dinamik adaları (Dynamic Island) tam ekran kapsar.
+   - `interactiveWidget: "resizes-content"`: Mobil sanal klavye açıldığında sayfa içeriğini akıllıca yeniden boyutlandırır.
+   - `appleWebApp: { capable: true, statusBarStyle: "black-translucent" }`: iOS "Ana Ekrana Ekle" modunda tarayıcı barlarını gizler.
+2. **Safe Area & Dokunma Yardımcıları (`src/app/globals.css`):**
+   - Çentik, yatay dönüşler ve alt navigasyon çubuğu için `pt-safe`, `pb-safe`, `pl-safe`, `pr-safe`, `px-safe` Tailwind v4 utility sınıfları.
+   - `touch-action: manipulation` ile çift dokunma yakınlaştırma gecikmesi engellenir.
+   - Mobilde input odağında iOS'un otomatik yakınlaştırmasını önlemek için 16px minimum font boyutu kuralı.
+3. **PWA Manifest & İkonlar (`src/app/manifest.ts` & `public/`):**
+   - Standalone mod, masaüstü ve yatay tablet desteği için serbest yönelim (`orientation: "any"`), 192x192, 512x512 ve maskelenebilir PWA ikonları.
+4. **Vaul Bottom Sheet & İki Yönlü Navigasyon:**
+   - **Mobilde:** Ekranın altından parmakla sürüklenebilir alt çekmece (`Drawer.Root`, `Drawer.Handle`) ve aktif sekme takipli alt menü (`BottomNav`).
+   - **Masaüstünde:** Geniş ekranlarda yüzen modern diyalog penceresi, `motion/react` animasyonlu üst menü çubuğu (`AppHeader`) ve `scroll-mt-24` ile başlık çakışmasız pürüzsüz kaydırma.
+5. **Erişilebilirlik ve Dokunma Hedefleri (WCAG 2.5.5 / Apple HIG):**
+   - Tüm butonlar ve etkileşimli alanlar en az `min-h-[44px]` (44x44px) dokunma alanı standartlarına sahiptir.
 
 ---
 

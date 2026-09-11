@@ -98,6 +98,15 @@ In Next.js App Router, QueryClient instances must be managed cleanly:
 - Root layout utilizes Next.js 16 `LayoutProps<"/">`.
 - Default to React Server Components. Add `"use client"` only when components require browser hooks (`useState`, `useQuery`, `useCounterStore`, event handlers).
 
+### 6. Mobile-First PWA & Accessibility Standards
+
+- **Viewport Configuration**: Export `viewport: Viewport` from `src/app/layout.tsx` using `viewportFit: "cover"` and `interactiveWidget: "resizes-content"`.
+- **Safe Area Insets**: Use Tailwind v4 custom utilities (`pt-safe`, `pb-safe`, `pl-safe`, `pr-safe`, `px-safe`) for fixed headers, bottom sheets, and navigation bars.
+- **Touch Target Minimum**: Every button, tab, and clickable control must satisfy the 44x44px target size (`min-h-[44px]` or `min-w-[44px]`).
+- **iOS Zoom Prevention**: Keep input font size at or above 16px on mobile screens (< 768px).
+- **Vaul Bottom Sheet & Desktop Dialog**: Use `vaul` (`Drawer.Root`, `Drawer.Portal`, etc.) for sheets. Optimize layout on mobile (bottom sheet, drag handle) and desktop (floating modal container).
+- **Zustand UI Store & Active Section**: Orchestrate UI modals, sheets, and active navigation tabs using `src/store/use-ui-store.ts` and `src/hooks/use-active-section.ts`.
+
 ---
 
 ## 📂 Project Map
@@ -112,19 +121,32 @@ jetacademie/
 ├── package.json                  # Scripts & dependencies
 ├── README.md                     # Project documentation
 ├── tsconfig.json                 # Strict TypeScript configuration
+├── public/                       # PWA icons & static assets
+│   ├── icon-192.png              # PWA 192x192 icon
+│   ├── icon-512.png              # PWA 512x512 icon
+│   ├── icon-maskable-512.png     # PWA maskable 512x512 icon
+│   ├── apple-touch-icon.png      # iOS home screen icon (180x180)
+│   └── icon.svg                  # Vector brand icon
 ├── src/
 │   ├── app/                      # Next.js App Router
 │   │   ├── api/
 │   │   │   ├── auth/[...all]/    # Better-Auth catch-all handler
 │   │   │   └── health/           # Health check endpoint (/api/health)
-│   │   ├── globals.css           # Tailwind CSS v4 directives & theme
-│   │   ├── layout.tsx            # Root layout wrapping QueryProvider
-│   │   └── page.tsx              # Starter showcase page
+│   │   ├── globals.css           # Tailwind CSS v4 directives, theme & safe-area utilities
+│   │   ├── layout.tsx            # Root layout with Viewport, PWA metadata & QueryProvider
+│   │   ├── manifest.ts           # Dynamic PWA Web App Manifest
+│   │   ├── manifest.test.ts      # PWA Manifest unit tests
+│   │   └── page.tsx              # Starter showcase page (responsive mobile & desktop)
 │   ├── components/               # UI components
-│   │   ├── auth-zod-demo.tsx     # Zod + Better-Auth auth demo
-│   │   ├── counter-demo.tsx      # Zustand state management demo
+│   │   ├── app-header.tsx        # Responsive desktop & mobile header
+│   │   ├── bottom-nav.tsx        # Mobile bottom navigation bar (pb-safe)
+│   │   ├── quick-actions-drawer.tsx # Vaul bottom sheet drawer & desktop modal
+│   │   ├── auth-zod-demo.tsx     # Zod + Better-Auth auth demo (min-h-[44px] targets)
+│   │   ├── counter-demo.tsx      # Zustand state management demo (min-h-[44px] buttons)
 │   │   └── query-demo.tsx        # TanStack Query useQuery/mutation demo
 │   ├── hooks/                    # Custom React hooks
+│   │   ├── use-active-section.ts # IntersectionObserver active section hook
+│   │   └── use-active-section.test.ts # Active section hook tests
 │   ├── lib/                      # Core utilities & configurations
 │   │   ├── auth.ts               # Better-Auth server configuration
 │   │   ├── auth.test.ts          # Better-Auth unit tests
@@ -140,9 +162,11 @@ jetacademie/
 │   ├── providers/                # React Context providers
 │   │   ├── query-provider.tsx    # TanStack QueryClientProvider & DevTools
 │   │   └── query-provider.test.tsx # QueryProvider unit tests
-│   └── store/                    # Zustand stores (e.g. use-counter-store.ts)
-│       ├── use-counter-store.ts  # Counter Zustand store
-│       └── use-counter-store.test.ts # Counter store unit tests
+│   └── store/                    # Zustand stores
+│       ├── use-counter-store.ts      # Counter Zustand store
+│       ├── use-counter-store.test.ts # Counter store unit tests
+│       ├── use-ui-store.ts           # UI / Drawer state Zustand store
+│       └── use-ui-store.test.ts      # UI store unit tests
 ```
 
 ---
