@@ -34,7 +34,9 @@ jetacademie/
 │   ├── icon-512.png            # PWA 512x512 ikonu
 │   ├── icon-maskable-512.png   # PWA 512x512 maskelenebilir ikon
 │   ├── apple-touch-icon.png    # iOS ana ekran ikonu (180x180)
-│   └── icon.svg                # Vektörel uygulama logosu
+│   └── icon.svg                # Vektörel süpersonik delta kep uygulama logosu
+├── scripts/                    # Yardımcı betikler
+│   └── generate-icons.ts       # Sharp ile public/icon.svg üzerinden PWA ikonlarını üreten betik
 ├── src/
 │   ├── app/                    # Next.js App Router sayfaları ve layout
 │   │   ├── api/
@@ -48,6 +50,8 @@ jetacademie/
 │   ├── components/             # React arayüz bileşenleri
 │   │   ├── app-header.tsx      # Masaüstü ve mobil uyumlu üst navigasyon çubuğu
 │   │   ├── bottom-nav.tsx      # Mobil alt navigasyon çubuğu (Safe-area destekli)
+│   │   ├── jet-logo.tsx        # Süpersonik delta kep logo bileşeni (JetLogo & JetLogoIcon)
+│   │   ├── jet-logo.test.tsx   # JetLogo bileşeni birim testleri
 │   │   ├── quick-actions-drawer.tsx # Vaul alt çekmece (mobilde bottom sheet, masaüstünde floating diyalog)
 │   │   ├── auth-zod-demo.tsx   # Zod ve Better-Auth kayıt/giriş formu ve oturum yönetimi
 │   │   ├── counter-demo.tsx    # Zustand istemci durumu demosu (min 44px butonlar)
@@ -197,16 +201,17 @@ Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açın.
 
 ## 📜 Komutlar
 
-| Komut                  | Açıklama                                                |
-| ---------------------- | ------------------------------------------------------- |
-| `bun dev`              | Turbopack ile geliştirme sunucusunu başlatır            |
-| `bun run build`        | Next.js standalone üretim derlemesini hazırlar          |
-| `bun start`            | Üretim derlemesini yerel olarak çalıştırır              |
-| `bun test`             | Tüm birim ve entegrasyon testlerini koşturur            |
-| `bun run lint`         | ESLint ile kod kontrolü yapar                           |
-| `bun run format`       | Prettier ile tüm dosyaları kurallara göre biçimlendirir |
-| `bun run format:check` | Prettier kurallarına uygunluğu denetler                 |
-| `bun run db:migrate`   | Better-Auth veritabanı şema göçlerini çalıştırır        |
+| Komut                    | Açıklama                                                |
+| ------------------------ | ------------------------------------------------------- |
+| `bun dev`                | Turbopack ile geliştirme sunucusunu başlatır            |
+| `bun run build`          | Next.js standalone üretim derlemesini hazırlar          |
+| `bun start`              | Üretim derlemesini yerel olarak çalıştırır              |
+| `bun test`               | Tüm birim ve entegrasyon testlerini koşturur            |
+| `bun run lint`           | ESLint ile kod kontrolü yapar                           |
+| `bun run format`         | Prettier ile tüm dosyaları kurallara göre biçimlendirir |
+| `bun run format:check`   | Prettier kurallarına uygunluğu denetler                 |
+| `bun run icons:generate` | Sharp ile SVG logodan PWA ve web ikonlarını üretir      |
+| `bun run db:migrate`     | Better-Auth veritabanı şema göçlerini çalıştırır        |
 
 ---
 
