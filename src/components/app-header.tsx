@@ -4,6 +4,7 @@ import { useUiStore } from "@/store/use-ui-store";
 import { useActiveSectionObserver } from "@/hooks/use-active-section";
 import { Sparkles, Rocket, Layers, Database, ShieldCheck, Container } from "lucide-react";
 import { motion } from "motion/react";
+import { JetLogo } from "@/components/jet-logo";
 
 const navItems = [
   {
@@ -54,22 +55,9 @@ export function AppHeader() {
         <a
           href="#overview"
           onClick={() => setActiveSection("overview")}
-          className="group flex min-h-[44px] items-center gap-2.5 rounded-lg text-left transition"
+          className="group flex min-h-[44px] items-center rounded-lg text-left transition"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white shadow-md shadow-indigo-500/20 transition group-hover:scale-105">
-            <Rocket className="h-5 w-5" />
-          </div>
-          <div>
-            <span className="bg-gradient-to-r from-zinc-900 via-indigo-950 to-zinc-800 bg-clip-text text-lg font-black tracking-tight text-transparent dark:from-white dark:via-indigo-200 dark:to-zinc-200">
-              JetAcademie
-            </span>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-semibold tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
-                PWA Mobile-First
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            </div>
-          </div>
+          <JetLogo size="md" />
         </a>
 
         {/* Desktop Navigation Links */}

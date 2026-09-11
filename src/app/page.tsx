@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Terminal,
 } from "lucide-react";
+import { JetLogoIcon } from "@/components/jet-logo";
 
 export default function Home() {
   const stack = [
@@ -98,18 +99,26 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                Mobil ve Masaüstünde Kusursuz{" "}
-                <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent">
-                  JetAcademie
-                </span>
-              </h1>
-              <p className="mx-auto max-w-3xl text-sm leading-relaxed text-zinc-600 sm:mx-0 sm:text-base lg:text-lg dark:text-zinc-400">
-                Next.js 16, Bun, Tailwind CSS v4, Zustand v5, TanStack Query v5, Zod v4 ve
-                Better-Auth ile güçlendirilmiş; mobil cihazlarda yerel uygulama hissi veren PWA
-                mimarisi, masaüstünde ise geniş ekranlara uyum sağlayan modern çatı.
-              </p>
+            <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
+              <div className="shrink-0 pt-1">
+                <div className="group relative">
+                  <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-tr from-indigo-500 via-sky-500 to-violet-600 opacity-40 blur-md transition duration-300 group-hover:opacity-75" />
+                  <JetLogoIcon className="relative h-16 w-16 rounded-2xl shadow-xl transition-transform duration-200 group-hover:scale-105 sm:h-20 sm:w-20" />
+                </div>
+              </div>
+              <div className="flex-1 space-y-3 text-center sm:text-left">
+                <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                  Mobil ve Masaüstünde Kusursuz{" "}
+                  <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent">
+                    JetAcademie
+                  </span>
+                </h1>
+                <p className="mx-auto max-w-3xl text-sm leading-relaxed text-zinc-600 sm:mx-0 sm:text-base lg:text-lg dark:text-zinc-400">
+                  Next.js 16, Bun, Tailwind CSS v4, Zustand v5, TanStack Query v5, Zod v4 ve
+                  Better-Auth ile güçlendirilmiş; mobil cihazlarda yerel uygulama hissi veren PWA
+                  mimarisi, masaüstünde ise geniş ekranlara uyum sağlayan modern çatı.
+                </p>
+              </div>
             </div>
 
             {/* Stack Tags */}
