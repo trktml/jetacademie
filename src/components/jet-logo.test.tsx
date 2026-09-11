@@ -12,7 +12,7 @@ describe("JetLogo & JetLogoIcon Components", () => {
     expect(html).toContain("custom-class");
     expect(html).toContain("logoBg");
     expect(html).toContain("jetLeft");
-    expect(html).toContain("logoGold");
+    expect(html).toContain("acadLeft");
   });
 
   it("should render JetLogo with brand typography and default tagline", () => {

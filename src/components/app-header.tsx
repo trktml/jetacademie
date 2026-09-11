@@ -12,35 +12,30 @@ const navItems = [
     label: "Genel Bakış",
     href: "#overview",
     icon: Rocket,
-    color: "text-rose-600 dark:text-rose-400",
   },
   {
     id: "zustand",
     label: "Zustand",
     href: "#zustand",
     icon: Layers,
-    color: "text-emerald-500",
   },
   {
     id: "query",
     label: "TanStack Query",
     href: "#query",
     icon: Database,
-    color: "text-red-500",
   },
   {
     id: "auth",
     label: "Kimlik & Zod",
     href: "#auth",
     icon: ShieldCheck,
-    color: "text-amber-500",
   },
   {
     id: "dokploy",
     label: "Dokploy",
     href: "#dokploy",
     icon: Container,
-    color: "text-sky-500",
   },
 ];
 
@@ -49,7 +44,7 @@ export function AppHeader() {
   useActiveSectionObserver();
 
   return (
-    <header className="pt-safe sticky top-0 z-30 w-full border-b border-zinc-200/80 bg-white/85 backdrop-blur-md transition-colors dark:border-zinc-800/80 dark:bg-zinc-950/85">
+    <header className="pt-safe sticky top-0 z-30 w-full border-b border-zinc-200/80 bg-white/90 backdrop-blur-md transition-colors dark:border-zinc-800/80 dark:bg-[#0b0d12]/90">
       <div className="pl-safe pr-safe mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand & Logo */}
         <a
@@ -70,18 +65,24 @@ export function AppHeader() {
                 key={item.id}
                 href={item.href}
                 onClick={() => setActiveSection(item.id)}
-                className={`relative flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                className={`relative flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition ${
                   isActive
-                    ? "bg-rose-50 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300"
-                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+                    ? "bg-zinc-100 font-semibold text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100"
+                    : "text-zinc-600 hover:bg-zinc-100/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-zinc-100"
                 }`}
               >
-                <Icon className={`h-3.5 w-3.5 ${item.color}`} />
+                <Icon
+                  className={`h-3.5 w-3.5 ${
+                    isActive
+                      ? "text-[#881337] dark:text-[#e05666]"
+                      : "text-zinc-500 dark:text-zinc-400"
+                  }`}
+                />
                 <span>{item.label}</span>
                 {isActive && (
                   <motion.span
                     layoutId="headerActiveIndicator"
-                    className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-rose-600 dark:bg-rose-400"
+                    className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[#881337] dark:bg-[#d64555]"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -97,9 +98,9 @@ export function AppHeader() {
             onClick={openDrawer}
             whileTap={{ scale: 0.95 }}
             aria-label="Hızlı İşlemler Menüsünü Aç"
-            className="flex min-h-[44px] items-center gap-2 rounded-xl bg-gradient-to-r from-rose-800 via-red-800 to-rose-900 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:from-rose-700 hover:to-red-700 active:scale-95 dark:from-rose-700 dark:via-red-700 dark:to-rose-800 dark:hover:from-rose-600 dark:hover:to-red-600"
+            className="flex min-h-[44px] items-center gap-2 rounded-xl bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs transition hover:bg-zinc-800 active:scale-95 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
-            <Sparkles className="h-4 w-4 animate-pulse text-amber-300" />
+            <Sparkles className="h-4 w-4 text-zinc-400 dark:text-zinc-600" />
             <span className="hidden sm:inline">Hızlı İşlemler</span>
             <span className="sm:hidden">Menü</span>
           </motion.button>

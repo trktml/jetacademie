@@ -13,35 +13,31 @@ export function BottomNav() {
       label: "Özet",
       href: "#overview",
       icon: Rocket,
-      color: "text-rose-600 dark:text-rose-400",
     },
     {
       id: "zustand",
       label: "Zustand",
       href: "#zustand",
       icon: Layers,
-      color: "text-emerald-600 dark:text-emerald-400",
     },
     {
       id: "query",
       label: "Query",
       href: "#query",
       icon: Database,
-      color: "text-red-600 dark:text-red-400",
     },
     {
       id: "auth",
       label: "Kimlik",
       href: "#auth",
       icon: ShieldCheck,
-      color: "text-amber-600 dark:text-amber-400",
     },
   ];
 
   return (
     <nav
       aria-label="Mobil Alt Navigasyon"
-      className="pb-safe fixed right-0 bottom-0 left-0 z-40 border-t border-zinc-200/90 bg-white/95 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] backdrop-blur-xl transition-colors md:hidden dark:border-zinc-800/90 dark:bg-zinc-950/95 dark:shadow-[0_-4px_24px_rgba(0,0,0,0.4)]"
+      className="pb-safe fixed right-0 bottom-0 left-0 z-40 border-t border-zinc-200/90 bg-white/95 shadow-[0_-4px_20px_rgba(0,0,0,0.04)] backdrop-blur-xl transition-colors md:hidden dark:border-zinc-800/90 dark:bg-[#0b0d12]/95 dark:shadow-[0_-4px_20px_rgba(0,0,0,0.4)]"
     >
       <div className="flex items-center justify-around px-2 py-1">
         {navItems.map((item) => {
@@ -61,14 +57,16 @@ export function BottomNav() {
             >
               <div className="relative">
                 <Icon
-                  className={`h-5 w-5 transition-transform ${item.color} ${
-                    isActive ? "scale-110" : "opacity-80"
+                  className={`h-5 w-5 transition-transform ${
+                    isActive
+                      ? "scale-110 text-[#881337] dark:text-[#e05666]"
+                      : "text-zinc-500 opacity-80 dark:text-zinc-400"
                   }`}
                 />
                 {isActive && (
                   <motion.span
                     layoutId="bottomNavDot"
-                    className="absolute -top-1 -right-1 h-1.5 w-1.5 rounded-full bg-rose-600 dark:bg-rose-400"
+                    className="absolute -top-1 -right-1 h-1.5 w-1.5 rounded-full bg-[#881337] dark:bg-[#d64555]"
                     transition={{ type: "spring", stiffness: 380, damping: 25 }}
                   />
                 )}
@@ -87,13 +85,13 @@ export function BottomNav() {
           className="group relative flex min-h-[48px] min-w-[48px] flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-medium text-zinc-600 transition-transform dark:text-zinc-400"
         >
           <div
-            className={`flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-rose-700 via-red-700 to-amber-600 text-white shadow-xs transition-transform ${
+            className={`flex h-5 w-5 items-center justify-center rounded-full bg-zinc-900 text-white shadow-2xs transition-transform dark:bg-zinc-100 dark:text-zinc-900 ${
               isDrawerOpen ? "scale-110" : ""
             }`}
           >
-            <Sparkles className="h-3 w-3 text-amber-200" />
+            <Sparkles className="h-3 w-3" />
           </div>
-          <span className="mt-1 leading-none font-semibold text-rose-700 dark:text-rose-400">
+          <span className="mt-1 leading-none font-medium text-zinc-800 dark:text-zinc-200">
             Hızlı Menü
           </span>
         </motion.button>

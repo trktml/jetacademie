@@ -135,11 +135,11 @@ export function AuthZodDemo() {
   return (
     <div
       id="auth"
-      className="scroll-mt-24 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md sm:p-6 dark:border-zinc-800 dark:bg-zinc-900"
+      className="scroll-mt-24 rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs transition hover:border-zinc-300 sm:p-6 dark:border-zinc-800/80 dark:bg-zinc-900/60 dark:hover:border-zinc-700"
     >
       <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200/60 bg-zinc-100 text-zinc-800 dark:border-zinc-700/60 dark:bg-zinc-800 dark:text-zinc-200">
             <ShieldCheck className="h-5 w-5" />
           </div>
           <div>
@@ -154,22 +154,22 @@ export function AuthZodDemo() {
 
         {session?.user ? (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-              <CheckCircle2 className="h-3.5 w-3.5" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-semibold text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>{session.user.name || session.user.email}</span>
             </span>
             <button
               type="button"
               onClick={handleSignOut}
               disabled={isSubmitting}
-              className="flex min-h-[44px] items-center gap-1.5 rounded-xl border border-zinc-300 px-3.5 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-100 active:scale-95 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              className="flex min-h-[44px] items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 active:scale-95 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
             >
               <LogOut className="h-3.5 w-3.5" />
               <span>Çıkış Yap</span>
             </button>
           </div>
         ) : (
-          <span className="inline-flex w-fit items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+          <span className="inline-flex w-fit items-center rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
             {sessionPending ? "Yükleniyor..." : "Oturum açık değil"}
           </span>
         )}
@@ -186,7 +186,7 @@ export function AuthZodDemo() {
           }}
           className={`flex min-h-[44px] flex-1 items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold transition active:scale-98 sm:flex-initial sm:text-sm ${
             mode === "signUp"
-              ? "border-b-2 border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400"
+              ? "border-b-2 border-zinc-900 text-zinc-900 dark:border-zinc-100 dark:text-zinc-100"
               : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
           }`}
         >
@@ -202,7 +202,7 @@ export function AuthZodDemo() {
           }}
           className={`flex min-h-[44px] flex-1 items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold transition active:scale-98 sm:flex-initial sm:text-sm ${
             mode === "signIn"
-              ? "border-b-2 border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400"
+              ? "border-b-2 border-zinc-900 text-zinc-900 dark:border-zinc-100 dark:text-zinc-100"
               : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
           }`}
         >
@@ -222,7 +222,7 @@ export function AuthZodDemo() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Örn: Ahmet Yılmaz"
-              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-zinc-300 bg-transparent px-3.5 py-2.5 text-base text-zinc-900 transition outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm dark:border-zinc-700 dark:text-zinc-100"
+              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-base text-zinc-900 transition outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 sm:text-sm dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-400 dark:focus:ring-zinc-400"
             />
             {errors.name && (
               <p className="mt-1.5 flex items-center gap-1 text-xs text-rose-500">
@@ -242,7 +242,7 @@ export function AuthZodDemo() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="ornek@jetacademie.com"
-            className="mt-1.5 min-h-[44px] w-full rounded-xl border border-zinc-300 bg-transparent px-3.5 py-2.5 text-base text-zinc-900 transition outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm dark:border-zinc-700 dark:text-zinc-100"
+            className="mt-1.5 min-h-[44px] w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-base text-zinc-900 transition outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 sm:text-sm dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-400 dark:focus:ring-zinc-400"
           />
           {errors.email && (
             <p className="mt-1.5 flex items-center gap-1 text-xs text-rose-500">
@@ -261,7 +261,7 @@ export function AuthZodDemo() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="mt-1.5 min-h-[44px] w-full rounded-xl border border-zinc-300 bg-transparent px-3.5 py-2.5 text-base text-zinc-900 transition outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm dark:border-zinc-700 dark:text-zinc-100"
+            className="mt-1.5 min-h-[44px] w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-base text-zinc-900 transition outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 sm:text-sm dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-400 dark:focus:ring-zinc-400"
           />
           {errors.password && (
             <p className="mt-1.5 flex items-center gap-1 text-xs text-rose-500">
@@ -275,8 +275,8 @@ export function AuthZodDemo() {
           <div
             className={`flex items-center gap-2 rounded-xl p-3.5 text-sm ${
               statusMessage.type === "success"
-                ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
-                : "bg-rose-50 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300"
+                ? "border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300"
+                : "border border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300"
             }`}
           >
             {statusMessage.type === "success" ? (
@@ -291,7 +291,7 @@ export function AuthZodDemo() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex min-h-[48px] w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 active:scale-[0.99] disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+          className="flex min-h-[48px] w-full items-center justify-center rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white shadow-2xs transition hover:bg-zinc-800 active:scale-[0.99] disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
         >
           {isSubmitting
             ? "İşleniyor..."

@@ -10,8 +10,8 @@ describe("PWA Web App Manifest", () => {
     expect(config.start_url).toBe("/");
     expect(config.display).toBe("standalone");
     expect(config.orientation).toBe("any");
-    expect(config.background_color).toBe("#140205");
-    expect(config.theme_color).toBe("#be123c");
+    expect(config.background_color).toBe("#0b0d12");
+    expect(config.theme_color).toBe("#0b0d12");
   });
 
   it("should include necessary icons with maskable support", () => {

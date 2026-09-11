@@ -21,12 +21,12 @@ export function QueryDemo() {
   return (
     <div
       id="query"
-      className="flex scroll-mt-24 flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md sm:p-6 dark:border-zinc-800 dark:bg-zinc-900"
+      className="flex scroll-mt-24 flex-col justify-between rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs transition hover:border-zinc-300 sm:p-6 dark:border-zinc-800/80 dark:bg-zinc-900/60 dark:hover:border-zinc-700"
     >
       <div>
         <div className="flex items-center justify-between pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200/60 bg-zinc-100 text-zinc-800 dark:border-zinc-700/60 dark:bg-zinc-800 dark:text-zinc-200">
               <Database className="h-5 w-5" />
             </div>
             <div>
@@ -38,45 +38,37 @@ export function QueryDemo() {
               </p>
             </div>
           </div>
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
-              isPending
-                ? "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400"
-                : error
-                  ? "bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400"
-                  : "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
-            }`}
-          >
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200/80 bg-zinc-50 px-3 py-1 text-xs font-semibold text-zinc-800 dark:border-zinc-700/80 dark:bg-zinc-800 dark:text-zinc-200">
             {isPending ? (
               <>
-                <RefreshCw className="h-3 w-3 animate-spin" />
+                <RefreshCw className="h-3 w-3 animate-spin text-zinc-500" />
                 <span>Yükleniyor</span>
               </>
             ) : error ? (
               <>
-                <AlertCircle className="h-3 w-3" />
+                <AlertCircle className="h-3 w-3 text-rose-500" />
                 <span>Hata</span>
               </>
             ) : (
               <>
-                <CheckCircle2 className="h-3 w-3" />
+                <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                 <span>API: {data?.status ?? "Bilinmiyor"}</span>
               </>
             )}
           </span>
         </div>
 
-        <div className="rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-xs text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+        <div className="rounded-xl border border-zinc-200/70 bg-zinc-50/80 p-4 text-xs text-zinc-700 dark:border-zinc-800/80 dark:bg-zinc-950/60 dark:text-zinc-300">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <span className="font-medium text-zinc-500 dark:text-zinc-400">Önbellek:</span>{" "}
-              <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100">
                 {isStale ? "Bayat (Stale)" : "Taze (Fresh)"}
               </span>
             </div>
             <div>
               <span className="font-medium text-zinc-500 dark:text-zinc-400">İstek Durumu:</span>{" "}
-              <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100">
                 {isFetching ? "Aktif..." : "Boşta (Idle)"}
               </span>
             </div>
@@ -95,13 +87,13 @@ export function QueryDemo() {
           </div>
 
           {error && (
-            <p className="mt-2 text-rose-500">
+            <p className="mt-2 text-xs text-rose-500">
               Sorgu Hatası: {error instanceof Error ? error.message : "Bilinmeyen hata"}
             </p>
           )}
 
           {pingMutation.error && (
-            <p className="mt-2 text-rose-500">
+            <p className="mt-2 text-xs text-rose-500">
               Mutasyon Hatası:{" "}
               {pingMutation.error instanceof Error
                 ? pingMutation.error.message
@@ -110,7 +102,7 @@ export function QueryDemo() {
           )}
 
           {pingMutation.isSuccess && !pingMutation.isPending && (
-            <p className="mt-2 text-emerald-600 dark:text-emerald-400">
+            <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400">
               ✓ Mutasyon başarılı: Önbellek senkronize edildi.
             </p>
           )}
@@ -122,7 +114,7 @@ export function QueryDemo() {
           type="button"
           onClick={() => refetch()}
           disabled={isFetching}
-          className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-indigo-500 active:scale-95 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+          className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-zinc-900 px-3.5 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-zinc-800 active:scale-95 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
           <span>{isFetching ? "Yenileniyor..." : "Yeniden Getir"}</span>
@@ -132,7 +124,7 @@ export function QueryDemo() {
           type="button"
           onClick={() => queryClient.invalidateQueries({ queryKey: ["health"] })}
           disabled={isFetching}
-          className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-zinc-300 bg-transparent px-3.5 py-2.5 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-100 active:scale-95 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 active:scale-95 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
         >
           <Ban className="h-3.5 w-3.5" />
           <span>Önbelleği Geçersiz Kıl</span>
@@ -142,9 +134,9 @@ export function QueryDemo() {
           type="button"
           onClick={() => pingMutation.mutate()}
           disabled={pingMutation.isPending}
-          className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-zinc-100 px-3.5 py-2.5 text-xs font-semibold text-zinc-800 transition hover:bg-zinc-200 active:scale-95 disabled:opacity-50 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+          className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-zinc-800 shadow-2xs transition hover:bg-zinc-50 active:scale-95 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
         >
-          <Activity className="h-3.5 w-3.5 text-rose-500" />
+          <Activity className="h-3.5 w-3.5 text-zinc-600 dark:text-zinc-400" />
           <span>{pingMutation.isPending ? "Pingleniyor..." : "Mutation Test"}</span>
         </button>
       </div>

@@ -31,13 +31,14 @@ async function generateIcons() {
 
   // 4. icon-maskable-512.png (512x512 with safe area margin)
   // W3C Maskable Icon specification:
-  // - Background must fill the entire canvas edge-to-edge (rx="0", no transparent rounded corners)
+  // - Background must fill the entire canvas edge-to-edge (rx="0", full bleed)
   // - Core content must be fully contained within the 80% safe zone circle (scale 0.82 centered)
   const maskableSvg = svgContent
     .replaceAll('rx="116"', 'rx="0"')
+    .replaceAll('rx="115"', 'rx="0"')
     .replace(
-      '<g filter="url(#logoShadow)">',
-      '<g filter="url(#logoShadow)" transform="translate(46.08, 46.08) scale(0.82)">'
+      '<g id="jetMark" transform="translate(0, 10)">',
+      '<g id="jetMark" transform="translate(46.08, 54.28) scale(0.82)">'
     );
 
   await sharp(Buffer.from(maskableSvg))
