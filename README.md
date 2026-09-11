@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# JetAcademie
 
-## Getting Started
+JetAcademie, modern web standartları ve yüksek performans hedeflenerek oluşturulmuş tam teşekküllü Next.js başlangıç şablonudur.
 
-First, run the development server:
+## 🚀 Teknoloji Yığını
+
+- **Çalışma Zamanı (Runtime):** [Bun](https://bun.sh/) (v1.3+)
+- **Web Çatısı:** [Next.js](https://nextjs.org/) (v16 App Router & Turbopack, standalone output)
+- **Stil & Tasarım:** [Tailwind CSS](https://tailwindcss.com/) (v4)
+- **Durum Yönetimi:** [Zustand](https://zustand-demo.pmnd.rs/) (v5)
+- **Veri & Şema Doğrulama:** [Zod](https://zod.dev/) (v4)
+- **Kimlik Doğrulama:** [Better-Auth](https://better-auth.com/) (Bun SQLite destekli)
+- **Kod Formatlama & Linting:** [Prettier](https://prettier.io/) (Tailwind eklentisiyle sabit kurallar) & ESLint
+- **Konteyner & Dağıtım:** Docker (Multi-stage) & Docker Compose ([Dokploy](https://dokploy.com/) uyumlu)
+
+---
+
+## 📁 Proje Yapısı
+
+```text
+├── Dockerfile                  # Çok aşamalı (multi-stage) Bun üretim imajı
+├── docker-compose.yml          # Dokploy / yerel Docker dağıtımı ve veri alanı
+├── .prettierrc.json            # Sabit Prettier kuralları
+├── .prettierignore             # Prettier hariç tutma listesi
+├── .env.example                # Çevre değişkenleri şablonu
+├── src/
+│   ├── app/                    # Next.js App Router sayfaları ve layout
+│   │   ├── api/auth/[...all]/  # Better-Auth API uç noktası
+│   │   ├── globals.css         # Tailwind v4 tema stilleri
+│   │   ├── layout.tsx
+│   │   └── page.tsx            # Başlangıç ve demo vitrini
+│   ├── components/             # React arayüz bileşenleri
+│   │   ├── auth-zod-demo.tsx   # Zod ve Better-Auth örnek formu
+│   │   └── counter-demo.tsx    # Zustand durum yönetimi demosu
+│   ├── lib/
+│   │   ├── auth.ts             # Better-Auth sunucu konfigürasyonu
+│   │   ├── auth-client.ts      # Better-Auth React istemcisi
+│   │   └── validations/auth.ts # Zod doğrulama şemaları
+│   └── store/
+│       └── use-counter-store.ts # Zustand sayaç deposu
+└── tsconfig.json
+```
+
+---
+
+## 🛠️ Yerel Geliştirme
+
+### Gereksinimler
+
+- [Bun](https://bun.sh/) kurulu olmalıdır (`curl -fsSL https://bun.sh/install | bash`).
+
+### 1. Bağımlılıkları Yükleme
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+```
+
+### 2. Çevre Değişkenlerini Ayarlama
+
+`.env.example` dosyasını `.env.local` olarak kopyalayın:
+
+```bash
+cp .env.example .env.local
+```
+
+### 3. Geliştirme Sunucusunu Başlatma
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açın.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📜 Komutlar
 
-## Learn More
+| Komut                  | Açıklama                                                |
+| ---------------------- | ------------------------------------------------------- |
+| `bun dev`              | Geliştirme sunucusunu başlatır                          |
+| `bun run build`        | Next.js standalone üretim derlemesini hazırlar          |
+| `bun start`            | Üretim derlemesini yerel olarak çalıştırır              |
+| `bun run lint`         | ESLint ile kod kontrolü yapar                           |
+| `bun run format`       | Prettier ile tüm dosyaları kurallara göre biçimlendirir |
+| `bun run format:check` | Prettier kurallarına uygunluğu denetler                 |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🐳 Dokploy & Docker ile Dağıtım
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Proje, **Dokploy** üzerinde tek tıkla çalışacak şekilde yapılandırılmıştır.
 
-## Deploy on Vercel
+### Dokploy Üzerinde Dağıtım
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Dokploy panelinde yeni bir **Compose** veya **Application (Dockerfile)** oluşturun.
+2. Depoyu (`Git Provider`) bağlayın.
+3. Çevre değişkenlerini (`Environment Variables`) tanımlayın:
+   - `BETTER_AUTH_SECRET`: Güvenli 32+ karakter anahtar (`openssl rand -base64 32`)
+   - `BETTER_AUTH_URL`: Yayın yapılan domain (Örn: `https://jetacademie.com`)
+   - `NEXT_PUBLIC_APP_URL`: Yayın yapılan domain (Örn: `https://jetacademie.com`)
+   - `DATABASE_URL`: `/app/data/auth.sqlite` (Varsayılan persistent volume konumu)
+4. Dağıtımı başlatın (**Deploy**).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Yerel Docker Testi
+
+```bash
+# Konteyneri derleyin ve ayağa kaldırın
+docker compose up --build -d
+
+# Logları takip edin
+docker compose logs -f
+```

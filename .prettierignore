@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+dist
+build
+.git
+bun.lock
+bun.lockb
+*.sqlite*
+.DS_Store
+.env*
+!.env.example
