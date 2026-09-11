@@ -9,7 +9,8 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "bun test"
+    "test": "bun test",
+    "db:migrate": "better-auth migrate"
   },
   "dependencies": {
     "better-auth": "^1.7.4",

@@ -9,33 +9,35 @@ JetAcademie, modern web standartları ve yüksek performans hedeflenerek oluştu
 - **Stil & Tasarım:** [Tailwind CSS](https://tailwindcss.com/) (v4)
 - **Durum Yönetimi:** [Zustand](https://zustand-demo.pmnd.rs/) (v5)
 - **Veri & Şema Doğrulama:** [Zod](https://zod.dev/) (v4)
-- **Kimlik Doğrulama:** [Better-Auth](https://better-auth.com/) (Bun SQLite destekli)
+- **Kimlik Doğrulama:** [Better-Auth](https://better-auth.com/) (Bun SQLite destekli, otomatik tablo ilklendirme)
 - **Kod Formatlama & Linting:** [Prettier](https://prettier.io/) (Tailwind eklentisiyle sabit kurallar) & ESLint
-- **Konteyner & Dağıtım:** Docker (Multi-stage) & Docker Compose ([Dokploy](https://dokploy.com/) uyumlu)
+- **Konteyner & Dağıtım:** Docker (Multi-stage) & Docker Compose ([Dokploy](https://dokploy.com/) uyumlu, sağlık kontrolü dahil)
 
 ---
 
 ## 📁 Proje Yapısı
 
 ```text
-├── Dockerfile                  # Çok aşamalı (multi-stage) Bun üretim imajı
-├── docker-compose.yml          # Dokploy / yerel Docker dağıtımı ve veri alanı
+├── Dockerfile                  # Çok aşamalı (multi-stage) Bun üretim imajı & sağlık kontrolü
+├── docker-compose.yml          # Dokploy / yerel Docker dağıtımı, persistent volume ve healthcheck
 ├── .prettierrc.json            # Sabit Prettier kuralları
 ├── .prettierignore             # Prettier hariç tutma listesi
 ├── .env.example                # Çevre değişkenleri şablonu
 ├── src/
 │   ├── app/                    # Next.js App Router sayfaları ve layout
-│   │   ├── api/auth/[...all]/  # Better-Auth API uç noktası
+│   │   ├── api/
+│   │   │   ├── auth/[...all]/  # Better-Auth API uç noktası
+│   │   │   └── health/         # Dokploy konteyner sağlık kontrolü (/api/health)
 │   │   ├── globals.css         # Tailwind v4 tema stilleri
-│   │   ├── layout.tsx
+│   │   ├── layout.tsx          # Kök yerleşim ve metadata
 │   │   └── page.tsx            # Başlangıç ve demo vitrini
 │   ├── components/             # React arayüz bileşenleri
-│   │   ├── auth-zod-demo.tsx   # Zod ve Better-Auth örnek formu
+│   │   ├── auth-zod-demo.tsx   # Zod ve Better-Auth kayıt/giriş formu ve oturum yönetimi
 │   │   └── counter-demo.tsx    # Zustand durum yönetimi demosu
 │   ├── lib/
-│   │   ├── auth.ts             # Better-Auth sunucu konfigürasyonu
+│   │   ├── auth.ts             # Better-Auth sunucu & otomatik SQLite şema ilklendirmesi
 │   │   ├── auth-client.ts      # Better-Auth React istemcisi
-│   │   └── validations/auth.ts # Zod doğrulama şemaları
+│   │   └── validations/auth.ts # Zod doğrulama şemaları (signUp & signIn)
 │   └── store/
 │       └── use-counter-store.ts # Zustand sayaç deposu
 └── tsconfig.json
@@ -80,9 +82,11 @@ Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açın.
 | `bun dev`              | Geliştirme sunucusunu başlatır                          |
 | `bun run build`        | Next.js standalone üretim derlemesini hazırlar          |
 | `bun start`            | Üretim derlemesini yerel olarak çalıştırır              |
+| `bun test`             | Birim testlerini koşturur                               |
 | `bun run lint`         | ESLint ile kod kontrolü yapar                           |
 | `bun run format`       | Prettier ile tüm dosyaları kurallara göre biçimlendirir |
 | `bun run format:check` | Prettier kurallarına uygunluğu denetler                 |
+| `bun run db:migrate`   | Better-Auth veritabanı şema göçlerini çalıştırır        |
 
 ---
 
@@ -99,7 +103,7 @@ Proje, **Dokploy** üzerinde tek tıkla çalışacak şekilde yapılandırılmı
    - `BETTER_AUTH_URL`: Yayın yapılan domain (Örn: `https://jetacademie.com`)
    - `NEXT_PUBLIC_APP_URL`: Yayın yapılan domain (Örn: `https://jetacademie.com`)
    - `DATABASE_URL`: `/app/data/auth.sqlite` (Varsayılan persistent volume konumu)
-4. Dağıtımı başlatın (**Deploy**).
+4. Dağıtımı başlatın (**Deploy**). Dokploy konteynerin durumunu `/api/health` uç noktası ile otomatik izler.
 
 ### Yerel Docker Testi
 
@@ -109,4 +113,7 @@ docker compose up --build -d
 
 # Logları takip edin
 docker compose logs -f
+
+# Sağlık kontrolünü test edin
+curl http://localhost:3000/api/health
 ```

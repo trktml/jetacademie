@@ -17,6 +17,12 @@ services:
       - DATABASE_URL=${DATABASE_URL:-/app/data/auth.sqlite}
     volumes:
       - app-data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
   app-data:
