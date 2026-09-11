@@ -13,7 +13,7 @@ export function BottomNav() {
       label: "Özet",
       href: "#overview",
       icon: Rocket,
-      color: "text-indigo-600 dark:text-indigo-400",
+      color: "text-rose-600 dark:text-rose-400",
     },
     {
       id: "zustand",
@@ -27,14 +27,14 @@ export function BottomNav() {
       label: "Query",
       href: "#query",
       icon: Database,
-      color: "text-rose-600 dark:text-rose-400",
+      color: "text-red-600 dark:text-red-400",
     },
     {
       id: "auth",
       label: "Kimlik",
       href: "#auth",
       icon: ShieldCheck,
-      color: "text-purple-600 dark:text-purple-400",
+      color: "text-amber-600 dark:text-amber-400",
     },
   ];
 
@@ -68,7 +68,7 @@ export function BottomNav() {
                 {isActive && (
                   <motion.span
                     layoutId="bottomNavDot"
-                    className="absolute -top-1 -right-1 h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400"
+                    className="absolute -top-1 -right-1 h-1.5 w-1.5 rounded-full bg-rose-600 dark:bg-rose-400"
                     transition={{ type: "spring", stiffness: 380, damping: 25 }}
                   />
                 )}
@@ -87,13 +87,13 @@ export function BottomNav() {
           className="group relative flex min-h-[48px] min-w-[48px] flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-medium text-zinc-600 transition-transform dark:text-zinc-400"
         >
           <div
-            className={`flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-violet-500 text-white shadow-xs transition-transform ${
+            className={`flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-rose-700 via-red-700 to-amber-600 text-white shadow-xs transition-transform ${
               isDrawerOpen ? "scale-110" : ""
             }`}
           >
             <Sparkles className="h-3 w-3 text-amber-200" />
           </div>
-          <span className="mt-1 leading-none font-semibold text-indigo-600 dark:text-indigo-400">
+          <span className="mt-1 leading-none font-semibold text-rose-700 dark:text-rose-400">
             Hızlı Menü
           </span>
         </motion.button>

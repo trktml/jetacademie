@@ -31,19 +31,19 @@ export default function Home() {
     { name: "Zod 4", color: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200" },
     {
       name: "Better-Auth",
-      color: "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-200",
+      color: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200",
     },
     {
       name: "Vaul Drawer",
-      color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-200",
+      color: "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200",
     },
     {
       name: "PWA Manifest",
-      color: "bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-200",
+      color: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200",
     },
     {
       name: "Dokploy / Docker",
-      color: "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-200",
+      color: "bg-stone-200 text-stone-800 dark:bg-stone-800 dark:text-stone-200",
     },
   ];
 
@@ -52,8 +52,8 @@ export default function Home() {
       icon: Smartphone,
       title: "Mobile-First & PWA Hazır",
       desc: "Safe-area (çentik) desteği, iOS zoom önleme, 44px dokunma hedefleri ve bağımsız web uygulaması manifesti.",
-      color: "text-indigo-600 dark:text-indigo-400",
-      bg: "bg-indigo-50 dark:bg-indigo-950/60",
+      color: "text-rose-600 dark:text-rose-400",
+      bg: "bg-rose-50 dark:bg-rose-950/60",
     },
     {
       icon: Layers,
@@ -66,15 +66,15 @@ export default function Home() {
       icon: Server,
       title: "TanStack Query & SSR",
       desc: "Sunucu tarafında prefetch, isomorphic hydration ve otomatik önbellek senkronizasyonu.",
-      color: "text-rose-600 dark:text-rose-400",
-      bg: "bg-rose-50 dark:bg-rose-950/60",
+      color: "text-red-600 dark:text-red-400",
+      bg: "bg-red-50 dark:bg-red-950/60",
     },
     {
       icon: ShieldCheck,
       title: "Better-Auth & Bun SQLite",
       desc: "Dış veritabanı bağımlılığı olmadan çalışan, Zod v4 doğrulamalı yerel ve Docker uyumlu kimlik altyapısı.",
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-50 dark:bg-purple-950/60",
+      color: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-50 dark:bg-amber-950/60",
     },
   ];
 
@@ -89,8 +89,8 @@ export default function Home() {
           {/* Hero Section */}
           <section id="overview" className="scroll-mt-24 space-y-6 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950/60 dark:text-indigo-300">
-                <Sparkles className="h-3.5 w-3.5" />
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-800 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-200">
+                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
                 <span>Next.js Mobile-First PWA Starter</span>
               </div>
               <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300">
@@ -102,14 +102,14 @@ export default function Home() {
             <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
               <div className="shrink-0 pt-1">
                 <div className="group relative">
-                  <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-tr from-indigo-500 via-sky-500 to-violet-600 opacity-40 blur-md transition duration-300 group-hover:opacity-75" />
+                  <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-tr from-rose-600 via-red-600 to-amber-500 opacity-40 blur-md transition duration-300 group-hover:opacity-75" />
                   <JetLogoIcon className="relative h-16 w-16 rounded-2xl shadow-xl transition-transform duration-200 group-hover:scale-105 sm:h-20 sm:w-20" />
                 </div>
               </div>
               <div className="flex-1 space-y-3 text-center sm:text-left">
                 <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
                   Mobil ve Masaüstünde Kusursuz{" "}
-                  <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-500 bg-clip-text text-transparent">
                     JetAcademie
                   </span>
                 </h1>

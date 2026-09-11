@@ -72,7 +72,7 @@ export function QuickActionsDrawer() {
           <div className="flex items-center justify-between pb-3">
             <div>
               <Drawer.Title className="flex items-center gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-100">
-                <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <Sparkles className="h-5 w-5 text-rose-600 dark:text-rose-400" />
                 <span>Hızlı İşlem & PWA Paneli</span>
               </Drawer.Title>
               <Drawer.Description className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -92,10 +92,10 @@ export function QuickActionsDrawer() {
 
           <div className="space-y-4 overflow-y-auto pr-1">
             {/* PWA Info Card */}
-            <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 dark:border-indigo-950 dark:bg-indigo-950/40">
+            <div className="rounded-2xl border border-rose-100 bg-rose-50/60 p-4 dark:border-rose-950 dark:bg-rose-950/40">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-700 text-white shadow-sm">
                     <Smartphone className="h-5 w-5" />
                   </div>
                   <div>
@@ -111,7 +111,7 @@ export function QuickActionsDrawer() {
                   className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
                     isStandalone
                       ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                      : "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-200"
+                      : "bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200"
                   }`}
                 >
                   <CheckCircle2 className="h-3.5 w-3.5" />
@@ -121,11 +121,11 @@ export function QuickActionsDrawer() {
 
               <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-zinc-600 sm:grid-cols-2 dark:text-zinc-400">
                 <div className="flex items-center gap-1.5 rounded-lg bg-white/70 p-2 dark:bg-zinc-900/60">
-                  <Smartphone className="h-4 w-4 shrink-0 text-indigo-500" />
+                  <Smartphone className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
                   <span>iOS: Paylaş → Ana Ekrana Ekle</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-lg bg-white/70 p-2 dark:bg-zinc-900/60">
-                  <Laptop className="h-4 w-4 shrink-0 text-indigo-500" />
+                  <Laptop className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
                   <span>Android & PC: Adres çubuğundan Yükle</span>
                 </div>
               </div>
@@ -137,7 +137,7 @@ export function QuickActionsDrawer() {
                 <span className="text-xs font-semibold tracking-wider text-zinc-700 uppercase dark:text-zinc-300">
                   Zustand Hızlı Sayaç
                 </span>
-                <span className="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                <span className="font-mono text-sm font-bold text-rose-600 dark:text-rose-400">
                   Sayaç: {count}
                 </span>
               </div>
@@ -155,7 +155,7 @@ export function QuickActionsDrawer() {
                   type="button"
                   onClick={increment}
                   aria-label="Artır"
-                  className="flex min-h-[44px] items-center justify-center gap-1 rounded-xl bg-indigo-600 text-sm font-medium text-white shadow-xs transition hover:bg-indigo-500 active:scale-95 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+                  className="flex min-h-[44px] items-center justify-center gap-1 rounded-xl bg-rose-700 text-sm font-medium text-white shadow-xs transition hover:bg-rose-600 active:scale-95 dark:bg-rose-600 dark:hover:bg-rose-500"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Artır</span>
@@ -197,7 +197,7 @@ export function QuickActionsDrawer() {
             {/* Dokploy & Cloud Deployment Quick Link */}
             <div className="flex items-center justify-between rounded-xl bg-zinc-100 px-3.5 py-2.5 text-xs text-zinc-600 dark:bg-zinc-800/80 dark:text-zinc-400">
               <span>Dokploy & Docker Multi-Stage Ready</span>
-              <span className="inline-flex items-center gap-1 font-semibold text-indigo-600 dark:text-indigo-400">
+              <span className="inline-flex items-center gap-1 font-semibold text-rose-600 dark:text-rose-400">
                 Bun SQLite <ExternalLink className="h-3 w-3" />
               </span>
             </div>

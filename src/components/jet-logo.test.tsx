@@ -11,8 +11,8 @@ describe("JetLogo & JetLogoIcon Components", () => {
     expect(html).toContain('viewBox="0 0 512 512"');
     expect(html).toContain("custom-class");
     expect(html).toContain("logoBg");
-    expect(html).toContain("jetCore");
-    expect(html).toContain("tasselGold");
+    expect(html).toContain("jetLeft");
+    expect(html).toContain("logoGold");
   });
 
   it("should render JetLogo with brand typography and default tagline", () => {

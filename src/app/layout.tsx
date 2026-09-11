@@ -21,7 +21,7 @@ export const viewport: Viewport = {
   interactiveWidget: "resizes-content",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: dark)", color: "#140205" },
   ],
 };
 
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col selection:bg-indigo-500 selection:text-white">
+      <body className="flex min-h-full flex-col selection:bg-rose-950 selection:text-amber-300">
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

@@ -34,7 +34,7 @@ jetacademie/
 │   ├── icon-512.png            # PWA 512x512 ikonu
 │   ├── icon-maskable-512.png   # PWA 512x512 maskelenebilir ikon
 │   ├── apple-touch-icon.png    # iOS ana ekran ikonu (180x180)
-│   └── icon.svg                # Vektörel süpersonik delta kep uygulama logosu
+│   └── icon.svg                # Risale-i Nur yakut kırmızısı & altın yaldız süpersonik jet ve kep logosu
 ├── scripts/                    # Yardımcı betikler
 │   └── generate-icons.ts       # Sharp ile public/icon.svg üzerinden PWA ikonlarını üreten betik
 ├── src/
@@ -50,7 +50,7 @@ jetacademie/
 │   ├── components/             # React arayüz bileşenleri
 │   │   ├── app-header.tsx      # Masaüstü ve mobil uyumlu üst navigasyon çubuğu
 │   │   ├── bottom-nav.tsx      # Mobil alt navigasyon çubuğu (Safe-area destekli)
-│   │   ├── jet-logo.tsx        # Süpersonik delta kep logo bileşeni (JetLogo & JetLogoIcon)
+│   │   ├── jet-logo.tsx        # Süpersonik savaş jeti ve akademik kep logosu (JetLogo & JetLogoIcon)
 │   │   ├── jet-logo.test.tsx   # JetLogo bileşeni birim testleri
 │   │   ├── quick-actions-drawer.tsx # Vaul alt çekmece (mobilde bottom sheet, masaüstünde floating diyalog)
 │   │   ├── auth-zod-demo.tsx   # Zod ve Better-Auth kayıt/giriş formu ve oturum yönetimi

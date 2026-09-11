@@ -12,7 +12,7 @@ const navItems = [
     label: "Genel Bakış",
     href: "#overview",
     icon: Rocket,
-    color: "text-indigo-500",
+    color: "text-rose-600 dark:text-rose-400",
   },
   {
     id: "zustand",
@@ -26,14 +26,14 @@ const navItems = [
     label: "TanStack Query",
     href: "#query",
     icon: Database,
-    color: "text-rose-500",
+    color: "text-red-500",
   },
   {
     id: "auth",
     label: "Kimlik & Zod",
     href: "#auth",
     icon: ShieldCheck,
-    color: "text-purple-500",
+    color: "text-amber-500",
   },
   {
     id: "dokploy",
@@ -72,7 +72,7 @@ export function AppHeader() {
                 onClick={() => setActiveSection(item.id)}
                 className={`relative flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition ${
                   isActive
-                    ? "bg-zinc-100 text-indigo-600 dark:bg-zinc-800/90 dark:text-indigo-300"
+                    ? "bg-rose-50 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300"
                     : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
                 }`}
               >
@@ -81,7 +81,7 @@ export function AppHeader() {
                 {isActive && (
                   <motion.span
                     layoutId="headerActiveIndicator"
-                    className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-indigo-600 dark:bg-indigo-400"
+                    className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-rose-600 dark:bg-rose-400"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -97,7 +97,7 @@ export function AppHeader() {
             onClick={openDrawer}
             whileTap={{ scale: 0.95 }}
             aria-label="Hızlı İşlemler Menüsünü Aç"
-            className="flex min-h-[44px] items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:from-indigo-500 hover:to-indigo-600 active:scale-95 dark:from-indigo-500 dark:to-indigo-600 dark:hover:from-indigo-400 dark:hover:to-indigo-500"
+            className="flex min-h-[44px] items-center gap-2 rounded-xl bg-gradient-to-r from-rose-800 via-red-800 to-rose-900 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:from-rose-700 hover:to-red-700 active:scale-95 dark:from-rose-700 dark:via-red-700 dark:to-rose-800 dark:hover:from-rose-600 dark:hover:to-red-600"
           >
             <Sparkles className="h-4 w-4 animate-pulse text-amber-300" />
             <span className="hidden sm:inline">Hızlı İşlemler</span>
