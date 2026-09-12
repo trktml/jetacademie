@@ -10,10 +10,10 @@ export default function TargetsPage() {
   return (
     <main className="targets-page page-shell">
       <header className="page-heading page-heading--compact">
-        <div className="page-heading__mark">
-          <Target aria-hidden="true" />
-        </div>
-        <div>
+        <div className="page-heading__title-row">
+          <div className="page-heading__mark">
+            <Target aria-hidden="true" />
+          </div>
           <h1>Hedefler</h1>
         </div>
       </header>
