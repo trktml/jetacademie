@@ -5,7 +5,7 @@ JetAcademie, öğrencilerin aylık ve haftalık manevi gelişim müfredatını s
 ## Ürün yapısı
 
 - `/`: Yalnızca Müfredat ve Hedefler bölümlerine açılan ana sayfa.
-- `/mufredat`: Ayet, Hadis, Siyer, Sahabe kıssaları, Risale, Hocaefendi dinleme, Pırlanta, İlmihal ve Adab-ı Muaşeret çekmeceleri.
+- `/mufredat`: Sol tarafta sabit (fixed) kompakt kapsül navigasyon ve dikey (alt alta) sıralanan Ayet, Hadis, Siyer, Sahabe kıssaları, Risale, Hocaefendi dinleme, Pırlanta, İlmihal ve Adab-ı Muaşeret arşiv dosyaları.
 - `/hedefler`: Bir sonraki ürün çalışması için hazırlanmış Hedefler sayfası.
 - Hesap: Better-Auth ile e-posta/şifre girişi ve kullanıcıya bağlı müfredat ilerlemesi.
 - Tema: Açık, koyu ve sistem tercihlerini destekleyen kalıcı semantik tema altyapısı.

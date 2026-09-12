@@ -15,7 +15,7 @@ export default async function CurriculumPage() {
   const completedEntryIds = session?.user ? getCompletedEntryIds(session.user.id) : [];
 
   return (
-    <main className="curriculum-page page-shell">
+    <main className="curriculum-page page-shell archive-page-shell">
       <header className="page-heading">
         <div className="page-heading__mark">
           <Archive aria-hidden="true" />

@@ -1,23 +1,18 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  ChevronRight,
-  FileClock,
-  FolderOpen,
-  LockKeyhole,
-} from "lucide-react";
+import { Check, FileClock, FolderOpen, LockKeyhole } from "lucide-react";
 import {
   curriculumCategories,
   getCategoryEntries,
+  getCategoryShortLabel,
   getUnlockedEntryIndex,
   type CurriculumCategoryId,
+  type CurriculumEntry,
 } from "@/lib/curriculum";
 import { markEntryAsRead } from "@/app/mufredat/actions";
 import { useUiStore } from "@/store/use-ui-store";
+import { useActiveSection } from "@/hooks/use-active-section";
 
 const monthNames = [
   "Ocak",
@@ -37,204 +32,230 @@ const monthNames = [
 interface CurriculumArchiveProps {
   initialCompletedEntryIds: string[];
   isSignedIn: boolean;
+  customEntries?: readonly CurriculumEntry[];
 }
 
 export function CurriculumArchive({
   initialCompletedEntryIds,
   isSignedIn,
+  customEntries,
 }: CurriculumArchiveProps) {
-  const [activeCategoryId, setActiveCategoryId] = useState<CurriculumCategoryId>("ayet");
+  const categoryIds = useMemo(() => curriculumCategories.map((c) => c.id), []);
+  const [activeCategoryId, setActiveCategoryId] = useActiveSection(categoryIds, "ayet");
   const [completedEntryIds, setCompletedEntryIds] = useState(initialCompletedEntryIds);
-  const [visibleIndex, setVisibleIndex] = useState(0);
+  const [pendingEntryId, setPendingEntryId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const openAccount = useUiStore((state) => state.openAccount);
 
-  const entries = useMemo(() => getCategoryEntries(activeCategoryId), [activeCategoryId]);
   const completedSet = useMemo(() => new Set(completedEntryIds), [completedEntryIds]);
-  const unlockedIndex = getUnlockedEntryIndex(entries, completedSet);
-  const activeEntry = entries[visibleIndex];
-  const category = curriculumCategories.find((item) => item.id === activeCategoryId)!;
-  const isCurrentUnread = Boolean(activeEntry && !completedSet.has(activeEntry.id));
-  const canGoForward = Boolean(activeEntry && visibleIndex < unlockedIndex);
-  const completedCount = entries.filter((entry) => completedSet.has(entry.id)).length;
 
-  function selectCategory(categoryId: CurriculumCategoryId) {
-    const nextEntries = getCategoryEntries(categoryId);
+  function scrollToCategory(categoryId: CurriculumCategoryId) {
     setActiveCategoryId(categoryId);
-    setVisibleIndex(Math.max(0, getUnlockedEntryIndex(nextEntries, completedSet)));
-    setMessage(null);
+    const element = document.getElementById(categoryId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
-  function completeCurrentEntry() {
-    if (!activeEntry) return;
+  function completeEntry(entryId: string) {
     if (!isSignedIn) {
       openAccount();
       return;
     }
 
+    setPendingEntryId(entryId);
     startTransition(async () => {
       try {
-        await markEntryAsRead(activeEntry.id);
-        setCompletedEntryIds((ids) => [...new Set([...ids, activeEntry.id])]);
+        await markEntryAsRead(entryId);
+        setCompletedEntryIds((ids) => [...new Set([...ids, entryId])]);
         setMessage("Dosya okundu olarak kaydedildi.");
+        setTimeout(() => setMessage(null), 3500);
       } catch (error) {
         setMessage(error instanceof Error ? error.message : "İlerleme kaydedilemedi.");
+        setTimeout(() => setMessage(null), 4000);
+      } finally {
+        setPendingEntryId(null);
       }
     });
   }
 
   return (
-    <section className="archive-workspace" aria-label="Müfredat arşivi">
-      <aside className="archive-cabinet" aria-label="Müfredat çekmeceleri">
-        <div className="cabinet-heading">
-          <span>Arşiv 01</span>
-          <strong>Konu çekmeceleri</strong>
-        </div>
-        <div className="drawer-list">
-          {curriculumCategories.map((item, index) => {
+    <div className="archive-layout" aria-label="Müfredat arşivi">
+      {/* Sol Sabit Kapsül Navigasyon (Fixed Capsule Rail) */}
+      <aside className="archive-fixed-capsule" aria-label="Müfredat Hızlı Menü">
+        <nav className="archive-capsule-list" aria-label="Kategori Listesi">
+          {curriculumCategories.map((item) => {
             const Icon = item.icon;
-            const itemEntries = getCategoryEntries(item.id);
-            const itemCompleted = itemEntries.filter((entry) => completedSet.has(entry.id)).length;
             const isActive = item.id === activeCategoryId;
+            const shortLabel = getCategoryShortLabel(item.id);
 
             return (
               <button
                 key={item.id}
                 type="button"
-                className="archive-drawer"
+                className="archive-capsule-item"
                 data-active={isActive}
-                data-accent={item.accent}
-                aria-pressed={isActive}
-                onClick={() => selectCategory(item.id)}
+                aria-current={isActive ? "true" : undefined}
+                aria-label={item.label}
+                title={item.label}
+                onClick={() => scrollToCategory(item.id)}
               >
-                <span className="archive-drawer__number">{String(index + 1).padStart(2, "0")}</span>
-                <span className="archive-drawer__icon">
-                  <Icon aria-hidden="true" />
+                <span className="archive-capsule-icon-wrap" aria-hidden="true">
+                  <Icon />
                 </span>
-                <span className="archive-drawer__label">{item.label}</span>
-                <span className="archive-drawer__count">
-                  {itemEntries.length ? `${itemCompleted}/${itemEntries.length}` : "—"}
-                </span>
-                <ChevronRight aria-hidden="true" />
+                <span className="archive-capsule-label">{shortLabel}</span>
               </button>
             );
           })}
-        </div>
+        </nav>
       </aside>
 
-      <div className="file-workspace">
-        <div className="file-toolbar">
-          <div>
-            <span className="file-toolbar__label">Açık çekmece</span>
-            <strong>{category.label}</strong>
-          </div>
-          <div className="file-toolbar__progress">
-            <span>
-              {entries.length
-                ? `${completedCount} / ${entries.length} tamamlandı`
-                : "Program bekleniyor"}
-            </span>
-            <div className="progress-track" aria-hidden="true">
-              <span
-                style={{
-                  width: entries.length ? `${(completedCount / entries.length) * 100}%` : "0%",
-                }}
-              />
-            </div>
-          </div>
-        </div>
+      {/* Dikey Alt Alta Arşiv Akışı (All Categories Stacked Vertically) */}
+      <div className="archive-feed">
+        {curriculumCategories.map((category, index) => {
+          const Icon = category.icon;
+          const entries = customEntries
+            ? customEntries.filter((e) => e.categoryId === category.id)
+            : getCategoryEntries(category.id);
+          const unlockedIndex = getUnlockedEntryIndex(entries, completedSet);
+          const completedCount = entries.filter((e) => completedSet.has(e.id)).length;
 
-        <div className="file-stage">
-          <div className="file-shadow file-shadow--three" aria-hidden="true" />
-          <div className="file-shadow file-shadow--two" aria-hidden="true" />
-          <div className="file-shadow file-shadow--one" aria-hidden="true" />
-
-          <article className="curriculum-file" aria-live="polite">
-            <div className="curriculum-file__tab">
-              {activeEntry
-                ? `${monthNames[activeEntry.month - 1]} · ${activeEntry.week}. Hafta`
-                : "Dosya bekleniyor"}
-            </div>
-
-            {activeEntry ? (
-              <>
-                <header className="curriculum-file__header">
-                  <div>
-                    <p className="eyebrow">{activeEntry.year} çalışma dosyası</p>
-                    <h2>{activeEntry.title}</h2>
+          return (
+            <section
+              key={category.id}
+              id={category.id}
+              className="archive-category-block scroll-mt-20 sm:scroll-mt-24"
+              data-category={category.id}
+              aria-labelledby={`heading-${category.id}`}
+            >
+              {/* Kategori Başlığı */}
+              <header className="archive-category-header">
+                <div className="archive-category-header__info">
+                  <div
+                    className="archive-category-icon-box"
+                    data-accent={category.accent}
+                    aria-hidden="true"
+                  >
+                    <Icon />
                   </div>
-                  {completedSet.has(activeEntry.id) ? (
-                    <span className="read-status read-status--complete">
-                      <Check aria-hidden="true" /> Okundu
-                    </span>
-                  ) : visibleIndex > unlockedIndex ? (
-                    <span className="read-status">
-                      <LockKeyhole aria-hidden="true" /> Kilitli
-                    </span>
-                  ) : (
-                    <span className="read-status">
-                      <FileClock aria-hidden="true" /> Sıradaki
-                    </span>
-                  )}
-                </header>
-                <div className="curriculum-file__body">
-                  {activeEntry.body ? (
-                    <p>{activeEntry.body}</p>
-                  ) : (
-                    <p>Bu dosyanın içeriği henüz eklenmedi.</p>
+                  <div>
+                    <div className="archive-category-eyebrow">
+                      <span>{String(index + 1).padStart(2, "0")} · ARŞİV DOSYASI</span>
+                      {category.resourceType && (
+                        <span className="archive-resource-badge">
+                          {category.resourceType.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <h2 id={`heading-${category.id}`} className="archive-category-title">
+                      {category.label}
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="archive-category-progress">
+                  <span className="archive-category-progress__count">
+                    {entries.length > 0
+                      ? `${completedCount} / ${entries.length} tamamlandı`
+                      : "Henüz içerik yayımlanmadı"}
+                  </span>
+                  {entries.length > 0 && (
+                    <div className="archive-progress-track" aria-hidden="true">
+                      <div
+                        className="archive-progress-fill"
+                        style={{
+                          width: `${(completedCount / entries.length) * 100}%`,
+                        }}
+                      />
+                    </div>
                   )}
                 </div>
-              </>
-            ) : (
-              <div className="empty-file">
-                <span>
-                  <FolderOpen aria-hidden="true" />
-                </span>
-                <p className="eyebrow">{category.label}</p>
-                <h2>Henüz haftalık içerik yayımlanmadı.</h2>
-                <p>İlk dosya eklendiğinde burada ay ve hafta sırasıyla görünecek.</p>
+              </header>
+
+              {/* Kategori Dosyaları - Alt Alta Sıralı */}
+              <div className="archive-category-body">
+                {entries.length > 0 ? (
+                  entries.map((entry, entryIdx) => {
+                    const isCompleted = completedSet.has(entry.id);
+                    const isCurrent = !isCompleted && entryIdx === unlockedIndex;
+                    const isEntryPending = isPending && pendingEntryId === entry.id;
+
+                    return (
+                      <article
+                        key={entry.id}
+                        className="archive-entry-card"
+                        data-status={isCompleted ? "completed" : isCurrent ? "current" : "locked"}
+                      >
+                        <div className="archive-entry-card__top">
+                          <span className="archive-entry-timing">
+                            {monthNames[entry.month - 1]} · {entry.week}. Hafta ({entry.year})
+                          </span>
+                          <span
+                            className={`read-status ${isCompleted ? "read-status--complete" : ""}`}
+                          >
+                            {isCompleted ? (
+                              <>
+                                <Check aria-hidden="true" /> Okundu
+                              </>
+                            ) : isCurrent ? (
+                              <>
+                                <FileClock aria-hidden="true" /> Sıradaki
+                              </>
+                            ) : (
+                              <>
+                                <LockKeyhole aria-hidden="true" /> Kilitli
+                              </>
+                            )}
+                          </span>
+                        </div>
+
+                        <h3 className="archive-entry-title">{entry.title}</h3>
+
+                        {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
+
+                        {isCurrent && (
+                          <div className="archive-entry-actions">
+                            <button
+                              type="button"
+                              className="primary-button"
+                              onClick={() => completeEntry(entry.id)}
+                              disabled={isEntryPending}
+                            >
+                              <Check aria-hidden="true" />
+                              {isEntryPending ? "Kaydediliyor…" : "Okundu işaretle"}
+                            </button>
+                          </div>
+                        )}
+                      </article>
+                    );
+                  })
+                ) : (
+                  <div className="archive-empty-card">
+                    <div className="archive-empty-card__icon" aria-hidden="true">
+                      <FolderOpen />
+                    </div>
+                    <div className="archive-empty-card__text">
+                      <h4>{category.label} haftalık dosyaları hazırlanıyor</h4>
+                      <p>
+                        Yeni dosyalar eklendiğinde burada hafta hafta sıralı ve kilitli olarak
+                        listelenecektir.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </article>
-        </div>
-
-        <div className="file-navigation">
-          <button
-            type="button"
-            className="secondary-button"
-            disabled={!activeEntry || visibleIndex === 0}
-            onClick={() => setVisibleIndex((index) => Math.max(0, index - 1))}
-          >
-            <ArrowLeft aria-hidden="true" /> Öncekiler
-          </button>
-
-          {activeEntry && isCurrentUnread && visibleIndex === unlockedIndex && (
-            <button
-              type="button"
-              className="primary-button"
-              onClick={completeCurrentEntry}
-              disabled={isPending}
-            >
-              <Check aria-hidden="true" /> {isPending ? "Kaydediliyor…" : "Okundu işaretle"}
-            </button>
-          )}
-
-          <button
-            type="button"
-            className="secondary-button"
-            disabled={!canGoForward}
-            onClick={() => setVisibleIndex((index) => index + 1)}
-          >
-            Sonraki <ArrowRight aria-hidden="true" />
-          </button>
-        </div>
-        {message && (
-          <p className="archive-message" role="status">
-            {message}
-          </p>
-        )}
+            </section>
+          );
+        })}
       </div>
-    </section>
+
+      {message && (
+        <aside className="archive-toast" role="status" aria-live="polite">
+          <Check aria-hidden="true" className="h-4 w-4 text-emerald-400" />
+          <span>{message}</span>
+        </aside>
+      )}
+    </div>
   );
 }

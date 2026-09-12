@@ -10,9 +10,6 @@ export default function Home() {
 
       <section className="home-quote-section" aria-label="Günün hadisi">
         <div className="home-quote-card">
-          <span className="home-quote-card__icon">
-            <BookOpen aria-hidden="true" />
-          </span>
           <blockquote>
             <p>&ldquo;İlim öğrenmek her Müslüman&apos;a farzdır.&rdquo;</p>
             <footer>— Hz. Muhammed (s.a.v.)</footer>

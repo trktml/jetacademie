@@ -35,4 +35,18 @@ describe("curriculum", () => {
     expect(canCompleteEntry("e2", entries, new Set())).toBe(false);
     expect(canCompleteEntry("e2", entries, new Set(["e1"]))).toBe(true);
   });
+
+  it("provides concise short labels for compact navigation", () => {
+    expect(curriculumCategories.map((category) => category.shortLabel)).toEqual([
+      "Ayet",
+      "Hadis",
+      "Siyer",
+      "Sahabe",
+      "Risale",
+      "Dinleme",
+      "Pırlanta",
+      "İlmihal",
+      "Adab",
+    ]);
+  });
 });
