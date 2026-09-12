@@ -76,42 +76,69 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('<span class="archive-resource-badge">AUDIO</span>');
   });
 
-  it("should render entries vertically with proper status indicators", () => {
-    const sampleEntries = [
-      {
-        id: "hadis-1",
-        categoryId: "hadis" as const,
-        month: 1,
-        week: 1,
-        year: 2026,
-        title: "Niyet ve İhlas Hadisi",
-        body: "Ameller niyetlere göredir...",
-      },
-      {
-        id: "hadis-2",
-        categoryId: "hadis" as const,
-        month: 1,
-        week: 2,
-        year: 2026,
-        title: "İman ve İslam Hadisi",
-        body: "Cibril hadisi açıklaması...",
-      },
-    ];
+  it("should render sample entries with Eylül-N timing format", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
 
-    // First entry completed, second entry is current
+    // Verify timing format: "Eylül-1", "Eylül-2"
+    expect(html).toContain("Eylül-1");
+    expect(html).toContain("Eylül-2");
+
+    // Each category should show "0 / 2 tamamlandı"
+    expect(html).toContain("0 / 2 tamamlandı");
+  });
+
+  it("should render real sample entries with correct titles", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
+
+    // Ayet
+    expect(html).toContain("Bakara Suresi 2:152");
+    expect(html).toContain("Âl-i İmran 3:159");
+
+    // Hadis
+    expect(html).toContain("Niyet Hadisi");
+    expect(html).toContain("Kolaylaştırın Hadisi");
+
+    // Siyer
+    expect(html).toContain("İlk Vahiy ve Gizli Davet");
+
+    // Sahabe (apostrophe is HTML-escaped by React's renderToString)
+    expect(html).toContain("Sıddîk&#x27;ın Sadakati");
+
+    // Risale
+    expect(html).toContain("Birinci Söz");
+    expect(html).toContain("İkinci Söz");
+  });
+
+  it("should track completion independently per category", () => {
+    // Complete hadis-eylul-1, but ayet should remain independent
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={["hadis-eylul-1"]} isSignedIn={true} />
+    );
+
+    // Hadis should show 1 completed
+    expect(html).toContain("1 / 2 tamamlandı");
+
+    // The first ayet entry (ayet-eylul-1) should still be "current" (Sıradaki)
+    expect(html).toContain("Sıradaki");
+  });
+
+  it("should render entries with proper status when some are completed", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["hadis-1"]}
+        initialCompletedEntryIds={["ayet-eylul-1", "hadis-eylul-1", "hadis-eylul-2"]}
         isSignedIn={true}
-        customEntries={sampleEntries}
       />
     );
 
-    expect(html).toContain("Niyet ve İhlas Hadisi");
-    expect(html).toContain("İman ve İslam Hadisi");
-    expect(html).toContain("Okundu");
-    expect(html).toContain("Sıradaki");
-    expect(html).toContain("Okundu işaretle");
+    // Hadis should be 2/2
+    expect(html).toContain("2 / 2 tamamlandı");
+    // Ayet should be 1/2
     expect(html).toContain("1 / 2 tamamlandı");
+    // Should have "Okundu" labels
+    expect(html).toContain("Okundu");
   });
 });

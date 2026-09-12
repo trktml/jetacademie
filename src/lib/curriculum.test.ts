@@ -2,14 +2,11 @@ import { describe, expect, it } from "bun:test";
 import {
   canCompleteEntry,
   curriculumCategories,
+  curriculumEntries,
+  getCategoryEntries,
   getUnlockedEntryIndex,
-  type CurriculumEntry,
+  makeEntryId,
 } from "./curriculum";
-
-const entries = [
-  { id: "e1", categoryId: "ayet", year: 2026, month: 9, week: 1, title: "Birinci" },
-  { id: "e2", categoryId: "ayet", year: 2026, month: 9, week: 2, title: "İkinci" },
-] satisfies CurriculumEntry[];
 
 describe("curriculum", () => {
   it("contains only the nine real curriculum categories", () => {
@@ -26,16 +23,6 @@ describe("curriculum", () => {
     ]);
   });
 
-  it("unlocks only the first unread entry", () => {
-    expect(getUnlockedEntryIndex(entries, new Set())).toBe(0);
-    expect(getUnlockedEntryIndex(entries, new Set(["e1"]))).toBe(1);
-  });
-
-  it("does not allow skipping an unread entry", () => {
-    expect(canCompleteEntry("e2", entries, new Set())).toBe(false);
-    expect(canCompleteEntry("e2", entries, new Set(["e1"]))).toBe(true);
-  });
-
   it("provides concise short labels for compact navigation", () => {
     expect(curriculumCategories.map((category) => category.shortLabel)).toEqual([
       "Ayet",
@@ -48,5 +35,62 @@ describe("curriculum", () => {
       "İlmihal",
       "Adab",
     ]);
+  });
+
+  it("has 2 sample entries per category (18 total)", () => {
+    expect(curriculumEntries.length).toBe(18);
+
+    for (const category of curriculumCategories) {
+      const entries = getCategoryEntries(category.id);
+      expect(entries.length).toBe(2);
+    }
+  });
+
+  it("uses category-month-week ID pattern", () => {
+    expect(curriculumEntries[0].id).toBe("ayet-eylul-1");
+    expect(curriculumEntries[1].id).toBe("ayet-eylul-2");
+
+    const hadisEntries = getCategoryEntries("hadis");
+    expect(hadisEntries[0].id).toBe("hadis-eylul-1");
+    expect(hadisEntries[1].id).toBe("hadis-eylul-2");
+  });
+
+  it("makeEntryId generates correct patterns", () => {
+    expect(makeEntryId("hadis", 9, 1)).toBe("hadis-eylul-1");
+    expect(makeEntryId("ayet", 1, 3)).toBe("ayet-ocak-3");
+    expect(makeEntryId("risale", 12, 2)).toBe("risale-aralik-2");
+  });
+
+  it("unlocks only the first unread entry", () => {
+    const entries = getCategoryEntries("hadis");
+    expect(getUnlockedEntryIndex(entries, new Set())).toBe(0);
+    expect(getUnlockedEntryIndex(entries, new Set(["hadis-eylul-1"]))).toBe(1);
+  });
+
+  it("does not allow skipping an unread entry", () => {
+    const entries = getCategoryEntries("hadis");
+    expect(canCompleteEntry("hadis-eylul-2", entries, new Set())).toBe(false);
+    expect(canCompleteEntry("hadis-eylul-2", entries, new Set(["hadis-eylul-1"]))).toBe(true);
+  });
+
+  it("tracks progress independently per category", () => {
+    const ayetEntries = getCategoryEntries("ayet");
+    const hadisEntries = getCategoryEntries("hadis");
+
+    // Completing ayet-eylul-1 should NOT unlock hadis-eylul-2
+    const completedAyet = new Set(["ayet-eylul-1"]);
+    expect(getUnlockedEntryIndex(ayetEntries, completedAyet)).toBe(1); // ayet-eylul-2 unlocked
+    expect(getUnlockedEntryIndex(hadisEntries, completedAyet)).toBe(0); // hadis-eylul-1 still first
+
+    expect(canCompleteEntry("hadis-eylul-2", hadisEntries, completedAyet)).toBe(false);
+    expect(canCompleteEntry("ayet-eylul-2", ayetEntries, completedAyet)).toBe(true);
+  });
+
+  it("returns entries sorted by year/month/week within a category", () => {
+    const risaleEntries = getCategoryEntries("risale");
+    expect(risaleEntries[0].week).toBe(1);
+    expect(risaleEntries[1].week).toBe(2);
+    expect(risaleEntries[0].title).toContain("Bismillah");
+    expect(risaleEntries[1].title).toContain("İman ve Küfür");
   });
 });

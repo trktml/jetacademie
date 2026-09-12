@@ -189,7 +189,7 @@ export function CurriculumArchive({
                       >
                         <div className="archive-entry-card__top">
                           <span className="archive-entry-timing">
-                            {monthNames[entry.month - 1]} · {entry.week}. Hafta ({entry.year})
+                            {`${monthNames[entry.month - 1]}-${entry.week}`}
                           </span>
                           <span
                             className={`read-status ${isCompleted ? "read-status--complete" : ""}`}

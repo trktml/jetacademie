@@ -96,9 +96,220 @@ export interface CurriculumEntry {
   pageCount?: number;
 }
 
-// Haftalık içerikler yönetim paneliyle eklendiğinde bu koleksiyona bağlanacak.
-// Gerçek içerik sağlanmadığı için kullanıcıya sahte dersler göstermiyoruz.
-export const curriculumEntries: readonly CurriculumEntry[] = [];
+const monthLabels: Record<number, string> = {
+  1: "ocak",
+  2: "subat",
+  3: "mart",
+  4: "nisan",
+  5: "mayis",
+  6: "haziran",
+  7: "temmuz",
+  8: "agustos",
+  9: "eylul",
+  10: "ekim",
+  11: "kasim",
+  12: "aralik",
+};
+
+/**
+ * Generates a deterministic entry ID.
+ * Pattern: "hadis-eylul-1", "ayet-eylul-2", etc.
+ */
+export function makeEntryId(categoryId: CurriculumCategoryId, month: number, week: number): string {
+  const monthSlug = monthLabels[month] ?? `m${month}`;
+  return `${categoryId}-${monthSlug}-${week}`;
+}
+
+// 2 haftalık örnek müfredat içerikleri — Eylül 2026
+export const curriculumEntries: readonly CurriculumEntry[] = [
+  // ── Ayet ────────────────────────────────────────
+  {
+    id: "ayet-eylul-1",
+    categoryId: "ayet",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "Bakara Suresi 2:152 — Beni Anın",
+    body: '"Öyleyse siz Beni (ibadetle) anın ki Ben de sizi anayım. Bana şükredin; sakın Bana nankörlük etmeyin." Ayetin tefsiri ve hayata yansımaları üzerine düşünceler.',
+  },
+  {
+    id: "ayet-eylul-2",
+    categoryId: "ayet",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Âl-i İmran 3:159 — Şûrâ ve Tevekkül",
+    body: '"İş hakkında onlarla istişare et. Bir kere de karar verip azmettin mi, artık Allah\'a tevekkül et." Karar alma süreçlerinde istişare ve tevekkül dengesi.',
+  },
+
+  // ── Hadis ───────────────────────────────────────
+  {
+    id: "hadis-eylul-1",
+    categoryId: "hadis",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "Niyet Hadisi — Ameller Niyetlere Göredir",
+    body: '"Ameller ancak niyetlere göredir. Herkese niyet ettiği şey vardır." (Buhârî, Müslim) Niyetin ibadet ve günlük hayattaki merkezi rolü.',
+  },
+  {
+    id: "hadis-eylul-2",
+    categoryId: "hadis",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Kolaylaştırın Hadisi — Müjdeleyin",
+    body: '"Kolaylaştırın, zorlaştırmayın; müjdeleyin, nefret ettirmeyin." (Buhârî, Müslim) Tebliğ ve eğitimde kolaylaştırma prensibi.',
+  },
+
+  // ── Siyer ───────────────────────────────────────
+  {
+    id: "siyer-eylul-1",
+    categoryId: "siyer",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "Mekke Dönemi — İlk Vahiy ve Gizli Davet",
+    body: "Hz. Peygamber'in (s.a.v.) Hira Mağarası'nda ilk vahyi alışı, Hz. Hatice'nin desteği ve ilk Müslümanların iman süreci.",
+  },
+  {
+    id: "siyer-eylul-2",
+    categoryId: "siyer",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Açık Davet ve İlk Tepkiler",
+    body: "Safâ Tepesi'ndeki açık davet, Kureyş'in tepkileri ve ilk Müslümanlara uygulanan baskılar. Sabır ve metanetin önemi.",
+  },
+
+  // ── Sahabe Kıssaları ────────────────────────────
+  {
+    id: "sahabe-kissalari-eylul-1",
+    categoryId: "sahabe-kissalari",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "Hz. Ebu Bekir (r.a.) — Sıddîk'ın Sadakati",
+    body: "İslam'a ilk iman eden erkek, hicret arkadaşı ve ilk halife. Malını, canını, her şeyini İslam için feda eden yüce sahabenin hikâyesi.",
+  },
+  {
+    id: "sahabe-kissalari-eylul-2",
+    categoryId: "sahabe-kissalari",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Hz. Bilal-i Habeşî (r.a.) — İmanın Sesi",
+    body: "Zulme rağmen \"Ehad, Ehad!\" diyerek direnen, İslam'ın ilk müezzini Hz. Bilal'in eşsiz iman gücü ve sabrı.",
+  },
+
+  // ── Risale ──────────────────────────────────────
+  {
+    id: "risale-eylul-1",
+    categoryId: "risale",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "Birinci Söz — Bismillah",
+    body: '"Bismillah" her hayrın başıdır. Biz dahi başta onu söyleriz. Bismillah\'ın mana derinliği ve günlük hayattaki yeri. (Sözler, Birinci Söz)',
+    resourceUrl: "#",
+    pageCount: 4,
+  },
+  {
+    id: "risale-eylul-2",
+    categoryId: "risale",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "İkinci Söz — İman ve Küfür Mukayesesi",
+    body: "İki yolcunun hikâyesi üzerinden iman ve küfürün insana kazandırdıkları ve kaybettirdikleri. (Sözler, İkinci Söz)",
+    resourceUrl: "#",
+    pageCount: 3,
+  },
+
+  // ── Hocaefendi Dinleme ──────────────────────────
+  {
+    id: "hocaefendi-dinleme-eylul-1",
+    categoryId: "hocaefendi-dinleme",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "Hizmet Ahlâkı ve Samimiyet",
+    body: "Hizmetin temelinde yatan ihlas, samimiyet ve fedakârlık. Yapılan işlerin Allah rızası için olması gerektiğine dair sohbet.",
+  },
+  {
+    id: "hocaefendi-dinleme-eylul-2",
+    categoryId: "hocaefendi-dinleme",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Duanın Önemi ve Adabı",
+    body: "Dua, kulun Allah'a en samimi yönelişidir. Duanın kabul şartları, âdâbı ve günlük hayatta dua bilinci.",
+  },
+
+  // ── Pırlanta ────────────────────────────────────
+  {
+    id: "pirlanta-eylul-1",
+    categoryId: "pirlanta",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "İman — Kalbin Ziyası",
+    body: "İmanın altı şartı, kalpte iman nurunun nasıl oluştuğu ve korunduğu üzerine tefekkür.",
+  },
+  {
+    id: "pirlanta-eylul-2",
+    categoryId: "pirlanta",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "İhlas — Saf ve Katışıksız Niyet",
+    body: "İhlasın tanımı, önemi ve ihlaslı olmanın pratik yolları. İhlas Risalesi'nden ilhamla.",
+  },
+
+  // ── İlmihal ─────────────────────────────────────
+  {
+    id: "ilmihal-eylul-1",
+    categoryId: "ilmihal",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "Abdest ve Gusül — Taharetin Temeli",
+    body: "Abdestin farzları, sünnetleri ve âdâbı. Guslün gerektiren durumlar ve yapılış şekli.",
+    resourceUrl: "#",
+    pageCount: 8,
+  },
+  {
+    id: "ilmihal-eylul-2",
+    categoryId: "ilmihal",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Namaz — Müminin Miracı",
+    body: "Namazın farzları, vacipleri, sünnetleri. Namazda huşu ve namaz kılınışının detaylı anlatımı.",
+    resourceUrl: "#",
+    pageCount: 12,
+  },
+
+  // ── Adab-ı Muaşeret ────────────────────────────
+  {
+    id: "adab-i-muaseret-eylul-1",
+    categoryId: "adab-i-muaseret",
+    month: 9,
+    week: 1,
+    year: 2026,
+    title: "Selam ve Selamlaşma Adabı",
+    body: "Selamın fazileti, kimlere ve nasıl selam verilir, selamlaşmada öncelik sırası ve günlük hayatta uygulama.",
+  },
+  {
+    id: "adab-i-muaseret-eylul-2",
+    categoryId: "adab-i-muaseret",
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Sofra Adabı ve Yeme-İçme",
+    body: "Sünnet-i seniyye çerçevesinde sofra düzeni, yemek duaları, sağ elle yeme ve israftan kaçınma.",
+  },
+];
 
 export function getCategoryEntries(categoryId: CurriculumCategoryId) {
   return curriculumEntries
