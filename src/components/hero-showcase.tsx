@@ -136,18 +136,18 @@ export function HeroShowcase() {
           {/* Red Bonsai Tree on Floating Rock Pedestal with Branch Anchored Telemetry */}
           <div className="hero-tree-wrap z-10 flex w-full items-center justify-center">
             <div className="relative aspect-[3/4] w-full">
-              {/* Masked Tree Image Container */}
-              <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_75%_80%_at_50%_52%,black_55%,transparent_92%)] mix-blend-screen">
+              {/* Transparent Tree Image Container */}
+              <div className="absolute inset-0">
                 <Image
-                  src="/red-tree.jpg"
+                  src="/red-tree.png"
                   alt="Jet Academie Crimson Red Bonsai Tree on Floating Pedestal"
                   fill
                   priority
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 360px, (max-width: 1024px) 420px, 460px"
                   className={`object-contain transition-all duration-700 ${
                     isLampOn
-                      ? "brightness-[1.12] contrast-[1.08] drop-shadow-[0_0_50px_rgba(225,29,72,0.5)] saturate-[1.2]"
-                      : "opacity-25 brightness-[0.25] contrast-[0.95] drop-shadow-none saturate-[0.25]"
+                      ? "brightness-[1.05] contrast-[1.05] drop-shadow-[0_0_40px_rgba(225,29,72,0.45)] saturate-[1.15]"
+                      : "opacity-25 brightness-[0.3] contrast-[0.95] drop-shadow-none saturate-[0.3]"
                   }`}
                 />
               </div>

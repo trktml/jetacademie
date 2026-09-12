@@ -35,7 +35,7 @@ jetacademie/
 │   ├── icon-maskable-512.png   # PWA 512x512 maskelenebilir ikon
 │   ├── apple-touch-icon.png    # iOS ana ekran ikonu (180x180)
 │   ├── icon.svg                # Mat obsidiyen, titanyum ve bordo süpersonik akademik vektör amblemi
-│   └── red-tree.jpg            # Yüzen taş kaideli kırmızı yapraklı bonsai ağacı görseli
+│   └── red-tree.png            # Saydam arka planlı, yüksek çözünürlüklü kırmızı hayat & ilim ağacı görseli
 ├── scripts/                    # Yardımcı betikler
 │   └── generate-icons.ts       # Sharp ile public/icon.svg üzerinden PWA ikonlarını üreten betik
 ├── src/
@@ -55,6 +55,7 @@ jetacademie/
 │   │   ├── bell-lamp.test.tsx  # BellLamp bileşeni birim testleri
 │   │   ├── bottom-nav.tsx      # Mobil alt navigasyon çubuğu (Safe-area destekli)
 │   │   ├── curriculum-section.tsx # Jet Academie sistem & AI müfredat bölümü (#mufredat)
+│   │   ├── hero-tree.tsx       # Ana sayfa kırmızı ilim ağacı ve interaktif çan lamba vitrini
 │   │   ├── hero-showcase.tsx   # Işıklandırılmış kırmızı ağaç, lamba, logo ve ağaç dallarına bağlı telemetri kılavuz çizgili navigasyon kartları
 │   │   ├── hero-showcase.test.tsx # Hero showcase, telemetri kılavuzları ve alt bölümler birim testleri
 │   │   ├── jet-logo.tsx        # Mat renkli süpersonik delta ve akademik kep amblemi (JetLogo & JetLogoIcon)

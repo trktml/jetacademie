@@ -4,18 +4,17 @@ import { renderToString } from "react-dom/server";
 import { HeroTree } from "./hero-tree";
 
 describe("HeroTree Component", () => {
-  it("should render Jet Academie brand typography and logo", () => {
+  it("should render Jet Academie brand typography and heading", () => {
     const html = renderToString(<HeroTree />);
 
     expect(html).toContain("Jet Academie");
-    expect(html).toContain("logoBg");
-    expect(html).toContain("jetMark");
+    expect(html).toContain("sr-only");
   });
 
   it("should render the crimson red tree image and bell lamp", () => {
     const html = renderToString(<HeroTree />);
 
-    expect(html).toContain("red-tree.jpg");
+    expect(html).toContain("red-tree.png");
     expect(html).toContain("bell-container");
     expect(html).toContain("rope");
     expect(html).toContain("volumetric");

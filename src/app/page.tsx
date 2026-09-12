@@ -25,8 +25,7 @@ export default function Home() {
           {/* Section Header */}
           <div className="mb-4 text-center sm:mb-6">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200/60 bg-rose-50 px-3 py-1 text-[10px] font-semibold tracking-wider text-rose-700 uppercase dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
-              6 MODÜL
+              <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />6 MODÜL
             </span>
             <h2 className="mt-2 text-lg font-extrabold tracking-tight sm:text-xl">
               Manevi Gelişim Müfredatı
@@ -80,9 +79,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="pl-safe pr-safe border-t border-zinc-200/80 bg-white/90 px-4 py-4 pb-24 text-center text-xs text-zinc-500 md:pb-4 dark:border-zinc-800/80 dark:bg-[#0b0d12]/90 dark:text-zinc-400">
-        <p>
-          © {new Date().getFullYear()} JetAcademie — Manevi Gelişim Müfredatı
-        </p>
+        <p>© {new Date().getFullYear()} JetAcademie — Manevi Gelişim Müfredatı</p>
       </footer>
 
       <BottomNav />

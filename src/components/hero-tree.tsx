@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { JetLogoIcon } from "@/components/jet-logo";
 import { BellLamp } from "@/components/bell-lamp";
 import { curriculumModules } from "@/lib/curriculum-data";
 import { motion, AnimatePresence } from "motion/react";
@@ -42,30 +41,8 @@ export function HeroTree() {
       />
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6 lg:px-8">
-        {/* Compact Brand Header */}
-        <header className="relative z-30 flex flex-col items-center text-center">
-          <div className="flex flex-col items-center gap-2">
-            <div className="relative flex items-center justify-center">
-              <div
-                className={`absolute -inset-3 rounded-full blur-lg transition-all duration-700 ${
-                  isLampOn ? "bg-rose-600/25 opacity-100" : "bg-zinc-800/10 opacity-20"
-                }`}
-                aria-hidden="true"
-              />
-              <JetLogoIcon
-                className={`relative h-10 w-10 drop-shadow-xl transition-transform duration-500 sm:h-12 sm:w-12 ${
-                  isLampOn ? "scale-105" : "scale-95 grayscale-[30%]"
-                }`}
-              />
-            </div>
-            <h1 className="text-xl font-black tracking-tight text-white sm:text-2xl md:text-3xl">
-              Jet Academie
-            </h1>
-            <p className="max-w-sm text-xs text-zinc-400 sm:text-sm">
-              Manevi Gelişim ve İslami İlimler Müfredatı
-            </p>
-          </div>
-        </header>
+        {/* Accessible Brand Heading for SEO & Screen Readers */}
+        <h1 className="sr-only">Jet Academie — Manevi Gelişim ve İslami İlimler Müfredatı</h1>
 
         {/* Tree & Lamp Stage — Compact */}
         <div className="hero-stage-wrap mx-auto mt-1 w-full max-w-sm sm:max-w-md lg:max-w-lg">
@@ -107,20 +84,20 @@ export function HeroTree() {
             )}
           </AnimatePresence>
 
-          {/* Crimson Tree Image */}
+          {/* Crimson Tree Image — Transparent & Isolated */}
           <div className="hero-tree-wrap z-10 flex w-full items-center justify-center">
             <div className="relative aspect-[3/4] w-full">
-              <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_75%_80%_at_50%_52%,black_55%,transparent_92%)] mix-blend-screen">
+              <div className="absolute inset-0">
                 <Image
-                  src="/red-tree.jpg"
+                  src="/red-tree.png"
                   alt="Jet Academie Kırmızı Ağaç"
                   fill
                   priority
                   sizes="(max-width: 640px) 250px, (max-width: 1024px) 350px, 420px"
                   className={`object-contain transition-all duration-700 ${
                     isLampOn
-                      ? "brightness-[1.12] contrast-[1.08] drop-shadow-[0_0_50px_rgba(225,29,72,0.5)] saturate-[1.2]"
-                      : "opacity-25 brightness-[0.25] contrast-[0.95] drop-shadow-none saturate-[0.25]"
+                      ? "brightness-[1.05] contrast-[1.05] drop-shadow-[0_0_40px_rgba(225,29,72,0.45)] saturate-[1.15]"
+                      : "opacity-25 brightness-[0.3] contrast-[0.95] drop-shadow-none saturate-[0.3]"
                   }`}
                 />
               </div>
