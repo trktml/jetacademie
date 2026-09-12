@@ -141,4 +141,129 @@ describe("CurriculumArchive Component", () => {
     // Should have "Okundu" labels
     expect(html).toContain("Okundu");
   });
+
+  it("should render physical archive drawer elements (casing, top trim, labelplates, handles, rails)", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
+
+    // Archive drawer casing
+    expect(html).toContain("archive-drawer");
+    expect(html).toContain("archive-drawer-top-trim");
+    expect(html).toContain("archive-drawer-labelplate");
+    expect(html).toContain("archive-drawer-handle");
+    expect(html).toContain("archive-drawer-rails");
+
+    // Drawer index codes
+    expect(html).toContain("ÇEKMECE #01 · AYET ARŞİVİ");
+    expect(html).toContain("ÇEKMECE #02 · HADİS ARŞİVİ");
+  });
+
+  it("should render physical folder tabs with active and locked stack states", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
+
+    // Active folder tab
+    expect(html).toContain("archive-folder-tab--active");
+    expect(html).toContain("Eylül-1 · 1. Hafta Dosyası");
+
+    // Locked behind folder tab
+    expect(html).toContain("archive-folder-tab--locked");
+    expect(html).toContain("Eylül-2 · 2. Hafta (Kilitli Yığın)");
+  });
+
+  it("should render locked stack notice enforcing sequential unlock", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
+
+    expect(html).toContain("archive-locked-stack-notice");
+    expect(html).toContain(
+      "Bu dosya yığının arkasında kilitli bekliyor. Açmak için önce sıradaki içeriği tamamlamalısınız."
+    );
+    expect(html).toContain("Okuyunca bir sonraki haftaya / alttaki klasöre geçebilirsiniz.");
+  });
+
+  it("should render drawer controls with Geçmiş (History) button and completion count", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={["hadis-eylul-1"]} isSignedIn={true} />
+    );
+
+    expect(html).toContain("archive-drawer-history-btn");
+    // Hadis should have Geçmiş (1)
+    expect(html).toContain("Geçmiş (1)");
+    // Ayet should have Geçmiş (0)
+    expect(html).toContain("Geçmiş (0)");
+  });
+
+  it("should render past shelf when category has partially completed entries", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={["hadis-eylul-1"]} isSignedIn={true} />
+    );
+
+    expect(html).toContain("archive-past-shelf");
+    expect(html).toContain("1 dosya tamamlandı ve arşive kaldırıldı");
+    expect(html).toContain("Geçmişi İncele →");
+  });
+
+  it("should render all-completed celebratory state when all entries in a drawer are completed", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        isSignedIn={true}
+      />
+    );
+
+    expect(html).toContain("archive-all-completed");
+    expect(html).toContain("Tüm Ayet Dosyaları Tamamlandı!");
+    expect(html).toContain("Geçmiş Arşiv");
+  });
+
+  it("should assign sequential data-depth attributes to locked folders in multi-item stack", () => {
+    const multiEntries = [
+      {
+        id: "ayet-eylul-1",
+        categoryId: "ayet" as const,
+        month: 9,
+        week: 1,
+        year: 2026,
+        title: "Ayet 1",
+      },
+      {
+        id: "ayet-eylul-2",
+        categoryId: "ayet" as const,
+        month: 9,
+        week: 2,
+        year: 2026,
+        title: "Ayet 2",
+      },
+      {
+        id: "ayet-eylul-3",
+        categoryId: "ayet" as const,
+        month: 9,
+        week: 3,
+        year: 2026,
+        title: "Ayet 3",
+      },
+    ];
+
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        customEntries={multiEntries}
+      />
+    );
+
+    // First entry is active (front)
+    expect(html).toContain('data-status="current"');
+    // Behind entries should have sequential data-depth 1 and 2
+    expect(html).toContain('data-depth="1"');
+    expect(html).toContain('data-depth="2"');
+    expect(html).toContain('role="button"');
+    expect(html).toContain('tabindex="0"');
+    expect(html).toContain('aria-label="Ayet 2 (Kilitli klasör)"');
+    expect(html).toContain('aria-label="Ayet 3 (Kilitli klasör)"');
+  });
 });

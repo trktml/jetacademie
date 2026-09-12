@@ -24,7 +24,7 @@ describe("JetLogo & JetLogoIcon Components", () => {
 
     expect(html).toContain("Jet");
     expect(html).toContain("Academie");
-    expect(html).toContain("PWA Mobile-First");
+    expect(html).toContain("İlim · Hedef · İstikrar");
   });
 
   it("should support hiding the tagline via showTagline prop", () => {
@@ -32,7 +32,7 @@ describe("JetLogo & JetLogoIcon Components", () => {
 
     expect(html).toContain("Jet");
     expect(html).toContain("Academie");
-    expect(html).not.toContain("PWA Mobile-First");
+    expect(html).not.toContain("İlim · Hedef · İstikrar");
   });
 
   it("should apply correct sizing classes for sm, md, and lg", () => {

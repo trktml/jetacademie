@@ -3,16 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUiStore } from "@/store/use-ui-store";
-import { BookOpenText, Target, UserRound } from "lucide-react";
+import { UserRound } from "lucide-react";
 import { JetLogo } from "@/components/jet-logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { AccountSheet } from "@/components/account-sheet";
 import { authClient } from "@/lib/auth-client";
-
-const navItems = [
-  { id: "mufredat", label: "Müfredat", href: "/mufredat", icon: BookOpenText },
-  { id: "hedefler", label: "Hedefler", href: "/hedefler", icon: Target },
-];
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -21,29 +16,11 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="site-header pt-safe">
+      <header className="site-header pt-safe" data-home={pathname === "/" ? "true" : undefined}>
         <div className="pl-safe pr-safe site-header__inner">
           <Link href="/" className="brand-link group" aria-label="JetAcademie ana sayfa">
-            <JetLogo size="md" showTagline={false} />
+            <JetLogo size="md" />
           </Link>
-
-          <nav className="desktop-nav" aria-label="Ana navigasyon">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname.startsWith(item.href);
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  className="nav-link"
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  <Icon aria-hidden="true" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
 
           <div className="header-actions">
             <ThemeSwitcher />

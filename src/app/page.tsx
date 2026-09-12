@@ -1,4 +1,3 @@
-import { BookOpen } from "lucide-react";
 import { HeroTree } from "@/components/hero-tree";
 
 export default function Home() {

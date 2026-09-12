@@ -332,12 +332,12 @@ export function JetLogo({ size = "md", showTagline = true }: JetLogoProps) {
   };
 
   return (
-    <div className="flex items-center gap-2.5">
-      <div className="shrink-0 transition-transform duration-200 group-hover:scale-105">
+    <div className={`jet-logo jet-logo--${size}`}>
+      <div className="jet-logo__icon-shell">
         <JetLogoIcon className={`${iconSizes[size]} drop-shadow-sm`} />
       </div>
-      <div className="flex flex-col">
-        <div className="flex items-baseline gap-1">
+      <div className="jet-logo__copy">
+        <div className="jet-logo__wordmark">
           <span
             className={`jet-logo__jet font-black tracking-tight ${titleSizes[size]} transition-colors`}
           >
@@ -350,11 +350,9 @@ export function JetLogo({ size = "md", showTagline = true }: JetLogoProps) {
           </span>
         </div>
         {showTagline && (
-          <div className="flex items-center gap-1.5">
-            <span className="jet-logo__tagline text-[10px] font-medium tracking-wider uppercase">
-              PWA Mobile-First
-            </span>
-            <span className="jet-logo__dot h-1.5 w-1.5 rounded-full" />
+          <div className="jet-logo__tagline-row">
+            <span className="jet-logo__dot" aria-hidden="true" />
+            <span className="jet-logo__tagline">İlim · Hedef · İstikrar</span>
           </div>
         )}
       </div>
