@@ -10,7 +10,6 @@ describe("HeroShowcase Component", () => {
     const html = renderToString(<HeroShowcase />);
 
     expect(html).toContain("Jet Academie");
-    expect(html).toContain("Thinking in Systems");
     expect(html).toContain("logoBg");
     expect(html).toContain("jetMark");
   });
@@ -38,20 +37,20 @@ describe("HeroShowcase Component", () => {
     expect(html).not.toContain("lucide-check-circle-2");
   });
 
-  it("should render technical metadata and noise grain layer", () => {
+  it("should render noise grain layer and grid background", () => {
     const html = renderToString(<HeroShowcase />);
 
     expect(html).toContain("grain");
-    expect(html).toContain("/JETACADEMIE");
-    expect(html).toContain("AYDINLATMA: AKTİF");
+    expect(html).toContain("bell-scene");
   });
 
-  it("should render tactile interactive toggle button with accessibility standards", () => {
+  it("should render interactive bell lamp with accessibility standards", () => {
     const html = renderToString(<HeroShowcase />);
 
-    expect(html).toContain("button lamp-toggle-btn");
+    expect(html).toContain('role="button"');
     expect(html).toContain("aria-label=");
-    expect(html).toContain("Aydınlatma: Açık");
+    expect(html).toContain("Lambayı Kapat");
+    expect(html).toContain('aria-pressed="true"');
   });
 
   it("should apply lg responsive breakpoint for floating cards and lg:hidden for mobile/tablet grid", () => {

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { JetLogoIcon } from "@/components/jet-logo";
 import { BellLamp } from "@/components/bell-lamp";
-import { BookOpen, Target, Cpu, Server, Lightbulb, LightbulbOff } from "lucide-react";
+import { BookOpen, Target, Cpu, Server } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 export function HeroShowcase() {
@@ -47,8 +47,9 @@ export function HeroShowcase() {
 
   return (
     <div
-      className={`bell-scene relative w-full overflow-hidden bg-black text-white transition-colors duration-700 ${!isLampOn ? "is-off" : ""
-        }`}
+      className={`bell-scene relative w-full overflow-hidden bg-black text-white transition-colors duration-700 ${
+        !isLampOn ? "is-off" : ""
+      }`}
     >
       {/* Noise Grain Overlay from Specification */}
       <div className="grain" aria-hidden="true" />
@@ -64,43 +65,21 @@ export function HeroShowcase() {
       />
 
       <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 pt-6 pb-12 sm:px-6 lg:px-8">
-        {/* Top Technical Metadata Header */}
-        <div className="flex w-full items-center justify-between font-mono text-[11px] tracking-widest text-zinc-500 uppercase">
-          <div className="flex items-center gap-4">
-            <span className="text-zinc-400">/JETACADEMIE</span>
-            <span className="hidden text-zinc-600 sm:inline">•</span>
-            <span className="hidden text-zinc-500 sm:inline">
-              /GELİŞİM [ SİSTEM MİMARİSİ & AI ]
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span
-              className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-emerald-400 shadow-[0_0_8px_#34d399]" : "bg-zinc-600"
-                }`}
-            />
-            <span className="text-zinc-400">
-              {isLampOn ? "AYDINLATMA: AKTİF" : "AYDINLATMA: KAPALI"}
-            </span>
-          </div>
-        </div>
-
         {/* Brand Headline and Typography */}
         <header className="relative z-30 mt-8 flex flex-col items-center text-center">
-          <p className="font-mono text-xs tracking-[0.3em] text-zinc-400 uppercase sm:text-sm">
-            Thinking in Systems
-          </p>
-
           <div className="mt-4 flex flex-col items-center gap-4">
             {/* Center Logo with Dynamic Glow */}
             <div className="relative flex items-center justify-center">
               <div
-                className={`absolute -inset-4 rounded-full blur-xl transition-all duration-700 ${isLampOn ? "bg-rose-600/30 opacity-100" : "bg-zinc-800/10 opacity-20"
-                  }`}
+                className={`absolute -inset-4 rounded-full blur-xl transition-all duration-700 ${
+                  isLampOn ? "bg-rose-600/30 opacity-100" : "bg-zinc-800/10 opacity-20"
+                }`}
                 aria-hidden="true"
               />
               <JetLogoIcon
-                className={`relative h-16 w-16 drop-shadow-2xl transition-transform duration-500 sm:h-20 sm:w-20 ${isLampOn ? "scale-105" : "scale-95 grayscale-[30%]"
-                  }`}
+                className={`relative h-16 w-16 drop-shadow-2xl transition-transform duration-500 sm:h-20 sm:w-20 ${
+                  isLampOn ? "scale-105" : "scale-95 grayscale-[30%]"
+                }`}
               />
             </div>
 
@@ -109,11 +88,6 @@ export function HeroShowcase() {
               Jet Academie
             </h1>
           </div>
-
-          <p className="mt-4 max-w-2xl text-xs leading-relaxed font-light text-zinc-400 sm:text-sm md:text-base">
-            Geleceğin otonom yapay zeka ajanları, modern web mühendisliği ve yüksek performanslı
-            sistem mimarileri için tasarlanmış ileri düzey eğitim ekosistemi.
-          </p>
         </header>
 
         {/* Tree & Lamp Interactive Stage */}
@@ -170,17 +144,19 @@ export function HeroShowcase() {
                   fill
                   priority
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 360px, (max-width: 1024px) 420px, 460px"
-                  className={`object-contain transition-all duration-700 ${isLampOn
+                  className={`object-contain transition-all duration-700 ${
+                    isLampOn
                       ? "brightness-[1.12] contrast-[1.08] drop-shadow-[0_0_50px_rgba(225,29,72,0.5)] saturate-[1.2]"
                       : "opacity-25 brightness-[0.25] contrast-[0.95] drop-shadow-none saturate-[0.25]"
-                    }`}
+                  }`}
                 />
               </div>
 
               {/* Rock Pedestal Light Reflection Pool */}
               <div
-                className={`pointer-events-none absolute bottom-[14%] left-1/2 h-16 w-3/4 -translate-x-1/2 rounded-[100%] transition-opacity duration-700 ${isLampOn ? "opacity-100" : "opacity-0"
-                  }`}
+                className={`pointer-events-none absolute bottom-[14%] left-1/2 h-16 w-3/4 -translate-x-1/2 rounded-[100%] transition-opacity duration-700 ${
+                  isLampOn ? "opacity-100" : "opacity-0"
+                }`}
                 style={{
                   background:
                     "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(254, 215, 170, 0.25) 0%, rgba(225, 29, 72, 0.15) 50%, transparent 70%)",
@@ -307,12 +283,14 @@ export function HeroShowcase() {
                     <span className="absolute h-6 w-6 animate-ping rounded-full bg-rose-500/40" />
                   )}
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
-                      }`}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
+                      isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
+                    }`}
                   />
                   <span
-                    className={`absolute h-1 w-1 rounded-full ${isLampOn ? "bg-white" : "bg-zinc-500"
-                      }`}
+                    className={`absolute h-1 w-1 rounded-full ${
+                      isLampOn ? "bg-white" : "bg-zinc-500"
+                    }`}
                   />
                 </div>
               </div>
@@ -327,12 +305,14 @@ export function HeroShowcase() {
                     <span className="absolute h-6 w-6 animate-ping rounded-full bg-rose-500/40" />
                   )}
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
-                      }`}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
+                      isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
+                    }`}
                   />
                   <span
-                    className={`absolute h-1 w-1 rounded-full ${isLampOn ? "bg-white" : "bg-zinc-500"
-                      }`}
+                    className={`absolute h-1 w-1 rounded-full ${
+                      isLampOn ? "bg-white" : "bg-zinc-500"
+                    }`}
                   />
                 </div>
               </div>
@@ -347,12 +327,14 @@ export function HeroShowcase() {
                     <span className="absolute h-6 w-6 animate-ping rounded-full bg-rose-500/40" />
                   )}
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
-                      }`}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
+                      isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
+                    }`}
                   />
                   <span
-                    className={`absolute h-1 w-1 rounded-full ${isLampOn ? "bg-white" : "bg-zinc-500"
-                      }`}
+                    className={`absolute h-1 w-1 rounded-full ${
+                      isLampOn ? "bg-white" : "bg-zinc-500"
+                    }`}
                   />
                 </div>
               </div>
@@ -367,12 +349,14 @@ export function HeroShowcase() {
                     <span className="absolute h-6 w-6 animate-ping rounded-full bg-rose-500/40" />
                   )}
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
-                      }`}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
+                      isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
+                    }`}
                   />
                   <span
-                    className={`absolute h-1 w-1 rounded-full ${isLampOn ? "bg-white" : "bg-zinc-500"
-                      }`}
+                    className={`absolute h-1 w-1 rounded-full ${
+                      isLampOn ? "bg-white" : "bg-zinc-500"
+                    }`}
                   />
                 </div>
               </div>
@@ -397,10 +381,11 @@ export function HeroShowcase() {
                   </div>
                   {/* Telemetry terminal notch on inner edge */}
                   <div
-                    className={`absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${isLampOn
+                    className={`absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
+                      isLampOn
                         ? "border-rose-400 bg-rose-500 shadow-[0_0_6px_#f43f5e] group-hover:border-rose-300 group-hover:shadow-[0_0_10px_#f43f5e]"
                         : "border-zinc-700 bg-zinc-800"
-                      }`}
+                    }`}
                     aria-hidden="true"
                   />
                 </a>
@@ -425,10 +410,11 @@ export function HeroShowcase() {
                   </div>
                   {/* Telemetry terminal notch on inner edge */}
                   <div
-                    className={`absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${isLampOn
+                    className={`absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
+                      isLampOn
                         ? "border-rose-400 bg-rose-500 shadow-[0_0_6px_#f43f5e] group-hover:border-rose-300 group-hover:shadow-[0_0_10px_#f43f5e]"
                         : "border-zinc-700 bg-zinc-800"
-                      }`}
+                    }`}
                     aria-hidden="true"
                   />
                 </a>
@@ -442,10 +428,11 @@ export function HeroShowcase() {
                 >
                   {/* Telemetry terminal notch on inner edge */}
                   <div
-                    className={`absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${isLampOn
+                    className={`absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
+                      isLampOn
                         ? "border-rose-400 bg-rose-500 shadow-[0_0_6px_#f43f5e] group-hover:border-rose-300 group-hover:shadow-[0_0_10px_#f43f5e]"
                         : "border-zinc-700 bg-zinc-800"
-                      }`}
+                    }`}
                     aria-hidden="true"
                   />
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-rose-500/40 bg-rose-950/40 text-rose-400 group-hover:scale-110">
@@ -470,10 +457,11 @@ export function HeroShowcase() {
                 >
                   {/* Telemetry terminal notch on inner edge */}
                   <div
-                    className={`absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${isLampOn
+                    className={`absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
+                      isLampOn
                         ? "border-rose-400 bg-rose-500 shadow-[0_0_6px_#f43f5e] group-hover:border-rose-300 group-hover:shadow-[0_0_10px_#f43f5e]"
                         : "border-zinc-700 bg-zinc-800"
-                      }`}
+                    }`}
                     aria-hidden="true"
                   />
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-rose-500/40 bg-rose-950/40 text-rose-400 group-hover:scale-110">
@@ -491,32 +479,7 @@ export function HeroShowcase() {
               </div>
             </div>
           </div>
-
-          {/* Interactive Lamp Toggle Button Styled After Specification (.button) */}
-          <button
-            type="button"
-            onClick={toggleLamp}
-            className="button lamp-toggle-btn group"
-            aria-label={isLampOn ? "Aydınlatmayı Kapat" : "Aydınlatmayı Aç"}
-          >
-            {isLampOn ? (
-              <>
-                <Lightbulb className="h-4 w-4 text-amber-300 transition-transform group-hover:scale-110" />
-                <span>Aydınlatma: Açık (Kapat)</span>
-              </>
-            ) : (
-              <>
-                <LightbulbOff className="h-4 w-4 text-zinc-400 transition-transform group-hover:scale-110" />
-                <span>Aydınlatma: Kapalı (Aç)</span>
-              </>
-            )}
-          </button>
         </div>
-
-        {/* Interaction Helper Hint */}
-        <p className="mt-4 text-center font-mono text-[11px] text-zinc-500">
-          * Lambaya veya butona tıklayarak ağaç aydınlatmasını kontrol edebilirsiniz.
-        </p>
 
         {/* Mobile & Tablet Navigation Grid (Clean 2-column grid on tablets, 1-col on mobile, hidden on lg+) */}
         <div className="mt-8 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:hidden">
@@ -540,13 +503,6 @@ export function HeroShowcase() {
               </a>
             );
           })}
-        </div>
-
-        {/* Bottom Metadata Bar Matching Reference Aesthetic */}
-        <div className="mt-14 flex w-full flex-col items-center justify-between gap-2 border-t border-zinc-900 pt-6 font-mono text-[11px] text-zinc-500 sm:flex-row">
-          <span>/MİMARİ [ NEXT.JS 16 • BUN • PWA ]</span>
-          <span className="hidden sm:inline">/</span>
-          <span>/DİJİTAL SİSTEMLER [ JETACADEMIE ]</span>
         </div>
       </div>
     </div>
