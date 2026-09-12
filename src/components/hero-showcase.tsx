@@ -129,7 +129,7 @@ export function HeroShowcase() {
 
           {/* Volumetric Downward Spotlight Cone on the Red Tree */}
           <div
-            className={`pointer-events-none absolute top-48 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
+            className={`pointer-events-none absolute top-32 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
               isLampOn ? "scale-100 opacity-100" : "scale-95 opacity-0"
             }`}
             style={{
@@ -143,7 +143,7 @@ export function HeroShowcase() {
 
           {/* Central Conic Light Beam Casting Down from Bell Rim */}
           <div
-            className={`pointer-events-none absolute top-52 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
+            className={`pointer-events-none absolute top-36 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
               isLampOn ? "opacity-80" : "opacity-0"
             }`}
             style={{
@@ -205,10 +205,10 @@ export function HeroShowcase() {
                   fill
                   priority
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 360px, (max-width: 1024px) 420px, 460px"
-                  className={`object-contain mix-blend-screen transition-all duration-700 ${
+                  className={`object-contain transition-all duration-700 ${
                     isLampOn
-                      ? "brightness-[1.15] contrast-[1.1] drop-shadow-[0_0_50px_rgba(225,29,72,0.6)] saturate-[1.25]"
-                      : "opacity-25 brightness-75 contrast-125 drop-shadow-none saturate-50"
+                      ? "brightness-[1.12] contrast-[1.08] drop-shadow-[0_0_50px_rgba(225,29,72,0.5)] saturate-[1.2]"
+                      : "opacity-25 brightness-[0.25] contrast-[0.95] drop-shadow-none saturate-[0.25]"
                   }`}
                 />
               </div>
