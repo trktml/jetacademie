@@ -47,9 +47,8 @@ export function HeroShowcase() {
 
   return (
     <div
-      className={`bell-scene relative w-full overflow-hidden bg-black text-white transition-colors duration-700 ${
-        !isLampOn ? "is-off" : ""
-      }`}
+      className={`bell-scene relative w-full overflow-hidden bg-black text-white transition-colors duration-700 ${!isLampOn ? "is-off" : ""
+        }`}
     >
       {/* Noise Grain Overlay from Specification */}
       <div className="grain" aria-hidden="true" />
@@ -60,7 +59,7 @@ export function HeroShowcase() {
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_45%,#000_70%,transparent_100%)] bg-[size:4rem_4rem]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_65%_55%_at_50%_45%,transparent_28%,#000_55%,transparent_100%)] bg-[size:4rem_4rem]"
         aria-hidden="true"
       />
 
@@ -76,9 +75,8 @@ export function HeroShowcase() {
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${
-                isLampOn ? "bg-emerald-400 shadow-[0_0_8px_#34d399]" : "bg-zinc-600"
-              }`}
+              className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-emerald-400 shadow-[0_0_8px_#34d399]" : "bg-zinc-600"
+                }`}
             />
             <span className="text-zinc-400">
               {isLampOn ? "AYDINLATMA: AKTİF" : "AYDINLATMA: KAPALI"}
@@ -87,7 +85,7 @@ export function HeroShowcase() {
         </div>
 
         {/* Brand Headline and Typography */}
-        <header className="mt-8 flex flex-col items-center text-center">
+        <header className="relative z-30 mt-8 flex flex-col items-center text-center">
           <p className="font-mono text-xs tracking-[0.3em] text-zinc-400 uppercase sm:text-sm">
             Thinking in Systems
           </p>
@@ -96,15 +94,13 @@ export function HeroShowcase() {
             {/* Center Logo with Dynamic Glow */}
             <div className="relative flex items-center justify-center">
               <div
-                className={`absolute -inset-4 rounded-full blur-xl transition-all duration-700 ${
-                  isLampOn ? "bg-rose-600/30 opacity-100" : "bg-zinc-800/10 opacity-20"
-                }`}
+                className={`absolute -inset-4 rounded-full blur-xl transition-all duration-700 ${isLampOn ? "bg-rose-600/30 opacity-100" : "bg-zinc-800/10 opacity-20"
+                  }`}
                 aria-hidden="true"
               />
               <JetLogoIcon
-                className={`relative h-16 w-16 drop-shadow-2xl transition-transform duration-500 sm:h-20 sm:w-20 ${
-                  isLampOn ? "scale-105" : "scale-95 grayscale-[30%]"
-                }`}
+                className={`relative h-16 w-16 drop-shadow-2xl transition-transform duration-500 sm:h-20 sm:w-20 ${isLampOn ? "scale-105" : "scale-95 grayscale-[30%]"
+                  }`}
               />
             </div>
 
@@ -121,40 +117,9 @@ export function HeroShowcase() {
         </header>
 
         {/* Tree & Lamp Interactive Stage */}
-        <div className="relative mt-10 flex w-full max-w-5xl flex-col items-center justify-center sm:mt-14">
+        <div className="hero-stage-wrap mx-auto mt-4 w-full max-w-5xl">
           {/* Hanging Bell Lamp Suspended from Above */}
-          <div className="relative z-20 flex w-full justify-center">
-            <BellLamp isOn={isLampOn} onToggle={toggleLamp} />
-          </div>
-
-          {/* Volumetric Downward Spotlight Cone on the Red Tree */}
-          <div
-            className={`pointer-events-none absolute top-32 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
-              isLampOn ? "scale-100 opacity-100" : "scale-95 opacity-0"
-            }`}
-            style={{
-              width: "min(560px, 90vw)",
-              height: "min(600px, 75vh)",
-              background:
-                "radial-gradient(ellipse 60% 85% at 50% 5%, rgba(255, 235, 200, 0.45) 0%, rgba(225, 29, 72, 0.22) 42%, rgba(136, 19, 55, 0.1) 68%, transparent 85%)",
-            }}
-            aria-hidden="true"
-          />
-
-          {/* Central Conic Light Beam Casting Down from Bell Rim */}
-          <div
-            className={`pointer-events-none absolute top-36 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
-              isLampOn ? "opacity-80" : "opacity-0"
-            }`}
-            style={{
-              width: "min(440px, 80vw)",
-              height: "min(460px, 65vh)",
-              background:
-                "conic-gradient(from 165deg at 50% 0%, transparent 0deg, rgba(255, 245, 230, 0.35) 15deg, rgba(225, 29, 72, 0.25) 30deg, transparent 45deg)",
-              filter: "blur(8px)",
-            }}
-            aria-hidden="true"
-          />
+          <BellLamp isOn={isLampOn} onToggle={toggleLamp} />
 
           {/* Floating Warm Dust Particles / Embers in Light Cone */}
           <AnimatePresence>
@@ -195,29 +160,27 @@ export function HeroShowcase() {
           </AnimatePresence>
 
           {/* Red Bonsai Tree on Floating Rock Pedestal with Branch Anchored Telemetry */}
-          <div className="relative z-10 mt-2 flex w-full max-w-[280px] items-center justify-center sm:mt-4 sm:max-w-[360px] md:max-w-[420px] lg:max-w-[460px]">
+          <div className="hero-tree-wrap z-10 flex w-full items-center justify-center">
             <div className="relative aspect-[3/4] w-full">
               {/* Masked Tree Image Container */}
-              <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_75%_80%_at_50%_52%,black_55%,transparent_92%)]">
+              <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_75%_80%_at_50%_52%,black_55%,transparent_92%)] mix-blend-screen">
                 <Image
                   src="/red-tree.jpg"
                   alt="Jet Academie Crimson Red Bonsai Tree on Floating Pedestal"
                   fill
                   priority
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 360px, (max-width: 1024px) 420px, 460px"
-                  className={`object-contain transition-all duration-700 ${
-                    isLampOn
+                  className={`object-contain transition-all duration-700 ${isLampOn
                       ? "brightness-[1.12] contrast-[1.08] drop-shadow-[0_0_50px_rgba(225,29,72,0.5)] saturate-[1.2]"
                       : "opacity-25 brightness-[0.25] contrast-[0.95] drop-shadow-none saturate-[0.25]"
-                  }`}
+                    }`}
                 />
               </div>
 
               {/* Rock Pedestal Light Reflection Pool */}
               <div
-                className={`pointer-events-none absolute bottom-[14%] left-1/2 h-16 w-3/4 -translate-x-1/2 rounded-[100%] transition-opacity duration-700 ${
-                  isLampOn ? "opacity-100" : "opacity-0"
-                }`}
+                className={`pointer-events-none absolute bottom-[14%] left-1/2 h-16 w-3/4 -translate-x-1/2 rounded-[100%] transition-opacity duration-700 ${isLampOn ? "opacity-100" : "opacity-0"
+                  }`}
                 style={{
                   background:
                     "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(254, 215, 170, 0.25) 0%, rgba(225, 29, 72, 0.15) 50%, transparent 70%)",
@@ -344,14 +307,12 @@ export function HeroShowcase() {
                     <span className="absolute h-6 w-6 animate-ping rounded-full bg-rose-500/40" />
                   )}
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
-                      isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
-                    }`}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
+                      }`}
                   />
                   <span
-                    className={`absolute h-1 w-1 rounded-full ${
-                      isLampOn ? "bg-white" : "bg-zinc-500"
-                    }`}
+                    className={`absolute h-1 w-1 rounded-full ${isLampOn ? "bg-white" : "bg-zinc-500"
+                      }`}
                   />
                 </div>
               </div>
@@ -366,14 +327,12 @@ export function HeroShowcase() {
                     <span className="absolute h-6 w-6 animate-ping rounded-full bg-rose-500/40" />
                   )}
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
-                      isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
-                    }`}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
+                      }`}
                   />
                   <span
-                    className={`absolute h-1 w-1 rounded-full ${
-                      isLampOn ? "bg-white" : "bg-zinc-500"
-                    }`}
+                    className={`absolute h-1 w-1 rounded-full ${isLampOn ? "bg-white" : "bg-zinc-500"
+                      }`}
                   />
                 </div>
               </div>
@@ -388,14 +347,12 @@ export function HeroShowcase() {
                     <span className="absolute h-6 w-6 animate-ping rounded-full bg-rose-500/40" />
                   )}
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
-                      isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
-                    }`}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
+                      }`}
                   />
                   <span
-                    className={`absolute h-1 w-1 rounded-full ${
-                      isLampOn ? "bg-white" : "bg-zinc-500"
-                    }`}
+                    className={`absolute h-1 w-1 rounded-full ${isLampOn ? "bg-white" : "bg-zinc-500"
+                      }`}
                   />
                 </div>
               </div>
@@ -410,14 +367,12 @@ export function HeroShowcase() {
                     <span className="absolute h-6 w-6 animate-ping rounded-full bg-rose-500/40" />
                   )}
                   <span
-                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
-                      isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
-                    }`}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${isLampOn ? "bg-rose-400 shadow-[0_0_10px_#f43f5e]" : "bg-zinc-700"
+                      }`}
                   />
                   <span
-                    className={`absolute h-1 w-1 rounded-full ${
-                      isLampOn ? "bg-white" : "bg-zinc-500"
-                    }`}
+                    className={`absolute h-1 w-1 rounded-full ${isLampOn ? "bg-white" : "bg-zinc-500"
+                      }`}
                   />
                 </div>
               </div>
@@ -442,11 +397,10 @@ export function HeroShowcase() {
                   </div>
                   {/* Telemetry terminal notch on inner edge */}
                   <div
-                    className={`absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
-                      isLampOn
+                    className={`absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${isLampOn
                         ? "border-rose-400 bg-rose-500 shadow-[0_0_6px_#f43f5e] group-hover:border-rose-300 group-hover:shadow-[0_0_10px_#f43f5e]"
                         : "border-zinc-700 bg-zinc-800"
-                    }`}
+                      }`}
                     aria-hidden="true"
                   />
                 </a>
@@ -471,11 +425,10 @@ export function HeroShowcase() {
                   </div>
                   {/* Telemetry terminal notch on inner edge */}
                   <div
-                    className={`absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
-                      isLampOn
+                    className={`absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${isLampOn
                         ? "border-rose-400 bg-rose-500 shadow-[0_0_6px_#f43f5e] group-hover:border-rose-300 group-hover:shadow-[0_0_10px_#f43f5e]"
                         : "border-zinc-700 bg-zinc-800"
-                    }`}
+                      }`}
                     aria-hidden="true"
                   />
                 </a>
@@ -489,11 +442,10 @@ export function HeroShowcase() {
                 >
                   {/* Telemetry terminal notch on inner edge */}
                   <div
-                    className={`absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
-                      isLampOn
+                    className={`absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${isLampOn
                         ? "border-rose-400 bg-rose-500 shadow-[0_0_6px_#f43f5e] group-hover:border-rose-300 group-hover:shadow-[0_0_10px_#f43f5e]"
                         : "border-zinc-700 bg-zinc-800"
-                    }`}
+                      }`}
                     aria-hidden="true"
                   />
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-rose-500/40 bg-rose-950/40 text-rose-400 group-hover:scale-110">
@@ -518,11 +470,10 @@ export function HeroShowcase() {
                 >
                   {/* Telemetry terminal notch on inner edge */}
                   <div
-                    className={`absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
-                      isLampOn
+                    className={`absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${isLampOn
                         ? "border-rose-400 bg-rose-500 shadow-[0_0_6px_#f43f5e] group-hover:border-rose-300 group-hover:shadow-[0_0_10px_#f43f5e]"
                         : "border-zinc-700 bg-zinc-800"
-                    }`}
+                      }`}
                     aria-hidden="true"
                   />
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-rose-500/40 bg-rose-950/40 text-rose-400 group-hover:scale-110">
@@ -542,53 +493,53 @@ export function HeroShowcase() {
           </div>
 
           {/* Interactive Lamp Toggle Button Styled After Specification (.button) */}
-          <div className="relative z-25 mt-4 flex flex-col items-center gap-2">
-            <button
-              type="button"
-              onClick={toggleLamp}
-              className="button lamp-toggle-btn group"
-              aria-label={isLampOn ? "Aydınlatmayı Kapat" : "Aydınlatmayı Aç"}
-            >
-              {isLampOn ? (
-                <>
-                  <Lightbulb className="h-4 w-4 text-amber-300 transition-transform group-hover:scale-110" />
-                  <span>Aydınlatma: Açık (Kapat)</span>
-                </>
-              ) : (
-                <>
-                  <LightbulbOff className="h-4 w-4 text-zinc-400 transition-transform group-hover:scale-110" />
-                  <span>Aydınlatma: Kapalı (Aç)</span>
-                </>
-              )}
-            </button>
-            <span className="font-mono text-[11px] text-zinc-500">
-              * Lambaya veya butona tıklayarak ağaç aydınlatmasını kontrol edebilirsiniz.
-            </span>
-          </div>
+          <button
+            type="button"
+            onClick={toggleLamp}
+            className="button lamp-toggle-btn group"
+            aria-label={isLampOn ? "Aydınlatmayı Kapat" : "Aydınlatmayı Aç"}
+          >
+            {isLampOn ? (
+              <>
+                <Lightbulb className="h-4 w-4 text-amber-300 transition-transform group-hover:scale-110" />
+                <span>Aydınlatma: Açık (Kapat)</span>
+              </>
+            ) : (
+              <>
+                <LightbulbOff className="h-4 w-4 text-zinc-400 transition-transform group-hover:scale-110" />
+                <span>Aydınlatma: Kapalı (Aç)</span>
+              </>
+            )}
+          </button>
+        </div>
 
-          {/* Mobile & Tablet Navigation Grid (Clean 2-column grid on tablets, 1-col on mobile, hidden on lg+) */}
-          <div className="mt-8 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:hidden">
-            {navBoxes.map((box) => {
-              const Icon = box.icon;
-              return (
-                <a
-                  key={box.id}
-                  href={box.href}
-                  className="flex min-h-[48px] items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/80 px-4 py-3 backdrop-blur-md transition-all hover:border-rose-500 hover:bg-zinc-900 active:scale-95"
-                >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-500/40 bg-rose-950/40 text-rose-400">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <span className="font-mono text-xs font-bold tracking-wider text-white">
-                      {box.label}
-                    </span>
-                    <span className="text-[11px] text-zinc-400">{box.subtitle}</span>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
+        {/* Interaction Helper Hint */}
+        <p className="mt-4 text-center font-mono text-[11px] text-zinc-500">
+          * Lambaya veya butona tıklayarak ağaç aydınlatmasını kontrol edebilirsiniz.
+        </p>
+
+        {/* Mobile & Tablet Navigation Grid (Clean 2-column grid on tablets, 1-col on mobile, hidden on lg+) */}
+        <div className="mt-8 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:hidden">
+          {navBoxes.map((box) => {
+            const Icon = box.icon;
+            return (
+              <a
+                key={box.id}
+                href={box.href}
+                className="flex min-h-[48px] items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/80 px-4 py-3 backdrop-blur-md transition-all hover:border-rose-500 hover:bg-zinc-900 active:scale-95"
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-500/40 bg-rose-950/40 text-rose-400">
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="font-mono text-xs font-bold tracking-wider text-white">
+                    {box.label}
+                  </span>
+                  <span className="text-[11px] text-zinc-400">{box.subtitle}</span>
+                </div>
+              </a>
+            );
+          })}
         </div>
 
         {/* Bottom Metadata Bar Matching Reference Aesthetic */}

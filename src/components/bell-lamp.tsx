@@ -10,10 +10,10 @@ interface BellLampProps {
 
 export function BellLamp({ isOn, onToggle, className = "" }: BellLampProps) {
   return (
-    <div className={`bell-lamp-scope relative flex justify-center ${className}`}>
+    <div className={`bell-lamp-scope ${className}`}>
       {/* Realistic ceiling cable anchor fixture */}
       <div
-        className="ceiling-mount pointer-events-none absolute -top-1 left-1/2 z-30 h-1.5 w-10 -translate-x-1/2 rounded-full border border-zinc-600/60 bg-gradient-to-r from-zinc-800 via-zinc-400 to-zinc-800 shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+        className="ceiling-mount pointer-events-none absolute -top-10 left-1/2 z-30 h-1.5 w-10 -translate-x-1/2 opacity-0"
         aria-hidden="true"
       />
 
@@ -35,7 +35,7 @@ export function BellLamp({ isOn, onToggle, className = "" }: BellLampProps) {
         <div className="bell-top" data-testid="bell-top" />
 
         <div className="bell-base" />
-        <div className="bell-base bell-base-glow" />
+        <div className="bell-base" />
         <div className="shadow-l1" />
         <div className="shadow-l2" />
         <div className="left-glow" />
