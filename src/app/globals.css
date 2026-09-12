@@ -910,6 +910,7 @@ a {
   min-height: calc(100% - 2rem);
   flex-direction: column;
   padding: clamp(1.3rem, 4vw, 2.4rem);
+  border-top-left-radius: 0;
 }
 
 .curriculum-file::after {
@@ -928,7 +929,7 @@ a {
   left: -1px;
   display: flex;
   min-width: 10rem;
-  height: 2.05rem;
+  height: calc(2rem + 1px);
   align-items: center;
   padding-inline: 1rem;
   border: 1px solid var(--paper-line);
