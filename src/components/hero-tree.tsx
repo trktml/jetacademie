@@ -15,10 +15,10 @@ export function HeroTree() {
   const positioned = curriculumModules.slice(0, 4);
   /* Desktop pill positions: [top-left, bottom-left, top-right, bottom-right] */
   const positions = [
-    { side: "left" as const, top: "22%" },
-    { side: "left" as const, top: "48%" },
-    { side: "right" as const, top: "22%" },
-    { side: "right" as const, top: "48%" },
+    { side: "left" as const, top: "calc(29.35% - 22px)" },
+    { side: "left" as const, top: "calc(57.23% - 22px)" },
+    { side: "right" as const, top: "calc(29.35% - 22px)" },
+    { side: "right" as const, top: "calc(57.23% - 22px)" },
   ];
 
   return (
@@ -44,9 +44,24 @@ export function HeroTree() {
         {/* Accessible Brand Heading for SEO & Screen Readers */}
         <h1 className="sr-only">Jet Academie — Manevi Gelişim ve İslami İlimler Müfredatı</h1>
 
-        {/* Tree & Lamp Stage — Compact */}
-        <div className="hero-stage-wrap mx-auto mt-1 w-full max-w-sm sm:max-w-md lg:max-w-lg">
+        {/* Tree & Lamp Stage — Balanced & Harmonious */}
+        <div className="hero-stage-wrap mx-auto mt-1 w-full max-w-xl sm:max-w-2xl lg:max-w-4xl">
           <BellLamp isOn={isLampOn} onToggle={toggleLamp} />
+
+          {/* Soft Atmospheric Ambient Light from Lamp */}
+          <div
+            className={`pointer-events-none absolute top-[2em] left-1/2 z-12 -translate-x-1/2 transition-opacity duration-700 ${
+              isLampOn ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              width: "min(560px, 90vw)",
+              height: "440px",
+              background:
+                "radial-gradient(ellipse 60% 60% at 50% 10%, rgba(254, 240, 138, 0.18) 0%, rgba(251, 146, 60, 0.08) 35%, rgba(225, 29, 72, 0.03) 65%, transparent 85%)",
+              filter: "blur(24px)",
+            }}
+            aria-hidden="true"
+          />
 
           {/* Floating Dust Particles */}
           <AnimatePresence>
@@ -56,11 +71,11 @@ export function HeroTree() {
                 aria-hidden="true"
               >
                 {[
-                  { top: "42%", left: "48%", delay: 0 },
-                  { top: "48%", left: "44%", delay: 0.8 },
-                  { top: "46%", left: "54%", delay: 1.5 },
-                  { top: "54%", left: "47%", delay: 0.4 },
-                  { top: "50%", left: "52%", delay: 1.2 },
+                  { top: "32%", left: "48%", delay: 0 },
+                  { top: "38%", left: "42%", delay: 0.8 },
+                  { top: "35%", left: "56%", delay: 1.5 },
+                  { top: "44%", left: "46%", delay: 0.4 },
+                  { top: "40%", left: "53%", delay: 1.2 },
                 ].map((particle, idx) => (
                   <motion.div
                     key={idx}
@@ -93,10 +108,10 @@ export function HeroTree() {
                   alt="Jet Academie Kırmızı Ağaç"
                   fill
                   priority
-                  sizes="(max-width: 640px) 250px, (max-width: 1024px) 350px, 420px"
+                  sizes="(max-width: 640px) 340px, (max-width: 1024px) 460px, 560px"
                   className={`object-contain transition-all duration-700 ${
                     isLampOn
-                      ? "brightness-[1.05] contrast-[1.05] drop-shadow-[0_0_40px_rgba(225,29,72,0.45)] saturate-[1.15]"
+                      ? "brightness-[1.08] contrast-[1.06] drop-shadow-[0_0_45px_rgba(225,29,72,0.5)] saturate-[1.15]"
                       : "opacity-25 brightness-[0.3] contrast-[0.95] drop-shadow-none saturate-[0.3]"
                   }`}
                 />
