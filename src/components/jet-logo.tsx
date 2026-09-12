@@ -64,38 +64,133 @@ export function JetLogoIcon({ className = "h-8 w-8", ...props }: SVGProps<SVGSVG
           <stop offset="100%" stopColor="#64748b" />
         </linearGradient>
 
-        {/* Academic Mortarboard Crest - Matte Bordeaux Light (Left) */}
+        {/* Academic Mortarboard Top - Matte Bordeaux Light (Left) */}
         <linearGradient
           id="acadLeft"
-          x1="170"
-          y1="216"
-          x2="252"
-          y2="408"
+          x1="180"
+          y1="210"
+          x2="256"
+          y2="306"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#9f1239" />
-          <stop offset="60%" stopColor="#881337" />
-          <stop offset="100%" stopColor="#4c0519" />
+          <stop offset="0%" stopColor="#b91c1c" />
+          <stop offset="45%" stopColor="#9f1239" />
+          <stop offset="100%" stopColor="#881337" />
         </linearGradient>
 
-        {/* Academic Mortarboard Crest - Matte Bordeaux Deep (Right) */}
+        {/* Academic Mortarboard Top - Matte Bordeaux Deep (Right) */}
         <linearGradient
           id="acadRight"
-          x1="342"
-          y1="216"
-          x2="260"
-          y2="408"
+          x1="332"
+          y1="210"
+          x2="256"
+          y2="306"
           gradientUnits="userSpaceOnUse"
         >
           <stop offset="0%" stopColor="#881337" />
-          <stop offset="60%" stopColor="#4c0519" />
+          <stop offset="55%" stopColor="#6b0d2b" />
+          <stop offset="100%" stopColor="#4c0519" />
+        </linearGradient>
+
+        {/* Academic Mortarboard Rim - Matte Bordeaux Rim Left */}
+        <linearGradient
+          id="acadRimLeft"
+          x1="108"
+          y1="258"
+          x2="256"
+          y2="316"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#9f1239" />
+          <stop offset="100%" stopColor="#5a081f" />
+        </linearGradient>
+
+        {/* Academic Mortarboard Rim - Matte Bordeaux Rim Right */}
+        <linearGradient
+          id="acadRimRight"
+          x1="404"
+          y1="258"
+          x2="256"
+          y2="316"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#5a081f" />
           <stop offset="100%" stopColor="#2c030e" />
+        </linearGradient>
+
+        {/* Academic Skullcap Base - Light Facet (Left) */}
+        <linearGradient
+          id="capLeft"
+          x1="174"
+          y1="270"
+          x2="256"
+          y2="368"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#9f1239" />
+          <stop offset="50%" stopColor="#700b25" />
+          <stop offset="100%" stopColor="#3b0514" />
+        </linearGradient>
+
+        {/* Academic Skullcap Base - Deep Facet (Right) */}
+        <linearGradient
+          id="capRight"
+          x1="338"
+          y1="270"
+          x2="256"
+          y2="368"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#6b0d2b" />
+          <stop offset="50%" stopColor="#4c0519" />
+          <stop offset="100%" stopColor="#22030b" />
+        </linearGradient>
+
+        {/* Academic Skullcap Brow Band - Left */}
+        <linearGradient
+          id="capBandLeft"
+          x1="174"
+          y1="336"
+          x2="256"
+          y2="368"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#9f1239" />
+          <stop offset="100%" stopColor="#4c0519" />
+        </linearGradient>
+
+        {/* Academic Skullcap Brow Band - Right */}
+        <linearGradient
+          id="capBandRight"
+          x1="338"
+          y1="336"
+          x2="256"
+          y2="368"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#4c0519" />
+          <stop offset="100%" stopColor="#22030b" />
+        </linearGradient>
+
+        {/* Academic Tassel - Titanium Silver/Platinum Gradient */}
+        <linearGradient
+          id="tasselGrad"
+          x1="256"
+          y1="258"
+          x2="416"
+          y2="360"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="35%" stopColor="#f8fafc" />
+          <stop offset="70%" stopColor="#cbd5e1" />
+          <stop offset="100%" stopColor="#94a3b8" />
         </linearGradient>
 
         {/* Soft Ambient Matte Aura */}
         <radialGradient id="ambientGlow" cx="256" cy="256" r="220" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#9f1239" stopOpacity="0.12" />
-          <stop offset="60%" stopColor="#9f1239" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#9f1239" stopOpacity="0.16" />
+          <stop offset="60%" stopColor="#9f1239" stopOpacity="0.03" />
           <stop offset="100%" stopColor="#000000" stopOpacity="0" />
         </radialGradient>
       </defs>
@@ -118,12 +213,6 @@ export function JetLogoIcon({ className = "h-8 w-8", ...props }: SVGProps<SVGSVG
         {/* 1. JET: Aerodynamic Mach Delta Wings (Supersonic Titanium Facets) */}
         <path d="M 252,80 L 96,252 L 252,198 Z" fill="url(#jetLeft)" />
         <path d="M 260,80 L 416,252 L 260,198 Z" fill="url(#jetRight)" />
-
-        {/* 2. ACADEMIE: Foundation Mortarboard Diamond / Knowledge Crest (Matte Bordeaux) */}
-        <path d="M 252,224 L 116,274 L 252,410 Z" fill="url(#acadLeft)" />
-        <path d="M 260,224 L 396,274 L 260,410 Z" fill="url(#acadRight)" />
-
-        {/* 3. Wing Leading Edge Sheen (Matte Precision Refraction Lines) */}
         <line
           x1="252"
           y1="80"
@@ -143,6 +232,81 @@ export function JetLogoIcon({ className = "h-8 w-8", ...props }: SVGProps<SVGSVG
           strokeWidth="1"
           strokeOpacity="0.35"
           strokeLinecap="round"
+        />
+
+        {/* 2. ACADEMIE: Skullcap Base (Recessed Under Board, Faceted Academic Coif & Brow Band) */}
+        <path d="M 174,272 L 256,260 L 256,346 L 178,328 Z" fill="url(#capLeft)" />
+        <path d="M 338,272 L 256,260 L 256,346 L 334,328 Z" fill="url(#capRight)" />
+        <path d="M 178,328 L 256,346 L 256,366 L 182,344 Z" fill="url(#capBandLeft)" />
+        <path d="M 334,328 L 256,346 L 256,366 L 330,344 Z" fill="url(#capBandRight)" />
+        <line
+          x1="182"
+          y1="344"
+          x2="256"
+          y2="366"
+          stroke="#ffffff"
+          strokeWidth="0.75"
+          strokeOpacity="0.25"
+          strokeLinecap="round"
+        />
+        <line
+          x1="330"
+          y1="344"
+          x2="256"
+          y2="366"
+          stroke="#ffffff"
+          strokeWidth="0.5"
+          strokeOpacity="0.1"
+          strokeLinecap="round"
+        />
+
+        {/* 3. ACADEMIE: Mortarboard Board Rim (Front 3D Thickness) */}
+        <path d="M 108,258 L 256,306 L 256,316 L 108,268 Z" fill="url(#acadRimLeft)" />
+        <path d="M 404,258 L 256,306 L 256,316 L 404,268 Z" fill="url(#acadRimRight)" />
+
+        {/* 4. ACADEMIE: Mortarboard Board Top (Perspective Rhombus) */}
+        <path d="M 256,210 L 108,258 L 256,306 Z" fill="url(#acadLeft)" />
+        <path d="M 256,210 L 404,258 L 256,306 Z" fill="url(#acadRight)" />
+        <line
+          x1="256"
+          y1="210"
+          x2="108"
+          y2="258"
+          stroke="#ffffff"
+          strokeWidth="1.2"
+          strokeOpacity="0.45"
+          strokeLinecap="round"
+        />
+
+        {/* 5. ACADEMIE: Academic Tassel (Püskül) */}
+        <circle cx="256" cy="258" r="5.5" fill="#f8fafc" stroke="#475569" strokeWidth="0.8" />
+        <circle cx="256" cy="258" r="2.2" fill="#cbd5e1" />
+        <path
+          d="M 256,258 C 298,268 350,274 388,270 C 398,269 406,274 406,284 L 406,318"
+          fill="none"
+          stroke="url(#tasselGrad)"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+        />
+        <rect
+          x="401"
+          y="318"
+          width="10"
+          height="4"
+          rx="1.5"
+          fill="#f8fafc"
+          stroke="#64748b"
+          strokeWidth="0.75"
+        />
+        <polygon points="402,322 410,322 415,364 397,364" fill="url(#tasselGrad)" />
+        <line
+          x1="406"
+          y1="322"
+          x2="406"
+          y2="362"
+          stroke="#ffffff"
+          strokeWidth="1"
+          strokeOpacity="0.8"
         />
       </g>
     </svg>
