@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./bell-lamp.css";
 
 :root {
   --background: #f8fafc;

@@ -34,7 +34,8 @@ jetacademie/
 │   ├── icon-512.png            # PWA 512x512 ikonu
 │   ├── icon-maskable-512.png   # PWA 512x512 maskelenebilir ikon
 │   ├── apple-touch-icon.png    # iOS ana ekran ikonu (180x180)
-│   └── icon.svg                # Mat obsidiyen, titanyum ve bordo süpersonik akademik vektör amblemi
+│   ├── icon.svg                # Mat obsidiyen, titanyum ve bordo süpersonik akademik vektör amblemi
+│   └── red-tree.jpg            # Yüzen taş kaideli kırmızı yapraklı bonsai ağacı görseli
 ├── scripts/                    # Yardımcı betikler
 │   └── generate-icons.ts       # Sharp ile public/icon.svg üzerinden PWA ikonlarını üreten betik
 ├── src/
@@ -42,6 +43,7 @@ jetacademie/
 │   │   ├── api/
 │   │   │   ├── auth/[...all]/  # Better-Auth API uç noktası
 │   │   │   └── health/         # Konteyner sağlık kontrolü (/api/health)
+│   │   ├── bell-lamp.css       # Sarkıt çan lamba ve ağaç aydınlatması CSS animasyonları
 │   │   ├── globals.css         # Tailwind v4 tema stilleri & mobil safe area yardımcıları
 │   │   ├── layout.tsx          # Kök yerleşim (Viewport, PWA meta etiketleri ve QueryProvider)
 │   │   ├── manifest.ts         # Dinamik PWA Web App Manifest yapılandırması
@@ -49,10 +51,16 @@ jetacademie/
 │   │   └── page.tsx            # Başlangıç ve demo vitrini (Header, Nav & Drawer entegreli)
 │   ├── components/             # React arayüz bileşenleri
 │   │   ├── app-header.tsx      # Masaüstü ve mobil uyumlu üst navigasyon çubuğu
+│   │   ├── bell-lamp.tsx       # İnteraktif sallanan sarkıt lamba bileşeni (on/off kontrolü)
+│   │   ├── bell-lamp.test.tsx  # BellLamp bileşeni birim testleri
 │   │   ├── bottom-nav.tsx      # Mobil alt navigasyon çubuğu (Safe-area destekli)
+│   │   ├── curriculum-section.tsx # Jet Academie sistem & AI müfredat bölümü (#mufredat)
+│   │   ├── hero-showcase.tsx   # Işıklandırılmış kırmızı ağaç, lamba, logo ve ağaç dallarına bağlı telemetri kılavuz çizgili navigasyon kartları
+│   │   ├── hero-showcase.test.tsx # Hero showcase, telemetri kılavuzları ve alt bölümler birim testleri
 │   │   ├── jet-logo.tsx        # Mat renkli süpersonik delta ve akademik kep amblemi (JetLogo & JetLogoIcon)
 │   │   ├── jet-logo.test.tsx   # JetLogo bileşeni birim testleri
 │   │   ├── quick-actions-drawer.tsx # Vaul alt çekmece (mobilde bottom sheet, masaüstünde floating diyalog)
+│   │   ├── targets-section.tsx # Jet Academie mezuniyet & mimari hedefleri bölümü (#hedefler)
 │   │   ├── auth-zod-demo.tsx   # Zod ve Better-Auth kayıt/giriş formu ve oturum yönetimi
 │   │   ├── counter-demo.tsx    # Zustand istemci durumu demosu (min 44px butonlar)
 │   │   └── query-demo.tsx      # TanStack Query sunucu durumu, refetch ve mutasyon demosu

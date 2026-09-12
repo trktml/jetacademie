@@ -5,6 +5,8 @@ import { useUiStore } from "@/store/use-ui-store";
 describe("useActiveSectionObserver", () => {
   it("should define all expected sections for page navigation", () => {
     expect(SECTION_IDS).toContain("overview");
+    expect(SECTION_IDS).toContain("mufredat");
+    expect(SECTION_IDS).toContain("hedefler");
     expect(SECTION_IDS).toContain("zustand");
     expect(SECTION_IDS).toContain("query");
     expect(SECTION_IDS).toContain("auth");

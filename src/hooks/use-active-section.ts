@@ -3,7 +3,15 @@
 import { useEffect } from "react";
 import { useUiStore } from "@/store/use-ui-store";
 
-export const SECTION_IDS = ["overview", "zustand", "query", "auth", "dokploy"] as const;
+export const SECTION_IDS = [
+  "overview",
+  "mufredat",
+  "hedefler",
+  "zustand",
+  "query",
+  "auth",
+  "dokploy",
+] as const;
 export type SectionId = (typeof SECTION_IDS)[number];
 
 export function useActiveSectionObserver() {

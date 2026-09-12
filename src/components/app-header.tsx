@@ -2,7 +2,16 @@
 
 import { useUiStore } from "@/store/use-ui-store";
 import { useActiveSectionObserver } from "@/hooks/use-active-section";
-import { Sparkles, Rocket, Layers, Database, ShieldCheck, Container } from "lucide-react";
+import {
+  Sparkles,
+  Rocket,
+  Layers,
+  Database,
+  ShieldCheck,
+  Container,
+  BookOpen,
+  Target,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { JetLogo } from "@/components/jet-logo";
 
@@ -12,6 +21,18 @@ const navItems = [
     label: "Genel Bakış",
     href: "#overview",
     icon: Rocket,
+  },
+  {
+    id: "mufredat",
+    label: "Müfredat",
+    href: "#mufredat",
+    icon: BookOpen,
+  },
+  {
+    id: "hedefler",
+    label: "Hedefler",
+    href: "#hedefler",
+    icon: Target,
   },
   {
     id: "zustand",

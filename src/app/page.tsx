@@ -4,8 +4,10 @@ import { AuthZodDemo } from "@/components/auth-zod-demo";
 import { AppHeader } from "@/components/app-header";
 import { BottomNav } from "@/components/bottom-nav";
 import { QuickActionsDrawer } from "@/components/quick-actions-drawer";
+import { HeroShowcase } from "@/components/hero-showcase";
+import { CurriculumSection } from "@/components/curriculum-section";
+import { TargetsSection } from "@/components/targets-section";
 import { Smartphone, Layers, Server, ShieldCheck, Terminal } from "lucide-react";
-import { JetLogoIcon } from "@/components/jet-logo";
 
 export default function Home() {
   const stack = [
@@ -49,43 +51,36 @@ export default function Home() {
       {/* Responsive Header for Mobile & Desktop */}
       <AppHeader />
 
+      {/* Main Flagship Hero Showcase with Illuminated Crimson Tree & Bell Lamp */}
+      <section id="overview" className="scroll-mt-24">
+        <HeroShowcase />
+      </section>
+
       {/* Main Content Area */}
       <main className="pl-safe pr-safe flex-1 px-4 py-8 pb-28 sm:px-6 sm:py-12 md:pb-16 lg:px-8">
-        <div className="mx-auto max-w-6xl space-y-10 sm:space-y-12">
-          {/* Hero Section */}
-          <section id="overview" className="scroll-mt-24 space-y-6 text-center sm:text-left">
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/90 px-3.5 py-1 text-xs font-medium text-zinc-700 shadow-2xs backdrop-blur-xs dark:border-zinc-800/80 dark:bg-zinc-900/80 dark:text-zinc-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#881337] dark:bg-[#e05666]" />
-                <span>Next.js 16 • Bun • PWA Starter</span>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/90 px-3.5 py-1 text-xs font-medium text-zinc-700 shadow-2xs backdrop-blur-xs dark:border-zinc-800/80 dark:bg-zinc-900/80 dark:text-zinc-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400" />
-                <span>Dokploy Production Ready</span>
-              </div>
-            </div>
+        <div className="mx-auto max-w-6xl space-y-12 sm:space-y-16">
+          {/* Müfredat Section */}
+          <CurriculumSection />
 
-            <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
-              <div className="shrink-0 pt-1">
-                <div className="group transition-transform duration-200 hover:scale-105">
-                  <JetLogoIcon className="h-16 w-16 drop-shadow-md sm:h-20 sm:w-20" />
-                </div>
-              </div>
-              <div className="flex-1 space-y-3 text-center sm:text-left">
-                <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl dark:text-zinc-100">
-                  Mobil ve Masaüstünde Kusursuz{" "}
-                  <span className="text-[#881337] dark:text-[#e05666]">JetAcademie</span>
-                </h1>
-                <p className="mx-auto max-w-3xl text-sm leading-relaxed text-zinc-600 sm:mx-0 sm:text-base lg:text-lg dark:text-zinc-400">
-                  Next.js 16, Bun, Tailwind CSS v4, Zustand v5, TanStack Query v5, Zod v4 ve
-                  Better-Auth ile güçlendirilmiş; mobil cihazlarda yerel uygulama hissi veren PWA
-                  mimarisi, masaüstünde ise geniş ekranlara uyum sağlayan modern çatı.
+          {/* Hedefler Section */}
+          <TargetsSection />
+
+          {/* Technology Stack & PWA Architecture Highlights */}
+          <section className="space-y-6">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-100">
+                  Teknoloji Yığını ve PWA Standartları
+                </h2>
+                <p className="text-xs text-zinc-500 sm:text-sm dark:text-zinc-400">
+                  Üretim seviyesinde hız, bağımsız altyapı ve mobil uyumluluk için seçilmiş modern
+                  araçlar.
                 </p>
               </div>
             </div>
 
             {/* Stack Tags */}
-            <div className="flex flex-wrap justify-center gap-2 pt-1 sm:justify-start">
+            <div className="flex flex-wrap gap-2">
               {stack.map((name) => (
                 <span
                   key={name}
@@ -95,29 +90,29 @@ export default function Home() {
                 </span>
               ))}
             </div>
-          </section>
 
-          {/* PWA & Architecture Highlights */}
-          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {pwaFeatures.map((feat) => {
-              const Icon = feat.icon;
-              return (
-                <div
-                  key={feat.title}
-                  className="flex flex-col rounded-2xl border border-zinc-200/80 bg-white/90 p-5 shadow-2xs transition hover:border-zinc-300 hover:shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/50 dark:hover:border-zinc-700"
-                >
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200/60 bg-zinc-100 text-zinc-800 dark:border-zinc-700/60 dark:bg-zinc-800 dark:text-zinc-200">
-                    <Icon className="h-5 w-5" />
+            {/* Features Grid */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {pwaFeatures.map((feat) => {
+                const Icon = feat.icon;
+                return (
+                  <div
+                    key={feat.title}
+                    className="flex flex-col rounded-2xl border border-zinc-200/80 bg-white/90 p-5 shadow-2xs transition hover:border-zinc-300 hover:shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/50 dark:hover:border-zinc-700"
+                  >
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200/60 bg-zinc-100 text-zinc-800 dark:border-zinc-700/60 dark:bg-zinc-800 dark:text-zinc-200">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                      {feat.title}
+                    </h3>
+                    <p className="mt-1.5 text-xs leading-normal text-zinc-500 dark:text-zinc-400">
+                      {feat.desc}
+                    </p>
                   </div>
-                  <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                    {feat.title}
-                  </h2>
-                  <p className="mt-1.5 text-xs leading-normal text-zinc-500 dark:text-zinc-400">
-                    {feat.desc}
-                  </p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </section>
 
           {/* Interactive Demos Grid */}
@@ -134,9 +129,13 @@ export default function Home() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-              <CounterDemo />
-              <QueryDemo />
-              <div className="md:col-span-2">
+              <div id="zustand" className="scroll-mt-24">
+                <CounterDemo />
+              </div>
+              <div id="query" className="scroll-mt-24">
+                <QueryDemo />
+              </div>
+              <div id="auth" className="scroll-mt-24 md:col-span-2">
                 <AuthZodDemo />
               </div>
             </div>
