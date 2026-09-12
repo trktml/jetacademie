@@ -1,7 +1,7 @@
 /* Scoped Bell Lamp & Tree Illumination Styles */
 
 .bell-scene {
-  --_size: min(min(520px, 48vh), 48vw);
+  --_size: min(min(420px, 44vh), 44vw);
   --base-clr: #b7b5b4;
   --degofrot: 0.8;
   font-size: calc(var(--_size) * 0.01);
@@ -10,7 +10,7 @@
 
 @media (max-width: 640px) {
   .bell-scene {
-    --_size: min(min(380px, 42vh), 75vw);
+    --_size: min(min(320px, 38vh), 70vw);
   }
 }
 
@@ -593,7 +593,7 @@
   position: relative;
   width: 100%;
   max-width: 1100px;
-  height: 160em;
+  height: 100em;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -602,11 +602,11 @@
 
 .hero-tree-wrap {
   position: absolute;
-  top: 78em;
+  top: 48em;
   left: 50%;
   transform: translateX(-50%);
-  width: 48em;
-  max-width: 48em;
+  width: 42em;
+  max-width: 42em;
   z-index: 15;
   transition:
     opacity 0.5s ease,
@@ -615,13 +615,13 @@
 
 @media (max-width: 1024px) {
   .hero-stage-wrap {
-    height: 138em;
+    height: 88em;
   }
 
   .hero-tree-wrap {
-    top: 68em;
-    width: 42em;
-    max-width: 42em;
+    top: 42em;
+    width: 36em;
+    max-width: 36em;
   }
 }
 
@@ -629,7 +629,7 @@
 .button,
 .lamp-toggle-btn {
   position: absolute;
-  top: calc(144 * var(--_size) * 0.01);
+  top: calc(90 * var(--_size) * 0.01);
   bottom: auto;
   left: 50%;
   transform: translateX(-50%);
@@ -662,7 +662,7 @@
 @media (max-width: 1024px) {
   .button,
   .lamp-toggle-btn {
-    top: calc(126 * var(--_size) * 0.01);
+    top: calc(80 * var(--_size) * 0.01);
   }
 }
 

@@ -26,9 +26,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "JetAcademie | Modern Full-Stack Starter",
+  title: "JetAcademie | Manevi Gelişim Müfredatı",
   description:
-    "Next.js, Bun, Tailwind CSS, Zustand, TanStack Query, Zod, Better-Auth, and Docker/Dokploy production starter.",
+    "İslami ilimler ve manevi gelişim için kapsamlı müfredat platformu. Akaid, ibadet, ahlâk, siyer, tefsir ve tasavvuf dersleri.",
   applicationName: "JetAcademie",
   appleWebApp: {
     capable: true,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="tr" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col selection:bg-rose-950/20 selection:text-rose-950 dark:selection:bg-rose-900/30 dark:selection:text-rose-200">
         <QueryProvider>{children}</QueryProvider>
       </body>

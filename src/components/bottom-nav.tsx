@@ -1,38 +1,21 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useUiStore } from "@/store/use-ui-store";
-import { Sparkles, Rocket, Layers, Database, ShieldCheck } from "lucide-react";
+import { Sparkles, Home, BookOpen, Heart, Star } from "lucide-react";
 import { motion } from "motion/react";
 
-export function BottomNav() {
-  const { isDrawerOpen, openDrawer, activeSection, setActiveSection } = useUiStore();
+const navItems = [
+  { id: "home", label: "Ana Sayfa", href: "/", icon: Home },
+  { id: "akaid", label: "Akaid", href: "/mufredat/akaid", icon: Star },
+  { id: "ibadet", label: "İbadet", href: "/mufredat/ibadet", icon: BookOpen },
+  { id: "ahlak", label: "Ahlâk", href: "/mufredat/ahlak", icon: Heart },
+];
 
-  const navItems = [
-    {
-      id: "overview",
-      label: "Özet",
-      href: "#overview",
-      icon: Rocket,
-    },
-    {
-      id: "zustand",
-      label: "Zustand",
-      href: "#zustand",
-      icon: Layers,
-    },
-    {
-      id: "query",
-      label: "Query",
-      href: "#query",
-      icon: Database,
-    },
-    {
-      id: "auth",
-      label: "Kimlik",
-      href: "#auth",
-      icon: ShieldCheck,
-    },
-  ];
+export function BottomNav() {
+  const { openDrawer, isDrawerOpen } = useUiStore();
+  const pathname = usePathname();
 
   return (
     <nav
@@ -42,13 +25,12 @@ export function BottomNav() {
       <div className="flex items-center justify-around px-2 py-1">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activeSection === item.id;
+          const isActive = pathname === item.href;
           return (
-            <motion.a
+            <Link
               key={item.id}
               href={item.href}
-              onClick={() => setActiveSection(item.id)}
-              whileTap={{ scale: 0.92 }}
+              prefetch={true}
               className={`relative flex min-h-[48px] min-w-[48px] flex-1 flex-col items-center justify-center rounded-xl py-1 text-[11px] font-medium transition-colors ${
                 isActive
                   ? "font-bold text-zinc-900 dark:text-zinc-50"
@@ -72,11 +54,11 @@ export function BottomNav() {
                 )}
               </div>
               <span className="mt-1 leading-none">{item.label}</span>
-            </motion.a>
+            </Link>
           );
         })}
 
-        {/* Action Trigger for Drawer */}
+        {/* Drawer Trigger */}
         <motion.button
           type="button"
           onClick={openDrawer}
@@ -92,7 +74,7 @@ export function BottomNav() {
             <Sparkles className="h-3 w-3" />
           </div>
           <span className="mt-1 leading-none font-medium text-zinc-800 dark:text-zinc-200">
-            Hızlı Menü
+            Menü
           </span>
         </motion.button>
       </div>
