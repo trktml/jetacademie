@@ -6,13 +6,13 @@
 }
 
 .bell-lamp-scope {
-  --_size: min(min(360px, 34vh), 36vw);
+  --_size: min(min(320px, 30vh), 32vw);
   --base-clr: #b7b5b4;
   --degofrot: 0.8;
   font-size: calc(var(--_size) * 0.01);
   position: relative;
   width: 80em;
-  height: 52em;
+  height: 68em;
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -20,9 +20,9 @@
 
 @media (max-width: 640px) {
   .bell-lamp-scope {
-    --_size: min(min(260px, 26vh), 64vw);
+    --_size: min(min(250px, 25vh), 56vw);
     width: 80em;
-    height: 48em;
+    height: 60em;
   }
 }
 
@@ -41,7 +41,7 @@
   top: 0;
   bottom: 0;
   margin: auto;
-  transform-origin: 50% -50em;
+  transform-origin: 50% -42em;
   animation: 5s ease-in-out infinite bell;
   user-select: none;
   touch-action: manipulation;
@@ -91,9 +91,9 @@
 }
 
 .rope {
-  height: 38em;
+  height: 22em;
   width: 2em;
-  translate: 0 -44em;
+  translate: 0 -33em;
   background:
     linear-gradient(90deg, #2d54744d 0%, #000b 30%, transparent 100%),
     repeating-linear-gradient(-70deg, #252525, #888 2%, #3a3a3a 3%);
@@ -103,7 +103,7 @@
   width: 14%;
   height: 14%;
   border-radius: 50%;
-  translate: 0 -28em;
+  translate: 0 -24em;
   background: var(--base-clr, #b7b5b4);
   box-shadow:
     inset -1em -0.5em 2em 0.5em #fff,

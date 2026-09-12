@@ -121,7 +121,7 @@ export function HeroShowcase() {
         </header>
 
         {/* Tree & Lamp Interactive Stage */}
-        <div className="relative mt-6 flex w-full max-w-5xl flex-col items-center justify-center">
+        <div className="relative mt-10 flex w-full max-w-5xl flex-col items-center justify-center sm:mt-14">
           {/* Hanging Bell Lamp Suspended from Above */}
           <div className="relative z-20 flex w-full justify-center">
             <BellLamp isOn={isLampOn} onToggle={toggleLamp} />
@@ -129,7 +129,7 @@ export function HeroShowcase() {
 
           {/* Volumetric Downward Spotlight Cone on the Red Tree */}
           <div
-            className={`pointer-events-none absolute top-32 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
+            className={`pointer-events-none absolute top-48 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
               isLampOn ? "scale-100 opacity-100" : "scale-95 opacity-0"
             }`}
             style={{
@@ -143,7 +143,7 @@ export function HeroShowcase() {
 
           {/* Central Conic Light Beam Casting Down from Bell Rim */}
           <div
-            className={`pointer-events-none absolute top-36 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
+            className={`pointer-events-none absolute top-52 left-1/2 z-10 -translate-x-1/2 transition-all duration-700 ${
               isLampOn ? "opacity-80" : "opacity-0"
             }`}
             style={{
@@ -195,20 +195,23 @@ export function HeroShowcase() {
           </AnimatePresence>
 
           {/* Red Bonsai Tree on Floating Rock Pedestal with Branch Anchored Telemetry */}
-          <div className="relative z-10 -mt-6 flex w-full max-w-[280px] items-center justify-center sm:-mt-8 sm:max-w-[360px] md:max-w-[420px] lg:max-w-[460px]">
+          <div className="relative z-10 mt-2 flex w-full max-w-[280px] items-center justify-center sm:mt-4 sm:max-w-[360px] md:max-w-[420px] lg:max-w-[460px]">
             <div className="relative aspect-[3/4] w-full">
-              <Image
-                src="/red-tree.jpg"
-                alt="Jet Academie Crimson Red Bonsai Tree on Floating Pedestal"
-                fill
-                priority
-                sizes="(max-width: 640px) 280px, (max-width: 768px) 360px, (max-width: 1024px) 420px, 460px"
-                className={`object-contain transition-all duration-700 ${
-                  isLampOn
-                    ? "brightness-[1.2] contrast-[1.1] drop-shadow-[0_0_40px_rgba(225,29,72,0.45)] saturate-[1.25]"
-                    : "opacity-35 brightness-[0.22] contrast-[0.92] drop-shadow-none saturate-[0.3]"
-                }`}
-              />
+              {/* Masked Tree Image Container */}
+              <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_75%_80%_at_50%_52%,black_55%,transparent_92%)]">
+                <Image
+                  src="/red-tree.jpg"
+                  alt="Jet Academie Crimson Red Bonsai Tree on Floating Pedestal"
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 280px, (max-width: 768px) 360px, (max-width: 1024px) 420px, 460px"
+                  className={`object-contain mix-blend-screen transition-all duration-700 ${
+                    isLampOn
+                      ? "brightness-[1.15] contrast-[1.1] drop-shadow-[0_0_50px_rgba(225,29,72,0.6)] saturate-[1.25]"
+                      : "opacity-25 brightness-75 contrast-125 drop-shadow-none saturate-50"
+                  }`}
+                />
+              </div>
 
               {/* Rock Pedestal Light Reflection Pool */}
               <div
