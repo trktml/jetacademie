@@ -39,19 +39,17 @@ describe("CurriculumArchive Component", () => {
     );
   });
 
-  it("should render active category archive folder deck directly without endless vertical feed", () => {
+  it("should render every category as a vertically scrollable feed", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
 
-    // Active category deck is rendered directly
+    // Every category remains in the document instead of being hidden by the navigation.
     expect(html).toContain('id="ayet"');
     expect(html).toContain(">Ayet</h2>");
-
-    // Other categories are NOT stacked vertically down the DOM ("alt alta olmayacak")
-    expect(html).not.toContain('id="hadis"');
-    expect(html).not.toContain('id="siyer"');
-    expect(html).not.toContain('id="risale"');
+    expect(html).toContain('id="hadis"');
+    expect(html).toContain('id="siyer"');
+    expect(html).toContain('id="risale"');
   });
 
   it("should render resource badges for PDF and Audio categories when active", () => {
@@ -145,17 +143,15 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("Sıradaki");
   });
 
-  it("should render clean editorial archive folder classification header without fake serials or barcodes", () => {
+  it("should omit the decorative outer archive casing", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
 
-    // Archive folder casing and classification header
-    expect(html).toContain("archive-drawer");
-    expect(html).toContain("archive-folder-header");
-    expect(html).toContain("archive-folder-code");
-    expect(html).toContain("KLASÖR #01 · AYET ARŞİVİ");
-    expect(html).toContain("KLASÖR 01 / 09");
+    expect(html).not.toContain('class="archive-drawer"');
+    expect(html).not.toContain('class="archive-folder-header archive-drawer-top-trim"');
+    expect(html).not.toContain('class="archive-folder-code"');
+    expect(html).not.toContain("KLASÖR #01 · AYET ARŞİVİ");
 
     // No fake barcodes or fake AI serial numbers
     expect(html).not.toContain("||| | ||||");
@@ -291,15 +287,14 @@ describe("CurriculumArchive Component", () => {
     expect(html).not.toContain("ARŞİV DİZİNİ // JETACADEMIE DOSYA DOLABI");
   });
 
-  it("should render drawer footer navigation controls between categories", () => {
+  it("should omit previous and next drawer navigation controls", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
 
-    expect(html).toContain('class="archive-drawer-footer"');
-    expect(html).toContain('class="archive-folder-nav-btn archive-folder-nav-btn--prev"');
-    expect(html).toContain('class="archive-folder-nav-btn archive-folder-nav-btn--next"');
-    expect(html).toContain("KLASÖR 01 / 09");
+    expect(html).not.toContain('class="archive-drawer-footer"');
+    expect(html).not.toContain("Önceki:");
+    expect(html).not.toContain("Sonraki:");
   });
 
   it("should handle multi-depth stack with 4 or more items gracefully", () => {
@@ -357,5 +352,27 @@ describe("CurriculumArchive Component", () => {
     // .archive-stack-behind should have height: 100% and width: 100% to match front card
     expect(css).toContain("height: 100%;");
     expect(css).toContain("width: 100%;");
+
+    // Children of behind card should be display: none to avoid any scrollable layout overflow
+    expect(css).toContain(
+      ".archive-folder-stack .archive-stack-behind > :not(.archive-folder-tab) {\n  display: none;\n}"
+    );
+  });
+
+  it("should assign relative depth 1 to behind card in all-completed view and preserve completed tab styling", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+      />
+    );
+
+    // One card is front active, other is stacked behind with relative depth 1
+    expect(html).toContain("archive-folder-card--active");
+    expect(html).toContain("archive-stack-behind");
+    expect(html).toContain('data-depth="1"');
+    // Both tabs retain completed styling
+    expect(html).toContain("archive-folder-tab--completed");
   });
 });

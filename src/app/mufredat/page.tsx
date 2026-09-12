@@ -21,9 +21,7 @@ export default async function CurriculumPage() {
           <Archive aria-hidden="true" />
         </div>
         <div>
-          <p className="eyebrow">Kişisel arşiv</p>
           <h1>Müfredat</h1>
-          <p>Dosyaları sırayla okuyun. Her tamamlanan dosya bir sonrakini açar.</p>
         </div>
         <div className="secure-note">
           <ShieldCheck aria-hidden="true" />

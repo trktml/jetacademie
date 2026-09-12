@@ -964,30 +964,21 @@ a {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: clamp(3.5rem, 7vw, 5.5rem);
   max-width: 58rem;
   margin-inline: auto;
   width: 100%;
 }
 
-/* ─── Arşiv Klasör Çekmecesi (Clean Archival Drawer Container) ─── */
+/* Kategoriler çerçevesiz ve doğal sayfa akışında ilerler. */
 .archive-category-block {
   display: flex;
   flex-direction: column;
-  border: 2px solid #232d36;
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow:
-    0 12px 32px -4px rgb(15 23 42 / 9%),
-    0 4px 12px -2px rgb(15 23 42 / 4%);
+  gap: 0.75rem;
   overflow: visible;
   position: relative;
+  scroll-margin-top: 6rem;
   animation: archive-dossier-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-:root[data-theme="dark"] .archive-category-block {
-  border-color: #3f4f62;
-  box-shadow: 0 16px 36px -4px rgb(0 0 0 / 45%);
 }
 
 @keyframes archive-dossier-in {
@@ -1058,9 +1049,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: clamp(1rem, 2.5vw, 1.4rem) clamp(1.2rem, 3vw, 1.8rem);
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface) 98%, var(--canvas-subtle));
+  padding: 0 0.25rem 0.75rem;
 }
 
 .archive-category-header__info {
@@ -1301,8 +1290,8 @@ a {
 
 .archive-drawer-interior {
   position: relative;
-  background: color-mix(in srgb, var(--canvas-subtle) 30%, var(--surface));
-  padding: clamp(1.4rem, 3.5vw, 2rem);
+  background: transparent;
+  padding: 0;
 }
 
 .archive-stack-container {
@@ -1469,9 +1458,7 @@ a {
 
 /* Arkadaki klasörün gövde içeriğini gizle; sadece kulakçığı ve basamaklı üst omzu göster */
 .archive-folder-stack .archive-stack-behind > :not(.archive-folder-tab) {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+  display: none;
 }
 
 /* Derinlik 1: Muted Olive Cardstock (önceki klasörle birebir aynı boyutlar) */
@@ -1485,7 +1472,9 @@ a {
 }
 
 .archive-folder-card--locked.archive-stack-behind[data-depth="1"] .archive-folder-tab,
-.archive-folder-stack .archive-stack-behind[data-depth="1"] .archive-folder-tab {
+.archive-folder-stack
+  .archive-stack-behind[data-depth="1"]
+  .archive-folder-tab:not(.archive-folder-tab--completed) {
   background: #edf0eb;
   color: #2b362e;
   border-color: #28322b;
@@ -1504,7 +1493,7 @@ a {
 :root[data-theme="dark"]
   .archive-folder-stack
   .archive-stack-behind[data-depth="1"]
-  .archive-folder-tab {
+  .archive-folder-tab:not(.archive-folder-tab--completed) {
   background: #1a2320;
   color: #b2c3b8;
   border-color: #425449;
@@ -1518,6 +1507,11 @@ a {
   border-color: #1e293b;
 }
 
+:root[data-theme="dark"] .archive-folder-card--locked.archive-stack-behind[data-depth="1"]:hover,
+:root[data-theme="dark"] .archive-folder-stack .archive-stack-behind[data-depth="1"]:hover {
+  border-color: #566e60;
+}
+
 /* Derinlik 2: Dusty Slate Blue Cardstock */
 .archive-folder-card--locked.archive-stack-behind[data-depth="2"],
 .archive-folder-stack .archive-stack-behind[data-depth="2"] {
@@ -1529,7 +1523,9 @@ a {
 }
 
 .archive-folder-card--locked.archive-stack-behind[data-depth="2"] .archive-folder-tab,
-.archive-folder-stack .archive-stack-behind[data-depth="2"] .archive-folder-tab {
+.archive-folder-stack
+  .archive-stack-behind[data-depth="2"]
+  .archive-folder-tab:not(.archive-folder-tab--completed) {
   background: #eaf0f5;
   color: #273746;
   border-color: #26323d;
@@ -1548,7 +1544,7 @@ a {
 :root[data-theme="dark"]
   .archive-folder-stack
   .archive-stack-behind[data-depth="2"]
-  .archive-folder-tab {
+  .archive-folder-tab:not(.archive-folder-tab--completed) {
   background: #18222b;
   color: #a6bccf;
   border-color: #3f5265;
@@ -1562,11 +1558,14 @@ a {
   border-color: #1e293b;
 }
 
+:root[data-theme="dark"] .archive-folder-card--locked.archive-stack-behind[data-depth="2"]:hover,
+:root[data-theme="dark"] .archive-folder-stack .archive-stack-behind[data-depth="2"]:hover {
+  border-color: #526980;
+}
+
 /* Derinlik 3+: Tobacco / Warm Ochre Cardstock */
 .archive-folder-card--locked.archive-stack-behind[data-depth="3"],
-.archive-folder-stack .archive-stack-behind[data-depth="3"],
-.archive-folder-card--locked.archive-stack-behind,
-.archive-folder-stack .archive-stack-behind {
+.archive-folder-stack .archive-stack-behind[data-depth="3"] {
   top: -44px;
   z-index: 4;
   background: #f6f0e6;
@@ -1575,9 +1574,9 @@ a {
 }
 
 .archive-folder-card--locked.archive-stack-behind[data-depth="3"] .archive-folder-tab,
-.archive-folder-stack .archive-stack-behind[data-depth="3"] .archive-folder-tab,
-.archive-folder-card--locked.archive-stack-behind .archive-folder-tab,
-.archive-folder-stack .archive-stack-behind .archive-folder-tab {
+.archive-folder-stack
+  .archive-stack-behind[data-depth="3"]
+  .archive-folder-tab:not(.archive-folder-tab--completed) {
   background: #f6f0e6;
   color: #4a3623;
   border-color: #3b2e22;
@@ -1585,9 +1584,7 @@ a {
 }
 
 :root[data-theme="dark"] .archive-folder-card--locked.archive-stack-behind[data-depth="3"],
-:root[data-theme="dark"] .archive-folder-stack .archive-stack-behind[data-depth="3"],
-:root[data-theme="dark"] .archive-folder-card--locked.archive-stack-behind,
-:root[data-theme="dark"] .archive-folder-stack .archive-stack-behind {
+:root[data-theme="dark"] .archive-folder-stack .archive-stack-behind[data-depth="3"] {
   background: #241e18;
   border-color: #594939;
 }
@@ -1598,9 +1595,7 @@ a {
 :root[data-theme="dark"]
   .archive-folder-stack
   .archive-stack-behind[data-depth="3"]
-  .archive-folder-tab,
-:root[data-theme="dark"] .archive-folder-card--locked.archive-stack-behind .archive-folder-tab,
-:root[data-theme="dark"] .archive-folder-stack .archive-stack-behind .archive-folder-tab {
+  .archive-folder-tab:not(.archive-folder-tab--completed) {
   background: #241e18;
   color: #d1bea8;
   border-color: #594939;
@@ -1611,6 +1606,11 @@ a {
 .archive-folder-stack .archive-stack-behind[data-depth="3"]:hover {
   top: -50px;
   border-color: #1e293b;
+}
+
+:root[data-theme="dark"] .archive-folder-card--locked.archive-stack-behind[data-depth="3"]:hover,
+:root[data-theme="dark"] .archive-folder-stack .archive-stack-behind[data-depth="3"]:hover {
+  border-color: #6e5b48;
 }
 
 .archive-folder-card--locked.archive-stack-behind[data-shaking="true"] {

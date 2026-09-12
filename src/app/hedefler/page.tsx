@@ -14,7 +14,6 @@ export default function TargetsPage() {
           <Target aria-hidden="true" />
         </div>
         <div>
-          <p className="eyebrow">Yeni bölüm</p>
           <h1>Hedefler</h1>
         </div>
       </header>
@@ -23,9 +22,8 @@ export default function TargetsPage() {
         <span className="targets-empty__icon">
           <Compass aria-hidden="true" />
         </span>
-        <p className="eyebrow">Sıradaki çalışma</p>
-        <h2 id="targets-empty-title">Hedefleri birlikte şekillendireceğiz.</h2>
-        <p>Bu bölüm hazır. İçeriğini bir sonraki adımda oluşturacağız.</p>
+        <p className="eyebrow">Yakında inşallah</p>
+        <h2 id="targets-empty-title">.</h2>
       </section>
     </main>
   );
