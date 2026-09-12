@@ -5,13 +5,13 @@ describe("PWA Web App Manifest", () => {
   it("should return valid manifest configuration", () => {
     const config = manifest();
 
-    expect(config.name).toBe("JetAcademie | Modern Full-Stack Starter");
+    expect(config.name).toBe("JetAcademie | Müfredat Takibi");
     expect(config.short_name).toBe("JetAcademie");
     expect(config.start_url).toBe("/");
     expect(config.display).toBe("standalone");
     expect(config.orientation).toBe("any");
-    expect(config.background_color).toBe("#0b0d12");
-    expect(config.theme_color).toBe("#0b0d12");
+    expect(config.background_color).toBe("#07111d");
+    expect(config.theme_color).toBe("#07111d");
   });
 
   it("should include necessary icons with maskable support", () => {

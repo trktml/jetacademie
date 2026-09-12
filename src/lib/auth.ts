@@ -13,7 +13,7 @@ if (dbPath !== ":memory:") {
   }
 }
 
-const db = new Database(dbPath);
+export const db = new Database(dbPath);
 
 // Enable WAL mode and busy timeout for concurrent SQLite operations
 db.exec("PRAGMA journal_mode = WAL;");
@@ -66,6 +66,14 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS "session_userId_idx" on "session" ("userId");
   CREATE INDEX IF NOT EXISTS "account_userId_idx" on "account" ("userId");
   CREATE INDEX IF NOT EXISTS "verification_identifier_idx" on "verification" ("identifier");
+  CREATE TABLE IF NOT EXISTS "curriculum_progress" (
+    "userId" text not null references "user" ("id") on delete cascade,
+    "entryId" text not null,
+    "completedAt" date not null,
+    primary key ("userId", "entryId")
+  );
+  CREATE INDEX IF NOT EXISTS "curriculum_progress_userId_completedAt_idx"
+    on "curriculum_progress" ("userId", "completedAt");
 `);
 
 export const auth = betterAuth({

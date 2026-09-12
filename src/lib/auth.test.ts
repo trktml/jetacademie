@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { auth } from "./auth";
+import { auth, db } from "./auth";
 import { GET, POST } from "@/app/api/auth/[...all]/route";
 import { GET as healthGET } from "@/app/api/health/route";
 
@@ -10,6 +10,16 @@ describe("Better Auth Server Setup", () => {
     expect(auth.api).toBeDefined();
     expect(auth.options).toBeDefined();
     expect(auth.options.emailAndPassword?.enabled).toBe(true);
+  });
+
+  it("should initialize user-scoped curriculum progress storage", () => {
+    const table = db
+      .query<{ name: string }, []>(
+        `SELECT name FROM sqlite_schema WHERE type = 'table' AND name = 'curriculum_progress'`
+      )
+      .get();
+
+    expect(table?.name).toBe("curriculum_progress");
   });
 
   it("should successfully sign up a new user and persist in sqlite", async () => {

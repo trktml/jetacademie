@@ -3,33 +3,19 @@ import { useUiStore } from "./use-ui-store";
 
 describe("useUiStore", () => {
   beforeEach(() => {
-    useUiStore.setState({ isDrawerOpen: false, activeSection: "overview" });
+    useUiStore.setState({ isAccountOpen: false });
   });
 
   it("should initialize with default state", () => {
     const state = useUiStore.getState();
-    expect(state.isDrawerOpen).toBe(false);
-    expect(state.activeSection).toBe("overview");
+    expect(state.isAccountOpen).toBe(false);
   });
 
-  it("should open and close drawer correctly", () => {
-    useUiStore.getState().openDrawer();
-    expect(useUiStore.getState().isDrawerOpen).toBe(true);
+  it("should open and close the account sheet", () => {
+    useUiStore.getState().openAccount();
+    expect(useUiStore.getState().isAccountOpen).toBe(true);
 
-    useUiStore.getState().closeDrawer();
-    expect(useUiStore.getState().isDrawerOpen).toBe(false);
-  });
-
-  it("should toggle drawer state", () => {
-    useUiStore.getState().toggleDrawer();
-    expect(useUiStore.getState().isDrawerOpen).toBe(true);
-
-    useUiStore.getState().toggleDrawer();
-    expect(useUiStore.getState().isDrawerOpen).toBe(false);
-  });
-
-  it("should update active section", () => {
-    useUiStore.getState().setActiveSection("zustand");
-    expect(useUiStore.getState().activeSection).toBe("zustand");
+    useUiStore.getState().closeAccount();
+    expect(useUiStore.getState().isAccountOpen).toBe(false);
   });
 });

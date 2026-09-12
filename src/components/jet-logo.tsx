@@ -339,22 +339,22 @@ export function JetLogo({ size = "md", showTagline = true }: JetLogoProps) {
       <div className="flex flex-col">
         <div className="flex items-baseline gap-1">
           <span
-            className={`font-black tracking-tight ${titleSizes[size]} text-[#881337] transition-colors dark:text-[#e05666]`}
+            className={`jet-logo__jet font-black tracking-tight ${titleSizes[size]} transition-colors`}
           >
             Jet
           </span>
           <span
-            className={`font-bold tracking-tight ${titleSizes[size]} text-zinc-900 transition-colors dark:text-zinc-100`}
+            className={`jet-logo__name font-bold tracking-tight ${titleSizes[size]} transition-colors`}
           >
             Academie
           </span>
         </div>
         {showTagline && (
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-medium tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+            <span className="jet-logo__tagline text-[10px] font-medium tracking-wider uppercase">
               PWA Mobile-First
             </span>
-            <span className="h-1.5 w-1.5 rounded-full bg-[#881337] dark:bg-[#d64555]" />
+            <span className="jet-logo__dot h-1.5 w-1.5 rounded-full" />
           </div>
         )}
       </div>

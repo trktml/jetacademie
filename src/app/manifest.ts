@@ -2,15 +2,14 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "JetAcademie | Modern Full-Stack Starter",
+    name: "JetAcademie | Müfredat Takibi",
     short_name: "JetAcademie",
-    description:
-      "Next.js, Bun, Tailwind CSS v4, Zustand, TanStack Query, Zod, Better-Auth, and Docker/Dokploy production starter.",
+    description: "Aylık ve haftalık manevi gelişim müfredatı ve ilerleme takibi.",
     start_url: "/",
     display: "standalone",
     orientation: "any",
-    background_color: "#0b0d12",
-    theme_color: "#0b0d12",
+    background_color: "#07111d",
+    theme_color: "#07111d",
     icons: [
       {
         src: "/icon-192.png",

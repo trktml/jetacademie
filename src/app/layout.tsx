@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { QueryProvider } from "@/providers/query-provider";
+import { AppHeader } from "@/components/app-header";
+import { BottomNav } from "@/components/bottom-nav";
+import { ThemeManager } from "@/components/theme-manager";
+import { ThemeScript } from "@/components/theme-script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,15 +24,18 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   interactiveWidget: "resizes-content",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0d12" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f6f8" },
+    { media: "(prefers-color-scheme: dark)", color: "#07111d" },
   ],
 };
 
 export const metadata: Metadata = {
-  title: "JetAcademie | Manevi Gelişim Müfredatı",
+  title: {
+    default: "JetAcademie | Müfredat Takibi",
+    template: "%s | JetAcademie",
+  },
   description:
-    "İslami ilimler ve manevi gelişim için kapsamlı müfredat platformu. Akaid, ibadet, ahlâk, siyer, tefsir ve tasavvuf dersleri.",
+    "Aylık ve haftalık manevi gelişim müfredatınızı sırayla takip edin, okuduklarınızı kaydedin.",
   applicationName: "JetAcademie",
   appleWebApp: {
     capable: true,
@@ -50,9 +57,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="tr" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col selection:bg-rose-950/20 selection:text-rose-950 dark:selection:bg-rose-900/30 dark:selection:text-rose-200">
-        <QueryProvider>{children}</QueryProvider>
+    <html
+      lang="tr"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <head>
+        <ThemeScript />
+      </head>
+      <body>
+        <QueryProvider>
+          <ThemeManager />
+          <div className="app-frame">
+            <AppHeader />
+            {children}
+            <BottomNav />
+          </div>
+        </QueryProvider>
       </body>
     </html>
   );
