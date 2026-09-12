@@ -44,8 +44,10 @@ export function HeroTree() {
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_65%_55%_at_50%_45%,transparent_28%,#000_55%,transparent_100%)] bg-[size:4rem_4rem]"
         aria-hidden="true"
       />
+      <div className="scene-edge-fade scene-edge-fade--top" aria-hidden="true" />
+      <div className="scene-edge-fade scene-edge-fade--bottom" aria-hidden="true" />
 
-      <div className="relative mx-auto flex max-w-5xl flex-col items-center px-4 pt-3 pb-5 sm:px-6 sm:pt-4 sm:pb-7 lg:px-8">
+      <div className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 pt-3 pb-5 sm:px-6 sm:pt-4 sm:pb-7 lg:px-8">
         <h1 className="sr-only">Jet Academie — Müfredat ve hedef takip sistemi</h1>
 
         <div className="hero-stage-wrap mx-auto mt-1 w-full max-w-xl sm:max-w-2xl lg:max-w-4xl">
@@ -213,14 +215,14 @@ export function HeroTree() {
                 return (
                   <div
                     key={item.id}
-                    className={`absolute z-20 hidden w-[170px] lg:block xl:w-[190px] ${
-                      isLeft ? "right-[calc(100%+16px)]" : "left-[calc(100%+16px)]"
+                    className={`absolute z-20 hidden w-[185px] lg:block xl:w-[205px] ${
+                      isLeft ? "right-[calc(100%-56px)]" : "left-[calc(100%-56px)]"
                     }`}
-                    style={{ top: "calc(43.05% - 22px)" }}
+                    style={{ top: "calc(43.05% - 27px)" }}
                   >
                     <Link
                       href={item.href}
-                      className="group relative flex min-h-[44px] items-center gap-2.5 rounded-lg border border-zinc-800/90 bg-black/85 px-3 py-2 backdrop-blur-md transition-all duration-200 hover:scale-105 hover:border-rose-500 hover:bg-zinc-950 hover:shadow-[0_0_20px_rgba(225,29,72,0.35)]"
+                      className="group relative flex min-h-[54px] items-center gap-3 rounded-xl border border-rose-500/35 bg-zinc-950/95 px-3.5 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.48),0_0_22px_rgba(225,29,72,0.14)] backdrop-blur-md transition-all duration-200 hover:scale-[1.035] hover:border-rose-400/80 hover:bg-zinc-900 hover:shadow-[0_14px_36px_rgba(0,0,0,0.55),0_0_28px_rgba(225,29,72,0.3)]"
                     >
                       <span
                         className={`absolute top-1/2 ${isLeft ? "-right-1" : "-left-1"} h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
@@ -230,14 +232,14 @@ export function HeroTree() {
                         }`}
                         aria-hidden="true"
                       />
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-rose-500/40 bg-rose-950/40 text-rose-400 group-hover:scale-110">
-                        <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-400/50 bg-rose-950/60 text-rose-300 shadow-[inset_0_0_12px_rgba(244,63,94,0.12)] transition-transform group-hover:scale-110">
+                        <Icon className="h-4 w-4" aria-hidden="true" />
                       </span>
                       <span className="flex flex-col text-left">
-                        <strong className="text-[10px] tracking-wider whitespace-nowrap text-white group-hover:text-rose-300">
+                        <strong className="text-[11px] font-bold tracking-wider whitespace-nowrap text-white group-hover:text-rose-200">
                           {item.title}
                         </strong>
-                        <span className="text-[9px] whitespace-nowrap text-zinc-400">
+                        <span className="text-[9.5px] whitespace-nowrap text-zinc-300">
                           {item.subtitle}
                         </span>
                       </span>
@@ -256,7 +258,7 @@ export function HeroTree() {
               <Link
                 key={item.id}
                 href={item.href}
-                className="flex min-h-[48px] items-center gap-2.5 rounded-lg border border-zinc-800 bg-zinc-950/80 px-3 py-2 backdrop-blur-md transition-all hover:border-rose-500 hover:bg-zinc-900 active:scale-95"
+                className="flex min-h-[52px] items-center gap-2.5 rounded-xl border border-rose-500/30 bg-zinc-950/90 px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.35),0_0_18px_rgba(225,29,72,0.1)] backdrop-blur-md transition-all hover:border-rose-400/70 hover:bg-zinc-900 active:scale-95"
               >
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-rose-500/40 bg-rose-950/40 text-rose-400">
                   <Icon className="h-3.5 w-3.5" aria-hidden="true" />

@@ -37,7 +37,7 @@
 .bell-container {
   width: 80em;
   height: 80em;
-  scale: 0.38;
+  scale: 0.34;
   opacity: 1;
   cursor: pointer;
   position: absolute;
@@ -595,6 +595,39 @@
   mix-blend-mode: screen;
 }
 
+/* Header/hero and hero/content boundaries dissolve into the shared black canvas. */
+.scene-edge-fade {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.scene-edge-fade--top {
+  top: -1px;
+  height: clamp(4rem, 8vw, 7.5rem);
+  background: linear-gradient(
+    to bottom,
+    #000 0%,
+    rgb(0 0 0 / 88%) 18%,
+    rgb(0 0 0 / 46%) 56%,
+    transparent 100%
+  );
+}
+
+.scene-edge-fade--bottom {
+  bottom: -1px;
+  height: clamp(6rem, 12vw, 11rem);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgb(0 0 0 / 38%) 34%,
+    rgb(0 0 0 / 84%) 72%,
+    #000 100%
+  );
+}
+
 /* Hero Stage & Tree Illumination Layout */
 .hero-stage-wrap {
   position: relative;
@@ -612,8 +645,8 @@
   top: 25em;
   left: 50%;
   transform: translateX(-50%);
-  width: 66em;
-  max-width: 66em;
+  width: 72em;
+  max-width: 72em;
   z-index: 15;
   transition:
     opacity 0.5s ease,
@@ -627,8 +660,8 @@
 
   .hero-tree-wrap {
     top: 25em;
-    width: 58em;
-    max-width: 58em;
+    width: 63em;
+    max-width: 63em;
   }
 }
 
@@ -639,8 +672,8 @@
 
   .hero-tree-wrap {
     top: 23em;
-    width: 52em;
-    max-width: 52em;
+    width: 56em;
+    max-width: 56em;
   }
 }
 

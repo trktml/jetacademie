@@ -19,7 +19,7 @@ export function AppHeader() {
       <header className="site-header pt-safe" data-home={pathname === "/" ? "true" : undefined}>
         <div className="pl-safe pr-safe site-header__inner">
           <Link href="/" className="brand-link group" aria-label="JetAcademie ana sayfa">
-            <JetLogo size="md" />
+            <JetLogo size="md" showTagline={false} />
           </Link>
 
           <div className="header-actions">
