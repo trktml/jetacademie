@@ -152,8 +152,9 @@ describe("CurriculumArchive Component", () => {
 
     // Ayet should be 1/16 completed
     expect(html).toContain("1 / 16 tamamlandı");
-    // Past shelf indicates completed entry archived
-    expect(html).toContain("1 dosya tamamlandı ve arşive kaldırıldı");
+    // Past shelf is omitted in favor of clean header button
+    expect(html).not.toContain("archive-past-shelf");
+    expect(html).toContain("Geçmiş (1)");
     // Second entry is now active (Sıradaki)
     expect(html).toContain("Sıradaki");
   });
@@ -189,13 +190,14 @@ describe("CurriculumArchive Component", () => {
     expect(html).not.toContain("(Kilitli Yığın)");
   });
 
-  it("should render locked stack notice enforcing sequential unlock", () => {
+  it("should render locked behind card with locked status without verbose clutter", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
 
-    expect(html).toContain("archive-locked-stack-notice");
-    expect(html).toContain(
+    expect(html).toContain("archive-folder-card--locked");
+    expect(html).toContain("Kilitli");
+    expect(html).not.toContain(
       "Bu dosya yığının arkasında kilitli bekliyor. Açmak için önce sıradaki içeriği tamamlamalısınız."
     );
   });
@@ -217,7 +219,7 @@ describe("CurriculumArchive Component", () => {
     expect(oneHtml).toContain("Geçmiş (1)");
   });
 
-  it("should render past shelf when category has partially completed entries", () => {
+  it("should omit past shelf and rely on header history button when category has partially completed entries", () => {
     const html = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={["ayet-eylul-1"]}
@@ -226,9 +228,9 @@ describe("CurriculumArchive Component", () => {
       />
     );
 
-    expect(html).toContain("archive-past-shelf");
-    expect(html).toContain("1 dosya tamamlandı ve arşive kaldırıldı");
-    expect(html).toContain("Geçmişi İncele →");
+    expect(html).not.toContain("archive-past-shelf");
+    expect(html).not.toContain("Geçmişi İncele →");
+    expect(html).toContain("Geçmiş (1)");
   });
 
   it("should render all-completed celebratory state when all entries in a drawer are completed", () => {
@@ -242,7 +244,26 @@ describe("CurriculumArchive Component", () => {
 
     expect(html).toContain("archive-all-completed");
     expect(html).toContain("Tüm Hadis Dosyaları Tamamlandı!");
-    expect(html).toContain("Geçmiş Arşiv");
+    expect(html).toContain("Geçmiş (2)");
+  });
+
+  it("should render completed entries in reverse chronological order (latest completed first)", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2", "ayet-eylul-3"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+        initialHistoryViewCategoryIds={{ ayet: true }}
+      />
+    );
+
+    expect(html).toContain("Geçmiş Arşiv Dosyaları");
+    // eylul-3 title appears before eylul-1 in reverse order
+    const idx3 = html.indexOf("Bakara Suresi 2:286 — Sorumluluk ve Dua");
+    const idx1 = html.indexOf("Bakara Suresi 2:152 — Beni Anın");
+    expect(idx3).toBeGreaterThan(-1);
+    expect(idx1).toBeGreaterThan(-1);
+    expect(idx3).toBeLessThan(idx1);
   });
 
   it("should assign sequential data-depth attributes to locked folders in multi-item stack", () => {

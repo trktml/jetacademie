@@ -44,6 +44,7 @@ interface CurriculumArchiveProps {
   isSignedIn: boolean;
   customEntries?: readonly CurriculumEntry[];
   initialCategoryId?: CurriculumCategoryId;
+  initialHistoryViewCategoryIds?: Record<string, boolean>;
 }
 
 export function CurriculumArchive({
@@ -51,6 +52,7 @@ export function CurriculumArchive({
   isSignedIn,
   customEntries,
   initialCategoryId = "ayet",
+  initialHistoryViewCategoryIds = {},
 }: CurriculumArchiveProps) {
   const [activeCategoryId, setActiveCategoryId] = useState<CurriculumCategoryId>(() => {
     if (typeof window !== "undefined" && window.location.hash) {
@@ -68,7 +70,9 @@ export function CurriculumArchive({
     type: "success" | "warning" | "error";
   } | null>(null);
   const [shakingEntryId, setShakingEntryId] = useState<string | null>(null);
-  const [historyViewCategoryIds, setHistoryViewCategoryIds] = useState<Record<string, boolean>>({});
+  const [historyViewCategoryIds, setHistoryViewCategoryIds] = useState<Record<string, boolean>>(
+    initialHistoryViewCategoryIds
+  );
   const [selectedCompletedIndexes, setSelectedCompletedIndexes] = useState<
     Partial<Record<CurriculumCategoryId, number>>
   >({});
@@ -206,7 +210,10 @@ export function CurriculumArchive({
             ? customEntries.filter((entry) => entry.categoryId === activeCategory.id)
             : getCategoryEntries(activeCategory.id);
           const unlockedIndex = getUnlockedEntryIndex(activeEntries, completedSet);
-          const completedEntries = activeEntries.filter((entry) => completedSet.has(entry.id));
+          const completedEntries = activeEntries
+            .filter((entry) => completedSet.has(entry.id))
+            .slice()
+            .reverse();
           const completedCount = completedEntries.length;
           const isAllCompleted =
             activeEntries.length > 0 && completedCount === activeEntries.length;
@@ -360,7 +367,6 @@ export function CurriculumArchive({
                                 </div>
 
                                 <div className="archive-entry-card__top">
-                                  <span className="archive-entry-timing">{`${timing} · ${entry.week}. Hafta`}</span>
                                   <span className="read-status read-status--complete">
                                     <Check aria-hidden="true" /> Okundu
                                   </span>
@@ -368,13 +374,6 @@ export function CurriculumArchive({
 
                                 <h3 className="archive-entry-title">{entry.title}</h3>
                                 {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
-
-                                <div className="archive-folder-meta">
-                                  <span className="archive-folder-stamp">ARŞİVLENDİ</span>
-                                  <span className="archive-folder-note">
-                                    Bu dosya tamamlandı ve kişisel arşivinize kaydedildi.
-                                  </span>
-                                </div>
                               </article>
                             );
                           })}
@@ -409,18 +408,9 @@ export function CurriculumArchive({
                             {`Tüm ${activeCategory.label} Dosyaları Tamamlandı!`}
                           </h3>
                           <p className="archive-all-completed__desc">
-                            Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız. Arşivdeki
-                            tüm dosyaları aşağıda inceleyebilir veya Geçmiş tuşuna basabilirsiniz.
+                            Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız.
                           </p>
                         </div>
-                        <button
-                          type="button"
-                          className="secondary-button"
-                          onClick={() => toggleHistoryView(activeCategory.id)}
-                        >
-                          <History aria-hidden="true" />
-                          Geçmiş Arşiv
-                        </button>
                       </div>
 
                       <div className="archive-folder-stack">
@@ -468,7 +458,6 @@ export function CurriculumArchive({
                                 </div>
 
                                 <div className="archive-entry-card__top">
-                                  <span className="archive-entry-timing">{`${timing} · ${entry.week}. Hafta`}</span>
                                   <span className="read-status read-status--complete">
                                     <Check aria-hidden="true" /> Okundu
                                   </span>
@@ -484,28 +473,6 @@ export function CurriculumArchive({
                   ) : (
                     /* ─── AKTİF ÇEKMECE: ÜST ÜSTE VE ARKASINA DOĞRU FİZİKSEL KLASÖR YIĞINI ─── */
                     <div className="archive-stack-container">
-                      {/* Daha önce tamamlanmış geçmiş dosyalar varsa gösterilen arşiv rafı */}
-                      {completedCount > 0 && (
-                        <div className="archive-past-shelf">
-                          <div className="archive-past-shelf__bar">
-                            <span className="archive-past-shelf__text">
-                              <FolderArchive
-                                className="h-4 w-4 text-emerald-700 dark:text-emerald-400"
-                                aria-hidden="true"
-                              />
-                              <span>{`${completedCount} dosya tamamlandı ve arşive kaldırıldı`}</span>
-                            </span>
-                            <button
-                              type="button"
-                              className="archive-past-shelf__btn"
-                              onClick={() => toggleHistoryView(activeCategory.id)}
-                            >
-                              Geçmişi İncele →
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
                       <div className="archive-folder-stack">
                         {/* En Öndeki Aktif Klasör (Front Active Manila Dossier) */}
                         {(() => {
@@ -536,7 +503,6 @@ export function CurriculumArchive({
                               </div>
 
                               <div className="archive-entry-card__top">
-                                <span className="archive-entry-timing">{`${currentTiming} · ${currentEntry.week}. Hafta`}</span>
                                 <span className="read-status read-status--current">
                                   <FileClock aria-hidden="true" /> Sıradaki
                                 </span>
@@ -614,21 +580,12 @@ export function CurriculumArchive({
                                     </div>
 
                                     <div className="archive-entry-card__top">
-                                      <span className="archive-entry-timing">{`${lockedTiming} · ${lockedEntry.week}. Hafta`}</span>
                                       <span className="read-status">
                                         <LockKeyhole aria-hidden="true" /> Kilitli
                                       </span>
                                     </div>
 
                                     <h3 className="archive-entry-title">{lockedEntry.title}</h3>
-
-                                    <div className="archive-locked-stack-notice">
-                                      <LockKeyhole className="h-4 w-4" aria-hidden="true" />
-                                      <span>
-                                        Bu dosya yığının arkasında kilitli bekliyor. Açmak için önce
-                                        sıradaki içeriği tamamlamalısınız.
-                                      </span>
-                                    </div>
                                   </article>
                                 );
                               })}
