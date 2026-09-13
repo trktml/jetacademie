@@ -1,15 +1,28 @@
 import { z } from "zod";
 
-export const signUpSchema = z.object({
-  name: z.string().min(2, "Ad en az 2 karakter olmalıdır"),
-  email: z.string().email("Geçerli bir e-posta adresi giriniz"),
-  password: z.string().min(8, "Şifre en az 8 karakter olmalıdır"),
+export const anonymousSignUpSchema = z.object({
+  password: z.string().min(6, "Şifre en az 6 karakter olmalıdır"),
 });
 
-export const signInSchema = z.object({
-  email: z.string().email("Geçerli bir e-posta adresi giriniz"),
+export const anonymousSignInSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .min(1, "Kullanıcı adı zorunludur")
+    .regex(/^user\d+$/i, "Geçerli bir kullanıcı adı giriniz (ör. user1)"),
   password: z.string().min(1, "Şifre zorunludur"),
 });
 
-export type SignUpInput = z.infer<typeof signUpSchema>;
-export type SignInInput = z.infer<typeof signInSchema>;
+export const changePasswordSchema = z.object({
+  newPassword: z.string().min(6, "Yeni şifre en az 6 karakter olmalıdır"),
+});
+
+export type AnonymousSignUpInput = z.infer<typeof anonymousSignUpSchema>;
+export type AnonymousSignInInput = z.infer<typeof anonymousSignInSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+
+// Aliases for compatibility
+export const signUpSchema = anonymousSignUpSchema;
+export const signInSchema = anonymousSignInSchema;
+export type SignUpInput = AnonymousSignUpInput;
+export type SignInInput = AnonymousSignInInput;

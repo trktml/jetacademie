@@ -3,9 +3,25 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Drawer } from "vaul";
-import { CheckCircle2, LogIn, LogOut, UserPlus, X } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  CheckCircle2,
+  Copy,
+  KeyRound,
+  LogIn,
+  LogOut,
+  ShieldCheck,
+  Trash2,
+  UserPlus,
+  X,
+} from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { signInSchema, signUpSchema } from "@/lib/validations/auth";
+import {
+  anonymousSignInSchema,
+  anonymousSignUpSchema,
+  changePasswordSchema,
+} from "@/lib/validations/auth";
 import { useUiStore } from "@/store/use-ui-store";
 
 export function AccountSheet() {
@@ -13,22 +29,72 @@ export function AccountSheet() {
   const isOpen = useUiStore((state) => state.isAccountOpen);
   const setOpen = useUiStore((state) => state.setAccountOpen);
   const { data: session, isPending: isSessionPending } = authClient.useSession();
-  const [mode, setMode] = useState<"signIn" | "signUp">("signIn");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+
+  const [mode, setMode] = useState<"signIn" | "signUp">("signUp");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
+  // Post-registration assigned username card
+  const [assignedUsername, setAssignedUsername] = useState<string | null>(null);
+  const [hasCopied, setHasCopied] = useState(false);
+
+  // Profile actions state
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  function resetForm() {
+    setPassword("");
+    setNewPassword("");
+    setMessage(null);
+    setSuccessMessage(null);
+    setShowDeleteConfirm(false);
+  }
+
+  async function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
+    setSuccessMessage(null);
 
-    const result =
-      mode === "signUp"
-        ? signUpSchema.safeParse({ name, email, password })
-        : signInSchema.safeParse({ email, password });
+    const result = anonymousSignUpSchema.safeParse({ password });
+    if (!result.success) {
+      setMessage(result.error.issues[0]?.message ?? "Geçersiz şifre.");
+      return;
+    }
 
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/auth/register-anonymous", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setMessage(data.error || "Kayıt işlemi tamamlanamadı.");
+        return;
+      }
+
+      setAssignedUsername(data.username);
+      setPassword("");
+      router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Kayıt işlemi tamamlanamadı.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleSignIn(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMessage(null);
+    setSuccessMessage(null);
+
+    const result = anonymousSignInSchema.safeParse({ username, password });
     if (!result.success) {
       setMessage(result.error.issues[0]?.message ?? "Bilgileri kontrol edin.");
       return;
@@ -36,21 +102,82 @@ export function AccountSheet() {
 
     setIsSubmitting(true);
     try {
-      const response =
-        mode === "signUp"
-          ? await authClient.signUp.email({ name, email, password })
-          : await authClient.signIn.email({ email, password });
+      const response = await fetch("/api/auth/sign-in-anonymous", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-      if (response.error) {
-        setMessage(response.error.message || "İşlem tamamlanamadı.");
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setMessage(data.error || "Kullanıcı adı veya şifre hatalı.");
         return;
       }
 
-      setMessage(null);
+      resetForm();
       setOpen(false);
       router.refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "İşlem tamamlanamadı.");
+      setMessage(error instanceof Error ? error.message : "Giriş işlemi tamamlanamadı.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleChangePassword(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMessage(null);
+    setSuccessMessage(null);
+
+    const result = changePasswordSchema.safeParse({ newPassword });
+    if (!result.success) {
+      setMessage(result.error.issues[0]?.message ?? "Geçersiz şifre.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/account/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPassword }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setMessage(data.error || "Şifre güncellenemedi.");
+        return;
+      }
+
+      setSuccessMessage("Şifreniz başarıyla güncellendi.");
+      setNewPassword("");
+      setShowChangePassword(false);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Şifre güncellenemedi.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setIsSubmitting(true);
+    setMessage(null);
+    try {
+      const response = await fetch("/api/account/delete", {
+        method: "POST",
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setMessage(data.error || "Hesap silinemedi.");
+        return;
+      }
+
+      resetForm();
+      setOpen(false);
+      router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Hesap silinemedi.");
     } finally {
       setIsSubmitting(false);
     }
@@ -60,6 +187,7 @@ export function AccountSheet() {
     setIsSubmitting(true);
     try {
       await authClient.signOut();
+      resetForm();
       setOpen(false);
       router.refresh();
     } finally {
@@ -67,19 +195,39 @@ export function AccountSheet() {
     }
   }
 
+  async function copyUsername() {
+    if (!assignedUsername) return;
+    try {
+      await navigator.clipboard.writeText(assignedUsername);
+      setHasCopied(true);
+      setTimeout(() => setHasCopied(false), 2000);
+    } catch {
+      // Ignore clipboard write failures
+    }
+  }
+
   return (
-    <Drawer.Root open={isOpen} onOpenChange={setOpen}>
+    <Drawer.Root
+      open={isOpen}
+      onOpenChange={(open) => {
+        setOpen(open);
+        if (!open) {
+          setAssignedUsername(null);
+          resetForm();
+        }
+      }}
+    >
       <Drawer.Portal>
         <Drawer.Overlay className="sheet-overlay" />
         <Drawer.Content className="account-sheet">
           <Drawer.Handle className="sheet-handle" />
           <div className="sheet-heading">
             <div>
-              <Drawer.Title>{session?.user ? "Hesabınız" : "İlerlemenizi kaydedin"}</Drawer.Title>
+              <Drawer.Title>{session?.user ? "Hesabınız" : "İlerlemenizi Kaydedin"}</Drawer.Title>
               <Drawer.Description>
                 {session?.user
-                  ? "Okuduğunuz her dosya hesabınıza kaydedilir."
-                  : "Müfredatta kaldığınız yer cihazlarınız arasında korunsun."}
+                  ? "Okuduğunuz her ders ve modül hesabınıza güvenle kaydedilir."
+                  : "Müfredatta kaldığınız yer cihazlarınız arasında anonim olarak korunsun."}
               </Drawer.Description>
             </div>
             <Drawer.Close asChild>
@@ -91,78 +239,250 @@ export function AccountSheet() {
 
           {isSessionPending ? (
             <div className="sheet-status">Oturum kontrol ediliyor…</div>
-          ) : session?.user ? (
-            <div className="account-summary">
-              <span className="account-summary__icon">
-                <CheckCircle2 aria-hidden="true" />
-              </span>
-              <div>
-                <strong>{session.user.name}</strong>
-                <span>{session.user.email}</span>
+          ) : assignedUsername ? (
+            <div className="account-created-card">
+              <div className="account-created-card__title">
+                <CheckCircle2 className="text-emerald-500" aria-hidden="true" />
+                <span>Hesabınız Oluşturuldu!</span>
+              </div>
+              <p className="text-sm leading-relaxed text-[var(--ink-soft)]">
+                GDPR uyumlu anonim hesabınız hazır. Kullanıcı adınız sistem tarafından otomatik
+                olarak atandı:
+              </p>
+              <div className="username-display-box">
+                <strong>{assignedUsername}</strong>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={copyUsername}
+                  aria-label="Kullanıcı adını kopyala"
+                >
+                  {hasCopied ? (
+                    <>
+                      <Check aria-hidden="true" /> Kopyalandı
+                    </>
+                  ) : (
+                    <>
+                      <Copy aria-hidden="true" /> Kopyala
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="auth-info-card">
+                <AlertTriangle aria-hidden="true" />
+                <span>
+                  <strong>Önemli:</strong> Lütfen bu kullanıcı adını ve belirlediğiniz şifreyi bir
+                  yere kaydedin. Oturumunuz kapandığında tekrar giriş yapmak için buna ihtiyacınız
+                  olacak.
+                </span>
               </div>
               <button
                 type="button"
-                className="secondary-button"
-                onClick={signOut}
-                disabled={isSubmitting}
+                className="primary-button"
+                onClick={() => setAssignedUsername(null)}
               >
-                <LogOut aria-hidden="true" /> Çıkış yap
+                Anladım, Devam Et
               </button>
             </div>
+          ) : session?.user ? (
+            <>
+              <div className="account-summary">
+                <span className="account-summary__icon">
+                  <ShieldCheck aria-hidden="true" />
+                </span>
+                <div>
+                  <strong>{session.user.name}</strong>
+                  <span>GDPR Uyumlu Anonim Hesap</span>
+                </div>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={signOut}
+                  disabled={isSubmitting}
+                >
+                  <LogOut aria-hidden="true" /> Çıkış Yap
+                </button>
+              </div>
+
+              {message && <p className="form-message mt-3">{message}</p>}
+              {successMessage && (
+                <p className="form-message form-message--success mt-3">{successMessage}</p>
+              )}
+
+              <div className="account-actions-card">
+                {!showChangePassword ? (
+                  <button
+                    type="button"
+                    className="secondary-button justify-start"
+                    onClick={() => {
+                      setShowChangePassword(true);
+                      setShowDeleteConfirm(false);
+                      setMessage(null);
+                    }}
+                  >
+                    <KeyRound aria-hidden="true" /> Şifre Değiştir
+                  </button>
+                ) : (
+                  <form className="auth-form mt-0" onSubmit={handleChangePassword}>
+                    <h3 className="account-subheading">
+                      <KeyRound aria-hidden="true" className="h-4 w-4 text-[var(--brand)]" />
+                      Yeni Şifre Belirleyin
+                    </h3>
+                    <label>
+                      <span>Yeni Şifre</span>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="En az 6 karakter"
+                        autoComplete="new-password"
+                      />
+                    </label>
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        className="primary-button flex-1"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Güncelleniyor…" : "Kaydet"}
+                      </button>
+                      <button
+                        type="button"
+                        className="secondary-button"
+                        onClick={() => {
+                          setShowChangePassword(false);
+                          setNewPassword("");
+                        }}
+                      >
+                        Vazgeç
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {!showDeleteConfirm ? (
+                  <button
+                    type="button"
+                    className="danger-button danger-button--outline justify-start"
+                    onClick={() => {
+                      setShowDeleteConfirm(true);
+                      setShowChangePassword(false);
+                      setMessage(null);
+                    }}
+                  >
+                    <Trash2 aria-hidden="true" /> Hesabı Sil
+                  </button>
+                ) : (
+                  <div className="danger-zone-box">
+                    <h3 className="account-subheading text-red-600 dark:text-red-400">
+                      <AlertTriangle aria-hidden="true" className="h-4 w-4" />
+                      Hesabınızı Silmek İstiyor musunuz?
+                    </h3>
+                    <p>
+                      Hesabınız ve tüm müfredat okuma ilerlemeniz kalıcı olarak silinecektir. Bu
+                      işlem geri alınamaz.
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="danger-button flex-1"
+                        onClick={handleDeleteAccount}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Siliniyor…" : "Evet, Hesabımı Sil"}
+                      </button>
+                      <button
+                        type="button"
+                        className="secondary-button"
+                        onClick={() => setShowDeleteConfirm(false)}
+                      >
+                        Vazgeç
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <>
               <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
                 <button
                   type="button"
                   role="tab"
-                  aria-selected={mode === "signIn"}
-                  onClick={() => setMode("signIn")}
+                  aria-selected={mode === "signUp"}
+                  onClick={() => {
+                    setMode("signUp");
+                    setMessage(null);
+                  }}
                 >
-                  <LogIn aria-hidden="true" /> Giriş yap
+                  <UserPlus aria-hidden="true" /> Kayıt Ol
                 </button>
                 <button
                   type="button"
                   role="tab"
-                  aria-selected={mode === "signUp"}
-                  onClick={() => setMode("signUp")}
+                  aria-selected={mode === "signIn"}
+                  onClick={() => {
+                    setMode("signIn");
+                    setMessage(null);
+                  }}
                 >
-                  <UserPlus aria-hidden="true" /> Kayıt ol
+                  <LogIn aria-hidden="true" /> Giriş Yap
                 </button>
               </div>
-              <form className="auth-form" onSubmit={submit}>
-                {mode === "signUp" && (
+
+              {mode === "signUp" ? (
+                <form className="auth-form" onSubmit={handleSignUp}>
+                  <div className="auth-info-card">
+                    <ShieldCheck aria-hidden="true" />
+                    <span>
+                      <strong>Tamamen Anonim:</strong> Ad, soyad veya e-posta istenmez. Sadece şifre
+                      belirlersiniz, kullanıcı adınız otomatik atanır.
+                    </span>
+                  </div>
                   <label>
-                    <span>Ad soyad</span>
+                    <span>Şifreniz</span>
                     <input
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                      autoComplete="name"
+                      type="password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder="En az 6 karakter"
+                      autoComplete="new-password"
                     />
                   </label>
-                )}
-                <label>
-                  <span>E-posta</span>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    autoComplete="email"
-                  />
-                </label>
-                <label>
-                  <span>Şifre</span>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    autoComplete={mode === "signUp" ? "new-password" : "current-password"}
-                  />
-                </label>
-                {message && <p className="form-message">{message}</p>}
-                <button className="primary-button" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "İşleniyor…" : mode === "signUp" ? "Hesap oluştur" : "Giriş yap"}
-                </button>
-              </form>
+                  {message && <p className="form-message">{message}</p>}
+                  <button className="primary-button" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Kaydediliyor…" : "Kayıt Ol ve Kullanıcı Adı Al"}
+                  </button>
+                </form>
+              ) : (
+                <form className="auth-form" onSubmit={handleSignIn}>
+                  <label>
+                    <span>Kullanıcı Adı</span>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(event) => setUsername(event.target.value)}
+                      placeholder="ör. user1"
+                      autoComplete="username"
+                      autoCapitalize="none"
+                    />
+                  </label>
+                  <label>
+                    <span>Şifre</span>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder="Şifreniz"
+                      autoComplete="current-password"
+                    />
+                  </label>
+                  {message && <p className="form-message">{message}</p>}
+                  <button className="primary-button" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Giriş yapılıyor…" : "Giriş Yap"}
+                  </button>
+                </form>
+              )}
             </>
           )}
         </Drawer.Content>

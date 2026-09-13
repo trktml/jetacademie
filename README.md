@@ -7,7 +7,7 @@ JetAcademie, öğrencilerin aylık ve haftalık manevi gelişim müfredatını s
 - `/`: Yalnızca Müfredat ve Hedefler bölümlerine açılan ana sayfa.
 - `/mufredat`: Sol tarafta sabit (mobilde üstte yapışkan) 9 kategorili kapsül navigasyon ile seçilen kategoriye ait fiziksel arşiv klasörü destesi (archive folder deck). Sonsuz dikey liste kaldırılmış olup dosyalar fiziksel klasör metaforuyla arkasına doğru basamaklı derinlikte ("üst üste ve arkasına doğru") Manila kulakçıklarıyla yerleştirilmiştir. Yapay zeka kalıntıları (sahte barkodlar, sahte seri kodları, perçinler) temizlenmiş; belirgin 2px konturlu kutucuklar, zarif karton/arşiv renkleri ve sade editoryal tipografi ile profesyonel bir deneyim sağlanmıştır. Sıradaki dosya tamamlanmadan arkadaki kilitli dosyaya geçilemez; 'Geçmiş' tuşuyla tamamlanan arşiv kayıtları incelenebilir.
 - `/hedefler`: Bir sonraki ürün çalışması için hazırlanmış Hedefler sayfası.
-- Hesap: Better-Auth ile e-posta/şifre girişi ve kullanıcıya bağlı müfredat ilerlemesi.
+- Hesap: GDPR uyumlu anonim kimlik doğrulama. Kişisel veri (ad, soyad, e-posta) toplanmaz; kullanıcı sadece şifre belirler ve sistem otomatik olarak ardışık kullanıcı adı atar (`user1`, `user2`...). Silinen hesapların numaraları sonraki kayıtlara devredilir (gap filling). Kullanıcı adı ve şifre ile giriş yapılır; doğrudan şifre değiştirme ve tek onaylı hesap silme desteklenir.
 - Tema: Açık, koyu ve sistem tercihlerini destekleyen kalıcı semantik tema altyapısı.
 
 Gerçek haftalık müfredat sağlanana kadar uygulama sahte ders içeriği göstermez. Haftalık kayıtlar `src/lib/curriculum.ts` içindeki `curriculumEntries` koleksiyonuna veya ileride kurulacak içerik yönetim kaynağına bağlanabilir.

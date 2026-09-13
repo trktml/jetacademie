@@ -18,6 +18,7 @@ export const db = new Database(dbPath);
 // Enable WAL mode and busy timeout for concurrent SQLite operations
 db.exec("PRAGMA journal_mode = WAL;");
 db.exec("PRAGMA busy_timeout = 5000;");
+db.exec("PRAGMA foreign_keys = ON;");
 
 // Initialize Better-Auth tables if they do not exist yet
 db.exec(`
@@ -83,5 +84,10 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   emailAndPassword: {
     enabled: true,
+  },
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
   },
 });
