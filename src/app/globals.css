@@ -221,6 +221,13 @@ body:has(.landing-page),
     background 200ms ease;
 }
 
+.site-header[data-home="true"] .site-header__island {
+  width: min(100%, 82rem);
+  min-height: 64px;
+  padding: 0.45rem 0.85rem 0.45rem 1rem;
+  border-radius: 1.5rem;
+}
+
 .site-header__slot--left {
   display: flex;
   align-items: center;
@@ -402,8 +409,8 @@ body:has(.landing-page),
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 9999px;
   border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
   background: color-mix(in srgb, var(--surface) 65%, transparent);
@@ -447,8 +454,8 @@ body:has(.landing-page),
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 48px;
+  min-height: 48px;
   padding: 0.25rem 0.85rem 0.25rem 0.35rem;
   border-radius: 9999px;
   border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
@@ -512,8 +519,8 @@ body:has(.landing-page),
 }
 
 .account-button__icon {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.15rem;
+  height: 1.15rem;
   color: var(--brand);
 }
 
@@ -639,7 +646,7 @@ body:has(.landing-page),
 }
 
 .landing-page {
-  min-height: calc(100dvh - 3.5rem);
+  min-height: calc(100dvh - 4rem);
   background: #000;
 }
 
@@ -678,7 +685,7 @@ body:has(.landing-page),
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  width: min(100%, 44rem);
+  width: min(100%, 52rem);
   margin-inline: auto;
   overflow: hidden;
   padding: clamp(1.4rem, 4vw, 2rem);
@@ -2855,6 +2862,22 @@ body:has(.landing-page),
     border-radius: 1rem;
   }
 
+  .site-header[data-home="true"] .site-header__island {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 56px;
+    padding: 0.3rem 0.45rem 0.3rem 0.55rem;
+    border-radius: 1.15rem;
+  }
+
+  .site-header[data-home="true"] .site-header__slot--left {
+    display: none;
+  }
+
+  .site-header[data-home="true"] .site-header__slot--center {
+    min-width: 0;
+    justify-content: flex-start;
+  }
+
   .site-header__breadcrumb {
     display: none;
   }
@@ -2872,8 +2895,8 @@ body:has(.landing-page),
   }
 
   .site-header .theme-switcher {
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .site-header .account-button {
@@ -2881,8 +2904,8 @@ body:has(.landing-page),
     align-items: center;
     justify-content: center;
     padding: 0.25rem;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 9999px;
   }
 
@@ -2891,7 +2914,32 @@ body:has(.landing-page),
   }
 
   .landing-page {
-    min-height: calc(100dvh - 3.5rem);
+    min-height: calc(100dvh - 4rem);
+  }
+
+  .hero-mobile-nav {
+    max-width: 28rem;
+  }
+
+  .site-header[data-home="true"] .jet-logo--md {
+    gap: 0.5rem;
+  }
+
+  .site-header[data-home="true"] .jet-logo--md .jet-logo__icon-shell {
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0.18rem;
+    border-radius: 0.7rem;
+  }
+
+  .site-header[data-home="true"] .jet-logo--md .jet-logo__icon-shell > svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .site-header[data-home="true"] .jet-logo--md .jet-logo__jet,
+  .site-header[data-home="true"] .jet-logo--md .jet-logo__name {
+    font-size: 1rem;
   }
 
   .home-page {
@@ -3102,6 +3150,13 @@ body:has(.landing-page),
     bottom: calc(4.8rem + env(safe-area-inset-bottom, 0px));
     justify-content: center;
     text-align: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-mobile-nav {
+    grid-template-columns: 1fr;
+    max-width: 20rem;
   }
 }
 

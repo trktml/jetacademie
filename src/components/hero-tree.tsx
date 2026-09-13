@@ -50,7 +50,7 @@ export function HeroTree() {
       <div className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 pt-0 pb-5 sm:px-6 sm:pt-1 sm:pb-7 lg:px-8">
         <h1 className="sr-only">Jet Academie — Müfredat ve hedef takip sistemi</h1>
 
-        <div className="hero-stage-wrap mx-auto mt-0 w-full max-w-xl sm:max-w-2xl lg:max-w-4xl">
+        <div className="hero-stage-wrap mx-auto mt-0 w-full max-w-xl sm:max-w-4xl lg:max-w-4xl">
           <BellLamp isOn={isLampOn} onToggle={() => setIsLampOn((value) => !value)} />
 
           <div
@@ -215,14 +215,14 @@ export function HeroTree() {
                 return (
                   <div
                     key={item.id}
-                    className={`absolute z-20 hidden w-[185px] lg:block xl:w-[205px] ${
+                    className={`absolute z-20 hidden w-[clamp(13rem,19vw,15rem)] lg:block ${
                       isLeft ? "right-[calc(100%-56px)]" : "left-[calc(100%-56px)]"
                     }`}
-                    style={{ top: "calc(43.05% - 27px)" }}
+                    style={{ top: "calc(43.05% - 34px)" }}
                   >
                     <Link
                       href={item.href}
-                      className="group relative flex min-h-[54px] items-center gap-3 rounded-xl border border-rose-500/35 bg-zinc-950/95 px-3.5 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.48),0_0_22px_rgba(225,29,72,0.14)] backdrop-blur-md transition-all duration-200 hover:scale-[1.035] hover:border-rose-400/80 hover:bg-zinc-900 hover:shadow-[0_14px_36px_rgba(0,0,0,0.55),0_0_28px_rgba(225,29,72,0.3)]"
+                      className="group relative flex min-h-[68px] w-full items-center gap-3 rounded-2xl border border-rose-500/35 bg-zinc-950/95 px-4 py-3 shadow-[0_12px_32px_rgba(0,0,0,0.48),0_0_22px_rgba(225,29,72,0.14)] backdrop-blur-md transition-all duration-200 hover:scale-[1.035] hover:border-rose-400/80 hover:bg-zinc-900 hover:shadow-[0_14px_36px_rgba(0,0,0,0.55),0_0_28px_rgba(225,29,72,0.3)]"
                     >
                       <span
                         className={`absolute top-1/2 ${isLeft ? "-right-1" : "-left-1"} h-2 w-2 -translate-y-1/2 rounded-full border transition-all duration-500 group-hover:scale-125 ${
@@ -232,14 +232,14 @@ export function HeroTree() {
                         }`}
                         aria-hidden="true"
                       />
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-400/50 bg-rose-950/60 text-rose-300 shadow-[inset_0_0_12px_rgba(244,63,94,0.12)] transition-transform group-hover:scale-110">
-                        <Icon className="h-4 w-4" aria-hidden="true" />
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-rose-400/50 bg-rose-950/60 text-rose-300 shadow-[inset_0_0_12px_rgba(244,63,94,0.12)] transition-transform group-hover:scale-110">
+                        <Icon className="h-5 w-5" aria-hidden="true" />
                       </span>
                       <span className="flex flex-col text-left">
-                        <strong className="text-[11px] font-bold tracking-wider whitespace-nowrap text-white group-hover:text-rose-200">
+                        <strong className="text-[13px] font-bold tracking-wide whitespace-nowrap text-white group-hover:text-rose-200">
                           {item.title}
                         </strong>
-                        <span className="text-[9.5px] whitespace-nowrap text-zinc-300">
+                        <span className="text-[11px] whitespace-nowrap text-zinc-300">
                           {item.subtitle}
                         </span>
                       </span>
@@ -251,21 +251,23 @@ export function HeroTree() {
           </div>
         </div>
 
-        <div className="mt-4 grid w-full max-w-md grid-cols-2 gap-2 sm:max-w-lg sm:gap-2.5 lg:hidden">
+        <div className="hero-mobile-nav mt-4 grid w-full max-w-md grid-cols-2 gap-2.5 sm:max-w-lg sm:gap-3 lg:hidden">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             return (
               <Link
                 key={item.id}
                 href={item.href}
-                className="flex min-h-[52px] items-center gap-2.5 rounded-xl border border-rose-500/30 bg-zinc-950/90 px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.35),0_0_18px_rgba(225,29,72,0.1)] backdrop-blur-md transition-all hover:border-rose-400/70 hover:bg-zinc-900 active:scale-95"
+                className="flex min-h-[64px] items-center gap-3 rounded-2xl border border-rose-500/30 bg-zinc-950/90 px-3.5 py-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.35),0_0_18px_rgba(225,29,72,0.1)] backdrop-blur-md transition-all hover:border-rose-400/70 hover:bg-zinc-900 active:scale-[0.98]"
               >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-rose-500/40 bg-rose-950/40 text-rose-400">
-                  <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-rose-500/40 bg-rose-950/40 text-rose-400">
+                  <Icon className="h-4 w-4" aria-hidden="true" />
                 </span>
                 <span className="flex flex-col text-left">
-                  <strong className="text-[10px] tracking-wider text-white">{item.title}</strong>
-                  <span className="text-[9px] text-zinc-400">{item.subtitle}</span>
+                  <strong className="text-xs font-semibold tracking-wide text-white">
+                    {item.title}
+                  </strong>
+                  <span className="text-[10px] text-zinc-400">{item.subtitle}</span>
                 </span>
               </Link>
             );

@@ -642,38 +642,38 @@
 
 .hero-tree-wrap {
   position: absolute;
-  top: 25em;
+  top: 14em;
   left: 50%;
   transform: translateX(-50%);
-  width: 72em;
-  max-width: 72em;
+  width: 78em;
+  max-width: 78em;
   z-index: 15;
   transition:
     opacity 0.5s ease,
     filter 0.5s ease;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) and (min-width: 641px) {
   .hero-stage-wrap {
-    height: 108em;
+    height: 110em;
   }
 
   .hero-tree-wrap {
-    top: 25em;
-    width: 63em;
-    max-width: 63em;
+    top: 15em;
+    width: 70em;
+    max-width: 70em;
   }
 }
 
 @media (max-width: 640px) {
   .hero-stage-wrap {
-    height: 98em;
+    height: 108em;
   }
 
   .hero-tree-wrap {
-    top: 23em;
-    width: 56em;
-    max-width: 56em;
+    top: 14em;
+    width: 68em;
+    max-width: 68em;
   }
 }
 

@@ -30,7 +30,7 @@ export function AppHeader() {
   const initial = (user?.name || "U").charAt(0).toUpperCase();
   const displayName = user?.name?.split(" ")[0] || "Hesap";
 
-  const logoMarkup = (
+  const logoMarkup = (size: "sm" | "md" = "sm") => (
     <motion.div
       layoutId="header-logo"
       transition={{
@@ -41,7 +41,7 @@ export function AppHeader() {
       className="brand-link-wrap"
     >
       <Link href="/" className="brand-link group" aria-label="JetAcademie ana sayfa">
-        <JetLogo size="sm" showTagline={false} />
+        <JetLogo size={size} showTagline={false} />
       </Link>
     </motion.div>
   );
@@ -51,11 +51,13 @@ export function AppHeader() {
       <header className="site-header pt-safe" data-home={isHome ? "true" : undefined}>
         <div className="site-header__wrapper pl-safe pr-safe">
           <div className="site-header__island">
-            <div className="site-header__slot site-header__slot--left">{!isHome && logoMarkup}</div>
+            <div className="site-header__slot site-header__slot--left">
+              {!isHome && logoMarkup()}
+            </div>
 
             <div className="site-header__slot site-header__slot--center">
               {isHome ? (
-                logoMarkup
+                logoMarkup("md")
               ) : (
                 <AnimatePresence mode="wait">
                   {pageTitle && (
