@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { auth, db } from "./auth";
+import { auth, db, dbPath, resolveDatabasePath } from "./auth";
 import { GET, POST } from "@/app/api/auth/[...all]/route";
 import { GET as healthGET } from "@/app/api/health/route";
 
@@ -111,5 +111,34 @@ describe("Better Auth Server Setup", () => {
     const data = (await res.json()) as { status: string; timestamp: string };
     expect(data.status).toBe("ok");
     expect(data.timestamp).toBeDefined();
+  });
+
+  describe("resolveDatabasePath & test database isolation", () => {
+    it("should default to :memory: in test mode when DATABASE_URL is unset", () => {
+      expect(resolveDatabasePath(undefined, "test")).toBe(":memory:");
+    });
+
+    it("should safely redirect auth.sqlite to :memory: in test mode", () => {
+      expect(resolveDatabasePath("auth.sqlite", "test")).toBe(":memory:");
+    });
+
+    it("should preserve custom sqlite path when explicitly provided in test mode", () => {
+      expect(resolveDatabasePath("custom-test.sqlite", "test")).toBe("custom-test.sqlite");
+    });
+
+    it("should default to auth.sqlite in development or production mode when unset", () => {
+      expect(resolveDatabasePath(undefined, "development", undefined)).toBe("auth.sqlite");
+      expect(resolveDatabasePath(undefined, "production", undefined)).toBe("auth.sqlite");
+    });
+
+    it("should honor production DATABASE_URL", () => {
+      expect(resolveDatabasePath("/app/data/auth.sqlite", "production", undefined)).toBe(
+        "/app/data/auth.sqlite"
+      );
+    });
+
+    it("should initialize test db with :memory:", () => {
+      expect(dbPath).toBe(":memory:");
+    });
   });
 });

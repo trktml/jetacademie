@@ -91,6 +91,7 @@ In Next.js App Router, QueryClient instances must be managed cleanly:
 - Route handler: `src/app/api/auth/[...all]/route.ts`.
 - Local DB: `./auth.sqlite` (ignored by Git).
 - Production DB: `/app/data/auth.sqlite` (mounted via Dokploy persistent volume).
+- Test DB: In-memory `:memory:` (automatically resolved in `NODE_ENV === "test"` to protect `./auth.sqlite` from being wiped during test runs).
 
 ### 5. Next.js 16 & React 19 Specifics
 

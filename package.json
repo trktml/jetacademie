@@ -9,7 +9,7 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "bun test",
+    "test": "DATABASE_URL=\":memory:\" bun test",
     "icons:generate": "bun scripts/generate-icons.ts",
     "db:migrate": "better-auth migrate"
   },

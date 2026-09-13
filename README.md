@@ -45,6 +45,8 @@ bun run format:check
 bun run build
 ```
 
+> **Not:** Birim testler otomatik olarak bellek içi SQLite (`:memory:`) üzerinde koşar; böylece yerel geliştirme veritabanı (`auth.sqlite`) testler sırasında asla sıfırlanmaz.
+
 ## Dağıtım
 
 Dokploy/Docker dağıtımında kalıcı SQLite dosyası için `DATABASE_URL=/app/data/auth.sqlite` kullanın ve `/app/data` dizinini kalıcı volume olarak bağlayın. `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` ve `NEXT_PUBLIC_APP_URL` değerlerini üretim ortamına göre ayarlayın.

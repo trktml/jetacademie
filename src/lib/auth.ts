@@ -3,7 +3,24 @@ import { Database } from "bun:sqlite";
 import { existsSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 
-const dbPath = process.env.DATABASE_URL || "auth.sqlite";
+/**
+ * Resolves the SQLite database path with automated test isolation guardrails.
+ * If running under test mode and DATABASE_URL is unset or pointing to the local dev file (auth.sqlite),
+ * it routes to ':memory:' to prevent tests from wiping developer data.
+ */
+export function resolveDatabasePath(
+  envDatabaseUrl = process.env.DATABASE_URL,
+  nodeEnv = process.env.NODE_ENV,
+  bunEnv = process.env.BUN_ENV
+): string {
+  const isTest = nodeEnv === "test" || bunEnv === "test";
+  if (isTest && (!envDatabaseUrl || envDatabaseUrl === "auth.sqlite")) {
+    return ":memory:";
+  }
+  return envDatabaseUrl || "auth.sqlite";
+}
+
+export const dbPath = resolveDatabasePath();
 
 // Ensure the parent directory exists if a nested path is specified
 if (dbPath !== ":memory:") {
