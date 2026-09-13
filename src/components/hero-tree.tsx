@@ -47,10 +47,10 @@ export function HeroTree() {
       <div className="scene-edge-fade scene-edge-fade--top" aria-hidden="true" />
       <div className="scene-edge-fade scene-edge-fade--bottom" aria-hidden="true" />
 
-      <div className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 pt-3 pb-5 sm:px-6 sm:pt-4 sm:pb-7 lg:px-8">
+      <div className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 pt-0 pb-5 sm:px-6 sm:pt-1 sm:pb-7 lg:px-8">
         <h1 className="sr-only">Jet Academie — Müfredat ve hedef takip sistemi</h1>
 
-        <div className="hero-stage-wrap mx-auto mt-1 w-full max-w-xl sm:max-w-2xl lg:max-w-4xl">
+        <div className="hero-stage-wrap mx-auto mt-0 w-full max-w-xl sm:max-w-2xl lg:max-w-4xl">
           <BellLamp isOn={isLampOn} onToggle={() => setIsLampOn((value) => !value)} />
 
           <div

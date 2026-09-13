@@ -3,8 +3,9 @@ import React from "react";
 import { renderToString } from "react-dom/server";
 
 // Mock next/navigation
+let currentPathname = "/";
 mock.module("next/navigation", () => ({
-  usePathname: () => "/",
+  usePathname: () => currentPathname,
   useRouter: () => ({ refresh: () => {} }),
 }));
 
@@ -23,18 +24,38 @@ mock.module("@/lib/auth-client", () => ({
 import { AppHeader } from "./app-header";
 
 describe("AppHeader Component", () => {
-  it("should render floating island header container and brand logo", () => {
+  it("should render floating island header container and brand logo in center on home page", () => {
+    currentPathname = "/";
     mockSessionData = null;
     const html = renderToString(<AppHeader />);
 
     expect(html).toContain("site-header");
     expect(html).toContain("site-header__island");
+    expect(html).toContain("site-header__slot--center");
     expect(html).toContain("brand-link");
     expect(html).toContain("Jet");
     expect(html).toContain("Academie");
+    // Center slot contains the logo
+    const centerSlot = html.split('site-header__slot--center">')[1]?.split("</div>")[0];
+    expect(centerSlot).toContain("brand-link");
+  });
+
+  it("should render logo on the left slot and page title in center when on inner page", () => {
+    currentPathname = "/mufredat";
+    mockSessionData = null;
+    const html = renderToString(<AppHeader />);
+
+    expect(html).toContain("site-header__slot--left");
+    expect(html).toContain("site-header__breadcrumb");
+    expect(html).toContain("Müfredat");
+
+    // Left slot contains the logo
+    const leftSlot = html.split('site-header__slot--left">')[1]?.split("</div>")[0];
+    expect(leftSlot).toContain("brand-link");
   });
 
   it("should render login button when unauthenticated", () => {
+    currentPathname = "/";
     mockSessionData = null;
     const html = renderToString(<AppHeader />);
 
@@ -44,6 +65,7 @@ describe("AppHeader Component", () => {
   });
 
   it("should render avatar initial and username when authenticated", () => {
+    currentPathname = "/";
     mockSessionData = {
       user: {
         id: "usr_123",
@@ -62,6 +84,7 @@ describe("AppHeader Component", () => {
   });
 
   it("should render theme switcher within header actions", () => {
+    currentPathname = "/";
     mockSessionData = null;
     const html = renderToString(<AppHeader />);
 
