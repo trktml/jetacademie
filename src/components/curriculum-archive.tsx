@@ -212,6 +212,7 @@ export function CurriculumArchive({
             activeEntries.length > 0 && completedCount === activeEntries.length;
           const isHistoryOpen = Boolean(historyViewCategoryIds[activeCategory.id]);
           const selectedCompletedIndex = selectedCompletedIndexes[activeCategory.id] ?? 0;
+          const extraLockedCount = Math.max(0, activeEntries.length - (unlockedIndex + 4));
 
           return (
             <section
@@ -414,49 +415,59 @@ export function CurriculumArchive({
                     </div>
 
                     <div className="archive-folder-stack">
-                      {activeEntries.map((entry, entryIdx) => {
-                        const timing = `${monthNames[entry.month - 1]}-${entry.week}`;
-                        const isFront = entryIdx === selectedCompletedIndex;
-                        const depth = isFront ? 0 : Math.abs(entryIdx - selectedCompletedIndex);
-                        return (
-                          <article
-                            key={entry.id}
-                            className={`archive-entry-card archive-folder-card archive-folder-card--completed ${isFront ? "archive-folder-card--active" : "archive-stack-behind"}`}
-                            data-status="completed"
-                            data-depth={isFront ? undefined : depth}
-                            onClick={() =>
-                              setSelectedCompletedIndexes((indexes) => ({
-                                ...indexes,
-                                [activeCategory.id]: entryIdx,
-                              }))
-                            }
-                            role={isFront ? undefined : "button"}
-                            tabIndex={isFront ? undefined : 0}
-                            aria-label={`${entry.title} (Tamamlandı)`}
-                          >
-                            <div
-                              className="archive-folder-tab archive-folder-tab--completed"
-                              style={{
-                                left: `clamp(0.75rem, calc(1rem + ${entryIdx * 18}%), calc(100% - 8.5rem))`,
-                              }}
-                              aria-hidden="true"
+                      {activeEntries
+                        .map((entry, entryIdx) => ({ entry, entryIdx }))
+                        .filter(({ entryIdx }) => Math.abs(entryIdx - selectedCompletedIndex) <= 3)
+                        .map(({ entry, entryIdx }) => {
+                          const timing = `${monthNames[entry.month - 1]}-${entry.week}`;
+                          const isFront = entryIdx === selectedCompletedIndex;
+                          const depth = isFront ? 0 : Math.abs(entryIdx - selectedCompletedIndex);
+                          const tabSlot = isFront ? 0 : Math.min(depth, 3);
+                          return (
+                            <article
+                              key={entry.id}
+                              className={`archive-entry-card archive-folder-card archive-folder-card--completed ${isFront ? "archive-folder-card--active" : "archive-stack-behind"}`}
+                              data-status="completed"
+                              data-depth={isFront ? undefined : depth}
+                              onClick={() =>
+                                setSelectedCompletedIndexes((indexes) => ({
+                                  ...indexes,
+                                  [activeCategory.id]: entryIdx,
+                                }))
+                              }
+                              role={isFront ? undefined : "button"}
+                              tabIndex={isFront ? undefined : 0}
+                              aria-label={`${entry.title} (Tamamlandı)`}
                             >
-                              <Check className="h-3.5 w-3.5" />
-                              <span>{`${timing} · ${entry.week}. Hafta`}</span>
-                            </div>
+                              <div
+                                className="archive-folder-tab archive-folder-tab--completed"
+                                style={{
+                                  left: `clamp(0.6rem, calc(0.75rem + ${tabSlot * 25}%), calc(100% - 6.5rem))`,
+                                }}
+                                aria-hidden="true"
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                                <span>
+                                  <span className="tab-full">{`${timing} · ${entry.week}. Hafta`}</span>
+                                  <span
+                                    className="tab-short"
+                                    aria-hidden="true"
+                                  >{`${entry.week}. Hafta`}</span>
+                                </span>
+                              </div>
 
-                            <div className="archive-entry-card__top">
-                              <span className="archive-entry-timing">{`${timing} · ${entry.week}. Hafta`}</span>
-                              <span className="read-status read-status--complete">
-                                <Check aria-hidden="true" /> Okundu
-                              </span>
-                            </div>
+                              <div className="archive-entry-card__top">
+                                <span className="archive-entry-timing">{`${timing} · ${entry.week}. Hafta`}</span>
+                                <span className="read-status read-status--complete">
+                                  <Check aria-hidden="true" /> Okundu
+                                </span>
+                              </div>
 
-                            <h3 className="archive-entry-title">{entry.title}</h3>
-                            {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
-                          </article>
-                        );
-                      })}
+                              <h3 className="archive-entry-title">{entry.title}</h3>
+                              {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
+                            </article>
+                          );
+                        })}
                     </div>
                   </div>
                 ) : (
@@ -500,11 +511,17 @@ export function CurriculumArchive({
                             {/* Öndeki Klasör Kulakçığı (Front Tab) */}
                             <div
                               className="archive-folder-tab archive-folder-tab--active"
-                              style={{ left: "1rem" }}
+                              style={{ left: "0.75rem" }}
                               aria-hidden="true"
                             >
                               <Layers className="h-3.5 w-3.5" aria-hidden="true" />
-                              <span>{`${currentTiming} · ${currentEntry.week}. Hafta`}</span>
+                              <span>
+                                <span className="tab-full">{`${currentTiming} · ${currentEntry.week}. Hafta`}</span>
+                                <span
+                                  className="tab-short"
+                                  aria-hidden="true"
+                                >{`${currentTiming} · ${currentEntry.week}.H`}</span>
+                              </span>
                             </div>
 
                             <div className="archive-entry-card__top">
@@ -536,61 +553,85 @@ export function CurriculumArchive({
                       })()}
 
                       {/* Arkaya Doğru Basamaklı Kilitli Klasörler (Stacked in Depth with Stepped Manila Tabs) */}
-                      {activeEntries.slice(unlockedIndex + 1).map((lockedEntry, offsetIdx) => {
-                        const lockedTiming = `${monthNames[lockedEntry.month - 1]}-${lockedEntry.week}`;
-                        const depth = offsetIdx + 1;
-                        const isShaking = shakingEntryId === lockedEntry.id;
-                        const tabOffset = `clamp(0.75rem, calc(1rem + ${depth * 18}%), calc(100% - 8.5rem))`;
+                      {(() => {
+                        const visibleLockedEntries = activeEntries.slice(
+                          unlockedIndex + 1,
+                          unlockedIndex + 4
+                        );
 
                         return (
-                          <article
-                            key={lockedEntry.id}
-                            className="archive-entry-card archive-folder-card archive-folder-card--locked archive-stack-behind"
-                            data-status="locked"
-                            data-depth={depth}
-                            data-shaking={isShaking ? "true" : undefined}
-                            onClick={() => notifyLocked(lockedEntry.id)}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                notifyLocked(lockedEntry.id);
-                              }
-                            }}
-                            aria-label={`${lockedEntry.title} (Kilitli klasör)`}
-                          >
-                            {/* Arkadaki Klasör Kulakçığı (Stepped Manila Tab) */}
-                            <div
-                              className="archive-folder-tab archive-folder-tab--locked"
-                              style={{
-                                left: tabOffset,
-                              }}
-                            >
-                              <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
-                              <span>{`${lockedTiming} · ${lockedEntry.week}. Hafta`}</span>
-                            </div>
+                          <>
+                            {visibleLockedEntries.map((lockedEntry, offsetIdx) => {
+                              const lockedTiming = `${monthNames[lockedEntry.month - 1]}-${lockedEntry.week}`;
+                              const depth = offsetIdx + 1;
+                              const isShaking = shakingEntryId === lockedEntry.id;
+                              const tabOffset = `clamp(0.6rem, calc(0.75rem + ${depth * 25}%), calc(100% - 6.5rem))`;
 
-                            <div className="archive-entry-card__top">
-                              <span className="archive-entry-timing">{`${lockedTiming} · ${lockedEntry.week}. Hafta`}</span>
-                              <span className="read-status">
-                                <LockKeyhole aria-hidden="true" /> Kilitli
-                              </span>
-                            </div>
+                              return (
+                                <article
+                                  key={lockedEntry.id}
+                                  className="archive-entry-card archive-folder-card archive-folder-card--locked archive-stack-behind"
+                                  data-status="locked"
+                                  data-depth={depth}
+                                  data-shaking={isShaking ? "true" : undefined}
+                                  onClick={() => notifyLocked(lockedEntry.id)}
+                                  role="button"
+                                  tabIndex={0}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                      e.preventDefault();
+                                      notifyLocked(lockedEntry.id);
+                                    }
+                                  }}
+                                  aria-label={`${lockedEntry.title} (Kilitli klasör)`}
+                                >
+                                  {/* Arkadaki Klasör Kulakçığı (Stepped Manila Tab) */}
+                                  <div
+                                    className="archive-folder-tab archive-folder-tab--locked"
+                                    style={{
+                                      left: tabOffset,
+                                    }}
+                                  >
+                                    <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
+                                    <span>
+                                      <span className="tab-full">{`${lockedTiming} · ${lockedEntry.week}. Hafta`}</span>
+                                      <span
+                                        className="tab-short"
+                                        aria-hidden="true"
+                                      >{`${lockedEntry.week}. Hafta`}</span>
+                                    </span>
+                                  </div>
 
-                            <h3 className="archive-entry-title">{lockedEntry.title}</h3>
+                                  <div className="archive-entry-card__top">
+                                    <span className="archive-entry-timing">{`${lockedTiming} · ${lockedEntry.week}. Hafta`}</span>
+                                    <span className="read-status">
+                                      <LockKeyhole aria-hidden="true" /> Kilitli
+                                    </span>
+                                  </div>
 
-                            <div className="archive-locked-stack-notice">
-                              <LockKeyhole className="h-4 w-4" aria-hidden="true" />
-                              <span>
-                                Bu dosya yığının arkasında kilitli bekliyor. Açmak için önce
-                                sıradaki içeriği tamamlamalısınız.
-                              </span>
-                            </div>
-                          </article>
+                                  <h3 className="archive-entry-title">{lockedEntry.title}</h3>
+
+                                  <div className="archive-locked-stack-notice">
+                                    <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+                                    <span>
+                                      Bu dosya yığının arkasında kilitli bekliyor. Açmak için önce
+                                      sıradaki içeriği tamamlamalısınız.
+                                    </span>
+                                  </div>
+                                </article>
+                              );
+                            })}
+                          </>
                         );
-                      })}
+                      })()}
                     </div>
+
+                    {extraLockedCount > 0 && (
+                      <div className="archive-queue-note" aria-live="polite">
+                        <LockKeyhole className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                        <span>{`Bu çekmecede sırada bekleyen ${extraLockedCount} kilitli dosya daha var`}</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

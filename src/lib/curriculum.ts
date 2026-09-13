@@ -122,7 +122,8 @@ export function makeEntryId(categoryId: CurriculumCategoryId, month: number, wee
 
 // 2 haftalık örnek müfredat içerikleri — Eylül 2026
 export const curriculumEntries: readonly CurriculumEntry[] = [
-  // ── Ayet ────────────────────────────────────────
+  // ── Ayet (Eylül 2026 – Aralık 2026 / 16 Hafta) ────────────────
+  // Eylül 2026
   {
     id: "ayet-eylul-1",
     categoryId: "ayet",
@@ -140,6 +141,138 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
     year: 2026,
     title: "Âl-i İmran 3:159 — Şûrâ ve Tevekkül",
     body: '"İş hakkında onlarla istişare et. Bir kere de karar verip azmettin mi, artık Allah\'a tevekkül et." Karar alma süreçlerinde istişare ve tevekkül dengesi.',
+  },
+  {
+    id: "ayet-eylul-3",
+    categoryId: "ayet",
+    month: 9,
+    week: 3,
+    year: 2026,
+    title: "Bakara Suresi 2:286 — Sorumluluk ve Dua",
+    body: '"Allah hiç kimseye güç yetiremeyeceği bir yük yüklemez. Herkesin kazandığı (iyilik) lehine, işlediği (kötülük) aleyhinedir." İnsanın takati, niyet saflığı ve acziyet şuuru ile Rabbine ilticası.',
+  },
+  {
+    id: "ayet-eylul-4",
+    categoryId: "ayet",
+    month: 9,
+    week: 4,
+    year: 2026,
+    title: "Âl-i İmrân 3:103 — Uhuvvet ve Birlik",
+    body: "\"Hep birlikte Allah'ın ipine (Kur'an'a) sımsıkı sarılın, parçalanıp ayrılmayın.\" Toplumsal dayanışma, kalplerin telifi ve tefrikaya karşı uhuvvet şuuru.",
+  },
+
+  // Ekim 2026
+  {
+    id: "ayet-ekim-1",
+    categoryId: "ayet",
+    month: 10,
+    week: 1,
+    year: 2026,
+    title: "Nisâ Suresi 4:58 — Emanet ve Adalet",
+    body: '"Şüphesiz Allah size emanetleri ehline vermenizi ve insanlar arasında hükmettiğiniz zaman adaletle hükmetmenizi emreder." Liyakat, vazife ahlakı ve hakkaniyet prensibi.',
+  },
+  {
+    id: "ayet-ekim-2",
+    categoryId: "ayet",
+    month: 10,
+    week: 2,
+    year: 2026,
+    title: "Mâide Suresi 5:2 — İyilikte Yardımlaşma",
+    body: '"İyilik ve takva üzerinde yardımlaşın; günah ve düşmanlık üzerinde yardımlaşmayın." Hayırda yarış, kötülüğe set çekme ve kolektif sorumluluk bilinci.',
+  },
+  {
+    id: "ayet-ekim-3",
+    categoryId: "ayet",
+    month: 10,
+    week: 3,
+    year: 2026,
+    title: "En'âm Suresi 6:152 — Doğruluk ve Dürüstlük",
+    body: '"Bir söz söylediğiniz zaman, yakınınız dahi olsa adil olun. Allah\'a verdiğiniz ahdi yerine getirin." İletişimde doğruluk, ölçüde hakkaniyet ve ahde vefa.',
+  },
+  {
+    id: "ayet-ekim-4",
+    categoryId: "ayet",
+    month: 10,
+    week: 4,
+    year: 2026,
+    title: "A'râf Suresi 7:56 — İhsan Şuuru ve Islah",
+    body: "\"Islah edilmesinden sonra yeryüzünde bozgunculuk yapmayın. O'na korku ve ümitle yalvarın. Şüphesiz Allah'ın rahmeti iyilik edenlere çok yakındır.\" İmar ve tamir ruhu, ihsan ahlakı.",
+  },
+
+  // Kasım 2026
+  {
+    id: "ayet-kasim-1",
+    categoryId: "ayet",
+    month: 11,
+    week: 1,
+    year: 2026,
+    title: "Tevbe Suresi 9:119 — Sadakat ve Sıddıkiyet",
+    body: '"Ey iman edenler! Allah\'a karşı gelmekten sakının ve doğrularla (sadıklarla) beraber olun." Sözde, amelde ve niyette sıdk; sadıkların atmosferinde bulunmanın önemi.',
+  },
+  {
+    id: "ayet-kasim-2",
+    categoryId: "ayet",
+    month: 11,
+    week: 2,
+    year: 2026,
+    title: "Yûnus Suresi 10:57 — Kalplerin Şifası Kur'an",
+    body: '"Ey insanlar! Size Rabbinizden bir öğüt, kalplerdeki dertlere bir şifa, müminler için bir hidayet ve rahmet gelmiştir." Kur\'an ile diriliş ve manevi tedaviler.',
+  },
+  {
+    id: "ayet-kasim-3",
+    categoryId: "ayet",
+    month: 11,
+    week: 3,
+    year: 2026,
+    title: "Hûd Suresi 11:112 — İstikamet Emri",
+    body: '"Öyleyse emrolunduğun gibi dosdoğru ol! Beraberindeki tövbe edenler de öyle olsunlar. Sakın haddi aşmayın!" Dengeli yaşamak, istikrar ve aşırılıklardan korunma.',
+  },
+  {
+    id: "ayet-kasim-4",
+    categoryId: "ayet",
+    month: 11,
+    week: 4,
+    year: 2026,
+    title: "Yûsuf Suresi 12:86 — Sabır ve Hüznün Arzı",
+    body: '"Ben kederimi ve hüznümü ancak Allah\'a arz ederim; ve ben Allah tarafından sizin bilmediğiniz şeyleri bilirim." Zorluklar karşısında metanet ve sığınağın yalnızca Hak olması.',
+  },
+
+  // Aralık 2026
+  {
+    id: "ayet-aralik-1",
+    categoryId: "ayet",
+    month: 12,
+    week: 1,
+    year: 2026,
+    title: "Ra'd Suresi 13:28 — Kalplerin İtminanı",
+    body: '"Bilesiniz ki, kalpler ancak Allah\'ı anmakla huzur bulur." Çağın buhranları karşısında iç sükunete ermenin ve hakiki huzurun zikirde oluşu.',
+  },
+  {
+    id: "ayet-aralik-2",
+    categoryId: "ayet",
+    month: 12,
+    week: 2,
+    year: 2026,
+    title: "İbrâhîm Suresi 14:7 — Şükrün Bereketi",
+    body: "\"Hani Rabbiniz şöyle duyurmuştu: 'Andolsun, eğer şükrederseniz elbette size (nimetimi) artırırım...'\" Nimetin kıymetini idrak etme ve şükürle derinleşen hayat.",
+  },
+  {
+    id: "ayet-aralik-3",
+    categoryId: "ayet",
+    month: 12,
+    week: 3,
+    year: 2026,
+    title: "Nahl Suresi 16:90 — Adalet, İhsan ve Fazilet",
+    body: '"Şüphesiz Allah adaleti, iyilik yapmayı ve akrabaya vermeyi emreder; hayasızlığı, fenalığı ve azgınlığı yasaklar." Evrensel ahlak ilkeleri ve vicdan nizamı.',
+  },
+  {
+    id: "ayet-aralik-4",
+    categoryId: "ayet",
+    month: 12,
+    week: 4,
+    year: 2026,
+    title: "İsrâ Suresi 17:79 — Gece Kıyamı ve Tefekkür",
+    body: '"Gecenin bir kısmında da sana mahsus bir nafile olarak teheccüde kalk. Umulur ki Rabbin seni Makam-ı Mahmud\'a ulaştırır." Gece ibadetinin ruha kazandırdığı derinlik ve iç aydınlık.',
   },
 
   // ── Hadis ───────────────────────────────────────

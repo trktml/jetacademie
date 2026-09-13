@@ -37,10 +37,13 @@ describe("curriculum", () => {
     ]);
   });
 
-  it("has 2 sample entries per category (18 total)", () => {
-    expect(curriculumEntries.length).toBe(18);
+  it("has 16 sample entries for ayet and 2 for other categories (32 total)", () => {
+    expect(curriculumEntries.length).toBe(32);
+
+    expect(getCategoryEntries("ayet").length).toBe(16);
 
     for (const category of curriculumCategories) {
+      if (category.id === "ayet") continue;
       const entries = getCategoryEntries(category.id);
       expect(entries.length).toBe(2);
     }
@@ -49,6 +52,10 @@ describe("curriculum", () => {
   it("uses category-month-week ID pattern", () => {
     expect(curriculumEntries[0].id).toBe("ayet-eylul-1");
     expect(curriculumEntries[1].id).toBe("ayet-eylul-2");
+    expect(curriculumEntries[2].id).toBe("ayet-eylul-3");
+    expect(curriculumEntries[3].id).toBe("ayet-eylul-4");
+    expect(curriculumEntries[4].id).toBe("ayet-ekim-1");
+    expect(curriculumEntries[15].id).toBe("ayet-aralik-4");
 
     const hadisEntries = getCategoryEntries("hadis");
     expect(hadisEntries[0].id).toBe("hadis-eylul-1");

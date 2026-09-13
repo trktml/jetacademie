@@ -104,7 +104,7 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should track completion independently per category", () => {
-    // Complete hadis-eylul-1: Ayet should still be 0/2 completed with first entry as Sıradaki
+    // Complete hadis-eylul-1: Ayet should still be 0/16 completed with first entry as Sıradaki
     const ayetHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={["hadis-eylul-1"]}
@@ -112,7 +112,7 @@ describe("CurriculumArchive Component", () => {
         initialCategoryId="ayet"
       />
     );
-    expect(ayetHtml).toContain("0 / 2 tamamlandı");
+    expect(ayetHtml).toContain("0 / 16 tamamlandı");
     expect(ayetHtml).toContain("Sıradaki");
 
     // Hadis category should show 1/2 completed
@@ -135,8 +135,8 @@ describe("CurriculumArchive Component", () => {
       />
     );
 
-    // Ayet should be 1/2 completed
-    expect(html).toContain("1 / 2 tamamlandı");
+    // Ayet should be 1/16 completed
+    expect(html).toContain("1 / 16 tamamlandı");
     // Past shelf indicates completed entry archived
     expect(html).toContain("1 dosya tamamlandı ve arşive kaldırıldı");
     // Second entry is now active (Sıradaki)
@@ -219,14 +219,14 @@ describe("CurriculumArchive Component", () => {
   it("should render all-completed celebratory state when all entries in a drawer are completed", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        initialCompletedEntryIds={["hadis-eylul-1", "hadis-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
+        initialCategoryId="hadis"
       />
     );
 
     expect(html).toContain("archive-all-completed");
-    expect(html).toContain("Tüm Ayet Dosyaları Tamamlandı!");
+    expect(html).toContain("Tüm Hadis Dosyaları Tamamlandı!");
     expect(html).toContain("Geçmiş Arşiv");
   });
 
@@ -362,9 +362,9 @@ describe("CurriculumArchive Component", () => {
   it("should assign relative depth 1 to behind card in all-completed view and preserve completed tab styling", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        initialCompletedEntryIds={["hadis-eylul-1", "hadis-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
+        initialCategoryId="hadis"
       />
     );
 
