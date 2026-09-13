@@ -240,7 +240,25 @@ describe("CurriculumArchive Component", () => {
 
     expect(html).toContain("archive-all-completed");
     expect(html).toContain("Tüm Hadis Dosyaları Tamamlandı!");
+    expect(html).not.toContain("archive-all-completed__desc");
+    expect(html).not.toContain("Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız.");
     expect(html).toContain("Geçmiş (2)");
+    // No duplicate read-status badge inside completed cards
+    expect(html).not.toContain("read-status--complete");
+  });
+
+  it("should render queue note with natural Turkish phrasing without drawer metaphor", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        initialCategoryId="ayet"
+      />
+    );
+
+    // Ayet has 16 items; 4 are in immediate stack, remaining 12 are queued
+    expect(html).toContain("Sırada bekleyen 12 dosya daha var");
+    expect(html).not.toContain("Bu çekmecede");
   });
 
   it("should render completed entries in reverse chronological order (latest completed first)", () => {
@@ -253,7 +271,12 @@ describe("CurriculumArchive Component", () => {
       />
     );
 
-    expect(html).toContain("Geçmiş Arşiv Dosyaları");
+    expect(html).toContain("Tamamlanan Dosyalar");
+    expect(html).toContain("Geri Dön");
+    expect(html).not.toContain("Geçmiş Arşiv Dosyaları");
+    expect(html).not.toContain("arşive kaldırıldı");
+    expect(html).not.toContain("archive-history-ledger__desc");
+    expect(html).not.toContain("read-status--complete");
     // eylul-3 title appears before eylul-1 in reverse order
     const idx3 = html.indexOf("Bakara Suresi 2:286 — Sorumluluk ve Dua");
     const idx1 = html.indexOf("Bakara Suresi 2:152 — Beni Anın");

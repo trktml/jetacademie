@@ -202,7 +202,7 @@ export function CurriculumArchive({
   }
 
   return (
-    <div className="archive-layout" aria-label="Müfredat arşivi">
+    <div className="archive-layout" aria-label="Müfredat akışı">
       {/* Sol Sabit Kapsül Navigasyon (Desktop: Fixed Capsule Rail / Mobile: Sticky Capsule Dock) */}
       <aside className="archive-fixed-capsule" aria-label="Müfredat Hızlı Menü">
         <nav className="archive-capsule-list" aria-label="Kategori Listesi">
@@ -264,7 +264,7 @@ export function CurriculumArchive({
                 data-category={activeCategory.id}
                 aria-labelledby={`heading-${activeCategory.id}`}
               >
-                {/* Çekmece Başlığı ve Kontrolleri */}
+                {/* Kategori Başlığı ve Kontrolleri */}
                 <header className="archive-category-header">
                   <div className="archive-category-header__info">
                     <div
@@ -315,21 +315,19 @@ export function CurriculumArchive({
                         onClick={() => toggleHistoryView(activeCategory.id)}
                         aria-label={
                           isHistoryOpen
-                            ? `${activeCategory.label} çekmecesine geri dön`
+                            ? `${activeCategory.label} dosyalarına geri dön`
                             : `${activeCategory.label} geçmiş dosyalarını gör (${completedCount} tamamlandı)`
                         }
                         title={
                           isHistoryOpen
-                            ? "Çekmeceye geri dön"
+                            ? "Geri dön"
                             : completedCount === 0
-                              ? "Henüz tamamlanmış geçmiş dosya yok"
+                              ? "Henüz tamamlanmış dosya yok"
                               : "Geçmiş dosyaları gör"
                         }
                       >
                         <History aria-hidden="true" />
-                        <span>
-                          {isHistoryOpen ? "Çekmeceye Dön" : `Geçmiş (${completedCount})`}
-                        </span>
+                        <span>{isHistoryOpen ? "Geri Dön" : `Geçmiş (${completedCount})`}</span>
                       </button>
                     )}
                   </div>
@@ -345,8 +343,8 @@ export function CurriculumArchive({
                       <div className="archive-empty-card__text">
                         <h4>{`${activeCategory.label} haftalık dosyaları hazırlanıyor`}</h4>
                         <p>
-                          Yeni dosyalar eklendiğinde burada hafta hafta sıralı ve kilitli olarak
-                          çekmecede listelenecektir.
+                          Yeni içerikler eklendiğinde burada hafta hafta sıralı olarak
+                          listelenecektir.
                         </p>
                       </div>
                     </div>
@@ -359,14 +357,7 @@ export function CurriculumArchive({
                             className="h-5 w-5 text-emerald-700 dark:text-emerald-400"
                             aria-hidden="true"
                           />
-                          <div>
-                            <h3 className="archive-history-ledger__title">
-                              Geçmiş Arşiv Dosyaları
-                            </h3>
-                            <p className="archive-history-ledger__desc">
-                              {`Daha önce okuyup tamamladığınız ${completedCount} dosya arşive kaldırıldı.`}
-                            </p>
-                          </div>
+                          <h3 className="archive-history-ledger__title">Tamamlanan Dosyalar</h3>
                         </div>
                         <button
                           type="button"
@@ -374,7 +365,7 @@ export function CurriculumArchive({
                           onClick={() => toggleHistoryView(activeCategory.id)}
                         >
                           <ArrowLeft aria-hidden="true" />
-                          Çekmeceye Dön
+                          Geri Dön
                         </button>
                       </div>
 
@@ -397,12 +388,6 @@ export function CurriculumArchive({
                                 >
                                   <Check className="h-3.5 w-3.5" />
                                   <span>{`${timing} · Tamamlandı`}</span>
-                                </div>
-
-                                <div className="archive-entry-card__top">
-                                  <span className="read-status read-status--complete">
-                                    <Check aria-hidden="true" /> Okundu
-                                  </span>
                                 </div>
 
                                 <h3 className="archive-entry-title">{entry.title}</h3>
@@ -431,10 +416,10 @@ export function CurriculumArchive({
                       ) : (
                         <div className="archive-history-empty">
                           <FileClock className="text-ink-faint h-8 w-8" aria-hidden="true" />
-                          <h4>Henüz geçmiş dosya bulunmuyor</h4>
+                          <h4>Henüz tamamlanan dosya bulunmuyor</h4>
                           <p>
-                            Bu çekmecedeki sıradaki dosyayı okuyup tamamladığınızda tamamlanan
-                            dosyalar burada listelenecektir.
+                            Sıradaki içeriği okuyup tamamladığınızda tamamlanan dosyalarınız burada
+                            listelenir.
                           </p>
                           <button
                             type="button"
@@ -457,9 +442,6 @@ export function CurriculumArchive({
                           <h3 className="archive-all-completed__title">
                             {`Tüm ${activeCategory.label} Dosyaları Tamamlandı!`}
                           </h3>
-                          <p className="archive-all-completed__desc">
-                            Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız.
-                          </p>
                         </div>
                       </div>
 
@@ -507,12 +489,6 @@ export function CurriculumArchive({
                                   </span>
                                 </div>
 
-                                <div className="archive-entry-card__top">
-                                  <span className="read-status read-status--complete">
-                                    <Check aria-hidden="true" /> Okundu
-                                  </span>
-                                </div>
-
                                 <h3 className="archive-entry-title">{entry.title}</h3>
                                 {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
                               </article>
@@ -521,7 +497,7 @@ export function CurriculumArchive({
                       </div>
                     </div>
                   ) : (
-                    /* ─── AKTİF ÇEKMECE: ÜST ÜSTE VE ARKASINA DOĞRU FİZİKSEL KLASÖR YIĞINI ─── */
+                    /* ─── AKTİF MÜFREDAT: ÜST ÜSTE VE ARKASINA DOĞRU FİZİKSEL KLASÖR YIĞINI ─── */
                     <div className="archive-stack-container">
                       <div className="archive-folder-stack">
                         {/* En Öndeki Aktif Klasör (Front Active Manila Dossier) */}
@@ -647,7 +623,7 @@ export function CurriculumArchive({
                       {extraLockedCount > 0 && (
                         <div className="archive-queue-note" aria-live="polite">
                           <LockKeyhole className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                          <span>{`Bu çekmecede sırada bekleyen ${extraLockedCount} kilitli dosya daha var`}</span>
+                          <span>{`Sırada bekleyen ${extraLockedCount} dosya daha var`}</span>
                         </div>
                       )}
                     </div>
