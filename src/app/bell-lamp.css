@@ -653,9 +653,19 @@
     filter 0.5s ease;
 }
 
-@media (max-width: 1023px) and (min-width: 641px) {
+@media (min-width: 1024px) {
   .hero-stage-wrap {
     height: 110em;
+  }
+
+  .scene-edge-fade--bottom {
+    height: clamp(5rem, 9vw, 8rem);
+  }
+}
+
+@media (max-width: 1023px) and (min-width: 641px) {
+  .hero-stage-wrap {
+    height: 106em;
   }
 
   .hero-tree-wrap {
