@@ -25,6 +25,7 @@ import {
 import { markEntryAsRead, unmarkEntryAsRead } from "@/app/mufredat/actions";
 
 import { useUiStore } from "@/store/use-ui-store";
+import { useGuestStore } from "@/store/use-guest-store";
 
 const monthNames = [
   "Ocak",
@@ -81,7 +82,16 @@ export function CurriculumArchive({
   const [isPending, startTransition] = useTransition();
   const openAccount = useUiStore((state) => state.openAccount);
 
-  const completedSet = useMemo(() => new Set(completedEntryIds), [completedEntryIds]);
+  // Guest store
+  const isGuest = useGuestStore((s) => s.isGuest);
+  const guestCompleteEntry = useGuestStore((s) => s.completeEntry);
+  const guestUncompleteEntry = useGuestStore((s) => s.uncompleteEntry);
+  const guestCompletedIds = useGuestStore((s) => s.completedEntryIds);
+
+  const completedSet = useMemo(
+    () => new Set(isGuest ? guestCompletedIds : completedEntryIds),
+    [isGuest, guestCompletedIds, completedEntryIds]
+  );
 
   // Synchronize category with hash changes if triggered externally
   useEffect(() => {
@@ -146,8 +156,18 @@ export function CurriculumArchive({
   }
 
   function completeEntry(entryId: string, timingLabel: string) {
-    if (!isSignedIn) {
+    if (!isSignedIn && !isGuest) {
       openAccount();
+      return;
+    }
+
+    if (isGuest) {
+      guestCompleteEntry(entryId);
+      setToast({
+        message: `${timingLabel} okundu olarak kaydedildi. 📱 İlerlemeniz bu cihazda saklanıyor.`,
+        type: "success",
+      });
+      setTimeout(() => setToast(null), 3500);
       return;
     }
 
@@ -174,8 +194,18 @@ export function CurriculumArchive({
   }
 
   function unmarkEntry(entryId: string, timingLabel: string) {
-    if (!isSignedIn) {
+    if (!isSignedIn && !isGuest) {
       openAccount();
+      return;
+    }
+
+    if (isGuest) {
+      guestUncompleteEntry(entryId);
+      setToast({
+        message: `${timingLabel} içeriği okunmadı olarak güncellendi.`,
+        type: "success",
+      });
+      setTimeout(() => setToast(null), 3500);
       return;
     }
 

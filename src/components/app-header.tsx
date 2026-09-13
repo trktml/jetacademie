@@ -9,6 +9,7 @@ import { JetLogo } from "@/components/jet-logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { AccountSheet } from "@/components/account-sheet";
 import { authClient } from "@/lib/auth-client";
+import { useGuestStore } from "@/store/use-guest-store";
 
 function getPageTitle(pathname: string | null): string | null {
   if (!pathname || pathname === "/") return null;
@@ -25,6 +26,7 @@ export function AppHeader() {
   const openAccount = useUiStore((state) => state.openAccount);
   const { data: session } = authClient.useSession();
   const user = session?.user;
+  const isGuest = useGuestStore((s) => s.isGuest);
   const initial = (user?.name || "U").charAt(0).toUpperCase();
   const displayName = user?.name?.split(" ")[0] || "Hesap";
 
@@ -80,7 +82,10 @@ export function AppHeader() {
                   onClick={openAccount}
                   className="account-button"
                   data-authenticated={user ? "true" : undefined}
-                  aria-label={user ? `Hesabı aç (${user.name})` : "Giriş yap"}
+                  data-guest={!user && isGuest ? "true" : undefined}
+                  aria-label={
+                    user ? `Hesabı aç (${user.name})` : isGuest ? "Misafir hesabı aç" : "Giriş yap"
+                  }
                 >
                   {user ? (
                     <>
@@ -88,6 +93,16 @@ export function AppHeader() {
                         {initial}
                       </span>
                       <span className="account-button__name">{displayName}</span>
+                    </>
+                  ) : isGuest ? (
+                    <>
+                      <span
+                        className="account-button__avatar account-button__avatar--guest"
+                        aria-hidden="true"
+                      >
+                        M
+                      </span>
+                      <span className="account-button__name">Misafir</span>
                     </>
                   ) : (
                     <>

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Archive, ShieldCheck } from "lucide-react";
+import { Archive } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { getCompletedEntryIds } from "@/lib/curriculum-progress";
 import { CurriculumArchive } from "@/components/curriculum-archive";
+import { ProgressStatusNote } from "@/components/progress-status-note";
 
 export const metadata: Metadata = {
   title: "Müfredat",
@@ -23,12 +24,7 @@ export default async function CurriculumPage() {
           </div>
           <h1>Müfredat</h1>
         </div>
-        <div className="secure-note">
-          <ShieldCheck aria-hidden="true" />
-          <span>
-            {session?.user ? "İlerlemeniz hesabınıza kaydediliyor" : "Kaydetmek için giriş yapın"}
-          </span>
-        </div>
+        <ProgressStatusNote isSignedIn={Boolean(session?.user)} />
       </header>
 
       <CurriculumArchive

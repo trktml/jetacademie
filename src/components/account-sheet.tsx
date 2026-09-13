@@ -12,8 +12,10 @@ import {
   LogIn,
   LogOut,
   ShieldCheck,
+  Smartphone,
   Trash2,
   UserPlus,
+  UserRound,
   X,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
@@ -23,6 +25,8 @@ import {
   changePasswordSchema,
 } from "@/lib/validations/auth";
 import { useUiStore } from "@/store/use-ui-store";
+import { useGuestStore } from "@/store/use-guest-store";
+import { migrateGuestProgress } from "@/app/mufredat/migrate-guest-progress";
 
 export function AccountSheet() {
   const router = useRouter();
@@ -46,12 +50,22 @@ export function AccountSheet() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Guest store
+  const isGuest = useGuestStore((s) => s.isGuest);
+  const enableGuest = useGuestStore((s) => s.enableGuest);
+  const disableGuest = useGuestStore((s) => s.disableGuest);
+  const guestCompletedIds = useGuestStore((s) => s.completedEntryIds);
+  const [showGuestLogoutConfirm, setShowGuestLogoutConfirm] = useState(false);
+  const [showAuthFromGuest, setShowAuthFromGuest] = useState(false);
+
   function resetForm() {
     setPassword("");
     setNewPassword("");
     setMessage(null);
     setSuccessMessage(null);
     setShowDeleteConfirm(false);
+    setShowGuestLogoutConfirm(false);
+    setShowAuthFromGuest(false);
   }
 
   async function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
@@ -81,6 +95,17 @@ export function AccountSheet() {
 
       setAssignedUsername(data.username);
       setPassword("");
+
+      // Misafir ilerlemesini yeni hesaba aktar
+      if (isGuest && guestCompletedIds.length > 0) {
+        try {
+          await migrateGuestProgress(guestCompletedIds);
+        } catch {
+          // Aktarım başarısız olsa da kayıt başarılı
+        }
+      }
+      if (isGuest) disableGuest();
+
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Kayıt işlemi tamamlanamadı.");
@@ -113,6 +138,16 @@ export function AccountSheet() {
         setMessage(data.error || "Kullanıcı adı veya şifre hatalı.");
         return;
       }
+
+      // Misafir ilerlemesini mevcut hesaba aktar
+      if (isGuest && guestCompletedIds.length > 0) {
+        try {
+          await migrateGuestProgress(guestCompletedIds);
+        } catch {
+          // Aktarım başarısız olsa da giriş başarılı
+        }
+      }
+      if (isGuest) disableGuest();
 
       resetForm();
       setOpen(false);
@@ -223,11 +258,15 @@ export function AccountSheet() {
           <Drawer.Handle className="sheet-handle" />
           <div className="sheet-heading">
             <div>
-              <Drawer.Title>{session?.user ? "Hesabınız" : "İlerlemenizi Kaydedin"}</Drawer.Title>
+              <Drawer.Title>
+                {session?.user ? "Hesabınız" : isGuest ? "Misafir Oturum" : "İlerlemenizi Kaydedin"}
+              </Drawer.Title>
               <Drawer.Description>
                 {session?.user
                   ? "Okuduğunuz her ders ve modül hesabınıza güvenle kaydedilir."
-                  : "Müfredatta kaldığınız yer cihazlarınız arasında anonim olarak korunsun."}
+                  : isGuest
+                    ? "Kaldığınız yerler bu cihazda kaydediliyor."
+                    : "Müfredatta kaldığınız yer cihazlarınız arasında anonim olarak korunsun."}
               </Drawer.Description>
             </div>
             <Drawer.Close asChild>
@@ -403,6 +442,84 @@ export function AccountSheet() {
                 )}
               </div>
             </>
+          ) : isGuest && !showAuthFromGuest ? (
+            <>
+              <div className="guest-profile-card">
+                <div className="guest-profile-card__header">
+                  <span className="guest-profile-card__icon">
+                    <UserRound aria-hidden="true" />
+                  </span>
+                  <div className="guest-profile-card__info">
+                    <strong>Misafir Oturum</strong>
+                    <span>{guestCompletedIds.length} dosya tamamlandı</span>
+                  </div>
+                </div>
+                <div className="guest-profile-card__note">
+                  <Smartphone aria-hidden="true" />
+                  <span>
+                    Kaldığınız yerler bu cihazda kaydediliyor. Hesap oluşturursanız ilerlemeniz
+                    güvenle aktarılır ve tüm cihazlarınızdan erişebilirsiniz.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => {
+                    setMode("signUp");
+                    setMessage(null);
+                    setShowAuthFromGuest(true);
+                  }}
+                >
+                  <UserPlus aria-hidden="true" /> Hesap Oluştur ve İlerlemeyi Aktar
+                </button>
+              </div>
+
+              {message && <p className="form-message mt-3">{message}</p>}
+
+              <div className="account-actions-card">
+                {!showGuestLogoutConfirm ? (
+                  <button
+                    type="button"
+                    className="danger-button danger-button--outline justify-start"
+                    onClick={() => setShowGuestLogoutConfirm(true)}
+                  >
+                    <LogOut aria-hidden="true" /> Misafir Oturumunu Sonlandır
+                  </button>
+                ) : (
+                  <div className="danger-zone-box">
+                    <h3 className="account-subheading text-red-600 dark:text-red-400">
+                      <AlertTriangle aria-hidden="true" className="h-4 w-4" />
+                      Misafir Oturumunu Sonlandırmak İstiyor musunuz?
+                    </h3>
+                    <p>
+                      Bu cihazdaki tüm ilerlemeniz ({guestCompletedIds.length} dosya) kalıcı olarak
+                      silinecektir. Bu işlem geri alınamaz.
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="danger-button flex-1"
+                        onClick={() => {
+                          disableGuest();
+                          resetForm();
+                          setOpen(false);
+                          router.refresh();
+                        }}
+                      >
+                        Evet, Sonlandır
+                      </button>
+                      <button
+                        type="button"
+                        className="secondary-button"
+                        onClick={() => setShowGuestLogoutConfirm(false)}
+                      >
+                        Vazgeç
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <>
               <div className="auth-tabs" role="tablist" aria-label="Hesap işlemi">
@@ -483,6 +600,25 @@ export function AccountSheet() {
                   </button>
                 </form>
               )}
+
+              <div className="guest-login-divider">
+                <span>veya</span>
+              </div>
+              <button
+                type="button"
+                className="guest-login-button"
+                onClick={() => {
+                  enableGuest();
+                  setOpen(false);
+                  router.refresh();
+                }}
+              >
+                <UserRound aria-hidden="true" />
+                <div>
+                  <strong>Misafir Olarak Devam Et</strong>
+                  <span>Kaldığınız yerler bu cihazda kaydedilir</span>
+                </div>
+              </button>
             </>
           )}
         </Drawer.Content>
