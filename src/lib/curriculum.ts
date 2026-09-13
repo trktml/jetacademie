@@ -474,3 +474,14 @@ export function canCompleteEntry(
   if (entryIndex < 0) return false;
   return entries.slice(0, entryIndex).every((entry) => completedEntryIds.has(entry.id));
 }
+
+export function canUnmarkEntry(
+  entryId: string,
+  entries: readonly CurriculumEntry[],
+  completedEntryIds: ReadonlySet<string>
+) {
+  const entryIndex = entries.findIndex((entry) => entry.id === entryId);
+  if (entryIndex < 0) return false;
+  if (!completedEntryIds.has(entryId)) return false;
+  return entries.slice(entryIndex + 1).every((entry) => !completedEntryIds.has(entry.id));
+}

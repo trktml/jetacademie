@@ -1989,6 +1989,34 @@ body:has(.landing-page),
   background: #4a5c6b;
 }
 
+.archive-undo-button {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0.5rem 0.95rem;
+  border-radius: 8px;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  transition: all 160ms ease;
+}
+
+.archive-undo-button:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  background: var(--surface-muted);
+  transform: translateY(-1px);
+}
+
+.archive-undo-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Çekmece Altı Klasör Gezinme Kontrolleri (Drawer Footer Navigation) */
 .archive-drawer-footer {
   display: flex;
@@ -2838,26 +2866,27 @@ body:has(.landing-page),
     gap: 0.45rem;
   }
 
+  .site-header .header-actions {
+    gap: 0.25rem;
+  }
+
+  .site-header .theme-switcher {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
   .site-header .account-button {
     display: inline-flex;
-    padding: 0.2rem 0.6rem 0.2rem 0.3rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 9999px;
   }
 
   .site-header .account-button__name {
-    max-width: 5.5rem;
-    font-size: 0.78rem;
-  }
-
-  @media (max-width: 400px) {
-    .site-header .account-button__name {
-      display: none;
-    }
-
-    .site-header .account-button {
-      padding: 0.25rem;
-      min-width: 44px;
-      justify-content: center;
-    }
+    display: none;
   }
 
   .landing-page {
@@ -3089,7 +3118,8 @@ body:has(.landing-page),
     white-space: nowrap;
   }
 
-  .archive-entry-actions .primary-button {
+  .archive-entry-actions .primary-button,
+  .archive-entry-actions .archive-undo-button {
     width: 100%;
     justify-content: center;
   }

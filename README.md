@@ -5,7 +5,7 @@ JetAcademie, öğrencilerin aylık ve haftalık manevi gelişim müfredatını s
 ## Ürün yapısı
 
 - `/`: Yalnızca Müfredat ve Hedefler bölümlerine açılan ana sayfa.
-- `/mufredat`: Sol tarafta sabit (mobilde üstte yapışkan) 9 kategorili kapsül navigasyon ile seçilen kategoriye ait fiziksel arşiv klasörü destesi (archive folder deck). Kategoriler doğal sayfa akışında alt alta listelenir; kategoriler arasına yerleştirilen iki uca doğru zarifçe solan minimalist ayraç çizgileri ve ferah dikey nefes payı ile bölümler birbirine karışmadan net bir hiyerarşiyle ayrılmıştır. Dosyalar fiziksel klasör metaforuyla arkasına doğru basamaklı derinlikte ("üst üste ve arkasına doğru") Manila kulakçıklarıyla yerleştirilmiştir. Sıradaki dosya tamamlanmadan arkadaki kilitli dosyaya geçilemez; başlık çubuğundaki sayaçlı 'Geçmiş' tuşuyla tamamlanan arşiv kayıtları son arşivlenenden ilke doğru ters kronolojik olarak incelenebilir.
+- `/mufredat`: Sol tarafta sabit (mobilde üstte yapışkan) 9 kategorili kapsül navigasyon ile seçilen kategoriye ait fiziksel arşiv klasörü destesi (archive folder deck). Kategoriler doğal sayfa akışında alt alta listelenir; kategoriler arasına yerleştirilen iki uca doğru zarifçe solan minimalist ayraç çizgileri ve ferah dikey nefes payı ile bölümler birbirine karışmadan net bir hiyerarşiyle ayrılmıştır. Dosyalar fiziksel klasör metaforuyla arkasına doğru basamaklı derinlikte ("üst üste ve arkasına doğru") Manila kulakçıklarıyla yerleştirilmiştir. Sıradaki dosya tamamlanmadan arkadaki kilitli dosyaya geçilemez; başlık çubuğundaki sayaçlı 'Geçmiş' tuşuyla tamamlanan arşiv kayıtları son arşivlenenden ilke doğru ters kronolojik olarak incelenebilir; yanlışlıkla okundu işaretlenen en güncel dosya Geçmiş listesindeki kart üzerinden tek tıkla geri alınabilir (okunmadı yapılabilir).
 - `/hedefler`: Bir sonraki ürün çalışması için hazırlanmış Hedefler sayfası.
 - Hesap: GDPR uyumlu anonim kimlik doğrulama. Kişisel veri (ad, soyad, e-posta) toplanmaz; kullanıcı sadece şifre belirler ve sistem otomatik olarak ardışık kullanıcı adı atar (`user1`, `user2`...). Silinen hesapların numaraları sonraki kayıtlara devredilir (gap filling). Kullanıcı adı ve şifre ile giriş yapılır; doğrudan şifre değiştirme ve tek onaylı hesap silme desteklenir.
 - Tema: Açık, koyu ve sistem tercihlerini destekleyen kalıcı semantik tema altyapısı.
@@ -14,7 +14,7 @@ Gerçek haftalık müfredat sağlanana kadar uygulama sahte ders içeriği göst
 
 ## İlerleme modeli
 
-Her içerik bir kategori, yıl, ay ve hafta bilgisi taşır. Kullanıcı bir dosyayı okundu olarak işaretlediğinde kayıt `curriculum_progress` tablosunda kullanıcı kimliğiyle saklanır. Aynı kategoride önceki dosyalar tamamlanmadan sonraki dosya tamamlanamaz. Risale ve İlmihal kayıtlarında ileride PDF sayfa/yüzde takibi için `resourceUrl` ve `pageCount` alanları hazırdır.
+Her içerik bir kategori, yıl, ay ve hafta bilgisi taşır. Kullanıcı bir dosyayı okundu olarak işaretlediğinde kayıt `curriculum_progress` tablosunda kullanıcı kimliğiyle saklanır. Aynı kategoride önceki dosyalar tamamlanmadan sonraki dosya tamamlanamaz. Kullanıcı yanlışlıkla okundu yaptığı takdirde, sıralı kilit bütünlüğünü korumak adına yalnızca en son tamamlanan dosya Geçmiş üzerinden okunmadı durumuna geri döndürülebilir. Risale ve İlmihal kayıtlarında ileride PDF sayfa/yüzde takibi için `resourceUrl` ve `pageCount` alanları hazırdır.
 
 ## Teknoloji
 

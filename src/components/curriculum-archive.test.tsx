@@ -1,11 +1,7 @@
-import { describe, expect, it, mock } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import React from "react";
-
-mock.module("@/app/mufredat/actions", () => ({
-  markEntryAsRead: mock(async () => ({ entryId: "test" })),
-}));
-
 import { renderToString } from "react-dom/server";
+
 import { CurriculumArchive } from "./curriculum-archive";
 
 describe("CurriculumArchive Component", () => {
@@ -410,5 +406,46 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('data-depth="1"');
     // Both tabs retain completed styling
     expect(html).toContain("archive-folder-tab--completed");
+  });
+
+  it("should render 'Okunmadı Olarak İşaretle' button on the latest completed entry in history view", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+        initialHistoryViewCategoryIds={{ ayet: true }}
+      />
+    );
+
+    expect(html).toContain("archive-undo-button");
+    expect(html).toContain("Okunmadı Olarak İşaretle");
+    expect(html).toContain(
+      'aria-label="Bakara Suresi 2:152 — Beni Anın dosyasını okunmadı olarak işaretle"'
+    );
+  });
+
+  it("should render 'Okunmadı Olarak İşaretle' button only on the first (latest) completed entry when multiple exist", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+        initialHistoryViewCategoryIds={{ ayet: true }}
+      />
+    );
+
+    // Ayet 2 is latest (rendered first in reverse order)
+    expect(html).toContain(
+      'aria-label="Âl-i İmran 3:159 — Şûrâ ve Tevekkül dosyasını okunmadı olarak işaretle"'
+    );
+    // Ayet 1 is not latest -> should not have an undo button
+    expect(html).not.toContain(
+      'aria-label="Bakara Suresi 2:152 — Beni Anın dosyasını okunmadı olarak işaretle"'
+    );
+
+    // Only one undo button should exist in this category's history view
+    const undoBtnCount = (html.match(/class="secondary-button archive-undo-button"/g) || []).length;
+    expect(undoBtnCount).toBe(1);
   });
 });

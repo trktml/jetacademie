@@ -11,6 +11,7 @@ import {
   History,
   Layers,
   LockKeyhole,
+  RotateCcw,
   Sparkles,
 } from "lucide-react";
 import {
@@ -21,7 +22,8 @@ import {
   type CurriculumCategoryId,
   type CurriculumEntry,
 } from "@/lib/curriculum";
-import { markEntryAsRead } from "@/app/mufredat/actions";
+import { markEntryAsRead, unmarkEntryAsRead } from "@/app/mufredat/actions";
+
 import { useUiStore } from "@/store/use-ui-store";
 
 const monthNames = [
@@ -162,6 +164,34 @@ export function CurriculumArchive({
       } catch (error) {
         setToast({
           message: error instanceof Error ? error.message : "İlerleme kaydedilemedi.",
+          type: "error",
+        });
+        setTimeout(() => setToast(null), 4000);
+      } finally {
+        setPendingEntryId(null);
+      }
+    });
+  }
+
+  function unmarkEntry(entryId: string, timingLabel: string) {
+    if (!isSignedIn) {
+      openAccount();
+      return;
+    }
+
+    setPendingEntryId(entryId);
+    startTransition(async () => {
+      try {
+        await unmarkEntryAsRead(entryId);
+        setCompletedEntryIds((ids) => ids.filter((id) => id !== entryId));
+        setToast({
+          message: `${timingLabel} içeriği okunmadı olarak güncellendi.`,
+          type: "success",
+        });
+        setTimeout(() => setToast(null), 3500);
+      } catch (error) {
+        setToast({
+          message: error instanceof Error ? error.message : "İşlem geri alınamadı.",
           type: "error",
         });
         setTimeout(() => setToast(null), 4000);
@@ -350,8 +380,11 @@ export function CurriculumArchive({
 
                       {completedEntries.length > 0 ? (
                         <div className="archive-history-list">
-                          {completedEntries.map((entry) => {
+                          {completedEntries.map((entry, index) => {
                             const timing = `${monthNames[entry.month - 1]}-${entry.week}`;
+                            const isLatest = index === 0;
+                            const isEntryPending = isPending && pendingEntryId === entry.id;
+
                             return (
                               <article
                                 key={entry.id}
@@ -374,6 +407,23 @@ export function CurriculumArchive({
 
                                 <h3 className="archive-entry-title">{entry.title}</h3>
                                 {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
+
+                                {isLatest && (
+                                  <div className="archive-entry-actions">
+                                    <button
+                                      type="button"
+                                      className="secondary-button archive-undo-button"
+                                      onClick={() => unmarkEntry(entry.id, timing)}
+                                      disabled={isEntryPending}
+                                      aria-label={`${entry.title} dosyasını okunmadı olarak işaretle`}
+                                    >
+                                      <RotateCcw aria-hidden="true" className="h-4 w-4" />
+                                      {isEntryPending
+                                        ? "Güncelleniyor…"
+                                        : "Okunmadı Olarak İşaretle"}
+                                    </button>
+                                  </div>
+                                )}
                               </article>
                             );
                           })}

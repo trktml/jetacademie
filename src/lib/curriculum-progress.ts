@@ -21,3 +21,10 @@ export function saveCompletedEntry(userId: string, entryId: string) {
      ON CONFLICT ("userId", "entryId") DO NOTHING`
   ).run(userId, entryId, new Date().toISOString());
 }
+
+export function removeCompletedEntry(userId: string, entryId: string) {
+  db.query(`DELETE FROM "curriculum_progress" WHERE "userId" = ? AND "entryId" = ?`).run(
+    userId,
+    entryId
+  );
+}

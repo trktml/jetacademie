@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import {
   canCompleteEntry,
+  canUnmarkEntry,
   curriculumCategories,
   curriculumEntries,
   getCategoryEntries,
@@ -99,5 +100,35 @@ describe("curriculum", () => {
     expect(risaleEntries[1].week).toBe(2);
     expect(risaleEntries[0].title).toContain("Bismillah");
     expect(risaleEntries[1].title).toContain("İman ve Küfür");
+  });
+
+  describe("canUnmarkEntry", () => {
+    it("allows unmarking the only completed entry", () => {
+      const entries = getCategoryEntries("hadis");
+      const completed = new Set(["hadis-eylul-1"]);
+      expect(canUnmarkEntry("hadis-eylul-1", entries, completed)).toBe(true);
+    });
+
+    it("allows unmarking only the latest completed entry when multiple are completed", () => {
+      const entries = getCategoryEntries("hadis");
+      const completed = new Set(["hadis-eylul-1", "hadis-eylul-2"]);
+
+      // hadis-eylul-2 is the latest -> allowed
+      expect(canUnmarkEntry("hadis-eylul-2", entries, completed)).toBe(true);
+      // hadis-eylul-1 has hadis-eylul-2 after it -> NOT allowed
+      expect(canUnmarkEntry("hadis-eylul-1", entries, completed)).toBe(false);
+    });
+
+    it("returns false if the entry is not currently completed", () => {
+      const entries = getCategoryEntries("hadis");
+      const completed = new Set<string>();
+      expect(canUnmarkEntry("hadis-eylul-1", entries, completed)).toBe(false);
+    });
+
+    it("returns false for non-existent entry", () => {
+      const entries = getCategoryEntries("hadis");
+      const completed = new Set(["hadis-eylul-1"]);
+      expect(canUnmarkEntry("unknown-entry", entries, completed)).toBe(false);
+    });
   });
 });
