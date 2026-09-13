@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { QueryProvider } from "@/providers/query-provider";
 import { AppHeader } from "@/components/app-header";
-import { BottomNav } from "@/components/bottom-nav";
 import { ThemeManager } from "@/components/theme-manager";
 import { ThemeScript } from "@/components/theme-script";
 import "./globals.css";
@@ -72,7 +71,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="app-frame">
             <AppHeader />
             {children}
-            <BottomNav />
           </div>
         </QueryProvider>
       </body>

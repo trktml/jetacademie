@@ -140,7 +140,6 @@ jetacademie/
 │   │   └── page.tsx              # Starter showcase page (responsive mobile & desktop)
 │   ├── components/               # UI components
 │   │   ├── app-header.tsx        # Responsive desktop & mobile header
-│   │   ├── bottom-nav.tsx        # Mobile bottom navigation bar (pb-safe)
 │   │   ├── quick-actions-drawer.tsx # Vaul bottom sheet drawer & desktop modal
 │   │   ├── auth-zod-demo.tsx     # Zod + Better-Auth auth demo (min-h-[44px] targets)
 │   │   ├── counter-demo.tsx      # Zustand state management demo (min-h-[44px] buttons)

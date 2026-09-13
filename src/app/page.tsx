@@ -17,7 +17,7 @@ export default function Home() {
       </section>
 
       <footer className="landing-footer">
-        © {new Date().getFullYear()} JetAcademie — Manevi Gelişim Müfredatı
+        © {new Date().getFullYear()} JetAcademie — Belçika ❤️
       </footer>
     </main>
   );
