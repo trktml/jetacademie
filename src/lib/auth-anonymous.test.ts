@@ -212,7 +212,9 @@ describe("Anonymous Auth & Slot Assignment", () => {
         await updateUserPassword(user.id, "newDirectPassword123", db);
         deleteUserAccount(user.id, db);
 
-        const remaining = db.query<{ count: number }, []>(`SELECT COUNT(*) as count FROM "user"`).get();
+        const remaining = db
+          .query<{ count: number }, []>(`SELECT COUNT(*) as count FROM "user"`)
+          .get();
         expect(remaining?.count).toBe(0);
       }
     });

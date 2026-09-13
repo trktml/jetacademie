@@ -52,6 +52,21 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('id="risale"');
   });
 
+  it("should render elegant dividers between categories to separate them clearly", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
+
+    // Separators between 9 categories should be exactly 8
+    const separatorCount = (html.match(/class="archive-category-separator"/g) || []).length;
+    expect(separatorCount).toBe(8);
+
+    expect(html).toContain(
+      'class="archive-category-separator" role="separator" aria-hidden="true"'
+    );
+    expect(html).toContain('class="archive-category-divider-line"');
+  });
+
   it("should render resource badges for PDF and Audio categories when active", () => {
     const risaleHtml = renderToString(
       <CurriculumArchive
