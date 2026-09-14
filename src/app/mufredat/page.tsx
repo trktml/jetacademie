@@ -18,12 +18,6 @@ export default async function CurriculumPage() {
   return (
     <main className="curriculum-page page-shell archive-page-shell">
       <header className="page-heading">
-        <div className="page-heading__title-row">
-          <div className="page-heading__mark">
-            <Archive aria-hidden="true" />
-          </div>
-          <h1>Müfredat</h1>
-        </div>
         <ProgressStatusNote isSignedIn={Boolean(session?.user)} />
       </header>
 
