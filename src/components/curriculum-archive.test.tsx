@@ -25,6 +25,19 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('<span class="archive-capsule-label">Adab</span>');
   });
 
+  it("should render horizontal scroll hint buttons for mobile overflow affordance", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
+
+    expect(html).toContain('class="archive-capsule-scroll-hint archive-capsule-scroll-hint--left"');
+    expect(html).toContain('aria-label="Önceki kategoriler"');
+    expect(html).toContain(
+      'class="archive-capsule-scroll-hint archive-capsule-scroll-hint--right"'
+    );
+    expect(html).toContain('aria-label="Daha fazla kategori"');
+  });
+
   it("should highlight the default active category in capsule navigation", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />

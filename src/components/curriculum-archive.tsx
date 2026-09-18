@@ -1,10 +1,12 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState, useTransition } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   AlertCircle,
   ArrowLeft,
   Check,
+  ChevronLeft,
+  ChevronRight,
   FileClock,
   FolderArchive,
   FolderOpen,
@@ -93,6 +95,108 @@ export function CurriculumArchive({
     [isGuest, guestCompletedIds, completedEntryIds]
   );
 
+  // Horizontal mobile capsule navigation state & refs
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const capsuleNavRef = useRef<HTMLElement | null>(null);
+  const categoryButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const isProgrammaticScrollRef = useRef(false);
+  const programmaticScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const updateScrollIndicators = useCallback(() => {
+    const container = capsuleNavRef.current;
+    if (!container) return;
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setCanScrollLeft(scrollLeft > 4);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const container = capsuleNavRef.current;
+    if (!container) return;
+
+    updateScrollIndicators();
+    container.addEventListener("scroll", updateScrollIndicators, { passive: true });
+    window.addEventListener("resize", updateScrollIndicators);
+
+    const timer = setTimeout(updateScrollIndicators, 150);
+
+    return () => {
+      container.removeEventListener("scroll", updateScrollIndicators);
+      window.removeEventListener("resize", updateScrollIndicators);
+      clearTimeout(timer);
+    };
+  }, [updateScrollIndicators]);
+
+  // Center active category inside horizontal capsule dock
+  useEffect(() => {
+    const listElement = capsuleNavRef.current;
+    const activeButton = categoryButtonRefs.current[activeCategoryId];
+
+    if (listElement && activeButton) {
+      if (listElement.scrollWidth > listElement.clientWidth) {
+        const targetLeft =
+          activeButton.offsetLeft - listElement.clientWidth / 2 + activeButton.clientWidth / 2;
+
+        listElement.scrollTo({
+          left: Math.max(0, targetLeft),
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [activeCategoryId]);
+
+  function scrollNav(direction: "left" | "right") {
+    const container = capsuleNavRef.current;
+    if (!container) return;
+    const scrollAmount = Math.max(140, Math.round(container.clientWidth * 0.65));
+    container.scrollBy({
+      left: direction === "right" ? scrollAmount : -scrollAmount,
+      behavior: "smooth",
+    });
+  }
+
+  function scrollToCategory(categoryId: CurriculumCategoryId) {
+    if (typeof window === "undefined") return;
+    const targetElement = document.getElementById(categoryId);
+    if (!targetElement) return;
+
+    const isMobile = window.innerWidth <= 767;
+    if (isMobile) {
+      const header = document.querySelector(".site-header");
+      const capsule = document.querySelector(".archive-fixed-capsule");
+      const headerHeight = header ? header.getBoundingClientRect().height : 0;
+      const capsuleHeight = capsule ? capsule.getBoundingClientRect().height : 0;
+      const totalOffset = (headerHeight || 56) + (capsuleHeight || 70) + 16;
+      const elementTop = targetElement.getBoundingClientRect().top + window.scrollY;
+
+      window.scrollTo({
+        top: Math.max(0, elementTop - totalOffset),
+        behavior: "smooth",
+      });
+    } else {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function selectCategory(categoryId: CurriculumCategoryId) {
+    setActiveCategoryId(categoryId);
+    isProgrammaticScrollRef.current = true;
+    if (programmaticScrollTimeoutRef.current) {
+      clearTimeout(programmaticScrollTimeoutRef.current);
+    }
+    programmaticScrollTimeoutRef.current = setTimeout(() => {
+      isProgrammaticScrollRef.current = false;
+    }, 850);
+
+    if (typeof window !== "undefined") {
+      if (window.history?.replaceState) {
+        window.history.replaceState(null, "", `#${categoryId}`);
+      }
+      scrollToCategory(categoryId);
+    }
+  }
+
   // Synchronize category with hash changes if triggered externally
   useEffect(() => {
     function handleHashChange() {
@@ -100,6 +204,7 @@ export function CurriculumArchive({
         const hash = window.location.hash.replace("#", "") as CurriculumCategoryId;
         if (curriculumCategories.some((c) => c.id === hash)) {
           setActiveCategoryId(hash);
+          scrollToCategory(hash);
         }
       }
     }
@@ -107,13 +212,27 @@ export function CurriculumArchive({
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
-  function selectCategory(categoryId: CurriculumCategoryId) {
-    setActiveCategoryId(categoryId);
-    if (typeof window !== "undefined" && window.history?.replaceState) {
-      window.history.replaceState(null, "", `#${categoryId}`);
-      document.getElementById(categoryId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // On initial mount, if URL has hash, smoothly scroll to category with correct offset
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash) {
+      const hash = window.location.hash.replace("#", "") as CurriculumCategoryId;
+      if (curriculumCategories.some((c) => c.id === hash)) {
+        const timer = setTimeout(() => {
+          scrollToCategory(hash);
+        }, 120);
+        return () => clearTimeout(timer);
+      }
     }
-  }
+  }, []);
+
+  // Cleanup programmatic scroll timeout
+  useEffect(() => {
+    return () => {
+      if (programmaticScrollTimeoutRef.current) {
+        clearTimeout(programmaticScrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const sections = curriculumCategories
@@ -125,7 +244,7 @@ export function CurriculumArchive({
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-        if (visibleSection) {
+        if (visibleSection && !isProgrammaticScrollRef.current) {
           setActiveCategoryId(visibleSection.target.id as CurriculumCategoryId);
         }
       },
@@ -235,7 +354,21 @@ export function CurriculumArchive({
     <div className="archive-layout" aria-label="Müfredat akışı">
       {/* Sol Sabit Kapsül Navigasyon (Desktop: Fixed Capsule Rail / Mobile: Sticky Capsule Dock) */}
       <aside className="archive-fixed-capsule" aria-label="Müfredat Hızlı Menü">
-        <nav className="archive-capsule-list" aria-label="Kategori Listesi">
+        {/* Mobilde sağa/sola kaydırılabilir olduğunu belirten zarif gradyan ve ok butonları */}
+        <button
+          type="button"
+          className="archive-capsule-scroll-hint archive-capsule-scroll-hint--left"
+          data-visible={canScrollLeft}
+          aria-label="Önceki kategoriler"
+          tabIndex={canScrollLeft ? 0 : -1}
+          onClick={() => scrollNav("left")}
+        >
+          <span className="archive-capsule-scroll-hint__icon-box" aria-hidden="true">
+            <ChevronLeft className="h-4 w-4" />
+          </span>
+        </button>
+
+        <nav ref={capsuleNavRef} className="archive-capsule-list" aria-label="Kategori Listesi">
           {curriculumCategories.map((item) => {
             const Icon = item.icon;
             const isActive = item.id === activeCategoryId;
@@ -244,6 +377,9 @@ export function CurriculumArchive({
             return (
               <button
                 key={item.id}
+                ref={(el) => {
+                  categoryButtonRefs.current[item.id] = el;
+                }}
                 type="button"
                 className="archive-capsule-item"
                 data-active={isActive}
@@ -260,6 +396,19 @@ export function CurriculumArchive({
             );
           })}
         </nav>
+
+        <button
+          type="button"
+          className="archive-capsule-scroll-hint archive-capsule-scroll-hint--right"
+          data-visible={canScrollRight}
+          aria-label="Daha fazla kategori"
+          tabIndex={canScrollRight ? 0 : -1}
+          onClick={() => scrollNav("right")}
+        >
+          <span className="archive-capsule-scroll-hint__icon-box" aria-hidden="true">
+            <ChevronRight className="h-4 w-4" />
+          </span>
+        </button>
       </aside>
 
       {/* Tüm kategoriler doğal sayfa akışında alt alta yer alır. */}
