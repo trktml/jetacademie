@@ -119,6 +119,7 @@ jetacademie/
 ├── CLAUDE.md                     # Anthropic/Claude agent link pointing to AGENTS.md
 ├── Dockerfile                    # Multi-stage Bun production build
 ├── docker-compose.yml            # Dokploy / local Docker composition with healthcheck
+├── docker-entrypoint.sh          # Auto-chown volume mount permissions & drop privileges to nextjs
 ├── package.json                  # Scripts & dependencies
 ├── README.md                     # Project documentation
 ├── tsconfig.json                 # Strict TypeScript configuration

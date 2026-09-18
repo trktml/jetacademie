@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { auth, db, dbPath, resolveDatabasePath } from "./auth";
+import { activeDbPath, auth, db, dbPath, initializeDatabase, resolveDatabasePath } from "./auth";
 import { GET, POST } from "@/app/api/auth/[...all]/route";
 import { GET as healthGET } from "@/app/api/health/route";
 
@@ -139,6 +139,22 @@ describe("Better Auth Server Setup", () => {
 
     it("should initialize test db with :memory:", () => {
       expect(dbPath).toBe(":memory:");
+      expect(activeDbPath).toBe(":memory:");
+    });
+
+    it("should initialize Database and apply pragmas", () => {
+      const result = initializeDatabase(":memory:");
+      expect(result.db).toBeDefined();
+      expect(result.activePath).toBe(":memory:");
+      result.db.close();
+    });
+
+    it("should fallback to /tmp/auth.sqlite when primary path is invalid/unwritable", () => {
+      // /proc/cannot-write-here/db.sqlite or /dev/null/invalid-dir/db.sqlite will fail
+      const result = initializeDatabase("/proc/cannot-write-here/invalid.sqlite");
+      expect(result.db).toBeDefined();
+      expect(result.activePath).toBe("/tmp/auth.sqlite");
+      result.db.close();
     });
   });
 });

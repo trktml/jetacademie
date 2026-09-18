@@ -22,20 +22,66 @@ export function resolveDatabasePath(
 
 export const dbPath = resolveDatabasePath();
 
-// Ensure the parent directory exists if a nested path is specified
-if (dbPath !== ":memory:") {
-  const dir = dirname(dbPath);
-  if (dir && dir !== "." && !existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
+/**
+ * Creates and initializes the Bun SQLite database connection with WAL mode and busy timeout.
+ * If the configured path fails due to container volume permission restrictions (SQLITE_CANTOPEN),
+ * outputs actionable diagnostic information and attempts an emergency fallback to /tmp/auth.sqlite
+ * so the application remains responsive rather than crashing unhandled at module import time.
+ */
+export function initializeDatabase(targetPath: string): { db: Database; activePath: string } {
+  const tryOpen = (path: string) => {
+    if (path !== ":memory:") {
+      const dir = dirname(path);
+      if (dir && dir !== "." && !existsSync(dir)) {
+        try {
+          mkdirSync(dir, { recursive: true });
+        } catch (dirErr) {
+          console.warn(`[auth] Warning: could not create directory "${dir}":`, dirErr);
+        }
+      }
+    }
+    const instance = new Database(path);
+    instance.exec("PRAGMA busy_timeout = 5000;");
+    instance.exec("PRAGMA journal_mode = WAL;");
+    instance.exec("PRAGMA foreign_keys = ON;");
+    return instance;
+  };
+
+  try {
+    const instance = tryOpen(targetPath);
+    return { db: instance, activePath: targetPath };
+  } catch (primaryErr) {
+    const errorMsg = primaryErr instanceof Error ? primaryErr.message : String(primaryErr);
+    console.error(
+      `[auth] ERROR: Failed to open SQLite database at "${targetPath}": ${errorMsg}. ` +
+        `(uid: ${typeof process.getuid === "function" ? process.getuid() : "n/a"}, ` +
+        `gid: ${typeof process.getgid === "function" ? process.getgid() : "n/a"})`
+    );
+
+    if (targetPath !== ":memory:" && targetPath !== "/tmp/auth.sqlite") {
+      const fallbackPath = "/tmp/auth.sqlite";
+      console.warn(
+        `[auth] EMERGENCY FALLBACK: Attempting to open fallback database at "${fallbackPath}" to prevent crash.`
+      );
+      try {
+        const fallbackDb = tryOpen(fallbackPath);
+        console.warn(
+          `[auth] Operating on temporary fallback database "${fallbackPath}". ` +
+            `NOTICE: Persistent data will NOT survive container restarts until directory permissions for "${targetPath}" are resolved.`
+        );
+        return { db: fallbackDb, activePath: fallbackPath };
+      } catch (fallbackErr) {
+        console.error(`[auth] Fallback database also failed:`, fallbackErr);
+      }
+    }
+
+    throw primaryErr;
   }
 }
 
-export const db = new Database(dbPath);
-
-// Enable busy timeout and WAL mode for concurrent SQLite operations
-db.exec("PRAGMA busy_timeout = 5000;");
-db.exec("PRAGMA journal_mode = WAL;");
-db.exec("PRAGMA foreign_keys = ON;");
+const initialized = initializeDatabase(dbPath);
+export const db = initialized.db;
+export const activeDbPath = initialized.activePath;
 
 // Initialize Better-Auth tables if they do not exist yet
 db.exec(`
