@@ -1,5 +1,7 @@
 # JetAcademie
 
+![JetAcademie Preview](./jet-example.png)
+
 JetAcademie is a mobile-first Progressive Web Application (PWA) designed for students to sequentially follow and track their monthly and weekly development curriculum.
 
 ## Product Structure
