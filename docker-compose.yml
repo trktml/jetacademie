@@ -3,26 +3,35 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: jetacademie-web
-    restart: always
-    ports:
-      - "${PORT:-3000}:3000"
+    restart: unless-stopped
+    # Dokploy uses Traefik as reverse proxy and Dokploy's web UI binds to host port 3000.
+    # Using 'expose' prevents host port collisions while allowing Traefik to route to port 3000.
+    # In Dokploy UI > Domains: set Service to 'web' and Port to '3000'.
+    expose:
+      - "3000"
+    # To expose directly on host (e.g., local Docker testing without Traefik):
+    # ports:
+    #   - "${HOST_PORT:-3001}:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
-      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-replace-with-a-secure-secret-min-32-chars}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3000}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       - DATABASE_URL=${DATABASE_URL:-/app/data/auth.sqlite}
     volumes:
       - app-data:/app/data
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1",
+        ]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
 volumes:
   app-data:

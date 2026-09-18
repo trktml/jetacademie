@@ -1,42 +1,42 @@
 # JetAcademie
 
-JetAcademie, öğrencilerin aylık ve haftalık manevi gelişim müfredatını sırayla takip ettiği mobil öncelikli bir PWA uygulamasıdır.
+JetAcademie is a mobile-first Progressive Web Application (PWA) designed for students to sequentially follow and track their monthly and weekly development curriculum.
 
-## Ürün yapısı
+## Product Structure
 
-- `/`: Yalnızca Müfredat ve Hedefler bölümlerine açılan ana sayfa.
-- `/mufredat`: Sol tarafta sabit (mobilde üstte yapışkan) 9 kategorili kapsül navigasyon ile seçilen kategoriye ait fiziksel arşiv klasörü destesi (archive folder deck). Kategoriler doğal sayfa akışında alt alta listelenir; kategoriler arasına yerleştirilen iki uca doğru zarifçe solan minimalist ayraç çizgileri ve ferah dikey nefes payı ile bölümler birbirine karışmadan net bir hiyerarşiyle ayrılmıştır. Dosyalar fiziksel klasör metaforuyla arkasına doğru basamaklı derinlikte ("üst üste ve arkasına doğru") Manila kulakçıklarıyla yerleştirilmiştir. Sıradaki dosya tamamlanmadan arkadaki kilitli dosyaya geçilemez; başlık çubuğundaki sayaçlı 'Geçmiş' tuşuyla tamamlanan arşiv kayıtları son arşivlenenden ilke doğru ters kronolojik olarak incelenebilir; yanlışlıkla okundu işaretlenen en güncel dosya Geçmiş listesindeki kart üzerinden tek tıkla geri alınabilir (okunmadı yapılabilir).
-- `/hedefler`: Bir sonraki ürün çalışması için hazırlanmış Hedefler sayfası.
-- Hesap: GDPR uyumlu anonim kimlik doğrulama. Kişisel veri (ad, soyad, e-posta) toplanmaz; kullanıcı sadece şifre belirler ve sistem otomatik olarak ardışık kullanıcı adı atar (`user1`, `user2`...). Silinen hesapların numaraları sonraki kayıtlara devredilir (gap filling). Kullanıcı adı ve şifre ile giriş yapılır; doğrudan şifre değiştirme ve tek onaylı hesap silme desteklenir.
-- Tema: Açık, koyu ve sistem tercihlerini destekleyen kalıcı semantik tema altyapısı.
+- `/`: Landing page leading directly to Curriculum and Targets sections.
+- `/mufredat`: Curriculum section featuring a 9-category capsule navigation (sticky on mobile, fixed on the left on desktop) and an archive folder deck for the selected category. Categories are listed sequentially with minimalist gradient dividers and comfortable vertical breathing room. Files employ a physical folder metaphor with staggered Manila tabs. Locked files cannot be accessed until preceding entries in that category are completed. The header bar includes a counter-enabled 'History' button to inspect completed archives in reverse chronological order, allowing users to revert accidentally completed entries.
+- `/hedefler`: Targets section prepared for upcoming goal tracking features.
+- Account: Privacy-first anonymous authentication. No personal data (name, email) is collected; users only choose a password, and sequential usernames (`user1`, `user2`, etc.) are assigned automatically with gap-filling on account deletion. Direct password updates and account deletion are supported.
+- Theme: Persistent semantic theme architecture supporting light, dark, and system preferences.
 
-Gerçek haftalık müfredat sağlanana kadar uygulama sahte ders içeriği göstermez. Haftalık kayıtlar `src/lib/curriculum.ts` içindeki `curriculumEntries` koleksiyonuna veya ileride kurulacak içerik yönetim kaynağına bağlanabilir.
+Real curriculum entries are stored in `src/lib/curriculum.ts` and can be attached to any future headless CMS or database source.
 
-## İlerleme modeli
+## Progress Model
 
-Her içerik bir kategori, yıl, ay ve hafta bilgisi taşır. Kullanıcı bir dosyayı okundu olarak işaretlediğinde kayıt `curriculum_progress` tablosunda kullanıcı kimliğiyle saklanır. Aynı kategoride önceki dosyalar tamamlanmadan sonraki dosya tamamlanamaz. Kullanıcı yanlışlıkla okundu yaptığı takdirde, sıralı kilit bütünlüğünü korumak adına yalnızca en son tamamlanan dosya Geçmiş üzerinden okunmadı durumuna geri döndürülebilir. Risale ve İlmihal kayıtlarında ileride PDF sayfa/yüzde takibi için `resourceUrl` ve `pageCount` alanları hazırdır.
+Each entry carries category, year, month, and week metadata. Progress is saved per user in the `curriculum_progress` table. Sequential completion is enforced per category. If an entry is completed by accident, only the latest completed entry in that category can be reverted via History to maintain sequential integrity.
 
-## Teknoloji
+## Tech Stack
 
 - Bun 1.3+
-- Next.js 16 App Router ve React 19
+- Next.js 16 App Router & React 19
 - Tailwind CSS v4
 - Zustand v5
 - TanStack Query v5
-- Better-Auth ve Bun SQLite
+- Better-Auth & Bun SQLite
 - Zod v4
 - Vaul bottom sheet
 
-## Yerel geliştirme
+## Local Development
 
 ```bash
 bun install
 bun dev
 ```
 
-Uygulama varsayılan olarak `http://localhost:3000` adresinde açılır. Ortam değişkenleri için `.env.example` dosyasını temel alın.
+The application runs by default at `http://localhost:3000`. Refer to `.env.example` for environment variables.
 
-## Doğrulama
+## Verification
 
 ```bash
 bun test
@@ -45,8 +45,22 @@ bun run format:check
 bun run build
 ```
 
-> **Not:** Birim testler otomatik olarak bellek içi SQLite (`:memory:`) üzerinde koşar; böylece yerel geliştirme veritabanı (`auth.sqlite`) testler sırasında asla sıfırlanmaz.
+> **Note:** Unit tests automatically run against in-memory SQLite (`:memory:`), ensuring the local development database (`auth.sqlite`) is never reset during test runs.
 
-## Dağıtım
+## Deployment (Dokploy / Docker)
 
-Dokploy/Docker dağıtımında kalıcı SQLite dosyası için `DATABASE_URL=/app/data/auth.sqlite` kullanın ve `/app/data` dizinini kalıcı volume olarak bağlayın. `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` ve `NEXT_PUBLIC_APP_URL` değerlerini üretim ortamına göre ayarlayın.
+Key guidelines when deploying as a Compose application on Dokploy:
+
+1. **Port Conflict Prevention:**
+   - Dokploy's dashboard UI binds to host port `3000` by default. To prevent host port collisions (`port is already allocated`), `docker-compose.yml` uses `expose: 3000` rather than binding host ports directly.
+   - In Dokploy UI, go to your application's **Domains** tab, add your domain, and set the target service to **`web`** and port to **`3000`**. Dokploy's built-in Traefik reverse proxy handles automatic SSL (Let's Encrypt) and routes traffic to the container.
+
+2. **Persistent Database (SQLite):**
+   - The `/app/data` container directory is mounted to the named `app-data` Docker volume to persist data across container recreations.
+   - Database location: `DATABASE_URL=/app/data/auth.sqlite`.
+
+3. **Environment Variables (Dokploy UI > Environment):**
+   - `BETTER_AUTH_SECRET`: Secure random string of at least 32 characters (`openssl rand -base64 32`).
+   - `BETTER_AUTH_URL`: Your canonical production URL (e.g., `https://jetacademie.com`).
+   - `NEXT_PUBLIC_APP_URL`: Your canonical production URL (e.g., `https://jetacademie.com`).
+   - `DATABASE_URL`: `/app/data/auth.sqlite`.

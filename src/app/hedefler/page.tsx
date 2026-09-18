@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Compass, Target } from "lucide-react";
+import { Compass } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Hedefler",
@@ -9,8 +9,7 @@ export const metadata: Metadata = {
 export default function TargetsPage() {
   return (
     <main className="targets-page page-shell">
-      <header className="page-heading page-heading--compact">
-      </header>
+      <header className="page-heading page-heading--compact"></header>
 
       <section className="targets-empty" aria-labelledby="targets-empty-title">
         <span className="targets-empty__icon">

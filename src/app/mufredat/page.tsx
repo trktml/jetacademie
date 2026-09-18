@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Archive } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { getCompletedEntryIds } from "@/lib/curriculum-progress";
 import { CurriculumArchive } from "@/components/curriculum-archive";
