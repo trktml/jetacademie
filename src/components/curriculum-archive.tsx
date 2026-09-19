@@ -3,7 +3,6 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   AlertCircle,
-  ArrowLeft,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -538,14 +537,6 @@ export function CurriculumArchive({
                           />
                           <h3 className="archive-history-ledger__title">Tamamlanan Dosyalar</h3>
                         </div>
-                        <button
-                          type="button"
-                          className="secondary-button"
-                          onClick={() => toggleHistoryView(activeCategory.id)}
-                        >
-                          <ArrowLeft aria-hidden="true" />
-                          Geri Dön
-                        </button>
                       </div>
 
                       {completedEntries.length > 0 ? (

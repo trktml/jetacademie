@@ -1135,21 +1135,43 @@ body:has(.landing-page),
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(1.5rem, 3vw, 2.75rem);
+  gap: clamp(2rem, 4vw, 3.25rem);
   max-width: 58rem;
   margin-inline: auto;
   width: 100%;
 }
 
-/* Kategoriler Arası Zarif Ayraç (Minimalist Fading Divider) */
+/* Kategoriler Arası Belirgin ve Zarif Ayraç (Distinct Architectural Category Divider) */
 .archive-category-separator {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding-block: clamp(0.25rem, 0.5vw, 0.5rem);
+  padding-block: clamp(2.5rem, 5vw, 4rem);
   user-select: none;
   pointer-events: none;
+}
+
+.archive-category-separator::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 9px;
+  height: 9px;
+  background: var(--surface);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 1.5px;
+  box-shadow: 0 0 0 8px var(--canvas);
+  z-index: 1;
+}
+
+:root[data-theme="dark"] .archive-category-separator::after {
+  background: #121820;
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 8px #0c1015;
 }
 
 .archive-category-divider-line {
@@ -1158,24 +1180,23 @@ body:has(.landing-page),
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--line) 40%, transparent) 12%,
-    var(--line-strong) 50%,
-    color-mix(in srgb, var(--line) 40%, transparent) 88%,
+    var(--line-strong) 15%,
+    var(--line-strong) 85%,
     transparent 100%
   );
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 :root[data-theme="dark"] .archive-category-divider-line {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--line) 30%, transparent) 12%,
-    var(--line-strong) 50%,
-    color-mix(in srgb, var(--line) 30%, transparent) 88%,
+    rgba(255, 255, 255, 0.12) 12%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.12) 88%,
     transparent 100%
   );
-  opacity: 0.7;
+  opacity: 1;
 }
 
 /* Kategoriler çerçevesiz ve doğal sayfa akışında ilerler. */
@@ -1258,7 +1279,8 @@ body:has(.landing-page),
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0 0.25rem 0.75rem;
+  padding: 0 0.25rem 0.85rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .archive-category-header__info {
@@ -1531,7 +1553,7 @@ body:has(.landing-page),
 .archive-folder-stack {
   position: relative;
   width: 100%;
-  margin-top: 3.5rem;
+  margin-top: 4.85rem;
   isolation: isolate;
 }
 
@@ -1675,7 +1697,7 @@ body:has(.landing-page),
 .archive-folder-card--locked.archive-stack-behind,
 .archive-folder-stack .archive-stack-behind {
   position: absolute;
-  top: -16px;
+  top: -14px;
   left: 0;
   right: 0;
   width: 100%;
@@ -1704,7 +1726,7 @@ body:has(.landing-page),
 /* Derinlik 1: Muted Olive Cardstock (önceki klasörle birebir aynı boyutlar) */
 .archive-folder-card--locked.archive-stack-behind[data-depth="1"],
 .archive-folder-stack .archive-stack-behind[data-depth="1"] {
-  top: -16px;
+  top: -14px;
   z-index: 8;
   background: #edf0eb;
   border-color: #28322b;
@@ -1742,7 +1764,7 @@ body:has(.landing-page),
 
 .archive-folder-card--locked.archive-stack-behind[data-depth="1"]:hover,
 .archive-folder-stack .archive-stack-behind[data-depth="1"]:hover {
-  top: -22px;
+  top: -18px;
   box-shadow: 0 14px 28px -4px rgb(15 23 42 / 12%);
   border-color: #1e293b;
 }
@@ -1755,7 +1777,7 @@ body:has(.landing-page),
 /* Derinlik 2: Dusty Slate Blue Cardstock */
 .archive-folder-card--locked.archive-stack-behind[data-depth="2"],
 .archive-folder-stack .archive-stack-behind[data-depth="2"] {
-  top: -30px;
+  top: -26px;
   z-index: 6;
   background: #eaf0f5;
   border-color: #26323d;
@@ -1793,7 +1815,7 @@ body:has(.landing-page),
 
 .archive-folder-card--locked.archive-stack-behind[data-depth="2"]:hover,
 .archive-folder-stack .archive-stack-behind[data-depth="2"]:hover {
-  top: -36px;
+  top: -31px;
   box-shadow: 0 12px 24px -4px rgb(15 23 42 / 13%);
   border-color: #1e293b;
 }
@@ -1806,7 +1828,7 @@ body:has(.landing-page),
 /* Derinlik 3+: Tobacco / Warm Ochre Cardstock */
 .archive-folder-card--locked.archive-stack-behind[data-depth="3"],
 .archive-folder-stack .archive-stack-behind[data-depth="3"] {
-  top: -44px;
+  top: -38px;
   z-index: 4;
   background: #f6f0e6;
   border-color: #3b2e22;
@@ -1844,7 +1866,7 @@ body:has(.landing-page),
 
 .archive-folder-card--locked.archive-stack-behind[data-depth="3"]:hover,
 .archive-folder-stack .archive-stack-behind[data-depth="3"]:hover {
-  top: -50px;
+  top: -43px;
   border-color: #1e293b;
 }
 
@@ -3203,7 +3225,7 @@ body:has(.landing-page),
   }
 
   .archive-folder-stack {
-    margin-top: 3.25rem;
+    margin-top: 4.5rem;
     min-width: 0;
     max-width: 100%;
     width: 100%;

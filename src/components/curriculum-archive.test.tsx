@@ -286,6 +286,9 @@ describe("CurriculumArchive Component", () => {
 
     expect(html).toContain("Tamamlanan Dosyalar");
     expect(html).toContain("Geri Dön");
+    // Verify there is only one "Geri Dön" button (the top header button), avoiding duplicate buttons
+    const geriDonMatches = (html.match(/Geri Dön/g) || []).length;
+    expect(geriDonMatches).toBe(1);
     expect(html).not.toContain("Geçmiş Arşiv Dosyaları");
     expect(html).not.toContain("arşive kaldırıldı");
     expect(html).not.toContain("archive-history-ledger__desc");
