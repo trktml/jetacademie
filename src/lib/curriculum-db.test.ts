@@ -53,4 +53,58 @@ describe("Curriculum SQLite Database Module", () => {
     const entry = getCurriculumEntryByIdFromDb("non-existent-id-xyz");
     expect(entry).toBeNull();
   });
+
+  it("should have 54 Adab-ı Muaşeret entries for all 6 grades (324 total)", () => {
+    const allEntries = getCurriculumEntriesFromDb();
+    const adabEntries = allEntries.filter((e) => e.categoryId === "adab-i-muaseret");
+    expect(adabEntries.length).toBe(324);
+
+    for (let grade = 1; grade <= 6; grade++) {
+      const gradeAdab = getCurriculumEntriesFromDb(grade).filter(
+        (e) => e.categoryId === "adab-i-muaseret"
+      );
+      expect(gradeAdab.length).toBe(54);
+
+      const standard = gradeAdab.filter((e) => !e.isExtra);
+      const extras = gradeAdab.filter((e) => e.isExtra);
+      expect(standard.length).toBe(48);
+      expect(extras.length).toBe(6);
+
+      // Verify middle school content for grades 1-3
+      if (grade <= 3) {
+        expect(standard[0].title).toBe("Sohbet Âdâbı — Sohbete Yer ve Gönül Hazırlığı");
+      } else {
+        // Verify high school content for grades 4-6
+        expect(standard[0].title).toBe("Edep, Güzel Ahlâk ve Hilim — Edep Nedir?");
+      }
+    }
+  });
+
+  it("should retrieve Adab-ı Muaşeret entries across grades by deterministic ID", () => {
+    // Grade 1 standard & extra
+    const g1Entry = getCurriculumEntryByIdFromDb("adab-i-muaseret-eylul-1");
+    expect(g1Entry).not.toBeNull();
+    expect(g1Entry?.title).toBe("Sohbet Âdâbı — Sohbete Yer ve Gönül Hazırlığı");
+    expect(g1Entry?.grade).toBe(1);
+    expect(g1Entry?.isExtra).toBe(false);
+
+    const g1Extra = getCurriculumEntryByIdFromDb("adab-i-muaseret-extra-1");
+    expect(g1Extra).not.toBeNull();
+    expect(g1Extra?.grade).toBe(1);
+    expect(g1Extra?.isExtra).toBe(true);
+    expect(g1Extra?.extraOrder).toBe(1);
+
+    // Grade 4 (Lise) standard & extra
+    const g4Entry = getCurriculumEntryByIdFromDb("g4-adab-i-muaseret-eylul-1");
+    expect(g4Entry).not.toBeNull();
+    expect(g4Entry?.title).toBe("Edep, Güzel Ahlâk ve Hilim — Edep Nedir?");
+    expect(g4Entry?.grade).toBe(4);
+    expect(g4Entry?.isExtra).toBe(false);
+
+    const g4Extra = getCurriculumEntryByIdFromDb("g4-adab-i-muaseret-extra-6");
+    expect(g4Extra).not.toBeNull();
+    expect(g4Extra?.grade).toBe(4);
+    expect(g4Extra?.isExtra).toBe(true);
+    expect(g4Extra?.extraOrder).toBe(6);
+  });
 });

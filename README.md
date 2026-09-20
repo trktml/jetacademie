@@ -12,7 +12,7 @@ JetAcademie is a mobile-first Progressive Web Application (PWA) designed for stu
 - Account: Privacy-first anonymous authentication. No personal data (name, email) is collected; users only choose a password, and sequential usernames (`user1`, `user2`, etc.) are assigned automatically with gap-filling on account deletion. Direct password updates and account deletion are supported.
 - Theme: Persistent semantic theme architecture supporting light, dark, and system preferences.
 
-Curriculum entries are managed directly via SQLite (`curriculum_entries` table with auto-seeding across all 6 Belgium grades: 1. Sınıf – 6. Sınıf) and can be easily extended or linked to administrative endpoints.
+Curriculum entries are managed directly via SQLite (`curriculum_entries` table with auto-seeding across all 6 Belgium grades: 1. Sınıf – 6. Sınıf) and can be easily extended or linked to administrative endpoints. Adab-ı Muaşeret features a comprehensive 54-week curriculum: Grades 1–3 follow the Middle School (_Ortaokul_) program, while Grades 4–6 follow the High School (_Lise_) program (48 standard weeks + 6 progressive extra tabs).
 
 ## Progress & Curriculum Model
 

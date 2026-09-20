@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { getCompletedEntryIds, saveCompletedEntry } from "@/lib/curriculum-progress";
-import { curriculumEntries } from "@/lib/curriculum";
+import { getCurriculumEntriesFromDb } from "@/lib/curriculum-db";
 
 /**
  * Misafir modunda localStorage'a kaydedilmiş ilerleme verilerini
@@ -15,7 +15,7 @@ export async function migrateGuestProgress(guestEntryIds: string[]) {
   if (!session?.user) throw new Error("Oturum bulunamadı.");
 
   const existingIds = new Set(getCompletedEntryIds(session.user.id));
-  const validIds = new Set(curriculumEntries.map((e) => e.id));
+  const validIds = new Set(getCurriculumEntriesFromDb().map((e) => e.id));
 
   let migratedCount = 0;
   for (const entryId of guestEntryIds) {

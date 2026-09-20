@@ -37,7 +37,7 @@ yarn-error.log*
 # sqlite database
 *.sqlite*
 auth.sqlite*
-data/
+/data/
 
 # vercel
 .vercel

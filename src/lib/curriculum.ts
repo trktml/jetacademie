@@ -10,6 +10,7 @@ import {
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
+import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
 
 export const curriculumCategoryIds = [
   "ayet",
@@ -455,25 +456,8 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
     pageCount: 12,
   },
 
-  // ── Adab-ı Muaşeret ────────────────────────────
-  {
-    id: "adab-i-muaseret-eylul-1",
-    categoryId: "adab-i-muaseret",
-    month: 9,
-    week: 1,
-    year: 2026,
-    title: "Selam ve Selamlaşma Adabı",
-    body: "Selamın fazileti, kimlere ve nasıl selam verilir, selamlaşmada öncelik sırası ve günlük hayatta uygulama.",
-  },
-  {
-    id: "adab-i-muaseret-eylul-2",
-    categoryId: "adab-i-muaseret",
-    month: 9,
-    week: 2,
-    year: 2026,
-    title: "Sofra Adabı ve Yeme-İçme",
-    body: "Sünnet-i seniyye çerçevesinde sofra düzeni, yemek duaları, sağ elle yeme ve israftan kaçınma.",
-  },
+  // ── Adab-ı Muaşeret (Ortaokul 1. Sınıf – 54 Hafta) ─────────────
+  ...getAdabEntriesForGrade(1),
 ];
 
 export function sortCurriculumEntries(entries: readonly CurriculumEntry[]): CurriculumEntry[] {

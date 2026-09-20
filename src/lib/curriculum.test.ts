@@ -38,13 +38,14 @@ describe("curriculum", () => {
     ]);
   });
 
-  it("has 16 sample entries for ayet and 2 for other categories (32 total)", () => {
-    expect(curriculumEntries.length).toBe(32);
+  it("has 16 sample entries for ayet, 54 for adab-i-muaseret, and 2 for other categories (84 total)", () => {
+    expect(curriculumEntries.length).toBe(84);
 
     expect(getCategoryEntries("ayet").length).toBe(16);
+    expect(getCategoryEntries("adab-i-muaseret").length).toBe(54);
 
     for (const category of curriculumCategories) {
-      if (category.id === "ayet") continue;
+      if (category.id === "ayet" || category.id === "adab-i-muaseret") continue;
       const entries = getCategoryEntries(category.id);
       expect(entries.length).toBe(2);
     }
