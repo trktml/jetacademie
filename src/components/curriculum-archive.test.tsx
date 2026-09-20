@@ -577,17 +577,18 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should render extra entries as continuation tabs in the folder stack, not in a separate section", () => {
-    const mockEntries = [
-      {
-        id: "test-ayet-1",
-        grade: 1,
-        categoryId: "ayet" as const,
-        month: 9,
-        week: 1,
-        year: 2026,
-        isExtra: false,
-        title: "Standart Hafta 1",
-      },
+    const mock48Entries = Array.from({ length: 48 }, (_, i) => ({
+      id: `test-ayet-${i + 1}`,
+      grade: 1,
+      categoryId: "ayet" as const,
+      month: Math.min(12, Math.floor(i / 4) + 1),
+      week: (i % 4) + 1,
+      year: 2026,
+      title: `Standart Hafta ${i + 1}`,
+    }));
+
+    const mock49Entries = [
+      ...mock48Entries,
       {
         id: "test-ayet-extra-1",
         grade: 1,
@@ -595,18 +596,18 @@ describe("CurriculumArchive Component", () => {
         month: 12,
         week: 4,
         year: 2026,
-        isExtra: true,
-        extraOrder: 1,
         title: "İlave Derinleşme Dosyası 1",
         body: "Ekstra pekiştirme içeriği",
       },
     ];
 
+    // With 47 weeks completed, 48th week is current and 49th (Ekstra 1) is in the locked stack
+    const completed47Ids = mock48Entries.slice(0, 47).map((e) => e.id);
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={[]}
+        initialCompletedEntryIds={completed47Ids}
         isSignedIn={false}
-        customEntries={mockEntries}
+        customEntries={mock49Entries}
       />
     );
 

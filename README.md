@@ -17,7 +17,7 @@ Curriculum entries are managed directly via SQLite (`curriculum_entries` table w
 ## Progress & Curriculum Model
 
 - **Belgium 6 Grades**: Tailored for the Belgian educational levels (1. Sınıf – 6. Sınıf). Users can switch grade quickly using the pill dropdown attached above the capsule rail (or pinned on the left on mobile). The selected grade syncs seamlessly with URL query parameter (`?sinif=1..6`) and client storage.
-- **Curriculum & Extra Content**: Standard content covers 48 weeks (12 months × 4 weeks with `isExtra = 0`). Additional contents extending beyond the 48 weeks are flagged with `isExtra = 1` and sequential `extraOrder` (1, 2, 3...), appearing sequentially as the next folder tabs in the deck and unlocking progressively as standard weeks are finished.
+- **Curriculum & Extra Content**: Standard content covers up to 48 weeks (12 months × 4 weeks). Under the automatic 48-week curriculum rule, all entries up to week 48 are standard weeks; no premature extra tabs can appear before the 48 weeks are filled. Once standard weeks exceed 48 (from week 49 onwards), subsequent contents automatically convert to `isExtra: true` with sequential `extraOrder` (1, 2, 3...), appearing as continuation tabs (`Ekstra 1 · İlave`, `Ekstra 2`, etc.) and unlocking progressively only after the 48th week is finished.
 - **Progress Tracking**: Progress is saved per user in the `curriculum_progress` table (`userId`, `entryId`, `completedAt`) and in guest storage (`jetacademie-guest`). Sequential completion is enforced per category and grade. If an entry is completed by accident, only the latest completed entry in that category can be reverted via History to maintain sequential integrity.
 
 ## Tech Stack

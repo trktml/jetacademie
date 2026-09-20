@@ -131,4 +131,96 @@ describe("curriculum", () => {
       expect(canUnmarkEntry("unknown-entry", entries, completed)).toBe(false);
     });
   });
+
+  describe("48-week curriculum & automatic extra conversion", () => {
+    it("defines total curriculum weeks as 48 (12 months x 4 weeks)", async () => {
+      const { TOTAL_CURRICULUM_WEEKS, TOTAL_CURRICULUM_MONTHS, WEEKS_PER_MONTH } =
+        await import("./curriculum");
+      expect(TOTAL_CURRICULUM_MONTHS).toBe(12);
+      expect(WEEKS_PER_MONTH).toBe(4);
+      expect(TOTAL_CURRICULUM_WEEKS).toBe(48);
+    });
+
+    it("ensures categories with <= 48 entries have ZERO extra entries even if flagged", () => {
+      const ayetEntries = getCategoryEntries("ayet");
+      expect(ayetEntries.length).toBe(16);
+      expect(ayetEntries.every((e) => !e.isExtra)).toBe(true);
+
+      // Even if raw entries had isExtra: true before 48 weeks, they must resolve to false
+      const rawWithPrematureExtra = [
+        ...ayetEntries,
+        {
+          id: "fake-premature-extra",
+          categoryId: "ayet" as const,
+          month: 12,
+          week: 4,
+          year: 2026,
+          isExtra: true,
+          extraOrder: 1,
+          title: "Premature Extra",
+        },
+      ];
+      const resolved = getCategoryEntries("ayet", rawWithPrematureExtra);
+      expect(resolved.length).toBe(17);
+      expect(resolved.every((e) => !e.isExtra)).toBe(true);
+    });
+
+    it("automatically converts entries beyond 48 weeks into extras", () => {
+      // Create 50 entries: 48 standard + 2 beyond 48 weeks
+      const mock50Entries = Array.from({ length: 50 }, (_, i) => {
+        const weekNum = i + 1;
+        const month = Math.min(12, Math.floor(i / 4) + 1);
+        const week = (i % 4) + 1;
+        return {
+          id: `ayet-w${weekNum}`,
+          grade: 1,
+          categoryId: "ayet" as const,
+          month,
+          week,
+          year: 2026,
+          title: `Ayet Hafta ${weekNum}`,
+        };
+      });
+
+      const resolved = getCategoryEntries("ayet", mock50Entries);
+      expect(resolved.length).toBe(50);
+
+      // First 48 entries must be standard (isExtra: false)
+      for (let i = 0; i < 48; i++) {
+        expect(resolved[i].isExtra).toBe(false);
+        expect(resolved[i].extraOrder).toBeUndefined();
+      }
+
+      // 49th entry must be Ekstra 1
+      expect(resolved[48].isExtra).toBe(true);
+      expect(resolved[48].extraOrder).toBe(1);
+
+      // 50th entry must be Ekstra 2
+      expect(resolved[49].isExtra).toBe(true);
+      expect(resolved[49].extraOrder).toBe(2);
+    });
+
+    it("requires completing all 48 weeks before an extra entry can be completed", () => {
+      const mock50Entries = Array.from({ length: 50 }, (_, i) => ({
+        id: `ayet-w${i + 1}`,
+        grade: 1,
+        categoryId: "ayet" as const,
+        month: Math.min(12, Math.floor(i / 4) + 1),
+        week: (i % 4) + 1,
+        year: 2026,
+        title: `Ayet Hafta ${i + 1}`,
+      }));
+
+      const resolved = getCategoryEntries("ayet", mock50Entries);
+      const extra1 = resolved[48]; // 49th entry (Ekstra 1)
+
+      // Only 47 weeks completed: extra cannot be completed
+      const first47Ids = new Set(resolved.slice(0, 47).map((e) => e.id));
+      expect(canCompleteEntry(extra1.id, resolved, first47Ids)).toBe(false);
+
+      // All 48 weeks completed: extra CAN be completed
+      const all48Ids = new Set(resolved.slice(0, 48).map((e) => e.id));
+      expect(canCompleteEntry(extra1.id, resolved, all48Ids)).toBe(true);
+    });
+  });
 });

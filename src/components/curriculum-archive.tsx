@@ -21,6 +21,7 @@ import {
 import {
   curriculumCategories,
   curriculumEntries,
+  getCategoryEntries,
   getCategoryShortLabel,
   getUnlockedEntryIndex,
   type CurriculumCategoryId,
@@ -161,7 +162,7 @@ export function CurriculumArchive({
 
   const activeHistoryEntries = useMemo(() => {
     if (!activeHistoryCategory) return [];
-    return currentGradeEntries.filter((entry) => entry.categoryId === activeHistoryCategory.id);
+    return getCategoryEntries(activeHistoryCategory.id, currentGradeEntries);
   }, [activeHistoryCategory, currentGradeEntries]);
 
   const historyCompletedEntries = useMemo(() => {
@@ -814,9 +815,7 @@ export function CurriculumArchive({
         <div className="archive-main-column">
           {curriculumCategories.map((activeCategory, categoryIndex) => {
             const ActiveIcon = activeCategory.icon;
-            const activeEntries = currentGradeEntries.filter(
-              (entry) => entry.categoryId === activeCategory.id
-            );
+            const activeEntries = getCategoryEntries(activeCategory.id, currentGradeEntries);
             const unlockedIndex = getUnlockedEntryIndex(activeEntries, completedSet);
             const completedEntries = activeEntries
               .filter((entry) => completedSet.has(entry.id))

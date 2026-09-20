@@ -96,6 +96,10 @@ export const GRADE_LABELS: Record<BelgiumGrade, string> = {
   6: "6. Sınıf",
 };
 
+export const TOTAL_CURRICULUM_MONTHS = 12;
+export const WEEKS_PER_MONTH = 4;
+export const TOTAL_CURRICULUM_WEEKS = TOTAL_CURRICULUM_MONTHS * WEEKS_PER_MONTH; // 48 weeks
+
 export interface CurriculumEntry {
   id: string;
   grade?: number;
@@ -474,6 +478,10 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
 
 export function sortCurriculumEntries(entries: readonly CurriculumEntry[]): CurriculumEntry[] {
   return entries.toSorted((a, b) => {
+    const gradeA = a.grade ?? 1;
+    const gradeB = b.grade ?? 1;
+    if (gradeA !== gradeB) return gradeA - gradeB;
+
     const aIsExtra = Boolean(a.isExtra);
     const bIsExtra = Boolean(b.isExtra);
 
@@ -492,11 +500,71 @@ export function sortCurriculumEntries(entries: readonly CurriculumEntry[]): Curr
   });
 }
 
+/**
+ * Resolves curriculum entries within a single category and grade:
+ * - Sorts standard entries chronologically first.
+ * - Standard 48-week curriculum (12 months x 4 weeks): entries at index < 48 are standard weeks.
+ * - Under no circumstances can an entry become an extra before all 48 weeks are filled.
+ * - Any entry beyond 48 weeks (index >= 48) automatically turns into an extra with sequential extraOrder.
+ */
+export function resolveCategoryEntries(entries: readonly CurriculumEntry[]): CurriculumEntry[] {
+  const sorted = sortCurriculumEntries(entries);
+
+  return sorted.map((entry, index) => {
+    if (index < TOTAL_CURRICULUM_WEEKS) {
+      return {
+        ...entry,
+        isExtra: false,
+        extraOrder: undefined,
+      };
+    }
+
+    return {
+      ...entry,
+      isExtra: true,
+      extraOrder: index - TOTAL_CURRICULUM_WEEKS + 1,
+    };
+  });
+}
+
+/**
+ * Resolves all curriculum entries across all grades and categories
+ * enforcing the 48-week standard curriculum threshold before any extras appear.
+ */
+export function resolveAllCurriculumEntries(
+  entries: readonly CurriculumEntry[]
+): CurriculumEntry[] {
+  const groups = new Map<string, CurriculumEntry[]>();
+
+  for (const entry of entries) {
+    const grade = entry.grade ?? 1;
+    const key = `${grade}:${entry.categoryId}`;
+    let group = groups.get(key);
+    if (!group) {
+      group = [];
+      groups.set(key, group);
+    }
+    group.push(entry);
+  }
+
+  const resolvedAll: CurriculumEntry[] = [];
+  for (const group of groups.values()) {
+    resolvedAll.push(...resolveCategoryEntries(group));
+  }
+
+  return sortCurriculumEntries(resolvedAll);
+}
+
 export function getCategoryEntries(
   categoryId: CurriculumCategoryId,
-  entries: readonly CurriculumEntry[] = curriculumEntries
+  entries: readonly CurriculumEntry[] = curriculumEntries,
+  grade?: number
 ): CurriculumEntry[] {
-  return sortCurriculumEntries(entries.filter((entry) => entry.categoryId === categoryId));
+  const filtered = entries.filter(
+    (entry) =>
+      entry.categoryId === categoryId && (typeof grade !== "number" || (entry.grade ?? 1) === grade)
+  );
+  return resolveCategoryEntries(filtered);
 }
 
 export function getUnlockedEntryIndex(

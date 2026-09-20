@@ -2,7 +2,8 @@ import { db } from "@/lib/auth";
 import {
   curriculumCategories,
   curriculumEntries,
-  sortCurriculumEntries,
+  resolveAllCurriculumEntries,
+  resolveCategoryEntries,
   type CurriculumCategoryId,
   type CurriculumEntry,
 } from "@/lib/curriculum";
@@ -66,6 +67,10 @@ export function ensureCurriculumEntriesTable() {
     );
     CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_idx"
       on "curriculum_entries" ("grade", "categoryId", "isExtra", "month", "week");
+
+    -- Clean up legacy premature extra entries that violated the 48-week rule
+    DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%';
+    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%';
   `);
 }
 
@@ -132,46 +137,9 @@ export function seedCurriculumDatabase(force = false): void {
     });
   }
 
-  // 2. Seed Extra entries for Grade 1 (e.g. 48 hafta sonrası ilave dosyalar)
-  curriculumCategories.forEach((cat) => {
-    seedBatch.push({
-      id: `g1-${cat.id}-extra-1`,
-      grade: 1,
-      categoryId: cat.id,
-      month: 12,
-      week: 4,
-      year: 2026,
-      isExtra: 1,
-      extraOrder: 1,
-      title: `${cat.label} — 1. İlave Derinleşme Dosyası`,
-      body: `1. Sınıf ${cat.label} müfredatının yıllık 48 haftalık periyodu sonrasında okunacak özel derinleşme ve pekiştirme metni.`,
-      resourceUrl: null,
-      pageCount: 3,
-      createdAt: now,
-      updatedAt: now,
-    });
-    seedBatch.push({
-      id: `g1-${cat.id}-extra-2`,
-      grade: 1,
-      categoryId: cat.id,
-      month: 12,
-      week: 4,
-      year: 2026,
-      isExtra: 1,
-      extraOrder: 2,
-      title: `${cat.label} — 2. İlave İnceleme ve Kaynakça`,
-      body: `1. Sınıf ${cat.label} konularına ilişkin ek okuma listesi, tahliller ve tatil dönemi için önerilen kaynaklar.`,
-      resourceUrl: null,
-      pageCount: 4,
-      createdAt: now,
-      updatedAt: now,
-    });
-  });
-
-  // 3. Seed template standard & extra entries for Grades 2 through 6
+  // 2. Seed template standard entries for Grades 2 through 6 (2 sample standard weeks for September)
   for (let grade = 2; grade <= 6; grade++) {
     for (const cat of curriculumCategories) {
-      // 2 sample standard weeks for September (similar to grade 1 initial set)
       seedBatch.push({
         id: `g${grade}-${cat.id}-eylul-1`,
         grade,
@@ -202,24 +170,6 @@ export function seedCurriculumDatabase(force = false): void {
         body: `Belçika ${grade}. Sınıf ${cat.label} dersi 2. hafta kapsamlı tahlil ve etkinlik rehberi.`,
         resourceUrl: null,
         pageCount: 2,
-        createdAt: now,
-        updatedAt: now,
-      });
-
-      // Extra entry for that grade and category
-      seedBatch.push({
-        id: `g${grade}-${cat.id}-extra-1`,
-        grade,
-        categoryId: cat.id,
-        month: 12,
-        week: 4,
-        year: 2026,
-        isExtra: 1,
-        extraOrder: 1,
-        title: `${grade}. Sınıf ${cat.label} — İlave / Ekstra Metin 1`,
-        body: `${grade}. Sınıf ${cat.label} alanında yıl sonu veya ileri okuma için hazırlanmış ek müfredat dosyası.`,
-        resourceUrl: null,
-        pageCount: 3,
         createdAt: now,
         updatedAt: now,
       });
@@ -274,7 +224,7 @@ export function getCurriculumEntriesFromDb(grade?: number): CurriculumEntry[] {
       typeof grade === "number" && grade >= 1 && grade <= 6
         ? curriculumEntries.filter((e) => (e.grade ?? 1) === grade)
         : curriculumEntries;
-    return sortCurriculumEntries(filtered);
+    return resolveAllCurriculumEntries(filtered);
   }
 
   try {
@@ -298,17 +248,17 @@ export function getCurriculumEntriesFromDb(grade?: number): CurriculumEntry[] {
         typeof grade === "number" && grade >= 1 && grade <= 6
           ? curriculumEntries.filter((e) => (e.grade ?? 1) === grade)
           : curriculumEntries;
-      return sortCurriculumEntries(filtered);
+      return resolveAllCurriculumEntries(filtered);
     }
 
     const entries = rows.map(rowToEntry);
-    return sortCurriculumEntries(entries);
+    return resolveAllCurriculumEntries(entries);
   } catch {
     const filtered =
       typeof grade === "number" && grade >= 1 && grade <= 6
         ? curriculumEntries.filter((e) => (e.grade ?? 1) === grade)
         : curriculumEntries;
-    return sortCurriculumEntries(filtered);
+    return resolveAllCurriculumEntries(filtered);
   }
 }
 
@@ -320,7 +270,8 @@ export function getCurriculumEntryByIdFromDb(id: string): CurriculumEntry | null
   seedCurriculumDatabase();
 
   if (typeof db?.query !== "function") {
-    return curriculumEntries.find((e) => e.id === id) ?? null;
+    const all = resolveAllCurriculumEntries(curriculumEntries);
+    return all.find((e) => e.id === id) ?? null;
   }
 
   try {
@@ -328,8 +279,22 @@ export function getCurriculumEntryByIdFromDb(id: string): CurriculumEntry | null
       .query<CurriculumEntryRow, [string]>(`SELECT * FROM "curriculum_entries" WHERE "id" = ?`)
       .get(id);
 
-    return row ? rowToEntry(row) : (curriculumEntries.find((e) => e.id === id) ?? null);
+    if (!row) {
+      const all = resolveAllCurriculumEntries(curriculumEntries);
+      return all.find((e) => e.id === id) ?? null;
+    }
+
+    // Resolve within its category to ensure accurate 48-week extra status
+    const categoryRows = db
+      .query<CurriculumEntryRow, [number, string]>(
+        `SELECT * FROM "curriculum_entries" WHERE "grade" = ? AND "categoryId" = ?`
+      )
+      .all(row.grade, row.categoryId);
+
+    const resolvedCategoryEntries = resolveCategoryEntries(categoryRows.map(rowToEntry));
+    return resolvedCategoryEntries.find((e) => e.id === id) ?? rowToEntry(row);
   } catch {
-    return curriculumEntries.find((e) => e.id === id) ?? null;
+    const all = resolveAllCurriculumEntries(curriculumEntries);
+    return all.find((e) => e.id === id) ?? null;
   }
 }

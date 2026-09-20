@@ -24,33 +24,29 @@ describe("Curriculum SQLite Database Module", () => {
     }
   });
 
-  it("should place standard entries before extra entries within a category", () => {
+  it("should enforce standard entries and zero premature extras for categories under 48 weeks", () => {
     const grade1Entries = getCurriculumEntriesFromDb(1);
     const ayetEntries = grade1Entries.filter((e) => e.categoryId === "ayet");
 
     const standardAyet = ayetEntries.filter((e) => !e.isExtra);
     const extraAyet = ayetEntries.filter((e) => e.isExtra);
 
-    expect(standardAyet.length).toBeGreaterThan(0);
-    expect(extraAyet.length).toBeGreaterThan(0);
-
-    // Extra entries must follow all standard entries
-    const firstExtraIdx = ayetEntries.findIndex((e) => e.isExtra);
-    const lastStandardIdx = ayetEntries.findLastIndex((e) => !e.isExtra);
-
-    expect(firstExtraIdx).toBeGreaterThan(lastStandardIdx);
+    expect(standardAyet.length).toBe(16);
+    expect(extraAyet.length).toBe(0); // 16 < 48: absolutely no extras before 48 weeks
   });
 
   it("should retrieve a specific entry by its deterministic ID", () => {
-    const entry = getCurriculumEntryByIdFromDb("ayet-eylul-1");
-    expect(entry).not.toBeNull();
-    expect(entry?.title).toContain("Bakara Suresi");
-    expect(entry?.grade).toBe(1);
+    const entry1 = getCurriculumEntryByIdFromDb("ayet-eylul-1");
+    expect(entry1).not.toBeNull();
+    expect(entry1?.title).toContain("Bakara Suresi");
+    expect(entry1?.grade).toBe(1);
+    expect(entry1?.isExtra).toBe(false);
 
-    const extraEntry = getCurriculumEntryByIdFromDb("g1-ayet-extra-1");
-    expect(extraEntry).not.toBeNull();
-    expect(extraEntry?.isExtra).toBe(true);
-    expect(extraEntry?.extraOrder).toBe(1);
+    const entry2 = getCurriculumEntryByIdFromDb("ayet-aralik-4");
+    expect(entry2).not.toBeNull();
+    expect(entry2?.title).toContain("İsrâ Suresi");
+    expect(entry2?.grade).toBe(1);
+    expect(entry2?.isExtra).toBe(false);
   });
 
   it("should return null for non-existent entry ID", () => {
