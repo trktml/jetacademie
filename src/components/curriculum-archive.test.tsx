@@ -565,4 +565,57 @@ describe("CurriculumArchive Component", () => {
 
     expect(html).toContain('id="history-card-ayet-eylul-1"');
   });
+
+  it("should render GradeSelector in the capsule navigation", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
+
+    expect(html).toContain('class="archive-capsule-grade-wrapper"');
+    expect(html).toContain('class="grade-selector-trigger"');
+    expect(html).toContain('class="grade-selector-trigger__num">1</span>');
+  });
+
+  it("should render extra entries as continuation tabs in the folder stack, not in a separate section", () => {
+    const mockEntries = [
+      {
+        id: "test-ayet-1",
+        grade: 1,
+        categoryId: "ayet" as const,
+        month: 9,
+        week: 1,
+        year: 2026,
+        isExtra: false,
+        title: "Standart Hafta 1",
+      },
+      {
+        id: "test-ayet-extra-1",
+        grade: 1,
+        categoryId: "ayet" as const,
+        month: 12,
+        week: 4,
+        year: 2026,
+        isExtra: true,
+        extraOrder: 1,
+        title: "İlave Derinleşme Dosyası 1",
+        body: "Ekstra pekiştirme içeriği",
+      },
+    ];
+
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        customEntries={mockEntries}
+      />
+    );
+
+    // Should NOT have a separate bottom section
+    expect(html).not.toContain('class="archive-extra-section"');
+    expect(html).not.toContain("48 Hafta Sonrası");
+
+    // Extra entry should appear as a continuation tab in the folder stack
+    expect(html).toContain("Ekstra 1 · İlave");
+    expect(html).toContain("İlave Derinleşme Dosyası 1");
+  });
 });

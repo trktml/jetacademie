@@ -10,6 +10,7 @@ import {
   curriculumEntries,
   getCategoryEntries,
 } from "@/lib/curriculum";
+import { getCurriculumEntriesFromDb, getCurriculumEntryByIdFromDb } from "@/lib/curriculum-db";
 import {
   getCompletedEntryIds,
   removeCompletedEntry,
@@ -25,11 +26,14 @@ export async function markEntryAsRead(entryId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("İlerlemenizi kaydetmek için giriş yapın.");
 
-  const entry = curriculumEntries.find((candidate) => candidate.id === parsedEntryId.data);
+  const entry =
+    getCurriculumEntryByIdFromDb(parsedEntryId.data) ??
+    curriculumEntries.find((candidate) => candidate.id === parsedEntryId.data);
   if (!entry) throw new Error("Dosya bulunamadı.");
 
   const completedEntryIds = new Set(getCompletedEntryIds(session.user.id));
-  const categoryEntries = getCategoryEntries(entry.categoryId);
+  const gradeEntries = getCurriculumEntriesFromDb(entry.grade ?? 1);
+  const categoryEntries = getCategoryEntries(entry.categoryId, gradeEntries);
   if (!canCompleteEntry(entry.id, categoryEntries, completedEntryIds)) {
     throw new Error("Önce sıradaki dosyayı tamamlayın.");
   }
@@ -46,11 +50,14 @@ export async function unmarkEntryAsRead(entryId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("İlerlemenizi güncellemek için giriş yapın.");
 
-  const entry = curriculumEntries.find((candidate) => candidate.id === parsedEntryId.data);
+  const entry =
+    getCurriculumEntryByIdFromDb(parsedEntryId.data) ??
+    curriculumEntries.find((candidate) => candidate.id === parsedEntryId.data);
   if (!entry) throw new Error("Dosya bulunamadı.");
 
   const completedEntryIds = new Set(getCompletedEntryIds(session.user.id));
-  const categoryEntries = getCategoryEntries(entry.categoryId);
+  const gradeEntries = getCurriculumEntriesFromDb(entry.grade ?? 1);
+  const categoryEntries = getCategoryEntries(entry.categoryId, gradeEntries);
   if (!canUnmarkEntry(entry.id, categoryEntries, completedEntryIds)) {
     throw new Error("Yalnızca en son tamamlanan dosya geri alınabilir.");
   }

@@ -7,16 +7,18 @@ JetAcademie is a mobile-first Progressive Web Application (PWA) designed for stu
 ## Product Structure
 
 - `/`: Landing page leading directly to Curriculum and Targets sections.
-- `/mufredat`: Curriculum section featuring a 9-category capsule navigation (sticky on mobile, fixed on the left on desktop) and an archive folder deck for the selected category. Categories are listed sequentially with minimalist gradient dividers and comfortable vertical breathing room. Files employ a physical folder metaphor with staggered Manila tabs. Locked files cannot be accessed until preceding entries in that category are completed. The header bar includes a counter-enabled 'History' button that transitions to a focused, dedicated history space isolated from other categories. Inside, a quick jump selector with a 'Git' button, period shortcut chips ('En Yeni', 'En Eski', Month pills), and spotlight card animations enable seamless travel across past completed readings, with support for reverting accidentally completed entries on the latest file.
+- `/mufredat`: Curriculum section featuring a 9-category capsule navigation (sticky on mobile, fixed on the left on desktop with an integrated Belgium 6-grade quick selector dropdown right at the top) and an archive folder deck for the selected category. Categories are listed sequentially with minimalist gradient dividers and comfortable vertical breathing room. Files employ a physical folder metaphor with staggered Manila tabs. Locked files cannot be accessed until preceding entries in that category are completed. Beyond the standard 48-week curriculum (12 months × 4 weeks), extra contents continue directly as consecutive folder tabs in the same stack (`Ekstra 1 · İlave`, `Ekstra 2`, etc.), unlocking progressively without separate isolated sections. The header bar includes a counter-enabled 'History' button that transitions to a focused, dedicated history space isolated from other categories. Inside, a quick jump selector with a 'Git' button, period shortcut chips ('En Yeni', 'En Eski', Month pills, 'Ekstra'), and spotlight card animations enable seamless travel across past completed readings, with support for reverting accidentally completed entries on the latest file.
 - `/hedefler`: Targets section prepared for upcoming goal tracking features.
 - Account: Privacy-first anonymous authentication. No personal data (name, email) is collected; users only choose a password, and sequential usernames (`user1`, `user2`, etc.) are assigned automatically with gap-filling on account deletion. Direct password updates and account deletion are supported.
 - Theme: Persistent semantic theme architecture supporting light, dark, and system preferences.
 
-Real curriculum entries are stored in `src/lib/curriculum.ts` and can be attached to any future headless CMS or database source.
+Curriculum entries are managed directly via SQLite (`curriculum_entries` table with auto-seeding across all 6 Belgium grades: 1. Sınıf – 6. Sınıf) and can be easily extended or linked to administrative endpoints.
 
-## Progress Model
+## Progress & Curriculum Model
 
-Each entry carries category, year, month, and week metadata. Progress is saved per user in the `curriculum_progress` table. Sequential completion is enforced per category. If an entry is completed by accident, only the latest completed entry in that category can be reverted via History to maintain sequential integrity.
+- **Belgium 6 Grades**: Tailored for the Belgian educational levels (1. Sınıf – 6. Sınıf). Users can switch grade quickly using the pill dropdown attached above the capsule rail (or pinned on the left on mobile). The selected grade syncs seamlessly with URL query parameter (`?sinif=1..6`) and client storage.
+- **Curriculum & Extra Content**: Standard content covers 48 weeks (12 months × 4 weeks with `isExtra = 0`). Additional contents extending beyond the 48 weeks are flagged with `isExtra = 1` and sequential `extraOrder` (1, 2, 3...), appearing sequentially as the next folder tabs in the deck and unlocking progressively as standard weeks are finished.
+- **Progress Tracking**: Progress is saved per user in the `curriculum_progress` table (`userId`, `entryId`, `completedAt`) and in guest storage (`jetacademie-guest`). Sequential completion is enforced per category and grade. If an entry is completed by accident, only the latest completed entry in that category can be reverted via History to maintain sequential integrity.
 
 ## Tech Stack
 

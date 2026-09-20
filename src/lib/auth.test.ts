@@ -22,6 +22,16 @@ describe("Better Auth Server Setup", () => {
     expect(table?.name).toBe("curriculum_progress");
   });
 
+  it("should initialize curriculum entries storage", () => {
+    const table = db
+      .query<{ name: string }, []>(
+        `SELECT name FROM sqlite_schema WHERE type = 'table' AND name = 'curriculum_entries'`
+      )
+      .get();
+
+    expect(table?.name).toBe("curriculum_entries");
+  });
+
   it("should successfully sign up a new user and persist in sqlite", async () => {
     const email = `user_${Date.now()}@example.com`;
     const res = await auth.api.signUpEmail({

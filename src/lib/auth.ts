@@ -138,6 +138,24 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS "curriculum_progress_userId_completedAt_idx"
     on "curriculum_progress" ("userId", "completedAt");
+  CREATE TABLE IF NOT EXISTS "curriculum_entries" (
+    "id" text not null primary key,
+    "grade" integer not null default 1,
+    "categoryId" text not null,
+    "month" integer,
+    "week" integer,
+    "year" integer default 2026,
+    "isExtra" integer not null default 0,
+    "extraOrder" integer,
+    "title" text not null,
+    "body" text,
+    "resourceUrl" text,
+    "pageCount" integer,
+    "createdAt" date not null,
+    "updatedAt" date not null
+  );
+  CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_idx"
+    on "curriculum_entries" ("grade", "categoryId", "isExtra", "month", "week");
 `);
 
 export const auth = betterAuth({

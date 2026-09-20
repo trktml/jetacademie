@@ -1129,6 +1129,168 @@ body:has(.landing-page),
     0 4px 14px -2px rgb(0 0 0 / 30%);
 }
 
+/* Kapsül İçi Sınıf Seçici Dropdown Wrapper (Desktop & Mobile Base) */
+.archive-capsule-grade-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.15rem 0 0.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line-strong) 35%, transparent);
+  margin-bottom: 0.25rem;
+}
+
+.grade-selector-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grade-selector-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  width: 2.35rem;
+  min-width: 44px;
+  height: 2.35rem;
+  min-height: 44px;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--surface) 84%, var(--line-strong) 16%);
+  border: 1px solid color-mix(in srgb, var(--line-strong) 50%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.grade-selector-trigger:hover {
+  background: color-mix(in srgb, var(--surface) 72%, var(--line-strong) 28%);
+  border-color: color-mix(in srgb, var(--line-strong) 85%, transparent);
+  transform: scale(1.05);
+}
+
+.grade-selector-trigger:focus-visible {
+  outline: 2px solid var(--accent, #3b82f6);
+  outline-offset: 2px;
+}
+
+.grade-selector-trigger__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+}
+
+.grade-selector-trigger__icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+:root[data-theme="dark"] .grade-selector-trigger__icon {
+  color: #60a5fa;
+}
+
+.grade-selector-trigger__num {
+  font-size: 0.825rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.grade-selector-dropdown {
+  position: fixed;
+  min-width: 185px;
+  padding: 0.35rem;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface) 96%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--line-strong) 50%, transparent);
+  box-shadow:
+    0 20px 40px -4px rgb(10 26 38 / 30%),
+    0 8px 18px -2px rgb(10 26 38 / 15%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 9999;
+  animation: gradeDropdownFade 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme="dark"] .grade-selector-dropdown {
+  background: color-mix(in srgb, var(--surface) 94%, var(--line));
+  border-color: color-mix(in srgb, var(--line-strong) 60%, transparent);
+  box-shadow:
+    0 24px 48px -4px rgb(0 0 0 / 60%),
+    0 8px 24px -2px rgb(0 0 0 / 40%);
+}
+
+@keyframes gradeDropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.grade-selector-dropdown__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.grade-selector-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.825rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.grade-selector-option:hover {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink);
+}
+
+.grade-selector-option--selected {
+  background: color-mix(in srgb, #3b82f6 15%, transparent);
+  color: #2563eb;
+  font-weight: 700;
+}
+
+:root[data-theme="dark"] .grade-selector-option--selected {
+  background: color-mix(in srgb, #3b82f6 25%, transparent);
+  color: #60a5fa;
+}
+
+.grade-selector-option__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--line-strong) 40%, transparent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.grade-selector-option--selected .grade-selector-option__badge {
+  background: #3b82f6;
+  color: #ffffff;
+}
 /* Ana Kolon (Main Archive Column) */
 .archive-main-column {
   flex: 1;
@@ -3319,6 +3481,14 @@ body:has(.landing-page),
     border-radius: 14px;
     padding: 0;
     z-index: 25;
+  }
+
+  .archive-capsule-grade-wrapper {
+    flex-shrink: 0;
+    padding: 0.25rem 0.45rem;
+    border-right: 1px solid color-mix(in srgb, var(--line-strong) 40%, transparent);
+    border-bottom: none;
+    margin-bottom: 0;
   }
 
   .archive-capsule-list {

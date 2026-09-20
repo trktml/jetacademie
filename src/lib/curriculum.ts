@@ -84,12 +84,27 @@ export function getCategoryShortLabel(categoryId: CurriculumCategoryId): string 
   return category?.shortLabel || category?.label || "";
 }
 
+export const BELGIUM_GRADES = [1, 2, 3, 4, 5, 6] as const;
+export type BelgiumGrade = (typeof BELGIUM_GRADES)[number];
+
+export const GRADE_LABELS: Record<BelgiumGrade, string> = {
+  1: "1. Sınıf",
+  2: "2. Sınıf",
+  3: "3. Sınıf",
+  4: "4. Sınıf",
+  5: "5. Sınıf",
+  6: "6. Sınıf",
+};
+
 export interface CurriculumEntry {
   id: string;
+  grade?: number;
   categoryId: CurriculumCategoryId;
   month: number;
   week: number;
   year: number;
+  isExtra?: boolean;
+  extraOrder?: number;
   title: string;
   body?: string;
   resourceUrl?: string;
@@ -113,11 +128,24 @@ const monthLabels: Record<number, string> = {
 
 /**
  * Generates a deterministic entry ID.
- * Pattern: "hadis-eylul-1", "ayet-eylul-2", etc.
+ * Pattern: "hadis-eylul-1", "g2-ayet-eylul-2", "g1-ayet-extra-1", etc.
  */
-export function makeEntryId(categoryId: CurriculumCategoryId, month: number, week: number): string {
+export function makeEntryId(
+  categoryId: CurriculumCategoryId,
+  month: number,
+  week: number,
+  grade: number = 1,
+  isExtra: boolean = false,
+  extraOrder?: number
+): string {
+  if (isExtra) {
+    const prefix = grade === 1 ? "" : `g${grade}-`;
+    return `${prefix}${categoryId}-extra-${extraOrder ?? 1}`;
+  }
   const monthSlug = monthLabels[month] ?? `m${month}`;
-  return `${categoryId}-${monthSlug}-${week}`;
+  return grade === 1
+    ? `${categoryId}-${monthSlug}-${week}`
+    : `g${grade}-${categoryId}-${monthSlug}-${week}`;
 }
 
 // 2 haftalık örnek müfredat içerikleri — Eylül 2026
@@ -444,16 +472,31 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
   },
 ];
 
-export function getCategoryEntries(categoryId: CurriculumCategoryId) {
-  return curriculumEntries
-    .filter((entry) => entry.categoryId === categoryId)
-    .toSorted((a, b) =>
-      a.year !== b.year
-        ? a.year - b.year
-        : a.month !== b.month
-          ? a.month - b.month
-          : a.week - b.week
-    );
+export function sortCurriculumEntries(entries: readonly CurriculumEntry[]): CurriculumEntry[] {
+  return entries.toSorted((a, b) => {
+    const aIsExtra = Boolean(a.isExtra);
+    const bIsExtra = Boolean(b.isExtra);
+
+    // Standard entries always precede extra entries
+    if (aIsExtra !== bIsExtra) {
+      return aIsExtra ? 1 : -1;
+    }
+
+    if (aIsExtra && bIsExtra) {
+      return (a.extraOrder ?? 0) - (b.extraOrder ?? 0);
+    }
+
+    if (a.year !== b.year) return a.year - b.year;
+    if (a.month !== b.month) return a.month - b.month;
+    return a.week - b.week;
+  });
+}
+
+export function getCategoryEntries(
+  categoryId: CurriculumCategoryId,
+  entries: readonly CurriculumEntry[] = curriculumEntries
+): CurriculumEntry[] {
+  return sortCurriculumEntries(entries.filter((entry) => entry.categoryId === categoryId));
 }
 
 export function getUnlockedEntryIndex(

@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import {
   curriculumCategories,
-  getCategoryEntries,
+  curriculumEntries,
   getCategoryShortLabel,
   getUnlockedEntryIndex,
   type CurriculumCategoryId,
@@ -30,6 +30,8 @@ import { markEntryAsRead, unmarkEntryAsRead } from "@/app/mufredat/actions";
 
 import { useUiStore } from "@/store/use-ui-store";
 import { useGuestStore } from "@/store/use-guest-store";
+import { isValidGrade, useCurriculumStore } from "@/store/use-curriculum-store";
+import { GradeSelector } from "@/components/grade-selector";
 
 const monthNames = [
   "Ocak",
@@ -50,6 +52,8 @@ interface CurriculumArchiveProps {
   initialCompletedEntryIds: string[];
   isSignedIn: boolean;
   customEntries?: readonly CurriculumEntry[];
+  allEntries?: readonly CurriculumEntry[];
+  initialGrade?: number;
   initialCategoryId?: CurriculumCategoryId;
   initialHistoryViewCategoryIds?: Record<string, boolean>;
 }
@@ -58,6 +62,8 @@ export function CurriculumArchive({
   initialCompletedEntryIds,
   isSignedIn,
   customEntries,
+  allEntries,
+  initialGrade = 1,
   initialCategoryId = "ayet",
   initialHistoryViewCategoryIds = {},
 }: CurriculumArchiveProps) {
@@ -130,6 +136,40 @@ export function CurriculumArchive({
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
+  const selectedGrade = useCurriculumStore((s) => s.selectedGrade);
+  const setSelectedGrade = useCurriculumStore((s) => s.setSelectedGrade);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      const param = url.searchParams.get("sinif");
+      if (param) {
+        const num = parseInt(param, 10);
+        if (isValidGrade(num)) {
+          setSelectedGrade(num);
+          return;
+        }
+      }
+    }
+    if (initialGrade && isValidGrade(initialGrade)) {
+      setSelectedGrade(initialGrade);
+    }
+  }, [initialGrade, setSelectedGrade]);
+
+  const currentGradeEntries = useMemo(() => {
+    if (customEntries && customEntries.length > 0) {
+      const hasGrade = customEntries.some((e) => typeof e.grade === "number");
+      if (hasGrade) {
+        return customEntries.filter((entry) => (entry.grade ?? 1) === selectedGrade);
+      }
+      return customEntries;
+    }
+    if (allEntries && allEntries.length > 0) {
+      return allEntries.filter((entry) => (entry.grade ?? 1) === selectedGrade);
+    }
+    return curriculumEntries.filter((entry) => (entry.grade ?? 1) === selectedGrade);
+  }, [allEntries, customEntries, selectedGrade]);
+
   // Dedicated history state and helpers
   const activeHistoryCategory = useMemo(
     () => curriculumCategories.find((c) => c.id === activeHistoryCategoryId) ?? null,
@@ -138,10 +178,8 @@ export function CurriculumArchive({
 
   const activeHistoryEntries = useMemo(() => {
     if (!activeHistoryCategory) return [];
-    return customEntries
-      ? customEntries.filter((entry) => entry.categoryId === activeHistoryCategory.id)
-      : getCategoryEntries(activeHistoryCategory.id);
-  }, [activeHistoryCategory, customEntries]);
+    return currentGradeEntries.filter((entry) => entry.categoryId === activeHistoryCategory.id);
+  }, [activeHistoryCategory, currentGradeEntries]);
 
   const historyCompletedEntries = useMemo(() => {
     return activeHistoryEntries
@@ -153,7 +191,7 @@ export function CurriculumArchive({
   const historyAvailableMonths = useMemo(() => {
     const monthsMap = new Map<number, string>();
     historyCompletedEntries.forEach((e) => {
-      if (!monthsMap.has(e.month)) {
+      if (!e.isExtra && e.month && !monthsMap.has(e.month)) {
         monthsMap.set(e.month, monthNames[e.month - 1]);
       }
     });
@@ -480,6 +518,14 @@ export function CurriculumArchive({
     <div className="archive-layout" aria-label="Müfredat akışı">
       {/* Sol Sabit Kapsül Navigasyon (Desktop: Fixed Capsule Rail / Mobile: Sticky Capsule Dock) */}
       <aside className="archive-fixed-capsule" aria-label="Müfredat Hızlı Menü">
+        <div className="archive-capsule-grade-wrapper">
+          <GradeSelector
+            compact
+            value={selectedGrade}
+            onGradeChange={(grade) => setSelectedGrade(grade)}
+          />
+        </div>
+
         {/* Mobilde sağa/sola kaydırılabilir olduğunu belirten zarif gradyan ve ok butonları */}
         <button
           type="button"
@@ -630,7 +676,9 @@ export function CurriculumArchive({
                       aria-label="Geçmişten bir dosya seçin"
                     >
                       {historyCompletedEntries.map((entry) => {
-                        const timing = `${monthNames[entry.month - 1]} · ${entry.week}. Hafta`;
+                        const timing = entry.isExtra
+                          ? `Ekstra ${entry.extraOrder ?? 1}`
+                          : `${monthNames[entry.month - 1]} · ${entry.week}. Hafta`;
                         return (
                           <option key={entry.id} value={entry.id}>
                             {`${timing} — ${entry.title}`}
@@ -693,6 +741,20 @@ export function CurriculumArchive({
                         </button>
                       );
                     })}
+
+                    {historyCompletedEntries.some((e) => e.isExtra) && (
+                      <button
+                        type="button"
+                        className="archive-history-chip archive-history-chip--extra"
+                        onClick={() => {
+                          const firstExtra = historyCompletedEntries.find((e) => e.isExtra);
+                          if (firstExtra) handleJumpToEntry(firstExtra.id);
+                        }}
+                        title="Tamamlanan ilave dosyalara git"
+                      >
+                        Ekstra
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -702,7 +764,9 @@ export function CurriculumArchive({
             {historyCompletedEntries.length > 0 ? (
               <div className="archive-history-list">
                 {historyCompletedEntries.map((entry, index) => {
-                  const timing = `${monthNames[entry.month - 1]}-${entry.week}`;
+                  const timing = entry.isExtra
+                    ? `Ekstra ${entry.extraOrder ?? 1}`
+                    : `${monthNames[entry.month - 1]}-${entry.week}`;
                   const isLatest = index === 0;
                   const isEntryPending = isPending && pendingEntryId === entry.id;
                   const isSpotlight = spotlightEntryId === entry.id;
@@ -766,9 +830,9 @@ export function CurriculumArchive({
         <div className="archive-main-column">
           {curriculumCategories.map((activeCategory, categoryIndex) => {
             const ActiveIcon = activeCategory.icon;
-            const activeEntries = customEntries
-              ? customEntries.filter((entry) => entry.categoryId === activeCategory.id)
-              : getCategoryEntries(activeCategory.id);
+            const activeEntries = currentGradeEntries.filter(
+              (entry) => entry.categoryId === activeCategory.id
+            );
             const unlockedIndex = getUnlockedEntryIndex(activeEntries, completedSet);
             const completedEntries = activeEntries
               .filter((entry) => completedSet.has(entry.id))
@@ -895,7 +959,9 @@ export function CurriculumArchive({
                               ({ entryIdx }) => Math.abs(entryIdx - selectedCompletedIndex) <= 3
                             )
                             .map(({ entry, entryIdx }) => {
-                              const timing = `${monthNames[entry.month - 1]}-${entry.week}`;
+                              const timing = entry.isExtra
+                                ? `Ekstra ${entry.extraOrder ?? 1}`
+                                : `${monthNames[entry.month - 1]}-${entry.week}`;
                               const isFront = entryIdx === selectedCompletedIndex;
                               const depth = isFront
                                 ? 0
@@ -908,8 +974,8 @@ export function CurriculumArchive({
                                   data-status="completed"
                                   data-depth={isFront ? undefined : depth}
                                   onClick={() =>
-                                    setSelectedCompletedIndexes((indexes) => ({
-                                      ...indexes,
+                                    setSelectedCompletedIndexes((prev) => ({
+                                      ...prev,
                                       [activeCategory.id]: entryIdx,
                                     }))
                                   }
@@ -926,11 +992,16 @@ export function CurriculumArchive({
                                   >
                                     <Check className="h-3.5 w-3.5" />
                                     <span>
-                                      <span className="tab-full">{`${timing} · ${entry.week}. Hafta`}</span>
-                                      <span
-                                        className="tab-short"
-                                        aria-hidden="true"
-                                      >{`${entry.week}. Hafta`}</span>
+                                      <span className="tab-full">
+                                        {entry.isExtra
+                                          ? `Ekstra ${entry.extraOrder ?? 1} · İlave`
+                                          : `${timing} · ${entry.week}. Hafta`}
+                                      </span>
+                                      <span className="tab-short" aria-hidden="true">
+                                        {entry.isExtra
+                                          ? `Ekstra ${entry.extraOrder ?? 1}`
+                                          : `${entry.week}. Hafta`}
+                                      </span>
                                     </span>
                                   </div>
 
@@ -948,7 +1019,9 @@ export function CurriculumArchive({
                           {/* En Öndeki Aktif Klasör (Front Active Manila Dossier) */}
                           {(() => {
                             const currentEntry = activeEntries[unlockedIndex];
-                            const currentTiming = `${monthNames[currentEntry.month - 1]}-${currentEntry.week}`;
+                            const currentTiming = currentEntry.isExtra
+                              ? `Ekstra ${currentEntry.extraOrder ?? 1}`
+                              : `${monthNames[currentEntry.month - 1]}-${currentEntry.week}`;
                             const isEntryPending = isPending && pendingEntryId === currentEntry.id;
 
                             return (
@@ -965,11 +1038,16 @@ export function CurriculumArchive({
                                 >
                                   <Layers className="h-3.5 w-3.5" aria-hidden="true" />
                                   <span>
-                                    <span className="tab-full">{`${currentTiming} · ${currentEntry.week}. Hafta`}</span>
-                                    <span
-                                      className="tab-short"
-                                      aria-hidden="true"
-                                    >{`${currentTiming} · ${currentEntry.week}.H`}</span>
+                                    <span className="tab-full">
+                                      {currentEntry.isExtra
+                                        ? `Ekstra ${currentEntry.extraOrder ?? 1} · İlave`
+                                        : `${currentTiming} · ${currentEntry.week}. Hafta`}
+                                    </span>
+                                    <span className="tab-short" aria-hidden="true">
+                                      {currentEntry.isExtra
+                                        ? `Ekstra ${currentEntry.extraOrder ?? 1}`
+                                        : `${currentTiming} · ${currentEntry.week}.H`}
+                                    </span>
                                   </span>
                                 </div>
 
@@ -1010,7 +1088,9 @@ export function CurriculumArchive({
                             return (
                               <>
                                 {visibleLockedEntries.map((lockedEntry, offsetIdx) => {
-                                  const lockedTiming = `${monthNames[lockedEntry.month - 1]}-${lockedEntry.week}`;
+                                  const lockedTiming = lockedEntry.isExtra
+                                    ? `Ekstra ${lockedEntry.extraOrder ?? 1}`
+                                    : `${monthNames[lockedEntry.month - 1]}-${lockedEntry.week}`;
                                   const depth = offsetIdx + 1;
                                   const isShaking = shakingEntryId === lockedEntry.id;
                                   const tabOffset = `clamp(0.6rem, calc(0.75rem + ${depth * 25}%), calc(100% - 6.5rem))`;
@@ -1042,11 +1122,16 @@ export function CurriculumArchive({
                                       >
                                         <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
                                         <span>
-                                          <span className="tab-full">{`${lockedTiming} · ${lockedEntry.week}. Hafta`}</span>
-                                          <span
-                                            className="tab-short"
-                                            aria-hidden="true"
-                                          >{`${lockedEntry.week}. Hafta`}</span>
+                                          <span className="tab-full">
+                                            {lockedEntry.isExtra
+                                              ? `Ekstra ${lockedEntry.extraOrder ?? 1} · İlave`
+                                              : `${lockedTiming} · ${lockedEntry.week}. Hafta`}
+                                          </span>
+                                          <span className="tab-short" aria-hidden="true">
+                                            {lockedEntry.isExtra
+                                              ? `Ekstra ${lockedEntry.extraOrder ?? 1}`
+                                              : `${lockedEntry.week}. Hafta`}
+                                          </span>
                                         </span>
                                       </div>
 
