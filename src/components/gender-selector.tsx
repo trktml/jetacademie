@@ -1,17 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  BookOpen,
-  Check,
-  ChevronRight,
-  Lock,
-  ShieldCheck,
-  Smartphone,
-  User,
-  Users,
-  X,
-} from "lucide-react";
+import { BookOpen, ChevronRight, Smartphone, User, Users, X } from "lucide-react";
 import { type Gender } from "@/lib/data/ilmihal-curriculum";
 
 export interface GenderSelectorProps {
@@ -77,30 +67,9 @@ export function GenderSelector({
 
   return (
     <div className="archive-gender-container" aria-label="İlmihal müfredat seçimi">
-      <div className="archive-gender-header">
-        <div className="archive-gender-title-wrap">
-          <Users className="h-4 w-4 text-[var(--accent-teal)]" aria-hidden="true" />
-          <span className="archive-gender-title">Müfredat Grubu</span>
-        </div>
-
-        <div className="archive-gender-status-badge">
-          {isSignedIn ? (
-            <span className="archive-gender-status archive-gender-status--synced">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />
-              <span>Hesabınıza Kaydediliyor</span>
-            </span>
-          ) : isGuest ? (
-            <span className="archive-gender-status archive-gender-status--guest">
-              <Smartphone className="h-3.5 w-3.5 text-sky-500" aria-hidden="true" />
-              <span>Misafir Modu (Bu Cihaz)</span>
-            </span>
-          ) : (
-            <span className="archive-gender-status archive-gender-status--anon">
-              <Lock className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
-              <span>Kaydetmek İçin Giriş Gerekir</span>
-            </span>
-          )}
-        </div>
+      <div className="archive-gender-title-wrap">
+        <Users className="h-3.5 w-3.5 shrink-0 text-[var(--accent-teal)]" aria-hidden="true" />
+        <span className="archive-gender-title">Müfredat</span>
       </div>
 
       <div
@@ -118,16 +87,13 @@ export function GenderSelector({
           className="archive-gender-btn archive-gender-btn--erkek"
           onClick={() => handleSelect("erkek")}
           disabled={isPending}
+          title="Erkek Müfredatı"
+          aria-label="Erkek Müfredatı"
         >
           <span className="archive-gender-icon" aria-hidden="true">
             👨
           </span>
-          <span className="archive-gender-btn__label">Erkek Müfredatı</span>
-          {currentGender === "erkek" && (
-            <span className="archive-gender-check" aria-hidden="true">
-              <Check className="h-3.5 w-3.5" />
-            </span>
-          )}
+          <span className="sr-only">Erkek Müfredatı</span>
         </button>
 
         <button
@@ -140,16 +106,13 @@ export function GenderSelector({
           className="archive-gender-btn archive-gender-btn--bayan"
           onClick={() => handleSelect("bayan")}
           disabled={isPending}
+          title="Bayan Müfredatı"
+          aria-label="Bayan Müfredatı"
         >
           <span className="archive-gender-icon" aria-hidden="true">
             👩
           </span>
-          <span className="archive-gender-btn__label">Bayan Müfredatı</span>
-          {currentGender === "bayan" && (
-            <span className="archive-gender-check" aria-hidden="true">
-              <Check className="h-3.5 w-3.5" />
-            </span>
-          )}
+          <span className="sr-only">Bayan Müfredatı</span>
         </button>
       </div>
 

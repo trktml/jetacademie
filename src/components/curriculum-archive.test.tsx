@@ -570,7 +570,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('id="history-card-ayet-eylul-1"');
   });
 
-  it("should render GradeSelector in the capsule navigation", () => {
+  it("should render GradeSelector and category nav container in the capsule navigation", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
@@ -578,6 +578,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('class="archive-capsule-grade-wrapper"');
     expect(html).toContain('class="grade-selector-trigger"');
     expect(html).toContain('class="grade-selector-trigger__num">1</span>');
+    expect(html).toContain('class="archive-capsule-nav-container"');
   });
 
   it("should render extra entries as continuation tabs in the folder stack, not in a separate section", () => {

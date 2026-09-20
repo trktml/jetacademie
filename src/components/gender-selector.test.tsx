@@ -21,6 +21,10 @@ describe("GenderSelector Component", () => {
     expect(html).toContain("Bayan Müfredatı");
     expect(html).toContain('id="gender-tab-erkek"');
     expect(html).toContain('id="gender-tab-bayan"');
+    expect(html).toContain("👨");
+    expect(html).toContain("👩");
+    expect(html).toContain('title="Erkek Müfredatı"');
+    expect(html).toContain('title="Bayan Müfredatı"');
   });
 
   it("sets active state on Erkek tab when currentGender is erkek", () => {
@@ -55,7 +59,7 @@ describe("GenderSelector Component", () => {
     expect(html).toContain('id="gender-tab-bayan" aria-selected="true"');
   });
 
-  it("renders signed-in status badge when user is authenticated", () => {
+  it("renders compact single-row container with Müfredat title", () => {
     const html = renderToString(
       <GenderSelector
         currentGender="erkek"
@@ -67,40 +71,11 @@ describe("GenderSelector Component", () => {
       />
     );
 
-    expect(html).toContain("archive-gender-status--synced");
-    expect(html).toContain("Hesabınıza Kaydediliyor");
-  });
-
-  it("renders guest status badge when in guest mode", () => {
-    const html = renderToString(
-      <GenderSelector
-        currentGender="bayan"
-        onGenderChange={() => {}}
-        onSelectGuest={() => {}}
-        onOpenAccount={() => {}}
-        isSignedIn={false}
-        isGuest={true}
-      />
-    );
-
-    expect(html).toContain("archive-gender-status--guest");
-    expect(html).toContain("Misafir Modu (Bu Cihaz)");
-  });
-
-  it("renders authentication required badge when visitor is anonymous and not guest", () => {
-    const html = renderToString(
-      <GenderSelector
-        currentGender="erkek"
-        onGenderChange={() => {}}
-        onSelectGuest={() => {}}
-        onOpenAccount={() => {}}
-        isSignedIn={false}
-        isGuest={false}
-      />
-    );
-
-    expect(html).toContain("archive-gender-status--anon");
-    expect(html).toContain("Kaydetmek İçin Giriş Gerekir");
+    expect(html).toContain("archive-gender-container");
+    expect(html).toContain("archive-gender-title");
+    expect(html).toContain("Müfredat");
+    expect(html).not.toContain("Misafir Modu");
+    expect(html).not.toContain("Hesabınıza Kaydediliyor");
   });
 
   it("renders professional, concise modal dialog when target gender is set", () => {

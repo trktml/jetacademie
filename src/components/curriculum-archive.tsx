@@ -678,62 +678,64 @@ export function CurriculumArchive({
           />
         </div>
 
-        {/* Mobilde sağa/sola kaydırılabilir olduğunu belirten zarif gradyan ve ok butonları */}
-        <button
-          type="button"
-          className="archive-capsule-scroll-hint archive-capsule-scroll-hint--left"
-          data-visible={canScrollLeft}
-          aria-label="Önceki kategoriler"
-          tabIndex={canScrollLeft ? 0 : -1}
-          onClick={() => scrollNav("left")}
-        >
-          <span className="archive-capsule-scroll-hint__icon-box" aria-hidden="true">
-            <ChevronLeft className="h-4 w-4" />
-          </span>
-        </button>
+        <div className="archive-capsule-nav-container">
+          {/* Mobilde sağa/sola kaydırılabilir olduğunu belirten zarif gradyan ve ok butonları */}
+          <button
+            type="button"
+            className="archive-capsule-scroll-hint archive-capsule-scroll-hint--left"
+            data-visible={canScrollLeft}
+            aria-label="Önceki kategoriler"
+            tabIndex={canScrollLeft ? 0 : -1}
+            onClick={() => scrollNav("left")}
+          >
+            <span className="archive-capsule-scroll-hint__icon-box" aria-hidden="true">
+              <ChevronLeft className="h-4 w-4" />
+            </span>
+          </button>
 
-        <nav ref={capsuleNavRef} className="archive-capsule-list" aria-label="Kategori Listesi">
-          {curriculumCategories.map((item) => {
-            const Icon = item.icon;
-            const currentActiveId = activeHistoryCategoryId || activeCategoryId;
-            const isActive = item.id === currentActiveId;
-            const shortLabel = getCategoryShortLabel(item.id);
+          <nav ref={capsuleNavRef} className="archive-capsule-list" aria-label="Kategori Listesi">
+            {curriculumCategories.map((item) => {
+              const Icon = item.icon;
+              const currentActiveId = activeHistoryCategoryId || activeCategoryId;
+              const isActive = item.id === currentActiveId;
+              const shortLabel = getCategoryShortLabel(item.id);
 
-            return (
-              <button
-                key={item.id}
-                ref={(el) => {
-                  categoryButtonRefs.current[item.id] = el;
-                }}
-                type="button"
-                className="archive-capsule-item"
-                data-active={isActive}
-                aria-current={isActive ? "true" : undefined}
-                aria-label={item.label}
-                title={item.label}
-                onClick={() => selectCategory(item.id)}
-              >
-                <span className="archive-capsule-icon-wrap" aria-hidden="true">
-                  <Icon />
-                </span>
-                <span className="archive-capsule-label">{shortLabel}</span>
-              </button>
-            );
-          })}
-        </nav>
+              return (
+                <button
+                  key={item.id}
+                  ref={(el) => {
+                    categoryButtonRefs.current[item.id] = el;
+                  }}
+                  type="button"
+                  className="archive-capsule-item"
+                  data-active={isActive}
+                  aria-current={isActive ? "true" : undefined}
+                  aria-label={item.label}
+                  title={item.label}
+                  onClick={() => selectCategory(item.id)}
+                >
+                  <span className="archive-capsule-icon-wrap" aria-hidden="true">
+                    <Icon />
+                  </span>
+                  <span className="archive-capsule-label">{shortLabel}</span>
+                </button>
+              );
+            })}
+          </nav>
 
-        <button
-          type="button"
-          className="archive-capsule-scroll-hint archive-capsule-scroll-hint--right"
-          data-visible={canScrollRight}
-          aria-label="Daha fazla kategori"
-          tabIndex={canScrollRight ? 0 : -1}
-          onClick={() => scrollNav("right")}
-        >
-          <span className="archive-capsule-scroll-hint__icon-box" aria-hidden="true">
-            <ChevronRight className="h-4 w-4" />
-          </span>
-        </button>
+          <button
+            type="button"
+            className="archive-capsule-scroll-hint archive-capsule-scroll-hint--right"
+            data-visible={canScrollRight}
+            aria-label="Daha fazla kategori"
+            tabIndex={canScrollRight ? 0 : -1}
+            onClick={() => scrollNav("right")}
+          >
+            <span className="archive-capsule-scroll-hint__icon-box" aria-hidden="true">
+              <ChevronRight className="h-4 w-4" />
+            </span>
+          </button>
+        </div>
       </aside>
 
       {/* Eğer bir kategori geçmişi seçildiyse bağımsız Özel Geçmiş Alanı gösterilir */}
@@ -811,7 +813,7 @@ export function CurriculumArchive({
 
             {/* İlmihal Geçmişi için Erkek / Bayan Müfredat Seçici */}
             {activeHistoryCategory.id === "ilmihal" && (
-              <div className="archive-history-gender-wrap mb-4">
+              <div className="archive-history-gender-wrap mb-1">
                 <GenderSelector
                   currentGender={activeGender}
                   onGenderChange={handleGenderChange}
