@@ -1,8 +1,12 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, mock } from "bun:test";
 import React from "react";
 import { renderToString } from "react-dom/server";
 
-import { CurriculumArchive, UNDO_DURATION_SECONDS } from "./curriculum-archive";
+import {
+  CurriculumArchive,
+  UNDO_DURATION_SECONDS,
+  scrollCategoryIntoView,
+} from "./curriculum-archive";
 
 describe("CurriculumArchive Component", () => {
   it("should render fixed capsule navigation with 9 category items", () => {
@@ -668,5 +672,79 @@ describe("CurriculumArchive Component", () => {
 
     expect(html).toContain("Dersi Görüntüle");
     expect(html).toContain("archive-reading-action");
+  });
+
+  describe("scrollCategoryIntoView", () => {
+    it("safely handles missing window or element gracefully", () => {
+      expect(() => scrollCategoryIntoView("non-existent-category")).not.toThrow();
+    });
+
+    it("scrolls on desktop using scrollIntoView with start alignment", () => {
+      const mockElement = {
+        scrollIntoView: mock(),
+      };
+      const originalWindow = globalThis.window;
+      const originalDocument = globalThis.document;
+
+      try {
+        (globalThis as unknown as { window: unknown }).window = {
+          innerWidth: 1024,
+        };
+        (globalThis as unknown as { document: unknown }).document = {
+          getElementById: (id: string) => (id === "ayet" ? mockElement : null),
+        };
+
+        scrollCategoryIntoView("ayet");
+        expect(mockElement.scrollIntoView).toHaveBeenCalledWith({
+          behavior: "smooth",
+          block: "start",
+        });
+      } finally {
+        (globalThis as unknown as { window: unknown }).window = originalWindow;
+        (globalThis as unknown as { document: unknown }).document = originalDocument;
+      }
+    });
+
+    it("scrolls on mobile taking header and fixed capsule offsets into account", () => {
+      const mockElement = {
+        getBoundingClientRect: () => ({ top: 600 }),
+      };
+      const mockHeader = {
+        getBoundingClientRect: () => ({ height: 50 }),
+      };
+      const mockCapsule = {
+        getBoundingClientRect: () => ({ height: 60 }),
+      };
+      const mockScrollTo = mock();
+
+      const originalWindow = globalThis.window;
+      const originalDocument = globalThis.document;
+
+      try {
+        (globalThis as unknown as { window: unknown }).window = {
+          innerWidth: 375,
+          scrollY: 100,
+          scrollTo: mockScrollTo,
+        };
+        (globalThis as unknown as { document: unknown }).document = {
+          getElementById: (id: string) => (id === "hadis" ? mockElement : null),
+          querySelector: (selector: string) => {
+            if (selector === ".site-header") return mockHeader;
+            if (selector === ".archive-fixed-capsule") return mockCapsule;
+            return null;
+          },
+        };
+
+        scrollCategoryIntoView("hadis");
+        // elementTop = 600 + 100 = 700. totalOffset = 50 + 60 + 16 = 126. top = 700 - 126 = 574.
+        expect(mockScrollTo).toHaveBeenCalledWith({
+          top: 574,
+          behavior: "smooth",
+        });
+      } finally {
+        (globalThis as unknown as { window: unknown }).window = originalWindow;
+        (globalThis as unknown as { document: unknown }).document = originalDocument;
+      }
+    });
   });
 });

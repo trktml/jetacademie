@@ -82,6 +82,33 @@ interface CurriculumArchiveProps {
   initialHistoryViewCategoryIds?: Record<string, boolean>;
 }
 
+export function scrollCategoryIntoView(categoryId: string) {
+  if (typeof window === "undefined") return;
+  const targetElement = document.getElementById(categoryId);
+  if (!targetElement) return;
+
+  const isMobile = window.innerWidth <= 767;
+  if (isMobile) {
+    const header = document.querySelector(".site-header");
+    const capsule = document.querySelector(".archive-fixed-capsule");
+    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    const capsuleHeight = capsule ? capsule.getBoundingClientRect().height : 0;
+    const totalOffset = (headerHeight || 56) + (capsuleHeight || 70) + 16;
+    const elementTop = targetElement.getBoundingClientRect().top + window.scrollY;
+
+    if (typeof window.scrollTo === "function") {
+      window.scrollTo({
+        top: Math.max(0, elementTop - totalOffset),
+        behavior: "smooth",
+      });
+    }
+  } else {
+    if (typeof targetElement.scrollIntoView === "function") {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+}
+
 export function CurriculumArchive({
   initialCompletedEntryIds,
   isSignedIn,
@@ -468,26 +495,15 @@ export function CurriculumArchive({
   }
 
   function scrollToCategory(categoryId: CurriculumCategoryId) {
-    if (typeof window === "undefined") return;
-    const targetElement = document.getElementById(categoryId);
-    if (!targetElement) return;
-
-    const isMobile = window.innerWidth <= 767;
-    if (isMobile) {
-      const header = document.querySelector(".site-header");
-      const capsule = document.querySelector(".archive-fixed-capsule");
-      const headerHeight = header ? header.getBoundingClientRect().height : 0;
-      const capsuleHeight = capsule ? capsule.getBoundingClientRect().height : 0;
-      const totalOffset = (headerHeight || 56) + (capsuleHeight || 70) + 16;
-      const elementTop = targetElement.getBoundingClientRect().top + window.scrollY;
-
-      window.scrollTo({
-        top: Math.max(0, elementTop - totalOffset),
-        behavior: "smooth",
-      });
-    } else {
-      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    isProgrammaticScrollRef.current = true;
+    if (programmaticScrollTimeoutRef.current) {
+      clearTimeout(programmaticScrollTimeoutRef.current);
     }
+    programmaticScrollTimeoutRef.current = setTimeout(() => {
+      isProgrammaticScrollRef.current = false;
+    }, 850);
+
+    scrollCategoryIntoView(categoryId);
   }
 
   function selectCategory(categoryId: CurriculumCategoryId) {
@@ -496,13 +512,6 @@ export function CurriculumArchive({
       return;
     }
     setActiveCategoryId(categoryId);
-    isProgrammaticScrollRef.current = true;
-    if (programmaticScrollTimeoutRef.current) {
-      clearTimeout(programmaticScrollTimeoutRef.current);
-    }
-    programmaticScrollTimeoutRef.current = setTimeout(() => {
-      isProgrammaticScrollRef.current = false;
-    }, 850);
 
     if (typeof window !== "undefined") {
       if (window.history?.replaceState) {
@@ -590,9 +599,15 @@ export function CurriculumArchive({
       return;
     }
 
+    setExpandedReadingEntryId(null);
+    scrollToCategory(categoryId);
+
     if (isGuest) {
       guestCompleteEntry(entryId);
       triggerUndoCountdown(entryId, timingLabel, categoryId);
+      setTimeout(() => {
+        scrollToCategory(categoryId);
+      }, 60);
       return;
     }
 
@@ -602,6 +617,9 @@ export function CurriculumArchive({
         await markEntryAsRead(entryId);
         setCompletedEntryIds((ids) => [...new Set([...ids, entryId])]);
         triggerUndoCountdown(entryId, timingLabel, categoryId);
+        setTimeout(() => {
+          scrollToCategory(categoryId);
+        }, 60);
       } catch (error) {
         showToast(
           error instanceof Error ? error.message : "İlerleme kaydedilemedi.",
