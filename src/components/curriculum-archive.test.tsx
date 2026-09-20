@@ -487,4 +487,82 @@ describe("CurriculumArchive Component", () => {
     const undoBtnCount = (html.match(/class="secondary-button archive-undo-button"/g) || []).length;
     expect(undoBtnCount).toBe(1);
   });
+
+  it("should render dedicated history screen without other categories underneath when history view is open", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+        initialHistoryViewCategoryIds={{ ayet: true }}
+      />
+    );
+
+    // Dedicated history screen should be rendered
+    expect(html).toContain('class="archive-main-column archive-main-column--history"');
+    expect(html).toContain('class="archive-history-screen"');
+    expect(html).toContain('class="archive-history-header"');
+
+    // Other categories must NOT be present in history mode to prevent mixing/confusion
+    expect(html).not.toContain('id="hadis"');
+    expect(html).not.toContain('id="siyer"');
+    expect(html).not.toContain('id="risale"');
+    expect(html).not.toContain('class="archive-category-separator"');
+  });
+
+  it("should render 'Git' button and quick selection dropdown with completed entries in history toolbar", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+        initialHistoryViewCategoryIds={{ ayet: true }}
+      />
+    );
+
+    // History jump toolbar
+    expect(html).toContain('class="archive-history-toolbar"');
+    expect(html).toContain("Hızlı Seçim:");
+
+    // Select dropdown with options
+    expect(html).toContain('id="history-jump-select"');
+    expect(html).toContain('value="ayet-eylul-1"');
+    expect(html).toContain('value="ayet-eylul-2"');
+    expect(html).toContain("Bakara Suresi 2:152 — Beni Anın");
+    expect(html).toContain("Âl-i İmran 3:159 — Şûrâ ve Tevekkül");
+
+    // The prominent "Git" button
+    expect(html).toContain('class="archive-history-jump__btn"');
+    expect(html).toContain("<span>Git</span>");
+    expect(html).toContain('aria-label="Seçilen geçmiş dosyasına git"');
+  });
+
+  it("should render quick jump chips for En Yeni, En Eski and month pills when multiple entries exist", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+        initialHistoryViewCategoryIds={{ ayet: true }}
+      />
+    );
+
+    expect(html).toContain('class="archive-history-chips"');
+    expect(html).toContain("En Yeni");
+    expect(html).toContain("En Eski");
+    expect(html).toContain("Eylül (2)");
+  });
+
+  it("should assign id='history-card-[id]' to completed cards for jump targeting", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+        initialHistoryViewCategoryIds={{ ayet: true }}
+      />
+    );
+
+    expect(html).toContain('id="history-card-ayet-eylul-1"');
+  });
 });
