@@ -5,10 +5,12 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
+  BookOpen,
   Check,
   ChevronLeft,
   ChevronRight,
   Compass,
+  EyeOff,
   FileClock,
   FolderArchive,
   FolderOpen,
@@ -17,6 +19,7 @@ import {
   LockKeyhole,
   RotateCcw,
   Sparkles,
+  X,
 } from "lucide-react";
 import {
   curriculumCategories,
@@ -28,9 +31,14 @@ import {
   type CurriculumEntry,
 } from "@/lib/curriculum";
 import { markEntryAsRead, unmarkEntryAsRead } from "@/app/mufredat/actions";
+import { updateUserGender } from "@/app/mufredat/gender-actions";
+import { type Gender } from "@/lib/data/ilmihal-curriculum";
+import { GenderSelector } from "@/components/gender-selector";
+import { InlinePdfViewer } from "@/components/inline-pdf-viewer";
 
 import { useUiStore } from "@/store/use-ui-store";
 import { useGuestStore } from "@/store/use-guest-store";
+import { useReadingProgressStore } from "@/store/use-reading-progress-store";
 import { isValidGrade, useCurriculumStore } from "@/store/use-curriculum-store";
 import { GradeSelector } from "@/components/grade-selector";
 
@@ -49,9 +57,24 @@ const monthNames = [
   "Aralık",
 ];
 
+export const UNDO_DURATION_SECONDS = 7;
+
+export interface UndoState {
+  entryId: string;
+  timingLabel: string;
+  categoryId: CurriculumCategoryId;
+}
+
+export interface ToastState {
+  message: string;
+  type: "success" | "warning" | "error";
+  hasUndo?: boolean;
+}
+
 interface CurriculumArchiveProps {
   initialCompletedEntryIds: string[];
   isSignedIn: boolean;
+  initialGender?: "erkek" | "bayan" | null;
   customEntries?: readonly CurriculumEntry[];
   allEntries?: readonly CurriculumEntry[];
   initialGrade?: number;
@@ -62,6 +85,7 @@ interface CurriculumArchiveProps {
 export function CurriculumArchive({
   initialCompletedEntryIds,
   isSignedIn,
+  initialGender = null,
   customEntries,
   allEntries,
   initialGrade = 1,
@@ -70,11 +94,14 @@ export function CurriculumArchive({
 }: CurriculumArchiveProps) {
   const [activeCategoryId, setActiveCategoryId] = useState<CurriculumCategoryId>(initialCategoryId);
   const [completedEntryIds, setCompletedEntryIds] = useState(initialCompletedEntryIds);
+  const [userGender, setUserGender] = useState<Gender | null>(initialGender ?? null);
+  const [isGenderUpdating, setIsGenderUpdating] = useState(false);
   const [pendingEntryId, setPendingEntryId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "warning" | "error";
-  } | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const [undoState, setUndoState] = useState<UndoState | null>(null);
+  const [undoSecondsLeft, setUndoSecondsLeft] = useState<number>(0);
+  const undoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [shakingEntryId, setShakingEntryId] = useState<string | null>(null);
 
   const initialHistoryCategory = useMemo(() => {
@@ -88,6 +115,8 @@ export function CurriculumArchive({
   const [selectedCompletedIndexes, setSelectedCompletedIndexes] = useState<
     Partial<Record<CurriculumCategoryId, number>>
   >({});
+  const [expandedReadingEntryId, setExpandedReadingEntryId] = useState<string | null>(null);
+  const readingProgressMap = useReadingProgressStore((s) => s.progressMap);
   const [isPending, startTransition] = useTransition();
   const openAccount = useUiStore((state) => state.openAccount);
 
@@ -96,6 +125,133 @@ export function CurriculumArchive({
   const guestCompleteEntry = useGuestStore((s) => s.completeEntry);
   const guestUncompleteEntry = useGuestStore((s) => s.uncompleteEntry);
   const guestCompletedIds = useGuestStore((s) => s.completedEntryIds);
+  const guestGender = useGuestStore((s) => s.gender);
+  const guestSetGender = useGuestStore((s) => s.setGender);
+
+  const activeGender: Gender = isSignedIn ? (userGender ?? "erkek") : (guestGender ?? "erkek");
+
+  const clearUndo = useCallback(() => {
+    if (undoTimerRef.current) {
+      clearInterval(undoTimerRef.current);
+      undoTimerRef.current = null;
+    }
+    setUndoState(null);
+    setUndoSecondsLeft(0);
+  }, []);
+
+  const dismissToast = useCallback(() => {
+    clearUndo();
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+    setToast(null);
+  }, [clearUndo]);
+
+  const showToast = useCallback(
+    (message: string, type: "success" | "warning" | "error", durationMs = 3500) => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = null;
+      }
+      setToast({ message, type, hasUndo: false });
+      toastTimerRef.current = setTimeout(() => {
+        setToast(null);
+      }, durationMs);
+    },
+    []
+  );
+
+  const triggerUndoCountdown = useCallback(
+    (entryId: string, timingLabel: string, categoryId: CurriculumCategoryId) => {
+      clearUndo();
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = null;
+      }
+
+      setUndoState({ entryId, timingLabel, categoryId });
+      setUndoSecondsLeft(UNDO_DURATION_SECONDS);
+
+      setToast({
+        message: `${timingLabel} okundu olarak kaydedildi.`,
+        type: "success",
+        hasUndo: true,
+      });
+
+      undoTimerRef.current = setInterval(() => {
+        setUndoSecondsLeft((prev) => {
+          if (prev <= 1) {
+            if (undoTimerRef.current) {
+              clearInterval(undoTimerRef.current);
+              undoTimerRef.current = null;
+            }
+            setUndoState(null);
+            toastTimerRef.current = setTimeout(() => {
+              setToast(null);
+            }, 1200);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    },
+    [clearUndo]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (undoTimerRef.current) clearInterval(undoTimerRef.current);
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
+  function handleGenderChange(newGender: Gender) {
+    if (isSignedIn) {
+      setIsGenderUpdating(true);
+      startTransition(async () => {
+        try {
+          await updateUserGender(newGender);
+          setUserGender(newGender);
+          setSelectedCompletedIndexes((prev) => ({ ...prev, ilmihal: 0 }));
+          setSelectedJumpEntryId("");
+          showToast(
+            `${newGender === "erkek" ? "Erkek" : "Bayan"} müfredatı seçildi ve hesabınıza kaydedildi.`,
+            "success",
+            3500
+          );
+        } catch (error) {
+          showToast(
+            error instanceof Error ? error.message : "Tercih kaydedilemedi.",
+            "error",
+            4000
+          );
+        } finally {
+          setIsGenderUpdating(false);
+        }
+      });
+    } else if (isGuest) {
+      guestSetGender(newGender);
+      setSelectedCompletedIndexes((prev) => ({ ...prev, ilmihal: 0 }));
+      setSelectedJumpEntryId("");
+      showToast(
+        `${newGender === "erkek" ? "Erkek" : "Bayan"} müfredatı seçildi (Misafir Modu).`,
+        "success",
+        3500
+      );
+    }
+  }
+
+  function handleSelectGuestGender(newGender: Gender) {
+    guestSetGender(newGender);
+    setSelectedCompletedIndexes((prev) => ({ ...prev, ilmihal: 0 }));
+    setSelectedJumpEntryId("");
+    showToast(
+      `Misafir modu etkinleştirildi: ${newGender === "erkek" ? "Erkek" : "Bayan"} müfredatı seçildi.`,
+      "success",
+      3500
+    );
+  }
 
   const completedSet = useMemo(
     () => new Set(isGuest ? guestCompletedIds : completedEntryIds),
@@ -162,8 +318,13 @@ export function CurriculumArchive({
 
   const activeHistoryEntries = useMemo(() => {
     if (!activeHistoryCategory) return [];
-    return getCategoryEntries(activeHistoryCategory.id, currentGradeEntries);
-  }, [activeHistoryCategory, currentGradeEntries]);
+    return getCategoryEntries(
+      activeHistoryCategory.id,
+      currentGradeEntries,
+      selectedGrade,
+      activeHistoryCategory.id === "ilmihal" ? activeGender : undefined
+    );
+  }, [activeHistoryCategory, currentGradeEntries, selectedGrade, activeGender]);
 
   const historyCompletedEntries = useMemo(() => {
     return activeHistoryEntries
@@ -416,14 +577,14 @@ export function CurriculumArchive({
       setShakingEntryId(entryId);
       setTimeout(() => setShakingEntryId(null), 500);
     }
-    setToast({
-      message: "Önce sıradaki içeriği okumalısınız. Müfredat dosyaları sırayla açılmaktadır.",
-      type: "warning",
-    });
-    setTimeout(() => setToast(null), 3500);
+    showToast(
+      "Önce sıradaki içeriği okumalısınız. Müfredat dosyaları sırayla açılmaktadır.",
+      "warning",
+      3500
+    );
   }
 
-  function completeEntry(entryId: string, timingLabel: string) {
+  function completeEntry(entryId: string, timingLabel: string, categoryId: CurriculumCategoryId) {
     if (!isSignedIn && !isGuest) {
       openAccount();
       return;
@@ -431,11 +592,7 @@ export function CurriculumArchive({
 
     if (isGuest) {
       guestCompleteEntry(entryId);
-      setToast({
-        message: `${timingLabel} okundu olarak kaydedildi. 📱 İlerlemeniz bu cihazda saklanıyor.`,
-        type: "success",
-      });
-      setTimeout(() => setToast(null), 3500);
+      triggerUndoCountdown(entryId, timingLabel, categoryId);
       return;
     }
 
@@ -444,17 +601,13 @@ export function CurriculumArchive({
       try {
         await markEntryAsRead(entryId);
         setCompletedEntryIds((ids) => [...new Set([...ids, entryId])]);
-        setToast({
-          message: `${timingLabel} okundu olarak kaydedildi. Sıradaki dosyanın kilidi açıldı!`,
-          type: "success",
-        });
-        setTimeout(() => setToast(null), 3500);
+        triggerUndoCountdown(entryId, timingLabel, categoryId);
       } catch (error) {
-        setToast({
-          message: error instanceof Error ? error.message : "İlerleme kaydedilemedi.",
-          type: "error",
-        });
-        setTimeout(() => setToast(null), 4000);
+        showToast(
+          error instanceof Error ? error.message : "İlerleme kaydedilemedi.",
+          "error",
+          4000
+        );
       } finally {
         setPendingEntryId(null);
       }
@@ -467,13 +620,11 @@ export function CurriculumArchive({
       return;
     }
 
+    clearUndo();
+
     if (isGuest) {
       guestUncompleteEntry(entryId);
-      setToast({
-        message: `${timingLabel} içeriği okunmadı olarak güncellendi.`,
-        type: "success",
-      });
-      setTimeout(() => setToast(null), 3500);
+      showToast(`${timingLabel} içeriği okunmadı olarak güncellendi.`, "success", 3500);
       return;
     }
 
@@ -482,21 +633,19 @@ export function CurriculumArchive({
       try {
         await unmarkEntryAsRead(entryId);
         setCompletedEntryIds((ids) => ids.filter((id) => id !== entryId));
-        setToast({
-          message: `${timingLabel} içeriği okunmadı olarak güncellendi.`,
-          type: "success",
-        });
-        setTimeout(() => setToast(null), 3500);
+        showToast(`${timingLabel} içeriği okunmadı olarak güncellendi.`, "success", 3500);
       } catch (error) {
-        setToast({
-          message: error instanceof Error ? error.message : "İşlem geri alınamadı.",
-          type: "error",
-        });
-        setTimeout(() => setToast(null), 4000);
+        showToast(error instanceof Error ? error.message : "İşlem geri alınamadı.", "error", 4000);
       } finally {
         setPendingEntryId(null);
       }
     });
+  }
+
+  function handleUndo() {
+    if (!undoState) return;
+    const { entryId, timingLabel } = undoState;
+    unmarkEntry(entryId, timingLabel);
   }
 
   return (
@@ -602,7 +751,15 @@ export function CurriculumArchive({
                   </div>
                   <div>
                     <div className="archive-category-title-wrap">
-                      <h2 className="archive-category-title">{activeHistoryCategory.label}</h2>
+                      <h2 className="archive-category-title">
+                        {activeHistoryCategory.label}
+                        {activeHistoryCategory.id === "ilmihal" && (
+                          <span className="text-sm font-normal opacity-75">
+                            {" "}
+                            ({activeGender === "erkek" ? "Erkek" : "Bayan"})
+                          </span>
+                        )}
+                      </h2>
                       <span className="archive-history-header__badge">
                         <FolderArchive
                           className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
@@ -633,6 +790,21 @@ export function CurriculumArchive({
                 </div>
               </div>
             </header>
+
+            {/* İlmihal Geçmişi için Erkek / Bayan Müfredat Seçici */}
+            {activeHistoryCategory.id === "ilmihal" && (
+              <div className="archive-history-gender-wrap mb-4">
+                <GenderSelector
+                  currentGender={activeGender}
+                  onGenderChange={handleGenderChange}
+                  onSelectGuest={handleSelectGuestGender}
+                  onOpenAccount={openAccount}
+                  isSignedIn={isSignedIn}
+                  isGuest={isGuest}
+                  isPending={isGenderUpdating || isPending}
+                />
+              </div>
+            )}
 
             {/* Geçmişte Yolculuk & Hızlı Seçim Araç Çubuğu */}
             {historyCompletedEntries.length > 0 && (
@@ -777,6 +949,49 @@ export function CurriculumArchive({
                       <h3 className="archive-entry-title">{entry.title}</h3>
                       {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
 
+                      {entry.pdfUrl && (
+                        <div className="archive-history-reading-action mt-2 mb-2 flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              className="secondary-button archive-read-button inline-flex min-h-[40px] items-center gap-1.5"
+                              onClick={() =>
+                                setExpandedReadingEntryId((prev) =>
+                                  prev === entry.id ? null : entry.id
+                                )
+                              }
+                              aria-expanded={expandedReadingEntryId === entry.id}
+                              aria-label={`${entry.title} ders metnini görüntüle`}
+                            >
+                              {expandedReadingEntryId === entry.id ? (
+                                <>
+                                  <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
+                                  <span>Görüntülemeyi Kapat</span>
+                                </>
+                              ) : (
+                                <>
+                                  <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+                                  <span>
+                                    {(readingProgressMap[entry.id] || 1) > 1
+                                      ? `Dersi Görüntüle (s. ${readingProgressMap[entry.id]})`
+                                      : "Dersi Görüntüle"}
+                                  </span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+
+                          {expandedReadingEntryId === entry.id && (
+                            <InlinePdfViewer
+                              pdfUrl={entry.pdfUrl}
+                              title={entry.title}
+                              entryId={entry.id}
+                              onClose={() => setExpandedReadingEntryId(null)}
+                            />
+                          )}
+                        </div>
+                      )}
+
                       {isLatest && (
                         <div className="archive-entry-actions">
                           <button
@@ -815,7 +1030,12 @@ export function CurriculumArchive({
         <div className="archive-main-column">
           {curriculumCategories.map((activeCategory, categoryIndex) => {
             const ActiveIcon = activeCategory.icon;
-            const activeEntries = getCategoryEntries(activeCategory.id, currentGradeEntries);
+            const activeEntries = getCategoryEntries(
+              activeCategory.id,
+              currentGradeEntries,
+              selectedGrade,
+              activeCategory.id === "ilmihal" ? activeGender : undefined
+            );
             const unlockedIndex = getUnlockedEntryIndex(activeEntries, completedSet);
             const completedEntries = activeEntries
               .filter((entry) => completedSet.has(entry.id))
@@ -908,6 +1128,19 @@ export function CurriculumArchive({
 
                   {/* Klasör İçi Arşiv Yığını (Physical Folder Deck Interior) */}
                   <div className="archive-category-body archive-drawer-interior">
+                    {/* İlmihal için Erkek / Bayan Müfredat Seçici */}
+                    {activeCategory.id === "ilmihal" && (
+                      <GenderSelector
+                        currentGender={activeGender}
+                        onGenderChange={handleGenderChange}
+                        onSelectGuest={handleSelectGuestGender}
+                        onOpenAccount={openAccount}
+                        isSignedIn={isSignedIn}
+                        isGuest={isGuest}
+                        isPending={isGenderUpdating || isPending}
+                      />
+                    )}
+
                     {activeEntries.length === 0 ? (
                       <div className="archive-empty-card">
                         <div className="archive-empty-card__icon" aria-hidden="true">
@@ -933,6 +1166,18 @@ export function CurriculumArchive({
                               {`Tüm ${activeCategory.label} Dosyaları Tamamlandı!`}
                             </h3>
                           </div>
+                          {undoState && undoState.categoryId === activeCategory.id && (
+                            <button
+                              type="button"
+                              className="secondary-button archive-inline-undo-button"
+                              onClick={handleUndo}
+                              disabled={isPending}
+                              aria-label={`${undoState.timingLabel} okundu işaretini geri al (${undoSecondsLeft} saniye)`}
+                            >
+                              <RotateCcw aria-hidden="true" className="h-4 w-4" />
+                              <span>Geri Al ({undoSecondsLeft}s)</span>
+                            </button>
+                          )}
                         </div>
 
                         <div className="archive-folder-stack">
@@ -990,6 +1235,55 @@ export function CurriculumArchive({
 
                                   <h3 className="archive-entry-title">{entry.title}</h3>
                                   {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
+
+                                  {isFront && entry.pdfUrl && (
+                                    <div className="archive-history-reading-action mt-3 flex flex-col gap-2">
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          type="button"
+                                          className="secondary-button archive-read-button inline-flex min-h-[40px] items-center gap-1.5"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setExpandedReadingEntryId((prev) =>
+                                              prev === entry.id ? null : entry.id
+                                            );
+                                          }}
+                                          aria-expanded={expandedReadingEntryId === entry.id}
+                                          aria-label={`${entry.title} ders metnini görüntüle`}
+                                        >
+                                          {expandedReadingEntryId === entry.id ? (
+                                            <>
+                                              <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
+                                              <span>Görüntülemeyi Kapat</span>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <BookOpen
+                                                className="h-3.5 w-3.5"
+                                                aria-hidden="true"
+                                              />
+                                              <span>
+                                                {(readingProgressMap[entry.id] || 1) > 1
+                                                  ? `Dersi Görüntüle (s. ${readingProgressMap[entry.id]})`
+                                                  : "Dersi Görüntüle"}
+                                              </span>
+                                            </>
+                                          )}
+                                        </button>
+                                      </div>
+
+                                      {expandedReadingEntryId === entry.id && (
+                                        <div onClick={(e) => e.stopPropagation()}>
+                                          <InlinePdfViewer
+                                            pdfUrl={entry.pdfUrl}
+                                            title={entry.title}
+                                            entryId={entry.id}
+                                            onClose={() => setExpandedReadingEntryId(null)}
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                                 </article>
                               );
                             })}
@@ -1046,16 +1340,89 @@ export function CurriculumArchive({
                                   <p className="archive-entry-desc">{currentEntry.body}</p>
                                 )}
 
+                                {currentEntry.pdfUrl && (
+                                  <div className="archive-reading-action mb-4 flex flex-col gap-3">
+                                    <div className="flex flex-wrap items-center gap-2.5">
+                                      <button
+                                        type="button"
+                                        className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition-all active:scale-[0.98] ${
+                                          expandedReadingEntryId === currentEntry.id
+                                            ? "bg-stone-700 text-stone-100 hover:bg-stone-600 dark:bg-stone-800 dark:hover:bg-stone-700"
+                                            : "bg-emerald-700 text-white hover:bg-emerald-600"
+                                        }`}
+                                        onClick={() =>
+                                          setExpandedReadingEntryId((prev) =>
+                                            prev === currentEntry.id ? null : currentEntry.id
+                                          )
+                                        }
+                                        aria-expanded={expandedReadingEntryId === currentEntry.id}
+                                        aria-label={`${currentEntry.title} dersini görüntüle`}
+                                      >
+                                        {expandedReadingEntryId === currentEntry.id ? (
+                                          <>
+                                            <EyeOff className="h-4 w-4" aria-hidden="true" />
+                                            <span>Görüntülemeyi Kapat</span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <BookOpen className="h-4 w-4" aria-hidden="true" />
+                                            <span>
+                                              {(readingProgressMap[currentEntry.id] || 1) > 1
+                                                ? `Dersi Görüntüle (s. ${readingProgressMap[currentEntry.id]})`
+                                                : "Dersi Görüntüle"}
+                                            </span>
+                                          </>
+                                        )}
+                                      </button>
+                                      {(readingProgressMap[currentEntry.id] || 1) > 1 &&
+                                        expandedReadingEntryId !== currentEntry.id && (
+                                          <span className="rounded-lg border border-emerald-300 bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
+                                            {readingProgressMap[currentEntry.id]}. sayfada kaldınız
+                                          </span>
+                                        )}
+                                    </div>
+
+                                    {/* Inline PDF Viewer rendered directly below the card */}
+                                    {expandedReadingEntryId === currentEntry.id && (
+                                      <InlinePdfViewer
+                                        pdfUrl={currentEntry.pdfUrl}
+                                        title={currentEntry.title}
+                                        entryId={currentEntry.id}
+                                        onClose={() => setExpandedReadingEntryId(null)}
+                                      />
+                                    )}
+                                  </div>
+                                )}
+
                                 <div className="archive-entry-actions">
                                   <button
                                     type="button"
                                     className="primary-button archive-complete-button"
-                                    onClick={() => completeEntry(currentEntry.id, currentTiming)}
+                                    onClick={() =>
+                                      completeEntry(
+                                        currentEntry.id,
+                                        currentTiming,
+                                        activeCategory.id
+                                      )
+                                    }
                                     disabled={isEntryPending}
                                   >
                                     <Check aria-hidden="true" />
                                     {isEntryPending ? "Kaydediliyor…" : "Okundu işaretle"}
                                   </button>
+
+                                  {undoState && undoState.categoryId === activeCategory.id && (
+                                    <button
+                                      type="button"
+                                      className="secondary-button archive-inline-undo-button"
+                                      onClick={handleUndo}
+                                      disabled={isEntryPending}
+                                      aria-label={`${undoState.timingLabel} okundu işaretini geri al (${undoSecondsLeft} saniye)`}
+                                    >
+                                      <RotateCcw aria-hidden="true" />
+                                      <span>Geri Al ({undoSecondsLeft}s)</span>
+                                    </button>
+                                  )}
                                 </div>
                               </article>
                             );
@@ -1150,17 +1517,63 @@ export function CurriculumArchive({
       )}
 
       {toast && (
-        <aside className="archive-toast" data-type={toast.type} role="status" aria-live="polite">
-          {toast.type === "success" && (
-            <Check aria-hidden="true" className="h-4 w-4 shrink-0 text-emerald-400" />
+        <aside
+          className="archive-toast"
+          data-type={toast.type}
+          data-has-undo={Boolean(toast.hasUndo && undoState)}
+          role="status"
+          aria-live="polite"
+        >
+          <div className="archive-toast-content">
+            <div className="archive-toast-message-wrap">
+              {toast.type === "success" && (
+                <Check aria-hidden="true" className="h-4 w-4 shrink-0 text-emerald-400" />
+              )}
+              {toast.type === "warning" && (
+                <LockKeyhole aria-hidden="true" className="h-4 w-4 shrink-0 text-amber-400" />
+              )}
+              {toast.type === "error" && (
+                <AlertCircle aria-hidden="true" className="h-4 w-4 shrink-0 text-rose-400" />
+              )}
+              <span className="archive-toast-message">{toast.message}</span>
+            </div>
+
+            {toast.hasUndo && undoState && (
+              <div className="archive-toast-actions">
+                <button
+                  type="button"
+                  className="archive-toast-undo-button"
+                  onClick={handleUndo}
+                  disabled={isPending}
+                  aria-label={`${undoState.timingLabel} okundu işaretini geri al (${undoSecondsLeft} saniye kaldı)`}
+                >
+                  <RotateCcw aria-hidden="true" className="h-3.5 w-3.5" />
+                  <span>Geri Al</span>
+                  <span className="archive-undo-badge" aria-hidden="true">
+                    {undoSecondsLeft}s
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="archive-toast-close-button"
+                  onClick={dismissToast}
+                  aria-label="Bildirimi kapat"
+                >
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {toast.hasUndo && undoState && (
+            <div
+              className="archive-toast-progress-bar"
+              aria-hidden="true"
+              style={{
+                width: `${(undoSecondsLeft / UNDO_DURATION_SECONDS) * 100}%`,
+              }}
+            />
           )}
-          {toast.type === "warning" && (
-            <LockKeyhole aria-hidden="true" className="h-4 w-4 shrink-0 text-amber-400" />
-          )}
-          {toast.type === "error" && (
-            <AlertCircle aria-hidden="true" className="h-4 w-4 shrink-0 text-rose-400" />
-          )}
-          <span>{toast.message}</span>
         </aside>
       )}
     </div>

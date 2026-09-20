@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
+import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
 
 export const curriculumCategoryIds = [
   "ayet",
@@ -104,6 +105,7 @@ export const TOTAL_CURRICULUM_WEEKS = TOTAL_CURRICULUM_MONTHS * WEEKS_PER_MONTH;
 export interface CurriculumEntry {
   id: string;
   grade?: number;
+  gender?: "erkek" | "bayan";
   categoryId: CurriculumCategoryId;
   month: number;
   week: number;
@@ -113,6 +115,7 @@ export interface CurriculumEntry {
   title: string;
   body?: string;
   resourceUrl?: string;
+  pdfUrl?: string;
   pageCount?: number;
 }
 
@@ -432,29 +435,9 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
     body: "İhlasın tanımı, önemi ve ihlaslı olmanın pratik yolları. İhlas Risalesi'nden ilhamla.",
   },
 
-  // ── İlmihal ─────────────────────────────────────
-  {
-    id: "ilmihal-eylul-1",
-    categoryId: "ilmihal",
-    month: 9,
-    week: 1,
-    year: 2026,
-    title: "Abdest ve Gusül — Taharetin Temeli",
-    body: "Abdestin farzları, sünnetleri ve âdâbı. Guslün gerektiren durumlar ve yapılış şekli.",
-    resourceUrl: "#",
-    pageCount: 8,
-  },
-  {
-    id: "ilmihal-eylul-2",
-    categoryId: "ilmihal",
-    month: 9,
-    week: 2,
-    year: 2026,
-    title: "Namaz — Müminin Miracı",
-    body: "Namazın farzları, vacipleri, sünnetleri. Namazda huşu ve namaz kılınışının detaylı anlatımı.",
-    resourceUrl: "#",
-    pageCount: 12,
-  },
+  // ── İlmihal (Ortaokul 1. Sınıf – Erkek & Bayan) ───────────────
+  ...getIlmihalEntriesForGrade(1, "erkek"),
+  ...getIlmihalEntriesForGrade(1, "bayan"),
 
   // ── Adab-ı Muaşeret (Ortaokul 1. Sınıf – 54 Hafta) ─────────────
   ...getAdabEntriesForGrade(1),
@@ -542,11 +525,15 @@ export function resolveAllCurriculumEntries(
 export function getCategoryEntries(
   categoryId: CurriculumCategoryId,
   entries: readonly CurriculumEntry[] = curriculumEntries,
-  grade?: number
+  grade?: number,
+  gender?: "erkek" | "bayan"
 ): CurriculumEntry[] {
+  const targetGender = gender ?? "erkek";
   const filtered = entries.filter(
     (entry) =>
-      entry.categoryId === categoryId && (typeof grade !== "number" || (entry.grade ?? 1) === grade)
+      entry.categoryId === categoryId &&
+      (typeof grade !== "number" || (entry.grade ?? 1) === grade) &&
+      (!entry.gender || entry.gender === targetGender)
   );
   return resolveCategoryEntries(filtered);
 }

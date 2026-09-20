@@ -3,9 +3,12 @@ import {
   ensureCurriculumEntriesTable,
   getCurriculumEntriesFromDb,
   getCurriculumEntryByIdFromDb,
+  getUserGenderFromDb,
   seedCurriculumDatabase,
+  setUserGenderInDb,
 } from "./curriculum-db";
 import { BELGIUM_GRADES } from "./curriculum";
+import { db } from "./auth";
 
 describe("Curriculum SQLite Database Module", () => {
   it("should ensure table exists and seed data without errors", () => {
@@ -106,5 +109,77 @@ describe("Curriculum SQLite Database Module", () => {
     expect(g4Extra?.grade).toBe(4);
     expect(g4Extra?.isExtra).toBe(true);
     expect(g4Extra?.extraOrder).toBe(6);
+  });
+
+  it("should store and retrieve user gender preferences in SQLite", () => {
+    const testUserId = `user_pref_test_${Date.now()}`;
+    expect(getUserGenderFromDb(testUserId)).toBeNull();
+
+    // Insert dummy user to satisfy FK constraint
+    const now = new Date().toISOString();
+    db.query(
+      `INSERT INTO "user" ("id", "name", "email", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?)`
+    ).run(testUserId, "Test Pref User", `${testUserId}@example.com`, now, now);
+
+    setUserGenderInDb(testUserId, "bayan");
+    expect(getUserGenderFromDb(testUserId)).toBe("bayan");
+
+    setUserGenderInDb(testUserId, "erkek");
+    expect(getUserGenderFromDb(testUserId)).toBe("erkek");
+  });
+
+  it("should filter İlmihal entries by gender in getCurriculumEntriesFromDb", () => {
+    // Ortaokul 1. Sınıf: 28 weeks for both Erkek and Bayan
+    const g1Bayan = getCurriculumEntriesFromDb(1, "bayan").filter(
+      (e) => e.categoryId === "ilmihal"
+    );
+    const g1Erkek = getCurriculumEntriesFromDb(1, "erkek").filter(
+      (e) => e.categoryId === "ilmihal"
+    );
+    expect(g1Bayan.length).toBe(28);
+    expect(g1Erkek.length).toBe(28);
+    expect(g1Bayan.every((e) => e.gender === "bayan")).toBe(true);
+    expect(g1Erkek.every((e) => e.gender === "erkek")).toBe(true);
+
+    // Lise 4. Sınıf: 104 weeks for Bayan (48 standard + 56 extra), 98 weeks for Erkek (48 standard + 50 extra)
+    const g4Bayan = getCurriculumEntriesFromDb(4, "bayan").filter(
+      (e) => e.categoryId === "ilmihal"
+    );
+    const g4Erkek = getCurriculumEntriesFromDb(4, "erkek").filter(
+      (e) => e.categoryId === "ilmihal"
+    );
+    expect(g4Bayan.length).toBe(104);
+    expect(g4Erkek.length).toBe(98);
+
+    const g4BayanExtras = g4Bayan.filter((e) => e.isExtra);
+    const g4ErkekExtras = g4Erkek.filter((e) => e.isExtra);
+    expect(g4BayanExtras.length).toBe(56);
+    expect(g4ErkekExtras.length).toBe(50);
+  });
+
+  it("should retrieve İlmihal entries by deterministic ID", () => {
+    const bayanEntry = getCurriculumEntryByIdFromDb("ilmihal-bayan-eylul-1");
+    expect(bayanEntry).not.toBeNull();
+    expect(bayanEntry?.gender).toBe("bayan");
+    expect(bayanEntry?.grade).toBe(1);
+    expect(bayanEntry?.pdfUrl).toBe("/curriculum/ilmihal/ortaokul/bayan/hafta-01.pdf");
+
+    const erkekEntry = getCurriculumEntryByIdFromDb("ilmihal-erkek-eylul-1");
+    expect(erkekEntry).not.toBeNull();
+    expect(erkekEntry?.gender).toBe("erkek");
+    expect(erkekEntry?.grade).toBe(1);
+    expect(erkekEntry?.pdfUrl).toBe("/curriculum/ilmihal/ortaokul/erkek/hafta-01.pdf");
+
+    const liseBayanExtra56 = getCurriculumEntryByIdFromDb("g4-ilmihal-bayan-extra-56");
+    expect(liseBayanExtra56).not.toBeNull();
+    expect(liseBayanExtra56?.isExtra).toBe(true);
+    expect(liseBayanExtra56?.extraOrder).toBe(56);
+    expect(liseBayanExtra56?.pdfUrl).toBe("/curriculum/ilmihal/lise/bayan/hafta-104.pdf");
+
+    const liseErkekExtra50 = getCurriculumEntryByIdFromDb("g4-ilmihal-erkek-extra-50");
+    expect(liseErkekExtra50).not.toBeNull();
+    expect(liseErkekExtra50?.isExtra).toBe(true);
+    expect(liseErkekExtra50?.extraOrder).toBe(50);
+    expect(liseErkekExtra50?.pdfUrl).toBe("/curriculum/ilmihal/lise/erkek/hafta-98.pdf");
   });
 });

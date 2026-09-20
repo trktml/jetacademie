@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import React from "react";
 import { renderToString } from "react-dom/server";
 
-import { CurriculumArchive } from "./curriculum-archive";
+import { CurriculumArchive, UNDO_DURATION_SECONDS } from "./curriculum-archive";
 
 describe("CurriculumArchive Component", () => {
   it("should render fixed capsule navigation with 9 category items", () => {
@@ -638,5 +638,35 @@ describe("CurriculumArchive Component", () => {
     );
     expect(risaleHtml).toContain('data-active="false" aria-label="Ayet"');
     expect(risaleHtml).toContain('data-active="true" aria-current="true" aria-label="Risale"');
+  });
+
+  it("should configure countdown undo with 7 seconds duration", () => {
+    expect(UNDO_DURATION_SECONDS).toBe(7);
+  });
+
+  it("should render Okundu işaretle action buttons for currently unlocked entries", () => {
+    const html = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={true} initialCategoryId="ayet" />
+    );
+
+    expect(html).toContain("archive-complete-button");
+    expect(html).toContain("Okundu işaretle");
+    // Initial render should not show undo button before any action is taken
+    expect(html).not.toContain("archive-inline-undo-button");
+    expect(html).not.toContain("archive-toast");
+  });
+
+  it("should render Dersi Görüntüle action button on entries with pdfUrl", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={true}
+        initialCategoryId="ilmihal"
+        initialGender="erkek"
+      />
+    );
+
+    expect(html).toContain("Dersi Görüntüle");
+    expect(html).toContain("archive-reading-action");
   });
 });

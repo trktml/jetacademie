@@ -7,6 +7,7 @@ describe("use-guest-store", () => {
     useGuestStore.setState({
       isGuest: false,
       completedEntryIds: [],
+      gender: null,
     });
   });
 
@@ -14,6 +15,7 @@ describe("use-guest-store", () => {
     const state = useGuestStore.getState();
     expect(state.isGuest).toBe(false);
     expect(state.completedEntryIds).toEqual([]);
+    expect(state.gender).toBe(null);
   });
 
   it("enableGuest sets isGuest to true", () => {
@@ -21,15 +23,24 @@ describe("use-guest-store", () => {
     expect(useGuestStore.getState().isGuest).toBe(true);
   });
 
-  it("disableGuest resets isGuest and clears progress", () => {
+  it("setGender sets gender and enables guest mode", () => {
+    useGuestStore.getState().setGender("bayan");
+    const state = useGuestStore.getState();
+    expect(state.gender).toBe("bayan");
+    expect(state.isGuest).toBe(true);
+  });
+
+  it("disableGuest resets isGuest and clears progress and gender", () => {
     useGuestStore.setState({
       isGuest: true,
       completedEntryIds: ["entry-1", "entry-2"],
+      gender: "erkek",
     });
     useGuestStore.getState().disableGuest();
     const state = useGuestStore.getState();
     expect(state.isGuest).toBe(false);
     expect(state.completedEntryIds).toEqual([]);
+    expect(state.gender).toBe(null);
   });
 
   it("completeEntry adds an entry ID", () => {

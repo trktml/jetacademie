@@ -6,10 +6,14 @@ interface GuestState {
   isGuest: boolean;
   /** Misafir ilerleme: tamamlanan entry ID'leri */
   completedEntryIds: string[];
+  /** Misafir İlmihal cinsiyet tercihi */
+  gender: "erkek" | "bayan" | null;
   /** Misafir modunu başlat */
   enableGuest: () => void;
   /** Misafir modundan çık (veriyi sil) */
   disableGuest: () => void;
+  /** Cinsiyet belirle */
+  setGender: (gender: "erkek" | "bayan") => void;
   /** Entry tamamla */
   completeEntry: (entryId: string) => void;
   /** Entry tamamlamayı geri al */
@@ -23,8 +27,10 @@ export const useGuestStore = create<GuestState>()(
     (set) => ({
       isGuest: false,
       completedEntryIds: [],
+      gender: null,
       enableGuest: () => set({ isGuest: true }),
-      disableGuest: () => set({ isGuest: false, completedEntryIds: [] }),
+      disableGuest: () => set({ isGuest: false, completedEntryIds: [], gender: null }),
+      setGender: (gender) => set({ gender, isGuest: true }),
       completeEntry: (entryId) =>
         set((state) => ({
           completedEntryIds: state.completedEntryIds.includes(entryId)

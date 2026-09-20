@@ -138,10 +138,17 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS "curriculum_progress_userId_completedAt_idx"
     on "curriculum_progress" ("userId", "completedAt");
+  CREATE TABLE IF NOT EXISTS "user_preferences" (
+    "userId" text not null primary key references "user" ("id") on delete cascade,
+    "gender" text not null check ("gender" in ('erkek', 'bayan')),
+    "createdAt" date not null,
+    "updatedAt" date not null
+  );
   CREATE TABLE IF NOT EXISTS "curriculum_entries" (
     "id" text not null primary key,
     "grade" integer not null default 1,
     "categoryId" text not null,
+    "gender" text,
     "month" integer,
     "week" integer,
     "year" integer default 2026,
@@ -156,6 +163,8 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_idx"
     on "curriculum_entries" ("grade", "categoryId", "isExtra", "month", "week");
+  CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_gender_idx"
+    on "curriculum_entries" ("grade", "categoryId", "gender", "isExtra", "month", "week");
 `);
 
 export const auth = betterAuth({

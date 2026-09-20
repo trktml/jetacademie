@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { getCompletedEntryIds } from "@/lib/curriculum-progress";
-import { getCurriculumEntriesFromDb } from "@/lib/curriculum-db";
+import { getCurriculumEntriesFromDb, getUserGenderFromDb } from "@/lib/curriculum-db";
 import { CurriculumArchive } from "@/components/curriculum-archive";
 import { ProgressStatusNote } from "@/components/progress-status-note";
 
@@ -22,6 +22,7 @@ export default async function CurriculumPage(props: CurriculumPageProps) {
 
   const session = await auth.api.getSession({ headers: await headers() });
   const completedEntryIds = session?.user ? getCompletedEntryIds(session.user.id) : [];
+  const initialGender = session?.user ? getUserGenderFromDb(session.user.id) : null;
   const entries = getCurriculumEntriesFromDb();
 
   return (
@@ -33,6 +34,7 @@ export default async function CurriculumPage(props: CurriculumPageProps) {
       <CurriculumArchive
         initialCompletedEntryIds={completedEntryIds}
         isSignedIn={Boolean(session?.user)}
+        initialGender={initialGender}
         allEntries={entries}
         initialGrade={initialGrade}
       />

@@ -55,6 +55,7 @@ export function AccountSheet() {
   const enableGuest = useGuestStore((s) => s.enableGuest);
   const disableGuest = useGuestStore((s) => s.disableGuest);
   const guestCompletedIds = useGuestStore((s) => s.completedEntryIds);
+  const guestGender = useGuestStore((s) => s.gender);
   const [showGuestLogoutConfirm, setShowGuestLogoutConfirm] = useState(false);
   const [showAuthFromGuest, setShowAuthFromGuest] = useState(false);
 
@@ -96,10 +97,10 @@ export function AccountSheet() {
       setAssignedUsername(data.username);
       setPassword("");
 
-      // Misafir ilerlemesini yeni hesaba aktar
-      if (isGuest && guestCompletedIds.length > 0) {
+      // Misafir ilerlemesini ve tercihlerini yeni hesaba aktar
+      if (isGuest && (guestCompletedIds.length > 0 || guestGender)) {
         try {
-          await migrateGuestProgress(guestCompletedIds);
+          await migrateGuestProgress(guestCompletedIds, guestGender);
         } catch {
           // Aktarım başarısız olsa da kayıt başarılı
         }
@@ -139,10 +140,10 @@ export function AccountSheet() {
         return;
       }
 
-      // Misafir ilerlemesini mevcut hesaba aktar
-      if (isGuest && guestCompletedIds.length > 0) {
+      // Misafir ilerlemesini ve tercihlerini mevcut hesaba aktar
+      if (isGuest && (guestCompletedIds.length > 0 || guestGender)) {
         try {
-          await migrateGuestProgress(guestCompletedIds);
+          await migrateGuestProgress(guestCompletedIds, guestGender);
         } catch {
           // Aktarım başarısız olsa da giriş başarılı
         }

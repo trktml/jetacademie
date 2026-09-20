@@ -38,14 +38,17 @@ describe("curriculum", () => {
     ]);
   });
 
-  it("has 16 sample entries for ayet, 54 for adab-i-muaseret, and 2 for other categories (84 total)", () => {
-    expect(curriculumEntries.length).toBe(84);
+  it("has 16 sample entries for ayet, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), and 2 for other categories", () => {
+    expect(curriculumEntries.length).toBe(138);
 
     expect(getCategoryEntries("ayet").length).toBe(16);
     expect(getCategoryEntries("adab-i-muaseret").length).toBe(54);
+    expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "erkek").length).toBe(28);
+    expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "bayan").length).toBe(28);
 
     for (const category of curriculumCategories) {
-      if (category.id === "ayet" || category.id === "adab-i-muaseret") continue;
+      if (category.id === "ayet" || category.id === "adab-i-muaseret" || category.id === "ilmihal")
+        continue;
       const entries = getCategoryEntries(category.id);
       expect(entries.length).toBe(2);
     }

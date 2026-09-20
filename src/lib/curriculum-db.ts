@@ -8,11 +8,17 @@ import {
   type CurriculumEntry,
 } from "@/lib/curriculum";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
+import {
+  getAllIlmihalEntries,
+  getIlmihalEntriesForGrade,
+  type Gender,
+} from "@/lib/data/ilmihal-curriculum";
 
 interface CurriculumEntryRow {
   id: string;
   grade: number;
   categoryId: string;
+  gender: string | null;
   month: number | null;
   week: number | null;
   year: number;
@@ -21,6 +27,7 @@ interface CurriculumEntryRow {
   title: string;
   body: string | null;
   resourceUrl: string | null;
+  pdfUrl: string | null;
   pageCount: number | null;
   createdAt: string;
   updatedAt: string;
@@ -30,6 +37,7 @@ function rowToEntry(row: CurriculumEntryRow): CurriculumEntry {
   return {
     id: row.id,
     grade: row.grade,
+    gender: (row.gender as Gender) || undefined,
     categoryId: row.categoryId as CurriculumCategoryId,
     month: row.month ?? 1,
     week: row.week ?? 1,
@@ -39,21 +47,31 @@ function rowToEntry(row: CurriculumEntryRow): CurriculumEntry {
     title: row.title,
     body: row.body ?? undefined,
     resourceUrl: row.resourceUrl ?? undefined,
+    pdfUrl: row.pdfUrl || row.resourceUrl || undefined,
     pageCount: row.pageCount ?? undefined,
   };
 }
 
 /**
- * Ensures table curriculum_entries exists in SQLite.
+ * Ensures tables exist in SQLite.
  */
 export function ensureCurriculumEntriesTable() {
   if (typeof db?.exec !== "function") return;
 
+  // 1. Create tables if they do not exist
   db.exec(`
+    CREATE TABLE IF NOT EXISTS "user_preferences" (
+      "userId" text not null primary key references "user" ("id") on delete cascade,
+      "gender" text not null check ("gender" in ('erkek', 'bayan')),
+      "createdAt" date not null,
+      "updatedAt" date not null
+    );
+
     CREATE TABLE IF NOT EXISTS "curriculum_entries" (
       "id" text not null primary key,
       "grade" integer not null default 1,
       "categoryId" text not null,
+      "gender" text,
       "month" integer,
       "week" integer,
       "year" integer default 2026,
@@ -62,17 +80,67 @@ export function ensureCurriculumEntriesTable() {
       "title" text not null,
       "body" text,
       "resourceUrl" text,
+      "pdfUrl" text,
       "pageCount" integer,
       "createdAt" date not null,
       "updatedAt" date not null
     );
+  `);
+
+  // 2. Safely add columns for existing databases before creating indexes
+  try {
+    db.exec(`ALTER TABLE "curriculum_entries" ADD COLUMN "gender" text;`);
+  } catch {
+    // Column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE "curriculum_entries" ADD COLUMN "pdfUrl" text;`);
+  } catch {
+    // Column already exists
+  }
+
+  // 3. Create indexes and perform cleanup
+  db.exec(`
     CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_idx"
       on "curriculum_entries" ("grade", "categoryId", "isExtra", "month", "week");
+    CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_gender_idx"
+      on "curriculum_entries" ("grade", "categoryId", "gender", "isExtra", "month", "week");
 
     -- Clean up legacy premature extra entries that violated the 48-week rule
-    DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%';
-    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%';
+    DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" != 'adab-i-muaseret' AND "categoryId" != 'ilmihal';
+    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%';
   `);
+}
+
+export function getUserGenderFromDb(userId: string): Gender | null {
+  ensureCurriculumEntriesTable();
+  if (typeof db?.query !== "function") return null;
+  try {
+    const row = db
+      .query<{ gender: string }, [string]>(
+        `SELECT "gender" FROM "user_preferences" WHERE "userId" = ?`
+      )
+      .get(userId);
+    return (row?.gender as Gender) || null;
+  } catch {
+    return null;
+  }
+}
+
+export function setUserGenderInDb(userId: string, gender: Gender): void {
+  ensureCurriculumEntriesTable();
+  if (typeof db?.prepare !== "function") return;
+  const now = new Date().toISOString();
+  try {
+    const stmt = db.prepare(`
+      INSERT INTO "user_preferences" ("userId", "gender", "createdAt", "updatedAt")
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT("userId") DO UPDATE SET "gender" = excluded.gender, "updatedAt" = excluded.updatedAt
+    `);
+    stmt.run(userId, gender, now, now);
+  } catch (err) {
+    console.error("Failed to set user gender in DB:", err);
+  }
 }
 
 /**
@@ -183,6 +251,77 @@ export function syncAdabCurriculumIfOutdated(): void {
 }
 
 /**
+ * Ensures ilmihal entries are fully synced across all 6 grades and both genders (total 774 entries).
+ * If old placeholder entries are present or count < 774, this cleanly syncs ilmihal
+ * without touching other categories or user progress.
+ */
+export function syncIlmihalCurriculumIfOutdated(): void {
+  if (
+    typeof db?.query !== "function" ||
+    typeof db?.prepare !== "function" ||
+    typeof db?.transaction !== "function" ||
+    typeof db?.exec !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    const row = db
+      .query<{ count: number; withPdf: number }, []>(
+        `SELECT COUNT(*) as count, SUM(CASE WHEN "pdfUrl" IS NOT NULL THEN 1 ELSE 0 END) as withPdf FROM "curriculum_entries" WHERE "categoryId" = 'ilmihal'`
+      )
+      .get();
+
+    // 6 grades * (28 ortaokul + 104/98 lise) * 2 genders = 774 entries with pdfUrl populated
+    if (row && row.count >= 774 && (row.withPdf ?? 0) >= 774) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const insertStmt = db.prepare(`
+      INSERT OR REPLACE INTO "curriculum_entries" (
+        "id", "grade", "categoryId", "gender", "month", "week", "year",
+        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "pageCount", "createdAt", "updatedAt"
+      ) VALUES (
+        $id, $grade, $categoryId, $gender, $month, $week, $year,
+        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
+        $pageCount, $createdAt, $updatedAt
+      )
+    `);
+
+    const ilmihalEntries = getAllIlmihalEntries();
+    const runSync = db.transaction((entries: typeof ilmihalEntries) => {
+      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'ilmihal'`);
+      for (const e of entries) {
+        insertStmt.run({
+          $id: e.id,
+          $grade: e.grade ?? 1,
+          $categoryId: "ilmihal",
+          $gender: e.gender ?? null,
+          $month: e.month,
+          $week: e.week,
+          $year: e.year,
+          $isExtra: e.isExtra ? 1 : 0,
+          $extraOrder: e.extraOrder ?? null,
+          $title: e.title,
+          $body: e.body ?? null,
+          $resourceUrl: e.resourceUrl ?? null,
+          $pdfUrl: e.pdfUrl ?? e.resourceUrl ?? null,
+          $pageCount: e.pageCount ?? null,
+          $createdAt: now,
+          $updatedAt: now,
+        });
+      }
+    });
+
+    runSync(ilmihalEntries);
+  } catch (err) {
+    console.error("Failed to sync ilmihal curriculum:", err);
+  }
+}
+
+/**
  * Seeds initial curriculum entries for all 6 Belgium grades,
  * including 48-week standard curriculum and extra contents.
  */
@@ -203,6 +342,7 @@ export function seedCurriculumDatabase(force = false): void {
 
   if (!force && countRow && countRow.count > 0) {
     syncAdabCurriculumIfOutdated();
+    syncIlmihalCurriculumIfOutdated();
     return;
   }
 
@@ -213,6 +353,7 @@ export function seedCurriculumDatabase(force = false): void {
     id: string;
     grade: number;
     categoryId: string;
+    gender: string | null;
     month: number | null;
     week: number | null;
     year: number;
@@ -221,17 +362,20 @@ export function seedCurriculumDatabase(force = false): void {
     title: string;
     body: string | null;
     resourceUrl: string | null;
+    pdfUrl: string | null;
     pageCount: number | null;
     createdAt: string;
     updatedAt: string;
   }> = [];
 
-  // 1. Seed Grade 1 from existing static entries (which now includes 54 adab entries)
+  // 1. Seed Grade 1 from existing static entries (which includes 54 adab entries)
   for (const entry of curriculumEntries) {
+    if (entry.categoryId === "ilmihal") continue;
     seedBatch.push({
       id: entry.id,
       grade: 1,
       categoryId: entry.categoryId,
+      gender: null,
       month: entry.month,
       week: entry.week,
       year: entry.year,
@@ -240,6 +384,7 @@ export function seedCurriculumDatabase(force = false): void {
       title: entry.title,
       body: entry.body ?? null,
       resourceUrl: entry.resourceUrl ?? null,
+      pdfUrl: entry.pdfUrl ?? entry.resourceUrl ?? null,
       pageCount: entry.pageCount ?? null,
       createdAt: now,
       updatedAt: now,
@@ -248,13 +393,14 @@ export function seedCurriculumDatabase(force = false): void {
 
   // 2. Seed template standard entries for Grades 2 through 6
   for (let grade = 2; grade <= 6; grade++) {
-    // 2a. Categories other than adab-i-muaseret
+    // 2a. Categories other than adab-i-muaseret and ilmihal
     for (const cat of curriculumCategories) {
-      if (cat.id === "adab-i-muaseret") continue;
+      if (cat.id === "adab-i-muaseret" || cat.id === "ilmihal") continue;
       seedBatch.push({
         id: `g${grade}-${cat.id}-eylul-1`,
         grade,
         categoryId: cat.id,
+        gender: null,
         month: 9,
         week: 1,
         year: 2026,
@@ -263,6 +409,7 @@ export function seedCurriculumDatabase(force = false): void {
         title: `${grade}. Sınıf ${cat.label} — 1. Hafta Başlangıç`,
         body: `Belçika ${grade}. Sınıf müfredatına uygun ${cat.label} ilk hafta ders notları ve temel hedefler.`,
         resourceUrl: null,
+        pdfUrl: null,
         pageCount: 2,
         createdAt: now,
         updatedAt: now,
@@ -272,6 +419,7 @@ export function seedCurriculumDatabase(force = false): void {
         id: `g${grade}-${cat.id}-eylul-2`,
         grade,
         categoryId: cat.id,
+        gender: null,
         month: 9,
         week: 2,
         year: 2026,
@@ -280,6 +428,7 @@ export function seedCurriculumDatabase(force = false): void {
         title: `${grade}. Sınıf ${cat.label} — 2. Hafta Konusu`,
         body: `Belçika ${grade}. Sınıf ${cat.label} dersi 2. hafta kapsamlı tahlil ve etkinlik rehberi.`,
         resourceUrl: null,
+        pdfUrl: null,
         pageCount: 2,
         createdAt: now,
         updatedAt: now,
@@ -293,6 +442,7 @@ export function seedCurriculumDatabase(force = false): void {
         id: entry.id,
         grade,
         categoryId: "adab-i-muaseret",
+        gender: null,
         month: entry.month,
         week: entry.week,
         year: entry.year,
@@ -301,6 +451,7 @@ export function seedCurriculumDatabase(force = false): void {
         title: entry.title,
         body: entry.body ?? null,
         resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: entry.pdfUrl ?? entry.resourceUrl ?? null,
         pageCount: entry.pageCount ?? null,
         createdAt: now,
         updatedAt: now,
@@ -308,14 +459,37 @@ export function seedCurriculumDatabase(force = false): void {
     }
   }
 
+  // 2c. İlmihal for all 6 grades and both genders (774 entries)
+  const allIlmihal = getAllIlmihalEntries();
+  for (const entry of allIlmihal) {
+    seedBatch.push({
+      id: entry.id,
+      grade: entry.grade ?? 1,
+      categoryId: "ilmihal",
+      gender: entry.gender ?? null,
+      month: entry.month,
+      week: entry.week,
+      year: entry.year,
+      isExtra: entry.isExtra ? 1 : 0,
+      extraOrder: entry.extraOrder ?? null,
+      title: entry.title,
+      body: entry.body ?? null,
+      resourceUrl: entry.resourceUrl ?? null,
+      pdfUrl: entry.pdfUrl ?? entry.resourceUrl ?? null,
+      pageCount: entry.pageCount ?? null,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
   const insertStmt = db.prepare(`
     INSERT OR REPLACE INTO "curriculum_entries" (
-      "id", "grade", "categoryId", "month", "week", "year",
-      "isExtra", "extraOrder", "title", "body", "resourceUrl",
+      "id", "grade", "categoryId", "gender", "month", "week", "year",
+      "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
       "pageCount", "createdAt", "updatedAt"
     ) VALUES (
-      $id, $grade, $categoryId, $month, $week, $year,
-      $isExtra, $extraOrder, $title, $body, $resourceUrl,
+      $id, $grade, $categoryId, $gender, $month, $week, $year,
+      $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
       $pageCount, $createdAt, $updatedAt
     )
   `);
@@ -326,6 +500,7 @@ export function seedCurriculumDatabase(force = false): void {
         $id: row.id,
         $grade: row.grade,
         $categoryId: row.categoryId,
+        $gender: row.gender,
         $month: row.month,
         $week: row.week,
         $year: row.year,
@@ -334,6 +509,7 @@ export function seedCurriculumDatabase(force = false): void {
         $title: row.title,
         $body: row.body,
         $resourceUrl: row.resourceUrl,
+        $pdfUrl: row.pdfUrl,
         $pageCount: row.pageCount,
         $createdAt: row.createdAt,
         $updatedAt: row.updatedAt,
@@ -344,29 +520,36 @@ export function seedCurriculumDatabase(force = false): void {
   runTransaction(seedBatch);
 }
 
-function getFallbackEntries(grade?: number): CurriculumEntry[] {
+function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] {
   if (typeof grade === "number" && grade >= 1 && grade <= 6) {
-    if (grade === 1) {
-      return resolveAllCurriculumEntries(curriculumEntries.filter((e) => (e.grade ?? 1) === 1));
-    }
     const adab = getAdabEntriesForGrade(grade);
+    const ilmihal = gender
+      ? getIlmihalEntriesForGrade(grade, gender)
+      : [
+          ...getIlmihalEntriesForGrade(grade, "erkek"),
+          ...getIlmihalEntriesForGrade(grade, "bayan"),
+        ];
     const others = curriculumEntries
-      .filter((e) => e.categoryId !== "adab-i-muaseret")
-      .map((e) => ({ ...e, grade, id: `g${grade}-${e.id}` }));
-    return resolveAllCurriculumEntries([...others, ...adab]);
+      .filter((e) => e.categoryId !== "adab-i-muaseret" && e.categoryId !== "ilmihal")
+      .map((e) => ({ ...e, grade, id: grade === 1 ? e.id : `g${grade}-${e.id}` }));
+    return resolveAllCurriculumEntries([...others, ...adab, ...ilmihal]);
   }
-  return resolveAllCurriculumEntries(curriculumEntries);
+  const ilmihalG1 = gender
+    ? getIlmihalEntriesForGrade(1, gender)
+    : [...getIlmihalEntriesForGrade(1, "erkek"), ...getIlmihalEntriesForGrade(1, "bayan")];
+  const othersG1 = curriculumEntries.filter((e) => e.categoryId !== "ilmihal");
+  return resolveAllCurriculumEntries([...othersG1, ...ilmihalG1]);
 }
 
 /**
- * Retrieves all entries from SQLite, optionally filtered by Belgium grade.
+ * Retrieves all entries from SQLite, optionally filtered by Belgium grade and gender for İlmihal.
  */
-export function getCurriculumEntriesFromDb(grade?: number): CurriculumEntry[] {
+export function getCurriculumEntriesFromDb(grade?: number, gender?: Gender): CurriculumEntry[] {
   ensureCurriculumEntriesTable();
   seedCurriculumDatabase();
 
   if (typeof db?.query !== "function") {
-    return getFallbackEntries(grade);
+    return getFallbackEntries(grade, gender);
   }
 
   try {
@@ -386,13 +569,17 @@ export function getCurriculumEntriesFromDb(grade?: number): CurriculumEntry[] {
     }
 
     if (!rows || rows.length === 0) {
-      return getFallbackEntries(grade);
+      return getFallbackEntries(grade, gender);
     }
 
-    const entries = rows.map(rowToEntry);
+    const filteredRows = gender
+      ? rows.filter((r) => r.categoryId !== "ilmihal" || !r.gender || r.gender === gender)
+      : rows;
+
+    const entries = filteredRows.map(rowToEntry);
     return resolveAllCurriculumEntries(entries);
   } catch {
-    return getFallbackEntries(grade);
+    return getFallbackEntries(grade, gender);
   }
 }
 
@@ -425,16 +612,28 @@ export function getCurriculumEntryByIdFromDb(id: string): CurriculumEntry | null
     }
 
     // Resolve within its category to ensure accurate 48-week extra status
-    const categoryRows = db
-      .query<CurriculumEntryRow, [number, string]>(
-        `SELECT * FROM "curriculum_entries" WHERE "grade" = ? AND "categoryId" = ?`
-      )
-      .all(row.grade, row.categoryId);
+    let categoryRows: CurriculumEntryRow[];
+    if (row.categoryId === "ilmihal" && row.gender) {
+      categoryRows = db
+        .query<CurriculumEntryRow, [number, string, string]>(
+          `SELECT * FROM "curriculum_entries" WHERE "grade" = ? AND "categoryId" = ? AND "gender" = ?`
+        )
+        .all(row.grade, row.categoryId, row.gender);
+    } else {
+      categoryRows = db
+        .query<CurriculumEntryRow, [number, string]>(
+          `SELECT * FROM "curriculum_entries" WHERE "grade" = ? AND "categoryId" = ?`
+        )
+        .all(row.grade, row.categoryId);
+    }
 
     const resolvedCategoryEntries = resolveCategoryEntries(categoryRows.map(rowToEntry));
     return resolvedCategoryEntries.find((e) => e.id === id) ?? rowToEntry(row);
   } catch {
-    const all = resolveAllCurriculumEntries(curriculumEntries);
-    return all.find((e) => e.id === id) ?? null;
+    for (let g = 1; g <= 6; g++) {
+      const match = getFallbackEntries(g).find((e) => e.id === id);
+      if (match) return match;
+    }
+    return null;
   }
 }
