@@ -618,4 +618,24 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("Ekstra 1 · İlave");
     expect(html).toContain("İlave Derinleşme Dosyası 1");
   });
+
+  it("should render active category purely from props during SSR without window branching", () => {
+    // Default initialCategoryId is 'ayet'
+    const defaultHtml = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+    );
+    expect(defaultHtml).toContain('data-active="true" aria-current="true" aria-label="Ayet"');
+    expect(defaultHtml).toContain('data-active="false" aria-label="Risale"');
+
+    // Explicit initialCategoryId="risale" renders risale as active consistently
+    const risaleHtml = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        initialCategoryId="risale"
+      />
+    );
+    expect(risaleHtml).toContain('data-active="false" aria-label="Ayet"');
+    expect(risaleHtml).toContain('data-active="true" aria-current="true" aria-label="Risale"');
+  });
 });

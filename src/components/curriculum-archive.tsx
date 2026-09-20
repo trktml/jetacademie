@@ -67,15 +67,7 @@ export function CurriculumArchive({
   initialCategoryId = "ayet",
   initialHistoryViewCategoryIds = {},
 }: CurriculumArchiveProps) {
-  const [activeCategoryId, setActiveCategoryId] = useState<CurriculumCategoryId>(() => {
-    if (typeof window !== "undefined" && window.location.hash) {
-      const hash = window.location.hash.replace("#", "") as CurriculumCategoryId;
-      if (curriculumCategories.some((c) => c.id === hash)) {
-        return hash;
-      }
-    }
-    return initialCategoryId;
-  });
+  const [activeCategoryId, setActiveCategoryId] = useState<CurriculumCategoryId>(initialCategoryId);
   const [completedEntryIds, setCompletedEntryIds] = useState(initialCompletedEntryIds);
   const [pendingEntryId, setPendingEntryId] = useState<string | null>(null);
   const [toast, setToast] = useState<{
@@ -90,17 +82,7 @@ export function CurriculumArchive({
   }, [initialHistoryViewCategoryIds]);
 
   const [activeHistoryCategoryId, setActiveHistoryCategoryId] =
-    useState<CurriculumCategoryId | null>(() => {
-      if (initialHistoryCategory) return initialHistoryCategory;
-      if (typeof window !== "undefined") {
-        const url = new URL(window.location.href);
-        const gecmisParam = url.searchParams.get("gecmis") as CurriculumCategoryId | null;
-        if (gecmisParam && curriculumCategories.some((c) => c.id === gecmisParam)) {
-          return gecmisParam;
-        }
-      }
-      return null;
-    });
+    useState<CurriculumCategoryId | null>(initialHistoryCategory ?? null);
 
   const [selectedCompletedIndexes, setSelectedCompletedIndexes] = useState<
     Partial<Record<CurriculumCategoryId, number>>
@@ -119,22 +101,23 @@ export function CurriculumArchive({
     [isGuest, guestCompletedIds, completedEntryIds]
   );
 
-  // Handle browser back/forward buttons (popstate)
+  // Handle browser back/forward buttons (popstate) and post-mount sync
   useEffect(() => {
-    function handlePopState() {
+    function syncHistoryFromUrl() {
       if (typeof window !== "undefined") {
         const url = new URL(window.location.href);
         const gecmisParam = url.searchParams.get("gecmis") as CurriculumCategoryId | null;
         if (gecmisParam && curriculumCategories.some((c) => c.id === gecmisParam)) {
           setActiveHistoryCategoryId(gecmisParam);
-        } else {
+        } else if (!initialHistoryCategory) {
           setActiveHistoryCategoryId(null);
         }
       }
     }
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+    syncHistoryFromUrl();
+    window.addEventListener("popstate", syncHistoryFromUrl);
+    return () => window.removeEventListener("popstate", syncHistoryFromUrl);
+  }, [initialHistoryCategory]);
 
   const selectedGrade = useCurriculumStore((s) => s.selectedGrade);
   const setSelectedGrade = useCurriculumStore((s) => s.setSelectedGrade);
@@ -382,14 +365,15 @@ export function CurriculumArchive({
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
-  // On initial mount, if URL has hash, smoothly scroll to category with correct offset
+  // On initial mount, if URL has hash, synchronize active category and smoothly scroll
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash) {
       const hash = window.location.hash.replace("#", "") as CurriculumCategoryId;
       if (curriculumCategories.some((c) => c.id === hash)) {
         const timer = setTimeout(() => {
+          setActiveCategoryId(hash);
           scrollToCategory(hash);
-        }, 120);
+        }, 100);
         return () => clearTimeout(timer);
       }
     }
