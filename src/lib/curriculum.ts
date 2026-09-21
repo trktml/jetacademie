@@ -17,6 +17,7 @@ import { getEfendimizEntriesForGrade } from "@/lib/data/efendimiz-curriculum";
 import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
 import { getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
 import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
+import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 
 export const curriculumCategoryIds = [
   "ayet",
@@ -186,25 +187,8 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
   // ── Efendimiz (Ortaokul 1. Sınıf – 55 Hafta) ───────────────────
   ...getEfendimizEntriesForGrade(1),
 
-  // ── Sahabe Kıssaları ────────────────────────────
-  {
-    id: "sahabe-kissalari-eylul-1",
-    categoryId: "sahabe-kissalari",
-    month: 9,
-    week: 1,
-    year: 2026,
-    title: "Hz. Ebu Bekir (r.a.) — Sıddîk'ın Sadakati",
-    body: "İslam'a ilk iman eden erkek, hicret arkadaşı ve ilk halife. Malını, canını, her şeyini İslam için feda eden yüce sahabenin hikâyesi.",
-  },
-  {
-    id: "sahabe-kissalari-eylul-2",
-    categoryId: "sahabe-kissalari",
-    month: 9,
-    week: 2,
-    year: 2026,
-    title: "Hz. Bilal-i Habeşî (r.a.) — İmanın Sesi",
-    body: "Zulme rağmen \"Ehad, Ehad!\" diyerek direnen, İslam'ın ilk müezzini Hz. Bilal'in eşsiz iman gücü ve sabrı.",
-  },
+  // ── Sahabe Kıssaları (Ortaokul 1. Sınıf – 55 Hafta) ────────────
+  ...getSahabeEntriesForGrade(1),
 
   // ── Risale ──────────────────────────────────────
   {

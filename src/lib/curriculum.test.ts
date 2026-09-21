@@ -40,13 +40,14 @@ describe("curriculum", () => {
     ]);
   });
 
-  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), and 2 for other categories", () => {
-    expect(curriculumEntries.length).toBe(338);
+  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), and 2 for other categories", () => {
+    expect(curriculumEntries.length).toBe(391);
 
     expect(getCategoryEntries("ayet").length).toBe(55);
     expect(getCategoryEntries("hadis").length).toBe(55);
     expect(getCategoryEntries("esma").length).toBe(55);
     expect(getCategoryEntries("efendimiz").length).toBe(55);
+    expect(getCategoryEntries("sahabe-kissalari").length).toBe(55);
     expect(getCategoryEntries("adab-i-muaseret").length).toBe(54);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "erkek").length).toBe(28);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "bayan").length).toBe(28);
@@ -57,6 +58,7 @@ describe("curriculum", () => {
         category.id === "hadis" ||
         category.id === "esma" ||
         category.id === "efendimiz" ||
+        category.id === "sahabe-kissalari" ||
         category.id === "adab-i-muaseret" ||
         category.id === "ilmihal"
       )

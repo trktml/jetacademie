@@ -20,6 +20,7 @@ import {
   getIlmihalEntriesForGrade,
   type Gender,
 } from "@/lib/data/ilmihal-curriculum";
+import { getAllSahabeEntries, getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 
 interface CurriculumEntryRow {
   id: string;
@@ -625,6 +626,77 @@ export function syncEfendimizCurriculumIfOutdated(): void {
 }
 
 /**
+ * Ensures sahabe-kissalari entries are fully synced across all 6 grades (55 entries each, total 330).
+ * If old placeholder entries are present or count < 330, this cleanly syncs sahabe
+ * without touching other categories or user progress.
+ */
+export function syncSahabeCurriculumIfOutdated(): void {
+  if (
+    typeof db?.query !== "function" ||
+    typeof db?.prepare !== "function" ||
+    typeof db?.transaction !== "function" ||
+    typeof db?.exec !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    const row = db
+      .query<{ count: number }, []>(
+        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'sahabe-kissalari'`
+      )
+      .get();
+
+    // 6 grades * 55 weeks = 330 entries
+    if (row && row.count >= 330) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const insertStmt = db.prepare(`
+      INSERT OR REPLACE INTO "curriculum_entries" (
+        "id", "grade", "categoryId", "gender", "month", "week", "year",
+        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "pageCount", "createdAt", "updatedAt"
+      ) VALUES (
+        $id, $grade, $categoryId, $gender, $month, $week, $year,
+        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
+        $pageCount, $createdAt, $updatedAt
+      )
+    `);
+
+    const sahabeEntries = getAllSahabeEntries();
+    const runSync = db.transaction((entries: typeof sahabeEntries) => {
+      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'sahabe-kissalari'`);
+      for (const e of entries) {
+        insertStmt.run({
+          $id: e.id,
+          $grade: e.grade ?? 1,
+          $categoryId: "sahabe-kissalari",
+          $gender: null,
+          $month: e.month,
+          $week: e.week,
+          $year: e.year,
+          $isExtra: e.isExtra ? 1 : 0,
+          $extraOrder: e.extraOrder ?? null,
+          $title: e.title,
+          $body: e.body ?? null,
+          $resourceUrl: e.resourceUrl ?? null,
+          $pdfUrl: null,
+          $pageCount: null,
+          $createdAt: now,
+          $updatedAt: now,
+        });
+      }
+    });
+
+    runSync(sahabeEntries);
+  } catch (err) {
+    console.error("Failed to sync sahabe curriculum:", err);
+  }
+}
+
+/**
  * Seeds initial curriculum entries for all 6 Belgium grades,
  * including 48-week standard curriculum and extra contents.
  */
@@ -650,6 +722,7 @@ export function seedCurriculumDatabase(force = false): void {
     syncIlmihalCurriculumIfOutdated();
     syncEsmaCurriculumIfOutdated();
     syncEfendimizCurriculumIfOutdated();
+    syncSahabeCurriculumIfOutdated();
     return;
   }
 
@@ -704,7 +777,7 @@ export function seedCurriculumDatabase(force = false): void {
 
   // 2. Seed template standard entries for Grades 2 through 6
   for (let grade = 2; grade <= 6; grade++) {
-    // 2a. Categories other than adab-i-muaseret, ilmihal, ayet, hadis, esma, and efendimiz
+    // 2a. Categories other than adab-i-muaseret, ilmihal, ayet, hadis, esma, efendimiz, and sahabe-kissalari
     for (const cat of curriculumCategories) {
       if (
         cat.id === "adab-i-muaseret" ||
@@ -712,7 +785,8 @@ export function seedCurriculumDatabase(force = false): void {
         cat.id === "ayet" ||
         cat.id === "hadis" ||
         cat.id === "esma" ||
-        cat.id === "efendimiz"
+        cat.id === "efendimiz" ||
+        cat.id === "sahabe-kissalari"
       )
         continue;
       seedBatch.push({
@@ -872,6 +946,29 @@ export function seedCurriculumDatabase(force = false): void {
         updatedAt: now,
       });
     }
+
+    // 2g. Sahabe Kıssaları for Grades 2 through 6 (55 weeks)
+    const gradeSahabeEntries = getSahabeEntriesForGrade(grade);
+    for (const entry of gradeSahabeEntries) {
+      seedBatch.push({
+        id: entry.id,
+        grade,
+        categoryId: "sahabe-kissalari",
+        gender: null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: entry.isExtra ? 1 : 0,
+        extraOrder: entry.extraOrder ?? null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: null,
+        pageCount: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
   }
 
   // 2e. İlmihal for all 6 grades and both genders (774 entries)
@@ -946,6 +1043,7 @@ function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] 
     const adab = getAdabEntriesForGrade(grade);
     const esma = getEsmaEntriesForGrade(grade);
     const efendimiz = getEfendimizEntriesForGrade(grade);
+    const sahabe = getSahabeEntriesForGrade(grade);
     const ilmihal = gender
       ? getIlmihalEntriesForGrade(grade, gender)
       : [
@@ -960,7 +1058,8 @@ function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] 
           e.categoryId !== "ayet" &&
           e.categoryId !== "hadis" &&
           e.categoryId !== "esma" &&
-          e.categoryId !== "efendimiz"
+          e.categoryId !== "efendimiz" &&
+          e.categoryId !== "sahabe-kissalari"
       )
       .map((e) => ({ ...e, grade, id: grade === 1 ? e.id : `g${grade}-${e.id}` }));
     return resolveAllCurriculumEntries([
@@ -970,6 +1069,7 @@ function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] 
       ...adab,
       ...esma,
       ...efendimiz,
+      ...sahabe,
       ...ilmihal,
     ]);
   }
