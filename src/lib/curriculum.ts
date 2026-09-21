@@ -5,11 +5,11 @@ import {
   FileAudio,
   Gem,
   HandHeart,
-  Infinity,
   ScrollText,
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
+import { EsmaIcon } from "@/components/icons/esma-icon";
 import { GoncaGulIcon } from "@/components/icons/gonca-gul-icon";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
 import { getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
@@ -48,7 +48,7 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     id: "esma",
     label: "Esmâü'l-Hüsnâ",
     shortLabel: "Esmâ",
-    icon: Infinity,
+    icon: EsmaIcon,
     accent: "emerald",
   },
   {
