@@ -17,6 +17,7 @@ export const useReadingProgressStore = create<ReadingProgressState>()(
       setReadingPage: (entryId: string, page: number) => {
         if (!entryId) return;
         const validPage = Math.max(1, Math.floor(page));
+        if (get().progressMap[entryId] === validPage) return;
         set((state) => ({
           progressMap: {
             ...state.progressMap,

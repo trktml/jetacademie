@@ -41,4 +41,13 @@ describe("useReadingProgressStore", () => {
     resetReadingPage("entry-reset");
     expect(getReadingPage("entry-reset")).toBe(1);
   });
+
+  it("should not update state reference if the page is already the same", () => {
+    const { setReadingPage } = useReadingProgressStore.getState();
+    setReadingPage("entry-same", 3);
+    const stateBefore = useReadingProgressStore.getState().progressMap;
+    setReadingPage("entry-same", 3);
+    const stateAfter = useReadingProgressStore.getState().progressMap;
+    expect(stateBefore).toBe(stateAfter);
+  });
 });

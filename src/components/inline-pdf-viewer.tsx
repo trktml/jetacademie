@@ -26,19 +26,24 @@ export function InlinePdfViewer({
   onClose,
   initialPage,
 }: InlinePdfViewerProps) {
-  const { getReadingPage, setReadingPage } = useReadingProgressStore();
+  const setReadingPage = useReadingProgressStore((s) => s.setReadingPage);
 
-  const initialResolvedPage =
-    initialPage ?? (typeof window !== "undefined" && entryId ? getReadingPage(entryId) : 1);
-  const startPage = initialResolvedPage > 1 ? initialResolvedPage : 1;
-
-  const [currentPage, setCurrentPage] = useState<number>(startPage);
+  const [currentPage, setCurrentPage] = useState<number>(() => {
+    if (typeof initialPage === "number" && initialPage >= 1) {
+      return initialPage;
+    }
+    if (typeof window !== "undefined" && entryId) {
+      const savedPage = useReadingProgressStore.getState().getReadingPage(entryId);
+      return savedPage > 1 ? savedPage : 1;
+    }
+    return 1;
+  });
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
-  const [resumedNotice, setResumedNotice] = useState<string | null>(
-    startPage > 1 ? `${startPage}. sayfadan devam ediliyor` : null
+  const [resumedNotice, setResumedNotice] = useState<string | null>(() =>
+    currentPage > 1 ? `${currentPage}. sayfadan devam ediliyor` : null
   );
 
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -202,26 +207,12 @@ export function InlinePdfViewer({
 
   // Navigation handlers
   const goToNextPage = useCallback(() => {
-    setCurrentPage((prev) => {
-      if (prev < totalPages) {
-        const next = prev + 1;
-        setReadingPage(entryId, next);
-        return next;
-      }
-      return prev;
-    });
-  }, [totalPages, entryId, setReadingPage]);
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  }, [totalPages]);
 
   const goToPrevPage = useCallback(() => {
-    setCurrentPage((prev) => {
-      if (prev > 1) {
-        const next = prev - 1;
-        setReadingPage(entryId, next);
-        return next;
-      }
-      return prev;
-    });
-  }, [entryId, setReadingPage]);
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  }, []);
 
   // Copy page text action
   const handleCopyPageText = async () => {

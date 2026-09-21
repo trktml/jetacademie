@@ -1012,6 +1012,7 @@ export function CurriculumArchive({
 
                           {expandedReadingEntryId === entry.id && (
                             <InlinePdfViewer
+                              key={entry.id}
                               pdfUrl={entry.pdfUrl}
                               title={entry.title}
                               entryId={entry.id}
@@ -1319,6 +1320,7 @@ export function CurriculumArchive({
                                       {expandedReadingEntryId === entry.id && (
                                         <div onClick={(e) => e.stopPropagation()}>
                                           <InlinePdfViewer
+                                            key={entry.id}
                                             pdfUrl={entry.pdfUrl}
                                             title={entry.title}
                                             entryId={entry.id}
@@ -1453,6 +1455,7 @@ export function CurriculumArchive({
                                     {/* Inline PDF Viewer rendered directly below the card */}
                                     {expandedReadingEntryId === currentEntry.id && (
                                       <InlinePdfViewer
+                                        key={currentEntry.id}
                                         pdfUrl={currentEntry.pdfUrl}
                                         title={currentEntry.title}
                                         entryId={currentEntry.id}
