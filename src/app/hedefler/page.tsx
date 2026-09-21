@@ -1,23 +1,24 @@
 import type { Metadata } from "next";
-import { Compass } from "lucide-react";
+import { TargetsView } from "@/components/targets-view";
 
 export const metadata: Metadata = {
-  title: "Hedefler",
-  description: "JetAcademie dönem hedefleri.",
+  title: "Hedefler & Yıllık Planlar",
+  description:
+    "JetAcademie 6 yıllık Ortaokul ve Lise hedefleri, sene sonu kazanımları ve 36 haftalık müfredat yol haritası.",
 };
 
-export default function TargetsPage() {
-  return (
-    <main className="targets-page page-shell">
-      <header className="page-heading page-heading--compact"></header>
+interface TargetsPageProps {
+  searchParams?: Promise<{ sinif?: string }>;
+}
 
-      <section className="targets-empty" aria-labelledby="targets-empty-title">
-        <span className="targets-empty__icon">
-          <Compass aria-hidden="true" />
-        </span>
-        <p className="eyebrow">Yakında inşallah</p>
-        <h2 id="targets-empty-title">.</h2>
-      </section>
+export default async function TargetsPage(props: TargetsPageProps) {
+  const searchParams = props.searchParams ? await props.searchParams : undefined;
+  const gradeParam = Number(searchParams?.sinif);
+  const initialGrade = gradeParam >= 1 && gradeParam <= 6 ? gradeParam : 1;
+
+  return (
+    <main className="targets-page page-shell archive-page-shell">
+      <TargetsView initialGrade={initialGrade} />
     </main>
   );
 }
