@@ -12,31 +12,31 @@ import {
 describe("curriculum", () => {
   it("contains all ten real curriculum categories", () => {
     expect(curriculumCategories.map((category) => category.label)).toEqual([
+      "Esmâü'l-Hüsnâ",
+      "Efendimiz",
       "Ayet",
       "Hadis",
-      "Efendimiz",
       "Sahabe kıssaları",
       "Risale",
       "Hocaefendi dinleme",
       "Pırlanta",
       "İlmihal",
       "Adab-ı Muaşeret",
-      "Esmâü'l-Hüsnâ",
     ]);
   });
 
   it("provides concise short labels for compact navigation", () => {
     expect(curriculumCategories.map((category) => category.shortLabel)).toEqual([
+      "Esmâ",
+      "Efendimiz",
       "Ayet",
       "Hadis",
-      "Efendimiz",
       "Sahabe",
       "Risale",
       "Dinleme",
       "Pırlanta",
       "İlmihal",
       "Adab",
-      "Esmâ",
     ]);
   });
 

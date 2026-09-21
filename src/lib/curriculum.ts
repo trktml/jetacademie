@@ -20,16 +20,16 @@ import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
 import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 
 export const curriculumCategoryIds = [
+  "esma",
+  "efendimiz",
   "ayet",
   "hadis",
-  "efendimiz",
   "sahabe-kissalari",
   "risale",
   "hocaefendi-dinleme",
   "pirlanta",
   "ilmihal",
   "adab-i-muaseret",
-  "esma",
 ] as const;
 
 export type CurriculumCategoryId = (typeof curriculumCategoryIds)[number];
@@ -44,8 +44,13 @@ export interface CurriculumCategory {
 }
 
 export const curriculumCategories: readonly CurriculumCategory[] = [
-  { id: "ayet", label: "Ayet", shortLabel: "Ayet", icon: BookOpenText, accent: "coral" },
-  { id: "hadis", label: "Hadis", shortLabel: "Hadis", icon: ScrollText, accent: "amber" },
+  {
+    id: "esma",
+    label: "Esmâü'l-Hüsnâ",
+    shortLabel: "Esmâ",
+    icon: Infinity,
+    accent: "emerald",
+  },
   {
     id: "efendimiz",
     label: "Efendimiz",
@@ -53,6 +58,8 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     icon: GoncaGulIcon,
     accent: "blue",
   },
+  { id: "ayet", label: "Ayet", shortLabel: "Ayet", icon: BookOpenText, accent: "coral" },
+  { id: "hadis", label: "Hadis", shortLabel: "Hadis", icon: ScrollText, accent: "amber" },
   {
     id: "sahabe-kissalari",
     label: "Sahabe kıssaları",
@@ -91,13 +98,6 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     shortLabel: "Adab",
     icon: HandHeart,
     accent: "orange",
-  },
-  {
-    id: "esma",
-    label: "Esmâü'l-Hüsnâ",
-    shortLabel: "Esmâ",
-    icon: Infinity,
-    accent: "emerald",
   },
 ] as const;
 

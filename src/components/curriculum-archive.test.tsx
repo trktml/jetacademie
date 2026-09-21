@@ -49,7 +49,7 @@ describe("CurriculumArchive Component", () => {
     );
 
     expect(html).toContain(
-      'class="archive-capsule-item" data-active="true" aria-current="true" aria-label="Ayet"'
+      'class="archive-capsule-item" data-active="true" aria-current="true" aria-label="Esmâü&#x27;l-Hüsnâ"'
     );
   });
 
@@ -646,11 +646,13 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should render active category purely from props during SSR without window branching", () => {
-    // Default initialCategoryId is 'ayet'
+    // Default initialCategoryId is first category ('esma')
     const defaultHtml = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
-    expect(defaultHtml).toContain('data-active="true" aria-current="true" aria-label="Ayet"');
+    expect(defaultHtml).toContain(
+      'data-active="true" aria-current="true" aria-label="Esmâü&#x27;l-Hüsnâ"'
+    );
     expect(defaultHtml).toContain('data-active="false" aria-label="Risale"');
 
     // Explicit initialCategoryId="risale" renders risale as active consistently
@@ -661,7 +663,7 @@ describe("CurriculumArchive Component", () => {
         initialCategoryId="risale"
       />
     );
-    expect(risaleHtml).toContain('data-active="false" aria-label="Ayet"');
+    expect(risaleHtml).toContain('data-active="false" aria-label="Esmâü&#x27;l-Hüsnâ"');
     expect(risaleHtml).toContain('data-active="true" aria-current="true" aria-label="Risale"');
   });
 

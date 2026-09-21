@@ -117,7 +117,7 @@ export function CurriculumArchive({
   customEntries,
   allEntries,
   initialGrade = 1,
-  initialCategoryId = "ayet",
+  initialCategoryId = curriculumCategories[0].id,
   initialHistoryViewCategoryIds = {},
 }: CurriculumArchiveProps) {
   const [activeCategoryId, setActiveCategoryId] = useState<CurriculumCategoryId>(initialCategoryId);
