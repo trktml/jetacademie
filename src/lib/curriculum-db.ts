@@ -21,6 +21,10 @@ import {
   type Gender,
 } from "@/lib/data/ilmihal-curriculum";
 import { getAllSahabeEntries, getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
+import {
+  getAllHocaefendiEntries,
+  getHocaefendiEntriesForGrade,
+} from "@/lib/data/hocaefendi-curriculum";
 
 interface CurriculumEntryRow {
   id: string;
@@ -697,6 +701,83 @@ export function syncSahabeCurriculumIfOutdated(): void {
 }
 
 /**
+ * Ensures hocaefendi-dinleme entries are fully synced across all 6 grades (48 entries each, total 288).
+ * If old placeholder entries are present or count < 288, this cleanly syncs hocaefendi-dinleme
+ * without touching other categories or user progress.
+ */
+export function syncHocaefendiCurriculumIfOutdated(): void {
+  if (
+    typeof db?.query !== "function" ||
+    typeof db?.prepare !== "function" ||
+    typeof db?.transaction !== "function" ||
+    typeof db?.exec !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    const row = db
+      .query<{ count: number }, []>(
+        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'hocaefendi-dinleme'`
+      )
+      .get();
+
+    const sample = db
+      .query<{ body: string }, []>(
+        `SELECT body FROM "curriculum_entries" WHERE "id" = 'hocaefendi-dinleme-eylul-1'`
+      )
+      .get();
+
+    // 6 grades * 48 weeks = 288 entries and must have rich vocabulary
+    if (row && row.count >= 288 && sample?.body?.includes("Âbid")) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const insertStmt = db.prepare(`
+      INSERT OR REPLACE INTO "curriculum_entries" (
+        "id", "grade", "categoryId", "gender", "month", "week", "year",
+        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "pageCount", "createdAt", "updatedAt"
+      ) VALUES (
+        $id, $grade, $categoryId, $gender, $month, $week, $year,
+        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
+        $pageCount, $createdAt, $updatedAt
+      )
+    `);
+
+    const hocaefendiEntries = getAllHocaefendiEntries();
+    const runSync = db.transaction((entries: typeof hocaefendiEntries) => {
+      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'hocaefendi-dinleme'`);
+      for (const e of entries) {
+        insertStmt.run({
+          $id: e.id,
+          $grade: e.grade ?? 1,
+          $categoryId: "hocaefendi-dinleme",
+          $gender: null,
+          $month: e.month,
+          $week: e.week,
+          $year: e.year,
+          $isExtra: e.isExtra ? 1 : 0,
+          $extraOrder: e.extraOrder ?? null,
+          $title: e.title,
+          $body: e.body ?? null,
+          $resourceUrl: e.resourceUrl ?? null,
+          $pdfUrl: null,
+          $pageCount: null,
+          $createdAt: now,
+          $updatedAt: now,
+        });
+      }
+    });
+
+    runSync(hocaefendiEntries);
+  } catch (err) {
+    console.error("Failed to sync hocaefendi curriculum:", err);
+  }
+}
+
+/**
  * Seeds initial curriculum entries for all 6 Belgium grades,
  * including 48-week standard curriculum and extra contents.
  */
@@ -723,6 +804,7 @@ export function seedCurriculumDatabase(force = false): void {
     syncEsmaCurriculumIfOutdated();
     syncEfendimizCurriculumIfOutdated();
     syncSahabeCurriculumIfOutdated();
+    syncHocaefendiCurriculumIfOutdated();
     return;
   }
 
@@ -786,7 +868,8 @@ export function seedCurriculumDatabase(force = false): void {
         cat.id === "hadis" ||
         cat.id === "esma" ||
         cat.id === "efendimiz" ||
-        cat.id === "sahabe-kissalari"
+        cat.id === "sahabe-kissalari" ||
+        cat.id === "hocaefendi-dinleme"
       )
         continue;
       seedBatch.push({
@@ -969,6 +1052,29 @@ export function seedCurriculumDatabase(force = false): void {
         updatedAt: now,
       });
     }
+
+    // 2h. Hocaefendi Sohbetleri for Grades 2 through 6 (48 weeks)
+    const gradeHocaefendiEntries = getHocaefendiEntriesForGrade(grade);
+    for (const entry of gradeHocaefendiEntries) {
+      seedBatch.push({
+        id: entry.id,
+        grade,
+        categoryId: "hocaefendi-dinleme",
+        gender: null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: 0,
+        extraOrder: null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: null,
+        pageCount: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
   }
 
   // 2e. İlmihal for all 6 grades and both genders (774 entries)
@@ -1044,6 +1150,7 @@ function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] 
     const esma = getEsmaEntriesForGrade(grade);
     const efendimiz = getEfendimizEntriesForGrade(grade);
     const sahabe = getSahabeEntriesForGrade(grade);
+    const hocaefendi = getHocaefendiEntriesForGrade(grade);
     const ilmihal = gender
       ? getIlmihalEntriesForGrade(grade, gender)
       : [
@@ -1059,7 +1166,8 @@ function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] 
           e.categoryId !== "hadis" &&
           e.categoryId !== "esma" &&
           e.categoryId !== "efendimiz" &&
-          e.categoryId !== "sahabe-kissalari"
+          e.categoryId !== "sahabe-kissalari" &&
+          e.categoryId !== "hocaefendi-dinleme"
       )
       .map((e) => ({ ...e, grade, id: grade === 1 ? e.id : `g${grade}-${e.id}` }));
     return resolveAllCurriculumEntries([
@@ -1070,6 +1178,7 @@ function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] 
       ...esma,
       ...efendimiz,
       ...sahabe,
+      ...hocaefendi,
       ...ilmihal,
     ]);
   }

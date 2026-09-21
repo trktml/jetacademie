@@ -2,11 +2,11 @@ import {
   BookHeart,
   BookOpenText,
   BookMarked,
-  FileAudio,
   Gem,
   HandHeart,
   ScrollText,
   UsersRound,
+  Video,
   type LucideIcon,
 } from "lucide-react";
 import { EsmaIcon } from "@/components/icons/esma-icon";
@@ -16,6 +16,7 @@ import { getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
 import { getEfendimizEntriesForGrade } from "@/lib/data/efendimiz-curriculum";
 import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
 import { getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
+import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
 import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
 import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 
@@ -40,7 +41,7 @@ export interface CurriculumCategory {
   readonly shortLabel: string;
   readonly icon: LucideIcon;
   readonly accent: string;
-  readonly resourceType?: "pdf" | "audio";
+  readonly resourceType?: "pdf" | "audio" | "video";
 }
 
 export const curriculumCategories: readonly CurriculumCategory[] = [
@@ -54,7 +55,7 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
   {
     id: "efendimiz",
     label: "Efendimiz",
-    shortLabel: "Efendimiz",
+    shortLabel: "Siyer",
     icon: GoncaGulIcon,
     accent: "blue",
   },
@@ -77,11 +78,11 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
   },
   {
     id: "hocaefendi-dinleme",
-    label: "Hocaefendi dinleme",
-    shortLabel: "Dinleme",
-    icon: FileAudio,
+    label: "Hocaefendi Sohbetleri",
+    shortLabel: "Sohbet",
+    icon: Video,
     accent: "rose",
-    resourceType: "audio",
+    resourceType: "video",
   },
   { id: "pirlanta", label: "Pırlanta", shortLabel: "Pırlanta", icon: Gem, accent: "sky" },
   {
@@ -214,25 +215,8 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
     pageCount: 3,
   },
 
-  // ── Hocaefendi Dinleme ──────────────────────────
-  {
-    id: "hocaefendi-dinleme-eylul-1",
-    categoryId: "hocaefendi-dinleme",
-    month: 9,
-    week: 1,
-    year: 2026,
-    title: "Hizmet Ahlâkı ve Samimiyet",
-    body: "Hizmetin temelinde yatan ihlas, samimiyet ve fedakârlık. Yapılan işlerin Allah rızası için olması gerektiğine dair sohbet.",
-  },
-  {
-    id: "hocaefendi-dinleme-eylul-2",
-    categoryId: "hocaefendi-dinleme",
-    month: 9,
-    week: 2,
-    year: 2026,
-    title: "Duanın Önemi ve Adabı",
-    body: "Dua, kulun Allah'a en samimi yönelişidir. Duanın kabul şartları, âdâbı ve günlük hayatta dua bilinci.",
-  },
+  // ── Hocaefendi Sohbetleri (1. Sınıf – 48 Hafta) ────────────────
+  ...getHocaefendiEntriesForGrade(1),
 
   // ── Pırlanta ────────────────────────────────────
   {

@@ -5,6 +5,7 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
+  BookA,
   BookOpen,
   Check,
   ChevronLeft,
@@ -108,6 +109,174 @@ export function scrollCategoryIntoView(categoryId: string) {
       targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
+}
+
+export function getYouTubeVideoId(url?: string | null): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtube.com")) {
+      return parsed.searchParams.get("v");
+    }
+    if (parsed.hostname.includes("youtu.be")) {
+      return parsed.pathname.slice(1);
+    }
+  } catch {
+    const match = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/
+    );
+    return match ? match[1] : null;
+  }
+  return null;
+}
+
+export interface ParsedVocabItem {
+  word: string;
+  tr: string;
+  fr?: string;
+  nl?: string;
+}
+
+export function parseEntryContent(body?: string | null): {
+  summary: string;
+  vocabList: ParsedVocabItem[];
+} {
+  if (!body) return { summary: "", vocabList: [] };
+
+  const vocabMarker = "📚 **Kelimeler ve Anlamları**:";
+  if (!body.includes(vocabMarker)) {
+    return { summary: body, vocabList: [] };
+  }
+
+  const [summaryPart, vocabPart] = body.split(vocabMarker);
+  const summary = summaryPart.trim();
+  const vocabList: ParsedVocabItem[] = [];
+
+  const lines = vocabPart.split("\n").filter((l) => l.trim().startsWith("•"));
+  for (const line of lines) {
+    const nlFrMatch = line.match(
+      /•\s*\*\*(.*?)\*\*:\s*(.*?)(?:\s*\(NL:\s*(.*?)\s*\/\s*FR:\s*(.*?)\))?$/
+    );
+    const frNlMatch = line.match(
+      /•\s*\*\*(.*?)\*\*:\s*(.*?)(?:\s*\(FR:\s*(.*?)\s*\/\s*NL:\s*(.*?)\))?$/
+    );
+
+    if (nlFrMatch && (nlFrMatch[3] || nlFrMatch[4])) {
+      vocabList.push({
+        word: nlFrMatch[1].trim(),
+        tr: nlFrMatch[2].trim(),
+        nl: nlFrMatch[3]?.trim(),
+        fr: nlFrMatch[4]?.trim(),
+      });
+    } else if (frNlMatch && (frNlMatch[3] || frNlMatch[4])) {
+      vocabList.push({
+        word: frNlMatch[1].trim(),
+        tr: frNlMatch[2].trim(),
+        fr: frNlMatch[3]?.trim(),
+        nl: frNlMatch[4]?.trim(),
+      });
+    } else {
+      const basicMatch = line.match(/•\s*\*\*(.*?)\*\*:\s*(.*?)$/);
+      if (basicMatch) {
+        vocabList.push({
+          word: basicMatch[1].trim(),
+          tr: basicMatch[2].trim(),
+        });
+      } else {
+        const rawMatch = line.replace(/^•\s*/, "").split(":");
+        if (rawMatch.length >= 2) {
+          vocabList.push({
+            word: rawMatch[0].trim(),
+            tr: rawMatch.slice(1).join(":").trim(),
+          });
+        }
+      }
+    }
+  }
+
+  return { summary, vocabList };
+}
+
+export function EntryContentRenderer({
+  entry,
+  renderMedia = true,
+}: {
+  entry: CurriculumEntry;
+  renderMedia?: boolean;
+}) {
+  const { summary, vocabList } = useMemo(() => parseEntryContent(entry.body), [entry.body]);
+  const videoId = useMemo(
+    () => (renderMedia ? getYouTubeVideoId(entry.resourceUrl) : null),
+    [entry.resourceUrl, renderMedia]
+  );
+
+  return (
+    <div className="archive-entry-rendered-content flex flex-col gap-3">
+      {summary && <p className="archive-entry-desc text-sm leading-relaxed">{summary}</p>}
+
+      {videoId && (
+        <div className="archive-video-wrapper my-1 overflow-hidden rounded-2xl border border-rose-500/20 bg-black/5 shadow-xs transition-shadow hover:shadow-md">
+          <div className="relative aspect-video w-full">
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`}
+              title={entry.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+              className="absolute inset-0 h-full w-full rounded-2xl border-0"
+            />
+          </div>
+        </div>
+      )}
+
+      {renderMedia && vocabList.length > 0 && (
+        <div className="archive-vocab-card mt-1 rounded-2xl border border-rose-200/80 bg-rose-50/40 p-3 sm:p-3.5 dark:border-rose-900/40 dark:bg-rose-950/20">
+          <div className="mb-2.5 flex items-center gap-1.5 text-xs font-bold text-rose-800 dark:text-rose-300">
+            <BookA
+              className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400"
+              aria-hidden="true"
+            />
+            <span>Kelimeler</span>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {vocabList.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col gap-1.5 rounded-xl border border-rose-200/70 bg-white p-2.5 shadow-xs dark:border-rose-900/40 dark:bg-[#16202c]"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-1.5">
+                  <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                    {item.word}
+                  </span>
+                  <div className="flex items-center gap-1 text-[10px] font-medium">
+                    {item.nl && (
+                      <span
+                        className="rounded border border-amber-300/70 bg-amber-100 px-1.5 py-0.5 font-semibold text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/80 dark:text-amber-200"
+                        title="Felemenkçe Karşılığı"
+                      >
+                        NL: {item.nl}
+                      </span>
+                    )}
+                    {item.fr && (
+                      <span
+                        className="rounded border border-blue-300/70 bg-blue-100 px-1.5 py-0.5 font-semibold text-blue-900 dark:border-blue-700/60 dark:bg-blue-950/80 dark:text-blue-200"
+                        title="Fransızca Karşılığı"
+                      >
+                        FR: {item.fr}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <p className="text-[11.5px] leading-relaxed text-slate-600 dark:text-slate-300">
+                  {item.tr}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function CurriculumArchive({
@@ -976,7 +1145,7 @@ export function CurriculumArchive({
                       </div>
 
                       <h3 className="archive-entry-title">{entry.title}</h3>
-                      {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
+                      <EntryContentRenderer entry={entry} />
 
                       {entry.pdfUrl && (
                         <div className="archive-history-reading-action mt-2 mb-2 flex flex-col gap-2">
@@ -1032,7 +1201,13 @@ export function CurriculumArchive({
                             aria-label={`${entry.title} kaynağını yeni sekmede aç`}
                           >
                             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                            <span>Kaynağı Aç (sunnah.com)</span>
+                            <span>
+                              {getYouTubeVideoId(entry.resourceUrl)
+                                ? "YouTube'da İzle"
+                                : entry.categoryId === "hadis"
+                                  ? "Kaynağı Aç (sunnah.com)"
+                                  : "Kaynağı Aç"}
+                            </span>
                           </a>
                         </div>
                       )}
@@ -1279,7 +1454,7 @@ export function CurriculumArchive({
                                   </div>
 
                                   <h3 className="archive-entry-title">{entry.title}</h3>
-                                  {entry.body && <p className="archive-entry-desc">{entry.body}</p>}
+                                  <EntryContentRenderer entry={entry} renderMedia={isFront} />
 
                                   {isFront && entry.pdfUrl && (
                                     <div className="archive-history-reading-action mt-3 flex flex-col gap-2">
@@ -1350,7 +1525,13 @@ export function CurriculumArchive({
                                             className="h-3.5 w-3.5"
                                             aria-hidden="true"
                                           />
-                                          <span>Kaynağı Aç (sunnah.com)</span>
+                                          <span>
+                                            {getYouTubeVideoId(entry.resourceUrl)
+                                              ? "YouTube'da İzle"
+                                              : entry.categoryId === "hadis"
+                                                ? "Kaynağı Aç (sunnah.com)"
+                                                : "Kaynağı Aç"}
+                                          </span>
                                         </a>
                                       </div>
                                     )}
@@ -1405,10 +1586,7 @@ export function CurriculumArchive({
                                 </div>
 
                                 <h3 className="archive-entry-title">{currentEntry.title}</h3>
-
-                                {currentEntry.body && (
-                                  <p className="archive-entry-desc">{currentEntry.body}</p>
-                                )}
+                                <EntryContentRenderer entry={currentEntry} renderMedia={true} />
 
                                 {currentEntry.pdfUrl && (
                                   <div className="archive-reading-action mb-4 flex flex-col gap-3">
@@ -1477,7 +1655,13 @@ export function CurriculumArchive({
                                         aria-label={`${currentEntry.title} kaynağını yeni sekmede aç`}
                                       >
                                         <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                                        <span>Kaynağı Aç (sunnah.com)</span>
+                                        <span>
+                                          {getYouTubeVideoId(currentEntry.resourceUrl)
+                                            ? "YouTube'da İzle"
+                                            : currentEntry.categoryId === "hadis"
+                                              ? "Kaynağı Aç (sunnah.com)"
+                                              : "Kaynağı Aç"}
+                                        </span>
                                       </a>
                                     </div>
                                   )}

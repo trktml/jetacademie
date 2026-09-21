@@ -20,10 +20,10 @@ describe("CurriculumArchive Component", () => {
     // Verify all 10 short labels are present in the capsule navigation
     expect(html).toContain('<span class="archive-capsule-label">Ayet</span>');
     expect(html).toContain('<span class="archive-capsule-label">Hadis</span>');
-    expect(html).toContain('<span class="archive-capsule-label">Efendimiz</span>');
+    expect(html).toContain('<span class="archive-capsule-label">Siyer</span>');
     expect(html).toContain('<span class="archive-capsule-label">Sahabe</span>');
     expect(html).toContain('<span class="archive-capsule-label">Risale</span>');
-    expect(html).toContain('<span class="archive-capsule-label">Dinleme</span>');
+    expect(html).toContain('<span class="archive-capsule-label">Sohbet</span>');
     expect(html).toContain('<span class="archive-capsule-label">Pırlanta</span>');
     expect(html).toContain('<span class="archive-capsule-label">İlmihal</span>');
     expect(html).toContain('<span class="archive-capsule-label">Adab</span>');
@@ -81,7 +81,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('class="archive-category-divider-line"');
   });
 
-  it("should render resource badges for PDF and Audio categories when active", () => {
+  it("should render resource badges for PDF and Video categories when active", () => {
     const risaleHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={[]}
@@ -91,14 +91,14 @@ describe("CurriculumArchive Component", () => {
     );
     expect(risaleHtml).toContain('<span class="archive-resource-badge">PDF</span>');
 
-    const audioHtml = renderToString(
+    const videoHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={[]}
         isSignedIn={false}
         initialCategoryId="hocaefendi-dinleme"
       />
     );
-    expect(audioHtml).toContain('<span class="archive-resource-badge">AUDIO</span>');
+    expect(videoHtml).toContain('<span class="archive-resource-badge">VIDEO</span>');
   });
 
   it("should render sample entries with Eylül-N timing format", () => {
@@ -789,5 +789,32 @@ describe("CurriculumArchive Component", () => {
         (globalThis as unknown as { document: unknown }).document = originalDocument;
       }
     });
+  });
+
+  it("should render embedded YouTube player and vocabulary card with NL before FR badges", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        initialCategoryId="hocaefendi-dinleme"
+      />
+    );
+
+    // Verify YouTube iframe embed
+    expect(html).toContain("youtube-nocookie.com/embed/");
+    expect(html).toContain('allowFullScreen=""');
+
+    // Verify Vocabulary card header
+    expect(html).toContain("<span>Kelimeler</span>");
+
+    // Verify NL and FR language pill badges and verify NL appears before FR
+    expect(html).toContain("NL:");
+    expect(html).toContain("FR:");
+    const nlIndex = html.indexOf("NL:");
+    const frIndex = html.indexOf("FR:");
+    expect(nlIndex).toBeLessThan(frIndex);
+
+    // Verify external watch on YouTube action link
+    expect(html).toContain("YouTube&#x27;da İzle");
   });
 });

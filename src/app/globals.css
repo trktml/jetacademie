@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "./bell-lamp.css";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
   --canvas: #f4f6f8;
   --canvas-subtle: #e9edf1;

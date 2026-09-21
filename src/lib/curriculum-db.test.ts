@@ -395,4 +395,32 @@ describe("Curriculum SQLite Database Module", () => {
       expect(entry.resourceUrl).toBeDefined();
     }
   });
+
+  it("should have 48 Hocaefendi Sohbetleri entries for all 6 grades (288 total)", () => {
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getCurriculumEntriesFromDb(grade).filter(
+        (e) => e.categoryId === "hocaefendi-dinleme"
+      );
+      expect(entries.length).toBe(48);
+      expect(entries.every((e) => !e.isExtra)).toBe(true);
+      expect(entries.every((e) => e.resourceUrl?.startsWith("https://www.youtube.com/"))).toBe(
+        true
+      );
+      expect(entries.every((e) => e.body?.includes("📚 **Kelimeler ve Anlamları**:"))).toBe(true);
+    }
+  });
+
+  it("should retrieve Hocaefendi entries by deterministic ID across grades", () => {
+    const g1Entry = getCurriculumEntryByIdFromDb("hocaefendi-dinleme-eylul-1");
+    expect(g1Entry).not.toBeNull();
+    expect(g1Entry?.grade).toBe(1);
+    expect(g1Entry?.categoryId).toBe("hocaefendi-dinleme");
+    expect(g1Entry?.resourceUrl).toStartWith("https://www.youtube.com/");
+
+    const g6Entry = getCurriculumEntryByIdFromDb("g6-hocaefendi-dinleme-agustos-4");
+    expect(g6Entry).not.toBeNull();
+    expect(g6Entry?.grade).toBe(6);
+    expect(g6Entry?.categoryId).toBe("hocaefendi-dinleme");
+    expect(g6Entry?.resourceUrl).toStartWith("https://www.youtube.com/");
+  });
 });

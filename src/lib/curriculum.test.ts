@@ -18,7 +18,7 @@ describe("curriculum", () => {
       "Hadis",
       "Sahabe kıssaları",
       "Risale",
-      "Hocaefendi dinleme",
+      "Hocaefendi Sohbetleri",
       "Pırlanta",
       "İlmihal",
       "Adab-ı Muaşeret",
@@ -28,20 +28,20 @@ describe("curriculum", () => {
   it("provides concise short labels for compact navigation", () => {
     expect(curriculumCategories.map((category) => category.shortLabel)).toEqual([
       "Esmâ",
-      "Efendimiz",
+      "Siyer",
       "Ayet",
       "Hadis",
       "Sahabe",
       "Risale",
-      "Dinleme",
+      "Sohbet",
       "Pırlanta",
       "İlmihal",
       "Adab",
     ]);
   });
 
-  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), and 2 for other categories", () => {
-    expect(curriculumEntries.length).toBe(391);
+  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), 48 for hocaefendi-dinleme, and 2 for other categories", () => {
+    expect(curriculumEntries.length).toBe(437);
 
     expect(getCategoryEntries("ayet").length).toBe(55);
     expect(getCategoryEntries("hadis").length).toBe(55);
@@ -49,6 +49,7 @@ describe("curriculum", () => {
     expect(getCategoryEntries("efendimiz").length).toBe(55);
     expect(getCategoryEntries("sahabe-kissalari").length).toBe(55);
     expect(getCategoryEntries("adab-i-muaseret").length).toBe(54);
+    expect(getCategoryEntries("hocaefendi-dinleme").length).toBe(48);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "erkek").length).toBe(28);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "bayan").length).toBe(28);
 
@@ -60,6 +61,7 @@ describe("curriculum", () => {
         category.id === "efendimiz" ||
         category.id === "sahabe-kissalari" ||
         category.id === "adab-i-muaseret" ||
+        category.id === "hocaefendi-dinleme" ||
         category.id === "ilmihal"
       )
         continue;
