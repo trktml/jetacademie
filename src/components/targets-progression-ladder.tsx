@@ -1,30 +1,14 @@
 "use client";
 
-import {
-  Compass,
-  BookOpen,
-  HeartHandshake,
-  KeyRound,
-  Scale,
-  Award,
-  type LucideIcon,
-} from "lucide-react";
+import { Compass } from "lucide-react";
 import type { GradePlan } from "@/lib/data/curriculum-plans";
+import { STAGE_ICONS } from "./target-outcome-card";
 
 interface TargetsProgressionLadderProps {
   plans: readonly GradePlan[];
   selectedGrade: number;
   onSelectGrade: (grade: number) => void;
 }
-
-const STAGE_ICONS: Record<number, LucideIcon> = {
-  1: Compass,
-  2: BookOpen,
-  3: HeartHandshake,
-  4: KeyRound,
-  5: Scale,
-  6: Award,
-};
 
 export function TargetsProgressionLadder({
   plans,

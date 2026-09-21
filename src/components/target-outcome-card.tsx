@@ -1,14 +1,33 @@
-"use client";
-
-import { Sparkles, CheckCircle2, ArrowRight, Target } from "lucide-react";
+import {
+  Compass,
+  BookOpen,
+  HeartHandshake,
+  Flame,
+  Scale,
+  Award,
+  CheckCircle2,
+  ArrowRight,
+  Target,
+  type LucideIcon,
+} from "lucide-react";
 import type { GradePlan } from "@/lib/data/curriculum-plans";
 
 interface TargetOutcomeCardProps {
   plan: GradePlan;
 }
 
+export const STAGE_ICONS: Record<number, LucideIcon> = {
+  1: Compass,
+  2: BookOpen,
+  3: HeartHandshake,
+  4: Flame,
+  5: Scale,
+  6: Award,
+};
+
 export function TargetOutcomeCard({ plan }: TargetOutcomeCardProps) {
   const isOrtaokul = plan.grade <= 3;
+  const StageIcon = STAGE_ICONS[plan.grade] ?? Flame;
 
   return (
     <section className="target-outcome-card" aria-labelledby={`outcome-heading-${plan.grade}`}>
@@ -23,7 +42,7 @@ export function TargetOutcomeCard({ plan }: TargetOutcomeCardProps) {
             {plan.code} · {plan.schoolLevel} ({plan.grade}. Sınıf)
           </span>
           <span className="target-outcome-card__stage-pill">
-            <Sparkles className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+            <StageIcon className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
             <span>{plan.stage}</span>
           </span>
         </div>
