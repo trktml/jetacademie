@@ -721,8 +721,8 @@ export function syncHocaefendiCurriculumIfOutdated(): void {
 
   try {
     const row = db
-      .query<{ count: number }, []>(
-        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'hocaefendi-dinleme'`
+      .query<{ count: number; distinctGrades: number }, []>(
+        `SELECT COUNT(*) as count, COUNT(DISTINCT grade) as distinctGrades FROM "curriculum_entries" WHERE "categoryId" = 'hocaefendi-dinleme'`
       )
       .get();
 
@@ -732,8 +732,8 @@ export function syncHocaefendiCurriculumIfOutdated(): void {
       )
       .get();
 
-    // 6 grades * 48 weeks = 288 entries and must have rich vocabulary
-    if (row && row.count >= 288 && sample?.body?.includes("Âbid")) {
+    // 6 grades * 48 weeks = 288 entries, distributed across all 6 grades, with rich vocabulary
+    if (row && row.count >= 288 && row.distinctGrades === 6 && sample?.body?.includes("Âbid")) {
       return;
     }
 

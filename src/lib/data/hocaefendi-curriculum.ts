@@ -12714,6 +12714,7 @@ export function getHocaefendiEntriesForGrade(grade: number): CurriculumEntry[] {
 
     return {
       id,
+      grade,
       title: item.title,
       month: monthNumber,
       week: weekInMonth,

@@ -62,6 +62,7 @@ describe("hocaefendi-curriculum", () => {
 
       const standard = entries.filter((e) => !e.isExtra);
       expect(standard.length).toBe(48);
+      expect(standard.every((e) => e.grade === grade)).toBe(true);
 
       // Grade 1 ID pattern
       if (grade === 1) {
