@@ -124,6 +124,56 @@ describe("Curriculum SQLite Database Module", () => {
     }
   });
 
+  it("should have 55 Esmâü'l-Hüsnâ entries for all 6 grades (330 total)", () => {
+    const allEntries = getCurriculumEntriesFromDb();
+    const esmaEntries = allEntries.filter((e) => e.categoryId === "esma");
+    expect(esmaEntries.length).toBe(330);
+
+    for (let grade = 1; grade <= 6; grade++) {
+      const gradeEsma = getCurriculumEntriesFromDb(grade).filter((e) => e.categoryId === "esma");
+      expect(gradeEsma.length).toBe(55);
+
+      const standard = gradeEsma.filter((e) => !e.isExtra);
+      const extras = gradeEsma.filter((e) => e.isExtra);
+      expect(standard.length).toBe(48);
+      expect(extras.length).toBe(7);
+
+      if (grade <= 3) {
+        expect(standard[0].title).toBe("EL-CEMÎL — Güzel olan, güzellik veren.");
+      } else {
+        expect(standard[0].title).toBe("EL-CEMÎL — Mutlak güzellik sahibi, güzelleştiren.");
+      }
+    }
+  });
+
+  it("should retrieve Esmâü'l-Hüsnâ entries across grades by deterministic ID", () => {
+    // Grade 1 standard & extra
+    const g1Entry = getCurriculumEntryByIdFromDb("esma-eylul-1");
+    expect(g1Entry).not.toBeNull();
+    expect(g1Entry?.title).toBe("EL-CEMÎL — Güzel olan, güzellik veren.");
+    expect(g1Entry?.grade).toBe(1);
+    expect(g1Entry?.isExtra).toBe(false);
+
+    const g1Extra = getCurriculumEntryByIdFromDb("esma-extra-1");
+    expect(g1Extra).not.toBeNull();
+    expect(g1Extra?.grade).toBe(1);
+    expect(g1Extra?.isExtra).toBe(true);
+    expect(g1Extra?.extraOrder).toBe(1);
+
+    // Grade 4 (Lise) standard & extra
+    const g4Entry = getCurriculumEntryByIdFromDb("g4-esma-eylul-1");
+    expect(g4Entry).not.toBeNull();
+    expect(g4Entry?.title).toBe("EL-CEMÎL — Mutlak güzellik sahibi, güzelleştiren.");
+    expect(g4Entry?.grade).toBe(4);
+    expect(g4Entry?.isExtra).toBe(false);
+
+    const g4Extra = getCurriculumEntryByIdFromDb("g4-esma-extra-7");
+    expect(g4Extra).not.toBeNull();
+    expect(g4Extra?.grade).toBe(4);
+    expect(g4Extra?.isExtra).toBe(true);
+    expect(g4Extra?.extraOrder).toBe(7);
+  });
+
   it("should retrieve Adab-ı Muaşeret entries across grades by deterministic ID", () => {
     // Grade 1 standard & extra
     const g1Entry = getCurriculumEntryByIdFromDb("adab-i-muaseret-eylul-1");

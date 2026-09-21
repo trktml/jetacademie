@@ -1525,6 +1525,12 @@ body:has(.landing-page),
   border-color: #ded6cf;
 }
 
+.archive-category-icon-box[data-accent="emerald"] {
+  background: #edf4f0;
+  color: #3b6e58;
+  border-color: #d2e4da;
+}
+
 /* Dark Mode Muted Archival Colors */
 :root[data-theme="dark"] .archive-category-icon-box[data-accent="coral"] {
   background: #25221d;
@@ -1578,6 +1584,12 @@ body:has(.landing-page),
   background: #241c18;
   color: #c5a999;
   border-color: #3f3129;
+}
+
+:root[data-theme="dark"] .archive-category-icon-box[data-accent="emerald"] {
+  background: #15241c;
+  color: #82c4a3;
+  border-color: #264234;
 }
 
 .archive-category-eyebrow {

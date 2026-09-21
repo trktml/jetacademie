@@ -403,6 +403,164 @@ export function getAllHadisEntries(): CurriculumEntry[] {{
 }}
 """
 
+def parse_esma(docx_path):
+    with zipfile.ZipFile(docx_path) as z:
+        tree = ET.fromstring(z.read("word/document.xml"))
+    paras = []
+    for p in tree.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p"):
+        t = "".join(node.text for node in p.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t") if node.text)
+        if t.strip():
+            paras.append(t.strip())
+            
+    entries = []
+    for i in range(1, len(paras), 2):
+        head = paras[i]
+        body = paras[i+1] if i+1 < len(paras) else ""
+        dot_idx = head.find(".")
+        if dot_idx != -1 and head[:dot_idx].strip().isdigit():
+            week_num = int(head[:dot_idx].strip())
+            rest = head[dot_idx+1:].strip()
+        else:
+            week_num = len(entries) + 1
+            rest = head
+
+        if "—" in rest:
+            parts = rest.split("—", 1)
+            name = parts[0].strip()
+            meaning = parts[1].strip()
+        elif "-" in rest:
+            parts = rest.split("-", 1)
+            name = parts[0].strip()
+            meaning = parts[1].strip()
+        else:
+            name = rest
+            meaning = ""
+
+        title = rest
+        entries.append({
+            "weekNumber": week_num,
+            "name": name,
+            "meaning": meaning,
+            "title": title,
+            "body": body
+        })
+    return entries
+
+def generate_esma_ts(ortaokul, lise):
+    return f"""import type {{ CurriculumEntry }} from "@/lib/curriculum";
+
+const monthSlugs: Record<number, string> = {{
+  1: "ocak",
+  2: "subat",
+  3: "mart",
+  4: "nisan",
+  5: "mayis",
+  6: "haziran",
+  7: "temmuz",
+  8: "agustos",
+  9: "eylul",
+  10: "ekim",
+  11: "kasim",
+  12: "aralik",
+}};
+
+function makeEsmaEntryId(
+  month: number,
+  week: number,
+  grade: number = 1,
+  isExtra: boolean = false,
+  extraOrder?: number
+): string {{
+  const prefix = grade === 1 ? "" : `g${{grade}}-`;
+  if (isExtra) {{
+    return `${{prefix}}esma-extra-${{extraOrder ?? 1}}`;
+  }}
+  const monthSlug = monthSlugs[month] ?? `m${{month}}`;
+  return `${{prefix}}esma-${{monthSlug}}-${{week}}`;
+}}
+
+export interface EsmaCurriculumItem {{
+  weekNumber: number;
+  name: string;
+  meaning: string;
+  title: string;
+  body: string;
+}}
+
+/**
+ * Ortaokul (1., 2. ve 3. Sınıflar) için 55 haftalık Esmâü'l-Hüsnâ müfredatı
+ * Kaynak: mufredat-docs/esma/01_ESMAUL_HUSNA_55_GUN_ORTAOKUL_PROGRAMI.docx
+ */
+export const ortaokulEsmaCurriculum: readonly EsmaCurriculumItem[] = {json.dumps(ortaokul, indent=2, ensure_ascii=False)} as const;
+
+/**
+ * Lise (4., 5. ve 6. Sınıflar) için 55 haftalık Esmâü'l-Hüsnâ müfredatı
+ * Kaynak: mufredat-docs/esma/02_ESMAUL_HUSNA_55_GUN_LISE_PROGRAMI.docx
+ */
+export const liseEsmaCurriculum: readonly EsmaCurriculumItem[] = {json.dumps(lise, indent=2, ensure_ascii=False)} as const;
+
+/**
+ * Belirtilen sınıf (1-6) için 55 haftalık Esmâü'l-Hüsnâ müfredat girişlerini üretir.
+ * - 1, 2, 3. sınıflar: Ortaokul müfredatı
+ * - 4, 5, 6. sınıflar: Lise müfredatı
+ * - Hafta 1-16: Eylül - Aralık 2026 (4 ay x 4 hafta)
+ * - Hafta 17-48: Ocak - Ağustos 2027 (8 ay x 4 hafta)
+ * - Hafta 49-55: Ekstra 1-7 (48 haftalık standart müfredat kuralı sonrası ilave kartlar)
+ */
+export function getEsmaEntriesForGrade(grade: number): CurriculumEntry[] {{
+  const items = grade <= 3 ? ortaokulEsmaCurriculum : liseEsmaCurriculum;
+
+  return items.map((item) => {{
+    if (item.weekNumber <= 48) {{
+      const monthIndex = Math.floor((item.weekNumber - 1) / 4); // 0..11
+      const month = monthIndex < 4 ? 9 + monthIndex : monthIndex - 3;
+      const year = monthIndex < 4 ? 2026 : 2027;
+      const weekInMonth = ((item.weekNumber - 1) % 4) + 1;
+      const id = makeEsmaEntryId(month, weekInMonth, grade, false);
+
+      return {{
+        id,
+        grade,
+        categoryId: "esma",
+        month,
+        week: weekInMonth,
+        year,
+        isExtra: false,
+        title: item.title,
+        body: item.body,
+      }};
+    }}
+
+    const extraOrder = item.weekNumber - 48; // 1..7
+    const id = makeEsmaEntryId(8, 4, grade, true, extraOrder);
+
+    return {{
+      id,
+      grade,
+      categoryId: "esma",
+      month: 8,
+      week: 4,
+      year: 2027,
+      isExtra: true,
+      extraOrder,
+      title: item.title,
+      body: item.body,
+    }};
+  }});
+}}
+
+/**
+ * 6 Belçika sınıfı için tüm Esmâü'l-Hüsnâ kayıtlarını döner (toplam 330 kayıt).
+ */
+export function getAllEsmaEntries(): CurriculumEntry[] {{
+  const all: CurriculumEntry[] = [];
+  for (let grade = 1; grade <= 6; grade++) {{
+    all.push(...getEsmaEntriesForGrade(grade));
+  }}
+  return all;
+}}
+"""
+
 if __name__ == "__main__":
     ortaokul_ayet = parse_ayet("mufredat-docs/ayet/01_ORTAOKUL_AYET_KUTUPHANESI_55.docx")
     lise_ayet = parse_ayet("mufredat-docs/ayet/01_LISE_AYET_KUTUPHANESI_55.docx")
@@ -417,3 +575,10 @@ if __name__ == "__main__":
     with open("src/lib/data/hadis-curriculum.ts", "w", encoding="utf-8") as f:
         f.write(generate_hadis_ts(ortaokul_hadis, lise_hadis))
     print("Wrote src/lib/data/hadis-curriculum.ts successfully.")
+
+    ortaokul_esma = parse_esma("mufredat-docs/esma/01_ESMAUL_HUSNA_55_GUN_ORTAOKUL_PROGRAMI.docx")
+    lise_esma = parse_esma("mufredat-docs/esma/02_ESMAUL_HUSNA_55_GUN_LISE_PROGRAMI.docx")
+    
+    with open("src/lib/data/esma-curriculum.ts", "w", encoding="utf-8") as f:
+        f.write(generate_esma_ts(ortaokul_esma, lise_esma))
+    print("Wrote src/lib/data/esma-curriculum.ts successfully.")

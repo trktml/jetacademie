@@ -9,7 +9,7 @@ import {
 } from "./curriculum-archive";
 
 describe("CurriculumArchive Component", () => {
-  it("should render fixed capsule navigation with 9 category items", () => {
+  it("should render fixed capsule navigation with 10 category items", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
@@ -17,7 +17,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('class="archive-fixed-capsule"');
     expect(html).toContain('aria-label="Müfredat Hızlı Menü"');
 
-    // Verify all 9 short labels are present in the capsule navigation
+    // Verify all 10 short labels are present in the capsule navigation
     expect(html).toContain('<span class="archive-capsule-label">Ayet</span>');
     expect(html).toContain('<span class="archive-capsule-label">Hadis</span>');
     expect(html).toContain('<span class="archive-capsule-label">Siyer</span>');
@@ -27,6 +27,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('<span class="archive-capsule-label">Pırlanta</span>');
     expect(html).toContain('<span class="archive-capsule-label">İlmihal</span>');
     expect(html).toContain('<span class="archive-capsule-label">Adab</span>');
+    expect(html).toContain('<span class="archive-capsule-label">Esmâ</span>');
   });
 
   it("should render horizontal scroll hint buttons for mobile overflow affordance", () => {
@@ -70,9 +71,9 @@ describe("CurriculumArchive Component", () => {
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
 
-    // Separators between 9 categories should be exactly 8
+    // Separators between 10 categories should be exactly 9
     const separatorCount = (html.match(/class="archive-category-separator"/g) || []).length;
-    expect(separatorCount).toBe(8);
+    expect(separatorCount).toBe(9);
 
     expect(html).toContain(
       'class="archive-category-separator" role="separator" aria-hidden="true"'

@@ -5,6 +5,7 @@ import {
   FileAudio,
   Gem,
   HandHeart,
+  Infinity,
   Landmark,
   ScrollText,
   UsersRound,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
 import { getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
+import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
 import { getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
 import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
 
@@ -25,6 +27,7 @@ export const curriculumCategoryIds = [
   "pirlanta",
   "ilmihal",
   "adab-i-muaseret",
+  "esma",
 ] as const;
 
 export type CurriculumCategoryId = (typeof curriculumCategoryIds)[number];
@@ -80,6 +83,13 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     shortLabel: "Adab",
     icon: HandHeart,
     accent: "orange",
+  },
+  {
+    id: "esma",
+    label: "Esmâü'l-Hüsnâ",
+    shortLabel: "Esmâ",
+    icon: Infinity,
+    accent: "emerald",
   },
 ] as const;
 
@@ -276,6 +286,9 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
 
   // ── Adab-ı Muaşeret (Ortaokul 1. Sınıf – 54 Hafta) ─────────────
   ...getAdabEntriesForGrade(1),
+
+  // ── Esmâü'l-Hüsnâ (Ortaokul 1. Sınıf – 55 Hafta) ───────────────
+  ...getEsmaEntriesForGrade(1),
 ];
 
 export function sortCurriculumEntries(entries: readonly CurriculumEntry[]): CurriculumEntry[] {

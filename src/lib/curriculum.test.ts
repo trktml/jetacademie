@@ -10,7 +10,7 @@ import {
 } from "./curriculum";
 
 describe("curriculum", () => {
-  it("contains only the nine real curriculum categories", () => {
+  it("contains all ten real curriculum categories", () => {
     expect(curriculumCategories.map((category) => category.label)).toEqual([
       "Ayet",
       "Hadis",
@@ -21,6 +21,7 @@ describe("curriculum", () => {
       "Pırlanta",
       "İlmihal",
       "Adab-ı Muaşeret",
+      "Esmâü'l-Hüsnâ",
     ]);
   });
 
@@ -35,14 +36,16 @@ describe("curriculum", () => {
       "Pırlanta",
       "İlmihal",
       "Adab",
+      "Esmâ",
     ]);
   });
 
-  it("has 55 entries for ayet, 55 for hadis, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), and 2 for other categories", () => {
-    expect(curriculumEntries.length).toBe(230);
+  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), and 2 for other categories", () => {
+    expect(curriculumEntries.length).toBe(285);
 
     expect(getCategoryEntries("ayet").length).toBe(55);
     expect(getCategoryEntries("hadis").length).toBe(55);
+    expect(getCategoryEntries("esma").length).toBe(55);
     expect(getCategoryEntries("adab-i-muaseret").length).toBe(54);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "erkek").length).toBe(28);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "bayan").length).toBe(28);
@@ -51,6 +54,7 @@ describe("curriculum", () => {
       if (
         category.id === "ayet" ||
         category.id === "hadis" ||
+        category.id === "esma" ||
         category.id === "adab-i-muaseret" ||
         category.id === "ilmihal"
       )

@@ -9,6 +9,7 @@ import {
 } from "@/lib/curriculum";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
 import { getAllAyetEntries, getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
+import { getAllEsmaEntries, getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
 import { getAllHadisEntries, getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
 import {
   getAllIlmihalEntries,
@@ -109,8 +110,8 @@ export function ensureCurriculumEntriesTable() {
       on "curriculum_entries" ("grade", "categoryId", "gender", "isExtra", "month", "week");
 
     -- Clean up legacy premature extra entries that violated the 48-week rule
-    DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" NOT IN ('adab-i-muaseret', 'ilmihal', 'ayet', 'hadis');
-    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%' AND "entryId" NOT LIKE '%ayet%' AND "entryId" NOT LIKE '%hadis%';
+    DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" NOT IN ('adab-i-muaseret', 'ilmihal', 'ayet', 'hadis', 'esma');
+    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%' AND "entryId" NOT LIKE '%ayet%' AND "entryId" NOT LIKE '%hadis%' AND "entryId" NOT LIKE '%esma%';
   `);
 }
 
@@ -466,6 +467,77 @@ export function syncHadisCurriculumIfOutdated(): void {
 }
 
 /**
+ * Ensures esma entries are fully synced across all 6 grades (55 entries each, total 330).
+ * If old placeholder entries are present or count < 330, this cleanly syncs esma
+ * without touching other categories or user progress.
+ */
+export function syncEsmaCurriculumIfOutdated(): void {
+  if (
+    typeof db?.query !== "function" ||
+    typeof db?.prepare !== "function" ||
+    typeof db?.transaction !== "function" ||
+    typeof db?.exec !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    const row = db
+      .query<{ count: number }, []>(
+        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'esma'`
+      )
+      .get();
+
+    // 6 grades * 55 weeks = 330 entries
+    if (row && row.count >= 330) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const insertStmt = db.prepare(`
+      INSERT OR REPLACE INTO "curriculum_entries" (
+        "id", "grade", "categoryId", "gender", "month", "week", "year",
+        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "pageCount", "createdAt", "updatedAt"
+      ) VALUES (
+        $id, $grade, $categoryId, $gender, $month, $week, $year,
+        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
+        $pageCount, $createdAt, $updatedAt
+      )
+    `);
+
+    const esmaEntries = getAllEsmaEntries();
+    const runSync = db.transaction((entries: typeof esmaEntries) => {
+      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'esma'`);
+      for (const e of entries) {
+        insertStmt.run({
+          $id: e.id,
+          $grade: e.grade ?? 1,
+          $categoryId: "esma",
+          $gender: null,
+          $month: e.month,
+          $week: e.week,
+          $year: e.year,
+          $isExtra: e.isExtra ? 1 : 0,
+          $extraOrder: e.extraOrder ?? null,
+          $title: e.title,
+          $body: e.body ?? null,
+          $resourceUrl: e.resourceUrl ?? null,
+          $pdfUrl: null,
+          $pageCount: null,
+          $createdAt: now,
+          $updatedAt: now,
+        });
+      }
+    });
+
+    runSync(esmaEntries);
+  } catch (err) {
+    console.error("Failed to sync esma curriculum:", err);
+  }
+}
+
+/**
  * Seeds initial curriculum entries for all 6 Belgium grades,
  * including 48-week standard curriculum and extra contents.
  */
@@ -489,6 +561,7 @@ export function seedCurriculumDatabase(force = false): void {
     syncHadisCurriculumIfOutdated();
     syncAdabCurriculumIfOutdated();
     syncIlmihalCurriculumIfOutdated();
+    syncEsmaCurriculumIfOutdated();
     return;
   }
 
@@ -539,13 +612,14 @@ export function seedCurriculumDatabase(force = false): void {
 
   // 2. Seed template standard entries for Grades 2 through 6
   for (let grade = 2; grade <= 6; grade++) {
-    // 2a. Categories other than adab-i-muaseret, ilmihal, ayet, and hadis
+    // 2a. Categories other than adab-i-muaseret, ilmihal, ayet, hadis, and esma
     for (const cat of curriculumCategories) {
       if (
         cat.id === "adab-i-muaseret" ||
         cat.id === "ilmihal" ||
         cat.id === "ayet" ||
-        cat.id === "hadis"
+        cat.id === "hadis" ||
+        cat.id === "esma"
       )
         continue;
       seedBatch.push({
@@ -640,6 +714,29 @@ export function seedCurriculumDatabase(force = false): void {
         id: entry.id,
         grade,
         categoryId: "hadis",
+        gender: null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: entry.isExtra ? 1 : 0,
+        extraOrder: entry.extraOrder ?? null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: null,
+        pageCount: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    // 2e. Esmâü'l-Hüsnâ for Grades 2 through 6 (55 weeks)
+    const gradeEsmaEntries = getEsmaEntriesForGrade(grade);
+    for (const entry of gradeEsmaEntries) {
+      seedBatch.push({
+        id: entry.id,
+        grade,
+        categoryId: "esma",
         gender: null,
         month: entry.month,
         week: entry.week,
