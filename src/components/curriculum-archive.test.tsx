@@ -9,7 +9,7 @@ import {
 } from "./curriculum-archive";
 
 describe("CurriculumArchive Component", () => {
-  it("should render fixed capsule navigation with 10 category items", () => {
+  it("should render fixed capsule navigation with 9 category items", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
@@ -17,17 +17,18 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('class="archive-fixed-capsule"');
     expect(html).toContain('aria-label="Müfredat Hızlı Menü"');
 
-    // Verify all 10 short labels are present in the capsule navigation
+    // Verify all 9 short labels are present in the capsule navigation
     expect(html).toContain('<span class="archive-capsule-label">Ayet</span>');
     expect(html).toContain('<span class="archive-capsule-label">Hadis</span>');
     expect(html).toContain('<span class="archive-capsule-label">Siyer</span>');
     expect(html).toContain('<span class="archive-capsule-label">Sahabe</span>');
-    expect(html).toContain('<span class="archive-capsule-label">Risale</span>');
     expect(html).toContain('<span class="archive-capsule-label">Sohbet</span>');
-    expect(html).toContain('<span class="archive-capsule-label">Pırlanta</span>');
+    expect(html).toContain('<span class="archive-capsule-label">Konu</span>');
     expect(html).toContain('<span class="archive-capsule-label">İlmihal</span>');
     expect(html).toContain('<span class="archive-capsule-label">Adab</span>');
     expect(html).toContain('<span class="archive-capsule-label">Esmâ</span>');
+    expect(html).not.toContain('<span class="archive-capsule-label">Risale</span>');
+    expect(html).not.toContain('<span class="archive-capsule-label">Pırlanta</span>');
   });
 
   it("should render horizontal scroll hint buttons for mobile overflow affordance", () => {
@@ -63,7 +64,10 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain(">Ayet</h2>");
     expect(html).toContain('id="hadis"');
     expect(html).toContain('id="efendimiz"');
-    expect(html).toContain('id="risale"');
+    expect(html).toContain('id="konu"');
+    expect(html).toContain(">Haftanın Konusu</h2>");
+    expect(html).not.toContain('id="risale"');
+    expect(html).not.toContain('id="pirlanta"');
   });
 
   it("should render elegant dividers between categories to separate them clearly", () => {
@@ -71,9 +75,9 @@ describe("CurriculumArchive Component", () => {
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
 
-    // Separators between 10 categories should be exactly 9
+    // Separators between 9 categories should be exactly 8
     const separatorCount = (html.match(/class="archive-category-separator"/g) || []).length;
-    expect(separatorCount).toBe(9);
+    expect(separatorCount).toBe(8);
 
     expect(html).toContain(
       'class="archive-category-separator" role="separator" aria-hidden="true"'
@@ -82,14 +86,14 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should render resource badges for PDF and Video categories when active", () => {
-    const risaleHtml = renderToString(
+    const pdfHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={[]}
         isSignedIn={false}
-        initialCategoryId="risale"
+        initialCategoryId="ilmihal"
       />
     );
-    expect(risaleHtml).toContain('<span class="archive-resource-badge">PDF</span>');
+    expect(pdfHtml).toContain('<span class="archive-resource-badge">PDF</span>');
 
     const videoHtml = renderToString(
       <CurriculumArchive
@@ -250,14 +254,14 @@ describe("CurriculumArchive Component", () => {
   it("should render all-completed celebratory state when all entries in a drawer are completed", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["pirlanta-eylul-1", "pirlanta-eylul-2"]}
+        initialCompletedEntryIds={["konu-eylul-1", "konu-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="pirlanta"
+        initialCategoryId="konu"
       />
     );
 
     expect(html).toContain("archive-all-completed");
-    expect(html).toContain("Tüm Pırlanta Dosyaları Tamamlandı!");
+    expect(html).toContain("Tüm Haftanın Konusu Dosyaları Tamamlandı!");
     expect(html).not.toContain("archive-all-completed__desc");
     expect(html).not.toContain("Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız.");
     expect(html).toContain("Geçmiş (2)");
@@ -438,9 +442,9 @@ describe("CurriculumArchive Component", () => {
   it("should assign relative depth 1 to behind card in all-completed view and preserve completed tab styling", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["pirlanta-eylul-1", "pirlanta-eylul-2"]}
+        initialCompletedEntryIds={["konu-eylul-1", "konu-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="pirlanta"
+        initialCategoryId="konu"
       />
     );
 
@@ -511,7 +515,7 @@ describe("CurriculumArchive Component", () => {
     // Other categories must NOT be present in history mode to prevent mixing/confusion
     expect(html).not.toContain('id="hadis"');
     expect(html).not.toContain('id="efendimiz"');
-    expect(html).not.toContain('id="risale"');
+    expect(html).not.toContain('id="konu"');
     expect(html).not.toContain('class="archive-category-separator"');
   });
 
@@ -653,18 +657,20 @@ describe("CurriculumArchive Component", () => {
     expect(defaultHtml).toContain(
       'data-active="true" aria-current="true" aria-label="Esmâü&#x27;l-Hüsnâ"'
     );
-    expect(defaultHtml).toContain('data-active="false" aria-label="Risale"');
+    expect(defaultHtml).toContain('data-active="false" aria-label="Haftanın Konusu"');
 
-    // Explicit initialCategoryId="risale" renders risale as active consistently
-    const risaleHtml = renderToString(
+    // Explicit initialCategoryId="konu" renders konu as active consistently
+    const konuHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={[]}
         isSignedIn={false}
-        initialCategoryId="risale"
+        initialCategoryId="konu"
       />
     );
-    expect(risaleHtml).toContain('data-active="false" aria-label="Esmâü&#x27;l-Hüsnâ"');
-    expect(risaleHtml).toContain('data-active="true" aria-current="true" aria-label="Risale"');
+    expect(konuHtml).toContain('data-active="false" aria-label="Esmâü&#x27;l-Hüsnâ"');
+    expect(konuHtml).toContain(
+      'data-active="true" aria-current="true" aria-label="Haftanın Konusu"'
+    );
   });
 
   it("should configure countdown undo with 7 seconds duration", () => {

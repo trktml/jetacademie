@@ -133,6 +133,10 @@ export function ensureCurriculumEntriesTable() {
     -- Clean up legacy premature extra entries that violated the 48-week rule
     DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" NOT IN ('adab-i-muaseret', 'ilmihal', 'ayet', 'hadis', 'esma', 'efendimiz');
     DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%' AND "entryId" NOT LIKE '%ayet%' AND "entryId" NOT LIKE '%hadis%' AND "entryId" NOT LIKE '%esma%' AND "entryId" NOT LIKE '%efendimiz%';
+
+    -- Clean up removed categories (risale, pirlanta) and their progress
+    DELETE FROM "curriculum_entries" WHERE "categoryId" IN ('risale', 'pirlanta');
+    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE 'risale-%' OR "entryId" LIKE 'pirlanta-%' OR "entryId" LIKE '%-risale-%' OR "entryId" LIKE '%-pirlanta-%';
   `);
 }
 
@@ -778,6 +782,160 @@ export function syncHocaefendiCurriculumIfOutdated(): void {
 }
 
 /**
+ * Ensures konu (Haftanın Konusu) entries are present and cleans up removed categories (risale, pirlanta).
+ */
+export function syncKonuCurriculumIfOutdated(): void {
+  if (
+    typeof db?.query !== "function" ||
+    typeof db?.prepare !== "function" ||
+    typeof db?.transaction !== "function" ||
+    typeof db?.exec !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    db.exec(`
+      DELETE FROM "curriculum_entries" WHERE "categoryId" IN ('risale', 'pirlanta');
+      DELETE FROM "curriculum_progress" WHERE "entryId" LIKE 'risale-%' OR "entryId" LIKE 'pirlanta-%' OR "entryId" LIKE '%-risale-%' OR "entryId" LIKE '%-pirlanta-%';
+    `);
+
+    const row = db
+      .query<{ count: number }, []>(
+        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'konu'`
+      )
+      .get();
+
+    if (row && row.count > 0) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const insertStmt = db.prepare(`
+      INSERT OR REPLACE INTO "curriculum_entries" (
+        "id", "grade", "categoryId", "gender", "month", "week", "year",
+        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "pageCount", "createdAt", "updatedAt"
+      ) VALUES (
+        $id, $grade, $categoryId, $gender, $month, $week, $year,
+        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
+        $pageCount, $createdAt, $updatedAt
+      )
+    `);
+
+    const konuBatch: Array<{
+      id: string;
+      grade: number;
+      categoryId: string;
+      gender: null;
+      month: number | null;
+      week: number | null;
+      year: number;
+      isExtra: number;
+      extraOrder: number | null;
+      title: string;
+      body: string | null;
+      resourceUrl: string | null;
+      pdfUrl: string | null;
+      pageCount: number | null;
+      createdAt: string;
+      updatedAt: string;
+    }> = [];
+
+    // Grade 1 entries from static curriculumEntries
+    const g1Entries = curriculumEntries.filter((e) => e.categoryId === "konu");
+    for (const entry of g1Entries) {
+      konuBatch.push({
+        id: entry.id,
+        grade: 1,
+        categoryId: "konu",
+        gender: null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: 0,
+        extraOrder: null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: null,
+        pdfUrl: null,
+        pageCount: 2,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    // Grades 2 to 6 template entries
+    for (let grade = 2; grade <= 6; grade++) {
+      konuBatch.push({
+        id: `g${grade}-konu-eylul-1`,
+        grade,
+        categoryId: "konu",
+        gender: null,
+        month: 9,
+        week: 1,
+        year: 2026,
+        isExtra: 0,
+        extraOrder: null,
+        title: `${grade}. Sınıf Haftanın Konusu — 1. Hafta Başlangıç`,
+        body: `Belçika ${grade}. Sınıf müfredatına uygun Haftanın Konusu ilk hafta ders notları ve temel hedefler.`,
+        resourceUrl: null,
+        pdfUrl: null,
+        pageCount: 2,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      konuBatch.push({
+        id: `g${grade}-konu-eylul-2`,
+        grade,
+        categoryId: "konu",
+        gender: null,
+        month: 9,
+        week: 2,
+        year: 2026,
+        isExtra: 0,
+        extraOrder: null,
+        title: `${grade}. Sınıf Haftanın Konusu — 2. Hafta Konusu`,
+        body: `Belçika ${grade}. Sınıf Haftanın Konusu 2. hafta kapsamlı tahlil ve etkinlik rehberi.`,
+        resourceUrl: null,
+        pdfUrl: null,
+        pageCount: 2,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    const runSync = db.transaction((rows: typeof konuBatch) => {
+      for (const r of rows) {
+        insertStmt.run({
+          $id: r.id,
+          $grade: r.grade,
+          $categoryId: r.categoryId,
+          $gender: r.gender,
+          $month: r.month,
+          $week: r.week,
+          $year: r.year,
+          $isExtra: r.isExtra,
+          $extraOrder: r.extraOrder,
+          $title: r.title,
+          $body: r.body,
+          $resourceUrl: r.resourceUrl,
+          $pdfUrl: r.pdfUrl,
+          $pageCount: r.pageCount,
+          $createdAt: r.createdAt,
+          $updatedAt: r.updatedAt,
+        });
+      }
+    });
+
+    runSync(konuBatch);
+  } catch (err) {
+    console.error("Failed to sync konu curriculum:", err);
+  }
+}
+
+/**
  * Seeds initial curriculum entries for all 6 Belgium grades,
  * including 48-week standard curriculum and extra contents.
  */
@@ -805,6 +963,7 @@ export function seedCurriculumDatabase(force = false): void {
     syncEfendimizCurriculumIfOutdated();
     syncSahabeCurriculumIfOutdated();
     syncHocaefendiCurriculumIfOutdated();
+    syncKonuCurriculumIfOutdated();
     return;
   }
 

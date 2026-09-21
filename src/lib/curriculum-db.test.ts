@@ -29,13 +29,13 @@ describe("Curriculum SQLite Database Module", () => {
 
   it("should enforce standard entries and zero premature extras for categories under 48 weeks", () => {
     const grade1Entries = getCurriculumEntriesFromDb(1);
-    const pirlantaEntries = grade1Entries.filter((e) => e.categoryId === "pirlanta");
+    const konuEntries = grade1Entries.filter((e) => e.categoryId === "konu");
 
-    const standardPirlanta = pirlantaEntries.filter((e) => !e.isExtra);
-    const extraPirlanta = pirlantaEntries.filter((e) => e.isExtra);
+    const standardKonu = konuEntries.filter((e) => !e.isExtra);
+    const extraKonu = konuEntries.filter((e) => e.isExtra);
 
-    expect(standardPirlanta.length).toBe(2);
-    expect(extraPirlanta.length).toBe(0); // 2 < 48: absolutely no extras before 48 weeks
+    expect(standardKonu.length).toBe(2);
+    expect(extraKonu.length).toBe(0); // 2 < 48: absolutely no extras before 48 weeks
   });
 
   it("should retrieve a specific entry by its deterministic ID", () => {

@@ -1,9 +1,8 @@
 import {
   BookHeart,
   BookOpenText,
-  BookMarked,
-  Gem,
   HandHeart,
+  Layers,
   ScrollText,
   UsersRound,
   Video,
@@ -26,9 +25,8 @@ export const curriculumCategoryIds = [
   "ayet",
   "hadis",
   "sahabe-kissalari",
-  "risale",
   "hocaefendi-dinleme",
-  "pirlanta",
+  "konu",
   "ilmihal",
   "adab-i-muaseret",
 ] as const;
@@ -69,14 +67,6 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     accent: "violet",
   },
   {
-    id: "risale",
-    label: "Risale",
-    shortLabel: "Risale",
-    icon: BookMarked,
-    accent: "teal",
-    resourceType: "pdf",
-  },
-  {
     id: "hocaefendi-dinleme",
     label: "Hocaefendi Sohbetleri",
     shortLabel: "Sohbet",
@@ -84,7 +74,13 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     accent: "rose",
     resourceType: "video",
   },
-  { id: "pirlanta", label: "Pırlanta", shortLabel: "Pırlanta", icon: Gem, accent: "sky" },
+  {
+    id: "konu",
+    label: "Haftanın Konusu",
+    shortLabel: "Konu",
+    icon: Layers,
+    accent: "teal",
+  },
   {
     id: "ilmihal",
     label: "İlmihal",
@@ -191,51 +187,27 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
   // ── Sahabe Kıssaları (Ortaokul 1. Sınıf – 55 Hafta) ────────────
   ...getSahabeEntriesForGrade(1),
 
-  // ── Risale ──────────────────────────────────────
-  {
-    id: "risale-eylul-1",
-    categoryId: "risale",
-    month: 9,
-    week: 1,
-    year: 2026,
-    title: "Birinci Söz — Bismillah",
-    body: '"Bismillah" her hayrın başıdır. Biz dahi başta onu söyleriz. Bismillah\'ın mana derinliği ve günlük hayattaki yeri. (Sözler, Birinci Söz)',
-    resourceUrl: "#",
-    pageCount: 4,
-  },
-  {
-    id: "risale-eylul-2",
-    categoryId: "risale",
-    month: 9,
-    week: 2,
-    year: 2026,
-    title: "İkinci Söz — İman ve Küfür Mukayesesi",
-    body: "İki yolcunun hikâyesi üzerinden iman ve küfürün insana kazandırdıkları ve kaybettirdikleri. (Sözler, İkinci Söz)",
-    resourceUrl: "#",
-    pageCount: 3,
-  },
-
   // ── Hocaefendi Sohbetleri (1. Sınıf – 48 Hafta) ────────────────
   ...getHocaefendiEntriesForGrade(1),
 
-  // ── Pırlanta ────────────────────────────────────
+  // ── Haftanın Konusu ─────────────────────────────
   {
-    id: "pirlanta-eylul-1",
-    categoryId: "pirlanta",
+    id: "konu-eylul-1",
+    categoryId: "konu",
     month: 9,
     week: 1,
     year: 2026,
-    title: "İman — Kalbin Ziyası",
-    body: "İmanın altı şartı, kalpte iman nurunun nasıl oluştuğu ve korunduğu üzerine tefekkür.",
+    title: "İman — Kalbin Ziyası ve Hayatın Anlamı",
+    body: "İman esasları, kalpte iman nurunun nasıl oluştuğu, muhafazası ve günlük hayata yansımaları üzerine haftalık müzakere ve tefekkür.",
   },
   {
-    id: "pirlanta-eylul-2",
-    categoryId: "pirlanta",
+    id: "konu-eylul-2",
+    categoryId: "konu",
     month: 9,
     week: 2,
     year: 2026,
-    title: "İhlas — Saf ve Katışıksız Niyet",
-    body: "İhlasın tanımı, önemi ve ihlaslı olmanın pratik yolları. İhlas Risalesi'nden ilhamla.",
+    title: "İhlas — Saf ve Katışıksız İstikamet",
+    body: "Amellerde rıza-i ilahiyi esas alma, samimiyet ve ihlası koruma yolları üzerine haftalık tahlil ve değerlendirme.",
   },
 
   // ── İlmihal (Ortaokul 1. Sınıf – Erkek & Bayan) ───────────────

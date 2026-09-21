@@ -10,16 +10,15 @@ import {
 } from "./curriculum";
 
 describe("curriculum", () => {
-  it("contains all ten real curriculum categories", () => {
+  it("contains all nine real curriculum categories", () => {
     expect(curriculumCategories.map((category) => category.label)).toEqual([
       "Esmâü'l-Hüsnâ",
       "Efendimiz",
       "Ayet",
       "Hadis",
       "Sahabe kıssaları",
-      "Risale",
       "Hocaefendi Sohbetleri",
-      "Pırlanta",
+      "Haftanın Konusu",
       "İlmihal",
       "Adab-ı Muaşeret",
     ]);
@@ -32,16 +31,15 @@ describe("curriculum", () => {
       "Ayet",
       "Hadis",
       "Sahabe",
-      "Risale",
       "Sohbet",
-      "Pırlanta",
+      "Konu",
       "İlmihal",
       "Adab",
     ]);
   });
 
   it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), 48 for hocaefendi-dinleme, and 2 for other categories", () => {
-    expect(curriculumEntries.length).toBe(437);
+    expect(curriculumEntries.length).toBe(435);
 
     expect(getCategoryEntries("ayet").length).toBe(55);
     expect(getCategoryEntries("hadis").length).toBe(55);
@@ -86,7 +84,7 @@ describe("curriculum", () => {
   it("makeEntryId generates correct patterns", () => {
     expect(makeEntryId("hadis", 9, 1)).toBe("hadis-eylul-1");
     expect(makeEntryId("ayet", 1, 3)).toBe("ayet-ocak-3");
-    expect(makeEntryId("risale", 12, 2)).toBe("risale-aralik-2");
+    expect(makeEntryId("konu", 12, 2)).toBe("konu-aralik-2");
   });
 
   it("unlocks only the first unread entry", () => {
@@ -115,11 +113,11 @@ describe("curriculum", () => {
   });
 
   it("returns entries sorted by year/month/week within a category", () => {
-    const risaleEntries = getCategoryEntries("risale");
-    expect(risaleEntries[0].week).toBe(1);
-    expect(risaleEntries[1].week).toBe(2);
-    expect(risaleEntries[0].title).toContain("Bismillah");
-    expect(risaleEntries[1].title).toContain("İman ve Küfür");
+    const konuEntries = getCategoryEntries("konu");
+    expect(konuEntries[0].week).toBe(1);
+    expect(konuEntries[1].week).toBe(2);
+    expect(konuEntries[0].title).toContain("İman");
+    expect(konuEntries[1].title).toContain("İhlas");
   });
 
   describe("canUnmarkEntry", () => {
@@ -162,16 +160,16 @@ describe("curriculum", () => {
     });
 
     it("ensures categories with <= 48 entries have ZERO extra entries even if flagged", () => {
-      const risaleEntries = getCategoryEntries("risale");
-      expect(risaleEntries.length).toBe(2);
-      expect(risaleEntries.every((e) => !e.isExtra)).toBe(true);
+      const konuEntries = getCategoryEntries("konu");
+      expect(konuEntries.length).toBe(2);
+      expect(konuEntries.every((e) => !e.isExtra)).toBe(true);
 
       // Even if raw entries had isExtra: true before 48 weeks, they must resolve to false
       const rawWithPrematureExtra = [
-        ...risaleEntries,
+        ...konuEntries,
         {
           id: "fake-premature-extra",
-          categoryId: "risale" as const,
+          categoryId: "konu" as const,
           month: 12,
           week: 4,
           year: 2026,
@@ -180,7 +178,7 @@ describe("curriculum", () => {
           title: "Premature Extra",
         },
       ];
-      const resolved = getCategoryEntries("risale", rawWithPrematureExtra);
+      const resolved = getCategoryEntries("konu", rawWithPrematureExtra);
       expect(resolved.length).toBe(3);
       expect(resolved.every((e) => !e.isExtra)).toBe(true);
     });
