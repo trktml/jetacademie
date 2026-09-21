@@ -748,7 +748,7 @@ export function CurriculumArchive({
           >
             {/* Üst Bilgi Başlığı ve Geri Dön Butonu */}
             <header className="archive-history-header">
-              <div className="archive-history-header__left">
+              <div className="archive-history-header__top-row">
                 <button
                   type="button"
                   className="archive-history-back-btn"
@@ -759,6 +759,16 @@ export function CurriculumArchive({
                   <span>Geri Dön</span>
                 </button>
 
+                <span className="archive-history-header__badge">
+                  <FolderArchive
+                    className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
+                    aria-hidden="true"
+                  />
+                  <span>Tamamlanan Dosyalar</span>
+                </span>
+              </div>
+
+              <div className="archive-history-header__content">
                 <div className="archive-history-header__info">
                   <div
                     className="archive-category-icon-box"
@@ -781,33 +791,26 @@ export function CurriculumArchive({
                           </span>
                         )}
                       </h2>
-                      <span className="archive-history-header__badge">
-                        <FolderArchive
-                          className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
-                          aria-hidden="true"
-                        />
-                        <span>Tamamlanan Dosyalar</span>
-                      </span>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="archive-history-header__right">
-                <div className="archive-category-progress">
-                  <span className="archive-category-progress__count">
-                    {historyCompletedEntries.length} / {activeHistoryEntries.length} tamamlandı
-                  </span>
-                  {activeHistoryEntries.length > 0 && (
-                    <div className="archive-progress-track" aria-hidden="true">
-                      <div
-                        className="archive-progress-fill"
-                        style={{
-                          width: `${(historyCompletedEntries.length / activeHistoryEntries.length) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  )}
+                <div className="archive-history-header__right">
+                  <div className="archive-category-progress">
+                    <span className="archive-category-progress__count">
+                      {historyCompletedEntries.length} / {activeHistoryEntries.length} tamamlandı
+                    </span>
+                    {activeHistoryEntries.length > 0 && (
+                      <div className="archive-progress-track" aria-hidden="true">
+                        <div
+                          className="archive-progress-fill"
+                          style={{
+                            width: `${(historyCompletedEntries.length / activeHistoryEntries.length) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </header>
@@ -844,7 +847,11 @@ export function CurriculumArchive({
                       id="history-jump-select"
                       className="archive-history-jump__select"
                       value={currentJumpId}
-                      onChange={(e) => setSelectedJumpEntryId(e.target.value)}
+                      onChange={(e) => {
+                        const targetId = e.target.value;
+                        setSelectedJumpEntryId(targetId);
+                        handleJumpToEntry(targetId);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -963,8 +970,9 @@ export function CurriculumArchive({
                         className="archive-folder-tab archive-folder-tab--completed"
                         aria-hidden="true"
                       >
-                        <Check className="h-3.5 w-3.5" />
-                        <span>{`${timing} · Tamamlandı`}</span>
+                        <Check className="h-3.5 w-3.5 shrink-0" />
+                        <span className="sm:hidden">{timing}</span>
+                        <span className="hidden sm:inline">{`${timing} · Tamamlandı`}</span>
                       </div>
 
                       <h3 className="archive-entry-title">{entry.title}</h3>
@@ -975,7 +983,7 @@ export function CurriculumArchive({
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
-                              className="secondary-button archive-read-button inline-flex min-h-[40px] items-center gap-1.5"
+                              className="secondary-button archive-read-button inline-flex min-h-[44px] items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold"
                               onClick={() =>
                                 setExpandedReadingEntryId((prev) =>
                                   prev === entry.id ? null : entry.id
@@ -986,12 +994,12 @@ export function CurriculumArchive({
                             >
                               {expandedReadingEntryId === entry.id ? (
                                 <>
-                                  <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
+                                  <EyeOff className="h-4 w-4" aria-hidden="true" />
                                   <span>Görüntülemeyi Kapat</span>
                                 </>
                               ) : (
                                 <>
-                                  <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+                                  <BookOpen className="h-4 w-4" aria-hidden="true" />
                                   <span>
                                     {(readingProgressMap[entry.id] || 1) > 1
                                       ? `Dersi Görüntüle (s. ${readingProgressMap[entry.id]})`
@@ -1019,7 +1027,7 @@ export function CurriculumArchive({
                             href={entry.resourceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="secondary-button archive-read-button inline-flex min-h-[40px] items-center gap-1.5 text-xs font-medium"
+                            className="secondary-button archive-read-button inline-flex min-h-[44px] items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold"
                             aria-label={`${entry.title} kaynağını yeni sekmede aç`}
                           >
                             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />

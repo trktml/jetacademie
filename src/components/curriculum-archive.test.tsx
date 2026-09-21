@@ -571,6 +571,25 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('id="history-card-ayet-eylul-1"');
   });
 
+  it("should render structured header with top-row and responsive folder tabs to prevent mobile truncation", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["ayet-eylul-1"]}
+        isSignedIn={true}
+        initialCategoryId="ayet"
+        initialHistoryViewCategoryIds={{ ayet: true }}
+      />
+    );
+
+    // Modern header top-row
+    expect(html).toContain('class="archive-history-header__top-row"');
+    expect(html).toContain('class="archive-history-header__content"');
+
+    // Mobile responsive tab label (prevents truncation on narrow screens)
+    expect(html).toContain('<span class="sm:hidden">Eylül-1</span>');
+    expect(html).toContain('<span class="hidden sm:inline">Eylül-1 · Tamamlandı</span>');
+  });
+
   it("should render GradeSelector and category nav container in the capsule navigation", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
