@@ -8,6 +8,8 @@ import {
   type CurriculumEntry,
 } from "@/lib/curriculum";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
+import { getAllAyetEntries, getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
+import { getAllHadisEntries, getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
 import {
   getAllIlmihalEntries,
   getIlmihalEntriesForGrade,
@@ -107,8 +109,8 @@ export function ensureCurriculumEntriesTable() {
       on "curriculum_entries" ("grade", "categoryId", "gender", "isExtra", "month", "week");
 
     -- Clean up legacy premature extra entries that violated the 48-week rule
-    DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" != 'adab-i-muaseret' AND "categoryId" != 'ilmihal';
-    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%';
+    DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" NOT IN ('adab-i-muaseret', 'ilmihal', 'ayet', 'hadis');
+    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%' AND "entryId" NOT LIKE '%ayet%' AND "entryId" NOT LIKE '%hadis%';
   `);
 }
 
@@ -322,6 +324,148 @@ export function syncIlmihalCurriculumIfOutdated(): void {
 }
 
 /**
+ * Ensures ayet entries are fully synced across all 6 grades (55 entries each, total 330).
+ * If old placeholder entries are present or count < 330, this cleanly syncs ayet
+ * without touching other categories or user progress.
+ */
+export function syncAyetCurriculumIfOutdated(): void {
+  if (
+    typeof db?.query !== "function" ||
+    typeof db?.prepare !== "function" ||
+    typeof db?.transaction !== "function" ||
+    typeof db?.exec !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    const row = db
+      .query<{ count: number }, []>(
+        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'ayet'`
+      )
+      .get();
+
+    // 6 grades * 55 weeks = 330 entries
+    if (row && row.count >= 330) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const insertStmt = db.prepare(`
+      INSERT OR REPLACE INTO "curriculum_entries" (
+        "id", "grade", "categoryId", "gender", "month", "week", "year",
+        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "pageCount", "createdAt", "updatedAt"
+      ) VALUES (
+        $id, $grade, $categoryId, $gender, $month, $week, $year,
+        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
+        $pageCount, $createdAt, $updatedAt
+      )
+    `);
+
+    const ayetEntries = getAllAyetEntries();
+    const runSync = db.transaction((entries: typeof ayetEntries) => {
+      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'ayet'`);
+      for (const e of entries) {
+        insertStmt.run({
+          $id: e.id,
+          $grade: e.grade ?? 1,
+          $categoryId: "ayet",
+          $gender: null,
+          $month: e.month,
+          $week: e.week,
+          $year: e.year,
+          $isExtra: e.isExtra ? 1 : 0,
+          $extraOrder: e.extraOrder ?? null,
+          $title: e.title,
+          $body: e.body ?? null,
+          $resourceUrl: e.resourceUrl ?? null,
+          $pdfUrl: null,
+          $pageCount: null,
+          $createdAt: now,
+          $updatedAt: now,
+        });
+      }
+    });
+
+    runSync(ayetEntries);
+  } catch (err) {
+    console.error("Failed to sync ayet curriculum:", err);
+  }
+}
+
+/**
+ * Ensures hadis entries are fully synced across all 6 grades (55 entries each, total 330).
+ * If old placeholder entries are present or count < 330, this cleanly syncs hadis
+ * without touching other categories or user progress.
+ */
+export function syncHadisCurriculumIfOutdated(): void {
+  if (
+    typeof db?.query !== "function" ||
+    typeof db?.prepare !== "function" ||
+    typeof db?.transaction !== "function" ||
+    typeof db?.exec !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    const row = db
+      .query<{ count: number }, []>(
+        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'hadis'`
+      )
+      .get();
+
+    // 6 grades * 55 weeks = 330 entries
+    if (row && row.count >= 330) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const insertStmt = db.prepare(`
+      INSERT OR REPLACE INTO "curriculum_entries" (
+        "id", "grade", "categoryId", "gender", "month", "week", "year",
+        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "pageCount", "createdAt", "updatedAt"
+      ) VALUES (
+        $id, $grade, $categoryId, $gender, $month, $week, $year,
+        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
+        $pageCount, $createdAt, $updatedAt
+      )
+    `);
+
+    const hadisEntries = getAllHadisEntries();
+    const runSync = db.transaction((entries: typeof hadisEntries) => {
+      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'hadis'`);
+      for (const e of entries) {
+        insertStmt.run({
+          $id: e.id,
+          $grade: e.grade ?? 1,
+          $categoryId: "hadis",
+          $gender: null,
+          $month: e.month,
+          $week: e.week,
+          $year: e.year,
+          $isExtra: e.isExtra ? 1 : 0,
+          $extraOrder: e.extraOrder ?? null,
+          $title: e.title,
+          $body: e.body ?? null,
+          $resourceUrl: e.resourceUrl ?? null,
+          $pdfUrl: null,
+          $pageCount: null,
+          $createdAt: now,
+          $updatedAt: now,
+        });
+      }
+    });
+
+    runSync(hadisEntries);
+  } catch (err) {
+    console.error("Failed to sync hadis curriculum:", err);
+  }
+}
+
+/**
  * Seeds initial curriculum entries for all 6 Belgium grades,
  * including 48-week standard curriculum and extra contents.
  */
@@ -341,6 +485,8 @@ export function seedCurriculumDatabase(force = false): void {
     .get();
 
   if (!force && countRow && countRow.count > 0) {
+    syncAyetCurriculumIfOutdated();
+    syncHadisCurriculumIfOutdated();
     syncAdabCurriculumIfOutdated();
     syncIlmihalCurriculumIfOutdated();
     return;
@@ -393,9 +539,15 @@ export function seedCurriculumDatabase(force = false): void {
 
   // 2. Seed template standard entries for Grades 2 through 6
   for (let grade = 2; grade <= 6; grade++) {
-    // 2a. Categories other than adab-i-muaseret and ilmihal
+    // 2a. Categories other than adab-i-muaseret, ilmihal, ayet, and hadis
     for (const cat of curriculumCategories) {
-      if (cat.id === "adab-i-muaseret" || cat.id === "ilmihal") continue;
+      if (
+        cat.id === "adab-i-muaseret" ||
+        cat.id === "ilmihal" ||
+        cat.id === "ayet" ||
+        cat.id === "hadis"
+      )
+        continue;
       seedBatch.push({
         id: `g${grade}-${cat.id}-eylul-1`,
         grade,
@@ -457,9 +609,55 @@ export function seedCurriculumDatabase(force = false): void {
         updatedAt: now,
       });
     }
+
+    // 2c. Ayet for Grades 2 through 6 (55 weeks)
+    const gradeAyetEntries = getAyetEntriesForGrade(grade);
+    for (const entry of gradeAyetEntries) {
+      seedBatch.push({
+        id: entry.id,
+        grade,
+        categoryId: "ayet",
+        gender: null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: entry.isExtra ? 1 : 0,
+        extraOrder: entry.extraOrder ?? null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: null,
+        pageCount: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    // 2d. Hadis for Grades 2 through 6 (55 weeks)
+    const gradeHadisEntries = getHadisEntriesForGrade(grade);
+    for (const entry of gradeHadisEntries) {
+      seedBatch.push({
+        id: entry.id,
+        grade,
+        categoryId: "hadis",
+        gender: null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: entry.isExtra ? 1 : 0,
+        extraOrder: entry.extraOrder ?? null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: null,
+        pageCount: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
   }
 
-  // 2c. İlmihal for all 6 grades and both genders (774 entries)
+  // 2e. İlmihal for all 6 grades and both genders (774 entries)
   const allIlmihal = getAllIlmihalEntries();
   for (const entry of allIlmihal) {
     seedBatch.push({
@@ -522,6 +720,8 @@ export function seedCurriculumDatabase(force = false): void {
 
 function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] {
   if (typeof grade === "number" && grade >= 1 && grade <= 6) {
+    const ayet = getAyetEntriesForGrade(grade);
+    const hadis = getHadisEntriesForGrade(grade);
     const adab = getAdabEntriesForGrade(grade);
     const ilmihal = gender
       ? getIlmihalEntriesForGrade(grade, gender)
@@ -530,9 +730,15 @@ function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] 
           ...getIlmihalEntriesForGrade(grade, "bayan"),
         ];
     const others = curriculumEntries
-      .filter((e) => e.categoryId !== "adab-i-muaseret" && e.categoryId !== "ilmihal")
+      .filter(
+        (e) =>
+          e.categoryId !== "adab-i-muaseret" &&
+          e.categoryId !== "ilmihal" &&
+          e.categoryId !== "ayet" &&
+          e.categoryId !== "hadis"
+      )
       .map((e) => ({ ...e, grade, id: grade === 1 ? e.id : `g${grade}-${e.id}` }));
-    return resolveAllCurriculumEntries([...others, ...adab, ...ilmihal]);
+    return resolveAllCurriculumEntries([...others, ...ayet, ...hadis, ...adab, ...ilmihal]);
   }
   const ilmihalG1 = gender
     ? getIlmihalEntriesForGrade(1, gender)

@@ -38,16 +38,22 @@ describe("curriculum", () => {
     ]);
   });
 
-  it("has 16 sample entries for ayet, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), and 2 for other categories", () => {
-    expect(curriculumEntries.length).toBe(138);
+  it("has 55 entries for ayet, 55 for hadis, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), and 2 for other categories", () => {
+    expect(curriculumEntries.length).toBe(230);
 
-    expect(getCategoryEntries("ayet").length).toBe(16);
+    expect(getCategoryEntries("ayet").length).toBe(55);
+    expect(getCategoryEntries("hadis").length).toBe(55);
     expect(getCategoryEntries("adab-i-muaseret").length).toBe(54);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "erkek").length).toBe(28);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "bayan").length).toBe(28);
 
     for (const category of curriculumCategories) {
-      if (category.id === "ayet" || category.id === "adab-i-muaseret" || category.id === "ilmihal")
+      if (
+        category.id === "ayet" ||
+        category.id === "hadis" ||
+        category.id === "adab-i-muaseret" ||
+        category.id === "ilmihal"
+      )
         continue;
       const entries = getCategoryEntries(category.id);
       expect(entries.length).toBe(2);
@@ -146,16 +152,16 @@ describe("curriculum", () => {
     });
 
     it("ensures categories with <= 48 entries have ZERO extra entries even if flagged", () => {
-      const ayetEntries = getCategoryEntries("ayet");
-      expect(ayetEntries.length).toBe(16);
-      expect(ayetEntries.every((e) => !e.isExtra)).toBe(true);
+      const siyerEntries = getCategoryEntries("siyer");
+      expect(siyerEntries.length).toBe(2);
+      expect(siyerEntries.every((e) => !e.isExtra)).toBe(true);
 
       // Even if raw entries had isExtra: true before 48 weeks, they must resolve to false
       const rawWithPrematureExtra = [
-        ...ayetEntries,
+        ...siyerEntries,
         {
           id: "fake-premature-extra",
-          categoryId: "ayet" as const,
+          categoryId: "siyer" as const,
           month: 12,
           week: 4,
           year: 2026,
@@ -164,8 +170,8 @@ describe("curriculum", () => {
           title: "Premature Extra",
         },
       ];
-      const resolved = getCategoryEntries("ayet", rawWithPrematureExtra);
-      expect(resolved.length).toBe(17);
+      const resolved = getCategoryEntries("siyer", rawWithPrematureExtra);
+      expect(resolved.length).toBe(3);
       expect(resolved.every((e) => !e.isExtra)).toBe(true);
     });
 

@@ -117,8 +117,8 @@ describe("CurriculumArchive Component", () => {
     const ayetHtml = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
-    expect(ayetHtml).toContain("Bakara Suresi 2:152");
-    expect(ayetHtml).toContain("Âl-i İmran 3:159");
+    expect(ayetHtml).toContain("Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak");
+    expect(ayetHtml).toContain("Fâtiha 1/2 — Şükretmek ve hamdetmek");
 
     const hadisHtml = renderToString(
       <CurriculumArchive
@@ -127,12 +127,12 @@ describe("CurriculumArchive Component", () => {
         initialCategoryId="hadis"
       />
     );
-    expect(hadisHtml).toContain("Niyet Hadisi");
-    expect(hadisHtml).toContain("Kolaylaştırın Hadisi");
+    expect(hadisHtml).toContain("Niyet: Bir işi neden yapıyorum?");
+    expect(hadisHtml).toContain("İslâm’ın beş temel direği");
   });
 
   it("should track completion independently per category", () => {
-    // Complete hadis-eylul-1: Ayet should still be 0/16 completed with first entry as Sıradaki
+    // Complete hadis-eylul-1: Ayet should still be 0/55 completed with first entry as Sıradaki
     const ayetHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={["hadis-eylul-1"]}
@@ -140,10 +140,10 @@ describe("CurriculumArchive Component", () => {
         initialCategoryId="ayet"
       />
     );
-    expect(ayetHtml).toContain("0 / 16 tamamlandı");
+    expect(ayetHtml).toContain("0 / 55 tamamlandı");
     expect(ayetHtml).toContain("Sıradaki");
 
-    // Hadis category should show 1/2 completed
+    // Hadis category should show 1/55 completed
     const hadisHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={["hadis-eylul-1"]}
@@ -151,7 +151,7 @@ describe("CurriculumArchive Component", () => {
         initialCategoryId="hadis"
       />
     );
-    expect(hadisHtml).toContain("1 / 2 tamamlandı");
+    expect(hadisHtml).toContain("1 / 55 tamamlandı");
   });
 
   it("should render entries with proper status when some are completed", () => {
@@ -163,8 +163,8 @@ describe("CurriculumArchive Component", () => {
       />
     );
 
-    // Ayet should be 1/16 completed
-    expect(html).toContain("1 / 16 tamamlandı");
+    // Ayet should be 1/55 completed
+    expect(html).toContain("1 / 55 tamamlandı");
     // Past shelf is omitted in favor of clean header button
     expect(html).not.toContain("archive-past-shelf");
     expect(html).toContain("Geçmiş (1)");
@@ -249,14 +249,14 @@ describe("CurriculumArchive Component", () => {
   it("should render all-completed celebratory state when all entries in a drawer are completed", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["hadis-eylul-1", "hadis-eylul-2"]}
+        initialCompletedEntryIds={["siyer-eylul-1", "siyer-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="hadis"
+        initialCategoryId="siyer"
       />
     );
 
     expect(html).toContain("archive-all-completed");
-    expect(html).toContain("Tüm Hadis Dosyaları Tamamlandı!");
+    expect(html).toContain("Tüm Siyer Dosyaları Tamamlandı!");
     expect(html).not.toContain("archive-all-completed__desc");
     expect(html).not.toContain("Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız.");
     expect(html).toContain("Geçmiş (2)");
@@ -273,8 +273,8 @@ describe("CurriculumArchive Component", () => {
       />
     );
 
-    // Ayet has 16 items; 4 are in immediate stack, remaining 12 are queued
-    expect(html).toContain("Sırada bekleyen 12 dosya daha var");
+    // Ayet has 55 items; 4 are in immediate stack, remaining 51 are queued
+    expect(html).toContain("Sırada bekleyen 51 dosya daha var");
     expect(html).not.toContain("Bu çekmecede");
   });
 
@@ -298,8 +298,8 @@ describe("CurriculumArchive Component", () => {
     expect(html).not.toContain("archive-history-ledger__desc");
     expect(html).not.toContain("read-status--complete");
     // eylul-3 title appears before eylul-1 in reverse order
-    const idx3 = html.indexOf("Bakara Suresi 2:286 — Sorumluluk ve Dua");
-    const idx1 = html.indexOf("Bakara Suresi 2:152 — Beni Anın");
+    const idx3 = html.indexOf("Fâtiha 1/3 — Allah’ın merhametini tanımak");
+    const idx1 = html.indexOf("Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak");
     expect(idx3).toBeGreaterThan(-1);
     expect(idx1).toBeGreaterThan(-1);
     expect(idx3).toBeLessThan(idx1);
@@ -437,9 +437,9 @@ describe("CurriculumArchive Component", () => {
   it("should assign relative depth 1 to behind card in all-completed view and preserve completed tab styling", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["hadis-eylul-1", "hadis-eylul-2"]}
+        initialCompletedEntryIds={["siyer-eylul-1", "siyer-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="hadis"
+        initialCategoryId="siyer"
       />
     );
 
@@ -464,7 +464,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("archive-undo-button");
     expect(html).toContain("Okunmadı Olarak İşaretle");
     expect(html).toContain(
-      'aria-label="Bakara Suresi 2:152 — Beni Anın dosyasını okunmadı olarak işaretle"'
+      'aria-label="Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak dosyasını okunmadı olarak işaretle"'
     );
   });
 
@@ -480,11 +480,11 @@ describe("CurriculumArchive Component", () => {
 
     // Ayet 2 is latest (rendered first in reverse order)
     expect(html).toContain(
-      'aria-label="Âl-i İmran 3:159 — Şûrâ ve Tevekkül dosyasını okunmadı olarak işaretle"'
+      'aria-label="Fâtiha 1/2 — Şükretmek ve hamdetmek dosyasını okunmadı olarak işaretle"'
     );
     // Ayet 1 is not latest -> should not have an undo button
     expect(html).not.toContain(
-      'aria-label="Bakara Suresi 2:152 — Beni Anın dosyasını okunmadı olarak işaretle"'
+      'aria-label="Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak dosyasını okunmadı olarak işaretle"'
     );
 
     // Only one undo button should exist in this category's history view
@@ -532,8 +532,8 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('id="history-jump-select"');
     expect(html).toContain('value="ayet-eylul-1"');
     expect(html).toContain('value="ayet-eylul-2"');
-    expect(html).toContain("Bakara Suresi 2:152 — Beni Anın");
-    expect(html).toContain("Âl-i İmran 3:159 — Şûrâ ve Tevekkül");
+    expect(html).toContain("Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak");
+    expect(html).toContain("Fâtiha 1/2 — Şükretmek ve hamdetmek");
 
     // The prominent "Git" button
     expect(html).toContain('class="archive-history-jump__btn"');

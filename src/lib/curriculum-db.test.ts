@@ -29,25 +29,25 @@ describe("Curriculum SQLite Database Module", () => {
 
   it("should enforce standard entries and zero premature extras for categories under 48 weeks", () => {
     const grade1Entries = getCurriculumEntriesFromDb(1);
-    const ayetEntries = grade1Entries.filter((e) => e.categoryId === "ayet");
+    const siyerEntries = grade1Entries.filter((e) => e.categoryId === "siyer");
 
-    const standardAyet = ayetEntries.filter((e) => !e.isExtra);
-    const extraAyet = ayetEntries.filter((e) => e.isExtra);
+    const standardSiyer = siyerEntries.filter((e) => !e.isExtra);
+    const extraSiyer = siyerEntries.filter((e) => e.isExtra);
 
-    expect(standardAyet.length).toBe(16);
-    expect(extraAyet.length).toBe(0); // 16 < 48: absolutely no extras before 48 weeks
+    expect(standardSiyer.length).toBe(2);
+    expect(extraSiyer.length).toBe(0); // 2 < 48: absolutely no extras before 48 weeks
   });
 
   it("should retrieve a specific entry by its deterministic ID", () => {
     const entry1 = getCurriculumEntryByIdFromDb("ayet-eylul-1");
     expect(entry1).not.toBeNull();
-    expect(entry1?.title).toContain("Bakara Suresi");
+    expect(entry1?.title).toContain("Fâtiha 1/1");
     expect(entry1?.grade).toBe(1);
     expect(entry1?.isExtra).toBe(false);
 
     const entry2 = getCurriculumEntryByIdFromDb("ayet-aralik-4");
     expect(entry2).not.toBeNull();
-    expect(entry2?.title).toContain("İsrâ Suresi");
+    expect(entry2?.title).toContain("Âl-i İmrân 3/31");
     expect(entry2?.grade).toBe(1);
     expect(entry2?.isExtra).toBe(false);
   });
@@ -80,6 +80,47 @@ describe("Curriculum SQLite Database Module", () => {
         // Verify high school content for grades 4-6
         expect(standard[0].title).toBe("Edep, Güzel Ahlâk ve Hilim — Edep Nedir?");
       }
+    }
+  });
+
+  it("should have 55 Ayet entries for all 6 grades (330 total)", () => {
+    const allEntries = getCurriculumEntriesFromDb();
+    const ayetEntries = allEntries.filter((e) => e.categoryId === "ayet");
+    expect(ayetEntries.length).toBe(330);
+
+    for (let grade = 1; grade <= 6; grade++) {
+      const gradeAyet = getCurriculumEntriesFromDb(grade).filter((e) => e.categoryId === "ayet");
+      expect(gradeAyet.length).toBe(55);
+
+      const standard = gradeAyet.filter((e) => !e.isExtra);
+      const extras = gradeAyet.filter((e) => e.isExtra);
+      expect(standard.length).toBe(48);
+      expect(extras.length).toBe(7);
+
+      if (grade <= 3) {
+        expect(standard[0].title).toBe("Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak");
+      } else {
+        expect(standard[0].title).toBe("Fâtiha 1/5 — Kulluk ve istiâne");
+      }
+    }
+  });
+
+  it("should have 55 Hadis entries for all 6 grades (330 total)", () => {
+    const allEntries = getCurriculumEntriesFromDb();
+    const hadisEntries = allEntries.filter((e) => e.categoryId === "hadis");
+    expect(hadisEntries.length).toBe(330);
+
+    for (let grade = 1; grade <= 6; grade++) {
+      const gradeHadis = getCurriculumEntriesFromDb(grade).filter((e) => e.categoryId === "hadis");
+      expect(gradeHadis.length).toBe(55);
+
+      const standard = gradeHadis.filter((e) => !e.isExtra);
+      const extras = gradeHadis.filter((e) => e.isExtra);
+      expect(standard.length).toBe(48);
+      expect(extras.length).toBe(7);
+
+      expect(standard[0].title).toBe("Niyet: Bir işi neden yapıyorum?");
+      expect(standard[0].resourceUrl).toBe("https://sunnah.com/bukhari:1");
     }
   });
 

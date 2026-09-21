@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Compass,
+  ExternalLink,
   EyeOff,
   FileClock,
   FolderArchive,
@@ -1012,6 +1013,21 @@ export function CurriculumArchive({
                         </div>
                       )}
 
+                      {entry.resourceUrl && !entry.pdfUrl && entry.resourceUrl !== "#" && (
+                        <div className="archive-history-resource-action mt-2 mb-2 flex items-center">
+                          <a
+                            href={entry.resourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="secondary-button archive-read-button inline-flex min-h-[40px] items-center gap-1.5 text-xs font-medium"
+                            aria-label={`${entry.title} kaynağını yeni sekmede aç`}
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                            <span>Kaynağı Aç (sunnah.com)</span>
+                          </a>
+                        </div>
+                      )}
+
                       {isLatest && (
                         <div className="archive-entry-actions">
                           <button
@@ -1304,6 +1320,30 @@ export function CurriculumArchive({
                                       )}
                                     </div>
                                   )}
+
+                                  {isFront &&
+                                    entry.resourceUrl &&
+                                    !entry.pdfUrl &&
+                                    entry.resourceUrl !== "#" && (
+                                      <div
+                                        className="mt-2.5 mb-1 flex items-center"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <a
+                                          href={entry.resourceUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="secondary-button archive-read-button inline-flex min-h-[40px] items-center gap-1.5 text-xs font-medium"
+                                          aria-label={`${entry.title} kaynağını yeni sekmede aç`}
+                                        >
+                                          <ExternalLink
+                                            className="h-3.5 w-3.5"
+                                            aria-hidden="true"
+                                          />
+                                          <span>Kaynağı Aç (sunnah.com)</span>
+                                        </a>
+                                      </div>
+                                    )}
                                 </article>
                               );
                             })}
@@ -1413,6 +1453,23 @@ export function CurriculumArchive({
                                     )}
                                   </div>
                                 )}
+
+                                {currentEntry.resourceUrl &&
+                                  !currentEntry.pdfUrl &&
+                                  currentEntry.resourceUrl !== "#" && (
+                                    <div className="mb-4 flex items-center">
+                                      <a
+                                        href={currentEntry.resourceUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="secondary-button archive-read-button inline-flex min-h-[40px] items-center gap-1.5 text-xs font-medium"
+                                        aria-label={`${currentEntry.title} kaynağını yeni sekmede aç`}
+                                      >
+                                        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                                        <span>Kaynağı Aç (sunnah.com)</span>
+                                      </a>
+                                    </div>
+                                  )}
 
                                 <div className="archive-entry-actions">
                                   <button

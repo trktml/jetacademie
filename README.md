@@ -14,6 +14,8 @@ JetAcademie is a mobile-first Progressive Web Application (PWA) designed for stu
 
 Curriculum entries are managed directly via SQLite (`curriculum_entries` table with auto-seeding across all 6 Belgium grades: 1. Sınıf – 6. Sınıf) and can be easily extended or linked to administrative endpoints.
 
+- **Ayet**: Comprehensive 55-week curriculum with Arabic text, Suat Yıldırım Turkish translation, and level-adapted explanations: Grades 1–3 follow the Middle School (_Ortaokul_) program, while Grades 4–6 follow the High School (_Lise_) program (48 standard weeks + 7 progressive extra tabs).
+- **Hadis**: Comprehensive 55-week core hadith curriculum with full Arabic matn, simplified Turkish meaning, verified authentic sources (Sahîh-i Buhârî & Sahîh-i Müslim), and direct one-click verification links (`sunnah.com`): Grades 1–3 follow the Middle School (_Ortaokul_) program, while Grades 4–6 follow the High School (_Lise_) program (48 standard weeks + 7 progressive extra tabs).
 - **Adab-ı Muaşeret**: Comprehensive 54-week curriculum: Grades 1–3 follow the Middle School (_Ortaokul_) program, while Grades 4–6 follow the High School (_Lise_) program (48 standard weeks + 6 progressive extra tabs).
 - **İlmihal**: Comprehensive gender-specific curriculum with Erkek and Bayan tracks:
   - Grades 1–3 (_Ortaokul_): 28 weeks for both Erkek and Bayan.
