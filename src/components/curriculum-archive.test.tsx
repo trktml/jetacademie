@@ -676,6 +676,26 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("archive-reading-action");
   });
 
+  it("should not render Dersi Görüntüle on Hadis entries and should render Kaynağı Aç (sunnah.com)", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={true}
+        initialCategoryId="hadis"
+      />
+    );
+
+    const hadisSectionStart = html.indexOf('id="hadis"');
+    const nextSectionStart = html.indexOf("<section", hadisSectionStart + 10);
+    const hadisSection = html.substring(
+      hadisSectionStart,
+      nextSectionStart !== -1 ? nextSectionStart : hadisSectionStart + 5000
+    );
+
+    expect(hadisSection).not.toContain("Dersi Görüntüle");
+    expect(hadisSection).toContain("Kaynağı Aç (sunnah.com)");
+  });
+
   describe("scrollCategoryIntoView", () => {
     it("safely handles missing window or element gracefully", () => {
       expect(() => scrollCategoryIntoView("non-existent-category")).not.toThrow();

@@ -273,4 +273,20 @@ describe("Curriculum SQLite Database Module", () => {
     expect(liseErkekExtra50?.extraOrder).toBe(50);
     expect(liseErkekExtra50?.pdfUrl).toBe("/curriculum/ilmihal/lise/erkek/hafta-98.pdf");
   });
+
+  it("should not assign non-PDF resourceUrl as pdfUrl for Hadis entries", () => {
+    const hadisEntry = getCurriculumEntryByIdFromDb("hadis-eylul-2");
+    expect(hadisEntry).not.toBeNull();
+    expect(hadisEntry?.categoryId).toBe("hadis");
+    expect(hadisEntry?.resourceUrl).toBe("https://sunnah.com/bukhari:8");
+    expect(hadisEntry?.pdfUrl).toBeUndefined();
+
+    const allEntries = getCurriculumEntriesFromDb(1);
+    const hadisList = allEntries.filter((e) => e.categoryId === "hadis");
+    expect(hadisList.length).toBe(55);
+    for (const entry of hadisList) {
+      expect(entry.pdfUrl).toBeUndefined();
+      expect(entry.resourceUrl).toBeDefined();
+    }
+  });
 });

@@ -36,6 +36,11 @@ interface CurriculumEntryRow {
   updatedAt: string;
 }
 
+function isPdf(url?: string | null): url is string {
+  if (!url) return false;
+  return url.endsWith(".pdf") || url.includes(".pdf?") || url.includes(".pdf#");
+}
+
 function rowToEntry(row: CurriculumEntryRow): CurriculumEntry {
   return {
     id: row.id,
@@ -50,7 +55,9 @@ function rowToEntry(row: CurriculumEntryRow): CurriculumEntry {
     title: row.title,
     body: row.body ?? undefined,
     resourceUrl: row.resourceUrl ?? undefined,
-    pdfUrl: row.pdfUrl || row.resourceUrl || undefined,
+    pdfUrl:
+      (isPdf(row.pdfUrl) ? row.pdfUrl : isPdf(row.resourceUrl) ? row.resourceUrl : undefined) ??
+      undefined,
     pageCount: row.pageCount ?? undefined,
   };
 }
@@ -310,7 +317,7 @@ export function syncIlmihalCurriculumIfOutdated(): void {
           $title: e.title,
           $body: e.body ?? null,
           $resourceUrl: e.resourceUrl ?? null,
-          $pdfUrl: e.pdfUrl ?? e.resourceUrl ?? null,
+          $pdfUrl: isPdf(e.pdfUrl) ? e.pdfUrl : isPdf(e.resourceUrl) ? e.resourceUrl : null,
           $pageCount: e.pageCount ?? null,
           $createdAt: now,
           $updatedAt: now,
@@ -603,7 +610,11 @@ export function seedCurriculumDatabase(force = false): void {
       title: entry.title,
       body: entry.body ?? null,
       resourceUrl: entry.resourceUrl ?? null,
-      pdfUrl: entry.pdfUrl ?? entry.resourceUrl ?? null,
+      pdfUrl: isPdf(entry.pdfUrl)
+        ? entry.pdfUrl
+        : isPdf(entry.resourceUrl)
+          ? entry.resourceUrl
+          : null,
       pageCount: entry.pageCount ?? null,
       createdAt: now,
       updatedAt: now,
@@ -677,7 +688,11 @@ export function seedCurriculumDatabase(force = false): void {
         title: entry.title,
         body: entry.body ?? null,
         resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: entry.pdfUrl ?? entry.resourceUrl ?? null,
+        pdfUrl: isPdf(entry.pdfUrl)
+          ? entry.pdfUrl
+          : isPdf(entry.resourceUrl)
+            ? entry.resourceUrl
+            : null,
         pageCount: entry.pageCount ?? null,
         createdAt: now,
         updatedAt: now,
@@ -770,7 +785,11 @@ export function seedCurriculumDatabase(force = false): void {
       title: entry.title,
       body: entry.body ?? null,
       resourceUrl: entry.resourceUrl ?? null,
-      pdfUrl: entry.pdfUrl ?? entry.resourceUrl ?? null,
+      pdfUrl: isPdf(entry.pdfUrl)
+        ? entry.pdfUrl
+        : isPdf(entry.resourceUrl)
+          ? entry.resourceUrl
+          : null,
       pageCount: entry.pageCount ?? null,
       createdAt: now,
       updatedAt: now,
