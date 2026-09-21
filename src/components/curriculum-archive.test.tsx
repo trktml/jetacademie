@@ -20,7 +20,7 @@ describe("CurriculumArchive Component", () => {
     // Verify all 10 short labels are present in the capsule navigation
     expect(html).toContain('<span class="archive-capsule-label">Ayet</span>');
     expect(html).toContain('<span class="archive-capsule-label">Hadis</span>');
-    expect(html).toContain('<span class="archive-capsule-label">Siyer</span>');
+    expect(html).toContain('<span class="archive-capsule-label">Efendimiz</span>');
     expect(html).toContain('<span class="archive-capsule-label">Sahabe</span>');
     expect(html).toContain('<span class="archive-capsule-label">Risale</span>');
     expect(html).toContain('<span class="archive-capsule-label">Dinleme</span>');
@@ -62,7 +62,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('id="ayet"');
     expect(html).toContain(">Ayet</h2>");
     expect(html).toContain('id="hadis"');
-    expect(html).toContain('id="siyer"');
+    expect(html).toContain('id="efendimiz"');
     expect(html).toContain('id="risale"');
   });
 
@@ -250,14 +250,14 @@ describe("CurriculumArchive Component", () => {
   it("should render all-completed celebratory state when all entries in a drawer are completed", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["siyer-eylul-1", "siyer-eylul-2"]}
+        initialCompletedEntryIds={["pirlanta-eylul-1", "pirlanta-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="siyer"
+        initialCategoryId="pirlanta"
       />
     );
 
     expect(html).toContain("archive-all-completed");
-    expect(html).toContain("Tüm Siyer Dosyaları Tamamlandı!");
+    expect(html).toContain("Tüm Pırlanta Dosyaları Tamamlandı!");
     expect(html).not.toContain("archive-all-completed__desc");
     expect(html).not.toContain("Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız.");
     expect(html).toContain("Geçmiş (2)");
@@ -438,9 +438,9 @@ describe("CurriculumArchive Component", () => {
   it("should assign relative depth 1 to behind card in all-completed view and preserve completed tab styling", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["siyer-eylul-1", "siyer-eylul-2"]}
+        initialCompletedEntryIds={["pirlanta-eylul-1", "pirlanta-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="siyer"
+        initialCategoryId="pirlanta"
       />
     );
 
@@ -510,7 +510,7 @@ describe("CurriculumArchive Component", () => {
 
     // Other categories must NOT be present in history mode to prevent mixing/confusion
     expect(html).not.toContain('id="hadis"');
-    expect(html).not.toContain('id="siyer"');
+    expect(html).not.toContain('id="efendimiz"');
     expect(html).not.toContain('id="risale"');
     expect(html).not.toContain('class="archive-category-separator"');
   });

@@ -18,14 +18,16 @@ describe("useActiveSection & resolveActiveSectionId", () => {
   describe("useActiveSection SSR behavior", () => {
     it("initializes with initialSectionId when provided", () => {
       const html = renderToString(
-        <TestSectionComponent sections={["ayet", "hadis", "siyer"]} initial="hadis" />
+        <TestSectionComponent sections={["ayet", "hadis", "efendimiz"]} initial="hadis" />
       );
       expect(html).toContain('data-active-section="hadis"');
       expect(html).toContain("Current: hadis");
     });
 
     it("defaults to the first section id when initial is not provided", () => {
-      const html = renderToString(<TestSectionComponent sections={["ayet", "hadis", "siyer"]} />);
+      const html = renderToString(
+        <TestSectionComponent sections={["ayet", "hadis", "efendimiz"]} />
+      );
       expect(html).toContain('data-active-section="ayet"');
       expect(html).toContain("Current: ayet");
     });
@@ -37,14 +39,14 @@ describe("useActiveSection & resolveActiveSectionId", () => {
   });
 
   describe("resolveActiveSectionId scroll spy logic", () => {
-    const sectionIds = ["ayet", "hadis", "siyer", "sahabe", "risale"];
+    const sectionIds = ["ayet", "hadis", "efendimiz", "sahabe", "risale"];
 
     it("selects the reading section closest to the reading anchor from above (not lowest element)", () => {
-      // 'ayet' is higher up (-200px), 'hadis' is in reading view (80px), 'siyer' is peeked at bottom (550px)
+      // 'ayet' is higher up (-200px), 'hadis' is in reading view (80px), 'efendimiz' is peeked at bottom (550px)
       const entries = [
         { id: "ayet", top: -200, isIntersecting: true },
         { id: "hadis", top: 80, isIntersecting: true },
-        { id: "siyer", top: 550, isIntersecting: true },
+        { id: "efendimiz", top: 550, isIntersecting: true },
       ];
 
       const active = resolveActiveSectionId({
@@ -53,7 +55,7 @@ describe("useActiveSection & resolveActiveSectionId", () => {
         readingOffsetPx: 140,
       });
 
-      // Crucial: Must be 'hadis', NOT 'siyer' (which would be selected if comparing largest top unconditionally)
+      // Crucial: Must be 'hadis', NOT 'efendimiz' (which would be selected if comparing largest top unconditionally)
       expect(active).toBe("hadis");
     });
 

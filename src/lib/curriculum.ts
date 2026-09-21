@@ -6,13 +6,14 @@ import {
   Gem,
   HandHeart,
   Infinity,
-  Landmark,
   ScrollText,
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
+import { GoncaGulIcon } from "@/components/icons/gonca-gul-icon";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
 import { getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
+import { getEfendimizEntriesForGrade } from "@/lib/data/efendimiz-curriculum";
 import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
 import { getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
 import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
@@ -20,7 +21,7 @@ import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
 export const curriculumCategoryIds = [
   "ayet",
   "hadis",
-  "siyer",
+  "efendimiz",
   "sahabe-kissalari",
   "risale",
   "hocaefendi-dinleme",
@@ -44,7 +45,13 @@ export interface CurriculumCategory {
 export const curriculumCategories: readonly CurriculumCategory[] = [
   { id: "ayet", label: "Ayet", shortLabel: "Ayet", icon: BookOpenText, accent: "coral" },
   { id: "hadis", label: "Hadis", shortLabel: "Hadis", icon: ScrollText, accent: "amber" },
-  { id: "siyer", label: "Siyer", shortLabel: "Siyer", icon: Landmark, accent: "blue" },
+  {
+    id: "efendimiz",
+    label: "Efendimiz",
+    shortLabel: "Efendimiz",
+    icon: GoncaGulIcon,
+    accent: "blue",
+  },
   {
     id: "sahabe-kissalari",
     label: "Sahabe kıssaları",
@@ -176,25 +183,8 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
   // ── Hadis (Ortaokul 1. Sınıf – 55 Hafta) ───────────────────────
   ...getHadisEntriesForGrade(1),
 
-  // ── Siyer ───────────────────────────────────────
-  {
-    id: "siyer-eylul-1",
-    categoryId: "siyer",
-    month: 9,
-    week: 1,
-    year: 2026,
-    title: "Mekke Dönemi — İlk Vahiy ve Gizli Davet",
-    body: "Hz. Peygamber'in (s.a.v.) Hira Mağarası'nda ilk vahyi alışı, Hz. Hatice'nin desteği ve ilk Müslümanların iman süreci.",
-  },
-  {
-    id: "siyer-eylul-2",
-    categoryId: "siyer",
-    month: 9,
-    week: 2,
-    year: 2026,
-    title: "Açık Davet ve İlk Tepkiler",
-    body: "Safâ Tepesi'ndeki açık davet, Kureyş'in tepkileri ve ilk Müslümanlara uygulanan baskılar. Sabır ve metanetin önemi.",
-  },
+  // ── Efendimiz (Ortaokul 1. Sınıf – 55 Hafta) ───────────────────
+  ...getEfendimizEntriesForGrade(1),
 
   // ── Sahabe Kıssaları ────────────────────────────
   {

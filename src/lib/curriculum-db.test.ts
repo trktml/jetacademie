@@ -29,13 +29,13 @@ describe("Curriculum SQLite Database Module", () => {
 
   it("should enforce standard entries and zero premature extras for categories under 48 weeks", () => {
     const grade1Entries = getCurriculumEntriesFromDb(1);
-    const siyerEntries = grade1Entries.filter((e) => e.categoryId === "siyer");
+    const pirlantaEntries = grade1Entries.filter((e) => e.categoryId === "pirlanta");
 
-    const standardSiyer = siyerEntries.filter((e) => !e.isExtra);
-    const extraSiyer = siyerEntries.filter((e) => e.isExtra);
+    const standardPirlanta = pirlantaEntries.filter((e) => !e.isExtra);
+    const extraPirlanta = pirlantaEntries.filter((e) => e.isExtra);
 
-    expect(standardSiyer.length).toBe(2);
-    expect(extraSiyer.length).toBe(0); // 2 < 48: absolutely no extras before 48 weeks
+    expect(standardPirlanta.length).toBe(2);
+    expect(extraPirlanta.length).toBe(0); // 2 < 48: absolutely no extras before 48 weeks
   });
 
   it("should retrieve a specific entry by its deterministic ID", () => {
@@ -168,6 +168,61 @@ describe("Curriculum SQLite Database Module", () => {
     expect(g4Entry?.isExtra).toBe(false);
 
     const g4Extra = getCurriculumEntryByIdFromDb("g4-esma-extra-7");
+    expect(g4Extra).not.toBeNull();
+    expect(g4Extra?.grade).toBe(4);
+    expect(g4Extra?.isExtra).toBe(true);
+    expect(g4Extra?.extraOrder).toBe(7);
+  });
+
+  it("should have 55 Efendimiz entries for all 6 grades (330 total)", () => {
+    const allEntries = getCurriculumEntriesFromDb();
+    const efendimizEntries = allEntries.filter((e) => e.categoryId === "efendimiz");
+    expect(efendimizEntries.length).toBe(330);
+
+    for (let grade = 1; grade <= 6; grade++) {
+      const gradeEfendimiz = getCurriculumEntriesFromDb(grade).filter(
+        (e) => e.categoryId === "efendimiz"
+      );
+      expect(gradeEfendimiz.length).toBe(55);
+
+      const standard = gradeEfendimiz.filter((e) => !e.isExtra);
+      const extras = gradeEfendimiz.filter((e) => e.isExtra);
+      expect(standard.length).toBe(48);
+      expect(extras.length).toBe(7);
+
+      if (grade <= 3) {
+        expect(standard[0].title).toBe(
+          "ZÂHİR'E DEĞERİNİ HATIRLATMASI — İnsan dış görünüşüyle ölçülmez"
+        );
+      } else {
+        expect(standard[0].title).toBe(
+          "ZÂHİR'İN GÖNLÜNE DOKUNMASI — Değer, görünüşten daha derindir"
+        );
+      }
+    }
+  });
+
+  it("should retrieve Efendimiz entries across grades by deterministic ID", () => {
+    // Grade 1 standard & extra
+    const g1Entry = getCurriculumEntryByIdFromDb("efendimiz-eylul-1");
+    expect(g1Entry).not.toBeNull();
+    expect(g1Entry?.title).toContain("ZÂHİR'E DEĞERİNİ HATIRLATMASI");
+    expect(g1Entry?.grade).toBe(1);
+    expect(g1Entry?.isExtra).toBe(false);
+
+    const g1Extra = getCurriculumEntryByIdFromDb("efendimiz-extra-1");
+    expect(g1Extra).not.toBeNull();
+    expect(g1Extra?.isExtra).toBe(true);
+    expect(g1Extra?.extraOrder).toBe(1);
+
+    // Grade 4 (Lise) standard & extra
+    const g4Entry = getCurriculumEntryByIdFromDb("g4-efendimiz-eylul-1");
+    expect(g4Entry).not.toBeNull();
+    expect(g4Entry?.title).toContain("ZÂHİR'İN GÖNLÜNE DOKUNMASI");
+    expect(g4Entry?.grade).toBe(4);
+    expect(g4Entry?.isExtra).toBe(false);
+
+    const g4Extra = getCurriculumEntryByIdFromDb("g4-efendimiz-extra-7");
     expect(g4Extra).not.toBeNull();
     expect(g4Extra?.grade).toBe(4);
     expect(g4Extra?.isExtra).toBe(true);
