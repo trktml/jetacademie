@@ -16,7 +16,7 @@ export async function updateUserGender(gender: Gender) {
     throw new Error("Tercihinizi kaydetmek için giriş yapın.");
   }
 
-  setUserGenderInDb(session.user.id, gender);
+  await setUserGenderInDb(session.user.id, gender);
   revalidatePath("/mufredat");
   return { success: true, gender };
 }
@@ -24,5 +24,5 @@ export async function updateUserGender(gender: Gender) {
 export async function getUserGender(): Promise<Gender | null> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) return null;
-  return getUserGenderFromDb(session.user.id);
+  return await getUserGenderFromDb(session.user.id);
 }

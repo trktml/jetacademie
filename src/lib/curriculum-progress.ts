@@ -1,30 +1,30 @@
-import { db } from "@/lib/auth";
+import { execute, query } from "@/lib/db";
 
 interface ProgressRow {
   entryId: string;
 }
 
-export function getCompletedEntryIds(userId: string) {
-  const rows = db
-    .query<ProgressRow, [string]>(
-      `SELECT "entryId" FROM "curriculum_progress" WHERE "userId" = ? ORDER BY "completedAt"`
-    )
-    .all(userId);
+export async function getCompletedEntryIds(userId: string): Promise<string[]> {
+  const rows = await query<ProgressRow>(
+    `SELECT "entryId" FROM "curriculum_progress" WHERE "userId" = $1 ORDER BY "completedAt"`,
+    [userId]
+  );
 
   return rows.map((row) => row.entryId);
 }
 
-export function saveCompletedEntry(userId: string, entryId: string) {
-  db.query(
+export async function saveCompletedEntry(userId: string, entryId: string): Promise<void> {
+  await execute(
     `INSERT INTO "curriculum_progress" ("userId", "entryId", "completedAt")
-     VALUES (?, ?, ?)
-     ON CONFLICT ("userId", "entryId") DO NOTHING`
-  ).run(userId, entryId, new Date().toISOString());
+     VALUES ($1, $2, $3)
+     ON CONFLICT ("userId", "entryId") DO NOTHING`,
+    [userId, entryId, new Date().toISOString()]
+  );
 }
 
-export function removeCompletedEntry(userId: string, entryId: string) {
-  db.query(`DELETE FROM "curriculum_progress" WHERE "userId" = ? AND "entryId" = ?`).run(
+export async function removeCompletedEntry(userId: string, entryId: string): Promise<void> {
+  await execute(`DELETE FROM "curriculum_progress" WHERE "userId" = $1 AND "entryId" = $2`, [
     userId,
-    entryId
-  );
+    entryId,
+  ]);
 }

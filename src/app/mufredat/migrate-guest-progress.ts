@@ -23,19 +23,19 @@ export async function migrateGuestProgress(
 
   // Cinsiyet tercihini aktar (henüz ayarlanmamışsa)
   if (guestGender === "erkek" || guestGender === "bayan") {
-    const existingGender = getUserGenderFromDb(session.user.id);
+    const existingGender = await getUserGenderFromDb(session.user.id);
     if (!existingGender) {
-      setUserGenderInDb(session.user.id, guestGender);
+      await setUserGenderInDb(session.user.id, guestGender);
     }
   }
 
-  const existingIds = new Set(getCompletedEntryIds(session.user.id));
-  const validIds = new Set(getCurriculumEntriesFromDb().map((e) => e.id));
+  const existingIds = new Set(await getCompletedEntryIds(session.user.id));
+  const validIds = new Set((await getCurriculumEntriesFromDb()).map((e) => e.id));
 
   let migratedCount = 0;
   for (const entryId of guestEntryIds) {
     if (validIds.has(entryId) && !existingIds.has(entryId)) {
-      saveCompletedEntry(session.user.id, entryId);
+      await saveCompletedEntry(session.user.id, entryId);
       migratedCount++;
     }
   }

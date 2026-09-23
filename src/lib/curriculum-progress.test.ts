@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { db } from "./auth";
+import { execute } from "./db";
 import {
   getCompletedEntryIds,
   removeCompletedEntry,
@@ -9,32 +9,34 @@ import {
 describe("curriculum-progress", () => {
   const testUserId = `test_user_${Date.now()}`;
   const now = new Date().toISOString();
-  db.query(
-    `INSERT INTO "user" ("id", "name", "email", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?)`
-  ).run(testUserId, "Test Progress User", `${testUserId}@example.com`, now, now);
 
-  it("saves, retrieves, and removes completed entries", () => {
+  it("saves, retrieves, and removes completed entries", async () => {
+    await execute(
+      `INSERT INTO "user" ("id", "name", "email", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5)`,
+      [testUserId, "Test Progress User", `${testUserId}@example.com`, now, now]
+    );
+
     // Initial state: empty
-    expect(getCompletedEntryIds(testUserId)).toEqual([]);
+    expect(await getCompletedEntryIds(testUserId)).toEqual([]);
 
     // Save entry
-    saveCompletedEntry(testUserId, "ayet-eylul-1");
-    expect(getCompletedEntryIds(testUserId)).toEqual(["ayet-eylul-1"]);
+    await saveCompletedEntry(testUserId, "ayet-eylul-1");
+    expect(await getCompletedEntryIds(testUserId)).toEqual(["ayet-eylul-1"]);
 
     // Save second entry
-    saveCompletedEntry(testUserId, "ayet-eylul-2");
-    expect(getCompletedEntryIds(testUserId)).toEqual(["ayet-eylul-1", "ayet-eylul-2"]);
+    await saveCompletedEntry(testUserId, "ayet-eylul-2");
+    expect(await getCompletedEntryIds(testUserId)).toEqual(["ayet-eylul-1", "ayet-eylul-2"]);
 
     // Remove latest entry
-    removeCompletedEntry(testUserId, "ayet-eylul-2");
-    expect(getCompletedEntryIds(testUserId)).toEqual(["ayet-eylul-1"]);
+    await removeCompletedEntry(testUserId, "ayet-eylul-2");
+    expect(await getCompletedEntryIds(testUserId)).toEqual(["ayet-eylul-1"]);
 
     // Remove remaining entry
-    removeCompletedEntry(testUserId, "ayet-eylul-1");
-    expect(getCompletedEntryIds(testUserId)).toEqual([]);
+    await removeCompletedEntry(testUserId, "ayet-eylul-1");
+    expect(await getCompletedEntryIds(testUserId)).toEqual([]);
   });
 
-  it("handles removing non-existent entry gracefully", () => {
-    expect(() => removeCompletedEntry(testUserId, "non-existent")).not.toThrow();
+  it("handles removing non-existent entry gracefully", async () => {
+    await expect(removeCompletedEntry(testUserId, "non-existent")).resolves.toBeUndefined();
   });
 });

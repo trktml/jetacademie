@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const username = getNextAvailableUsername();
+    const username = await getNextAvailableUsername();
     const email = usernameToSyntheticEmail(username);
 
     const signUpResponse = await auth.api.signUpEmail({

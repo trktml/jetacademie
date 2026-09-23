@@ -1,4 +1,5 @@
-import { db } from "@/lib/auth";
+import { ensureDatabaseSchema } from "@/lib/auth";
+import { execute, query, queryOne } from "@/lib/db";
 import {
   curriculumCategories,
   curriculumEntries,
@@ -8,26 +9,20 @@ import {
   type CurriculumEntry,
 } from "@/lib/curriculum";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
-import { getAllAyetEntries, getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
-import {
-  getAllEfendimizEntries,
-  getEfendimizEntriesForGrade,
-} from "@/lib/data/efendimiz-curriculum";
-import { getAllEsmaEntries, getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
-import { getAllHadisEntries, getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
+import { getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
+import { getEfendimizEntriesForGrade } from "@/lib/data/efendimiz-curriculum";
+import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
+import { getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
 import {
   getAllIlmihalEntries,
   getIlmihalEntriesForGrade,
   type Gender,
 } from "@/lib/data/ilmihal-curriculum";
-import { getAllSahabeEntries, getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
-import {
-  getAllHocaefendiEntries,
-  getHocaefendiEntriesForGrade,
-} from "@/lib/data/hocaefendi-curriculum";
-import { getAllKonuEntries, getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
+import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
+import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
+import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
 
-interface CurriculumEntryRow {
+export interface CurriculumEntryRow {
   id: string;
   grade: number;
   categoryId: string;
@@ -35,7 +30,7 @@ interface CurriculumEntryRow {
   month: number | null;
   week: number | null;
   year: number;
-  isExtra: number;
+  isExtra: number | boolean;
   extraOrder: number | null;
   title: string;
   body: string | null;
@@ -72,170 +67,161 @@ function rowToEntry(row: CurriculumEntryRow): CurriculumEntry {
   };
 }
 
+let tableEnsured = false;
+
 /**
- * Ensures tables exist in SQLite.
+ * Ensures tables exist in PostgreSQL or SQLite.
  */
-export function ensureCurriculumEntriesTable() {
-  if (typeof db?.exec !== "function") return;
+export async function ensureCurriculumEntriesTable(): Promise<void> {
+  if (tableEnsured) return;
+  await ensureDatabaseSchema();
 
-  // 1. Create tables if they do not exist
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS "user_preferences" (
-      "userId" text not null primary key references "user" ("id") on delete cascade,
-      "gender" text not null check ("gender" in ('erkek', 'bayan')),
-      "createdAt" date not null,
-      "updatedAt" date not null
-    );
-
-    CREATE TABLE IF NOT EXISTS "curriculum_entries" (
-      "id" text not null primary key,
-      "grade" integer not null default 1,
-      "categoryId" text not null,
-      "gender" text,
-      "month" integer,
-      "week" integer,
-      "year" integer default 2026,
-      "isExtra" integer not null default 0,
-      "extraOrder" integer,
-      "title" text not null,
-      "body" text,
-      "resourceUrl" text,
-      "pdfUrl" text,
-      "pageCount" integer,
-      "createdAt" date not null,
-      "updatedAt" date not null
-    );
-  `);
-
-  // 2. Safely add columns for existing databases before creating indexes
   try {
-    db.exec(`ALTER TABLE "curriculum_entries" ADD COLUMN "gender" text;`);
-  } catch {
-    // Column already exists
+    await execute(`
+      -- Migrate any legacy siyer entries and progress to efendimiz
+      UPDATE "curriculum_entries" SET "categoryId" = 'efendimiz' WHERE "categoryId" = 'siyer';
+      UPDATE "curriculum_entries" SET "id" = REPLACE("id", 'siyer', 'efendimiz') WHERE "id" LIKE '%siyer%';
+      UPDATE "curriculum_progress" SET "entryId" = REPLACE("entryId", 'siyer', 'efendimiz') WHERE "entryId" LIKE '%siyer%';
+
+      -- Clean up legacy premature extra entries that violated the 48-week rule
+      DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" NOT IN ('adab-i-muaseret', 'ilmihal', 'ayet', 'hadis', 'esma', 'efendimiz');
+      DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%' AND "entryId" NOT LIKE '%ayet%' AND "entryId" NOT LIKE '%hadis%' AND "entryId" NOT LIKE '%esma%' AND "entryId" NOT LIKE '%efendimiz%';
+
+      -- Clean up removed categories (risale, pirlanta) and their progress
+      DELETE FROM "curriculum_entries" WHERE "categoryId" IN ('risale', 'pirlanta');
+      DELETE FROM "curriculum_progress" WHERE "entryId" LIKE 'risale-%' OR "entryId" LIKE 'pirlanta-%' OR "entryId" LIKE '%-risale-%' OR "entryId" LIKE '%-pirlanta-%';
+    `);
+    tableEnsured = true;
+  } catch (err) {
+    console.error("Failed to execute curriculum entries table updates:", err);
   }
-  try {
-    db.exec(`ALTER TABLE "curriculum_entries" ADD COLUMN "pdfUrl" text;`);
-  } catch {
-    // Column already exists
-  }
-
-  // 3. Create indexes and perform cleanup
-  db.exec(`
-    CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_idx"
-      on "curriculum_entries" ("grade", "categoryId", "isExtra", "month", "week");
-    CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_gender_idx"
-      on "curriculum_entries" ("grade", "categoryId", "gender", "isExtra", "month", "week");
-
-    -- Migrate any legacy siyer entries and progress to efendimiz
-    UPDATE "curriculum_entries" SET "categoryId" = 'efendimiz' WHERE "categoryId" = 'siyer';
-    UPDATE "curriculum_entries" SET "id" = REPLACE("id", 'siyer', 'efendimiz') WHERE "id" LIKE '%siyer%';
-    UPDATE "curriculum_progress" SET "entryId" = REPLACE("entryId", 'siyer', 'efendimiz') WHERE "entryId" LIKE '%siyer%';
-
-    -- Clean up legacy premature extra entries that violated the 48-week rule
-    DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" NOT IN ('adab-i-muaseret', 'ilmihal', 'ayet', 'hadis', 'esma', 'efendimiz');
-    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%' AND "entryId" NOT LIKE '%ayet%' AND "entryId" NOT LIKE '%hadis%' AND "entryId" NOT LIKE '%esma%' AND "entryId" NOT LIKE '%efendimiz%';
-
-    -- Clean up removed categories (risale, pirlanta) and their progress
-    DELETE FROM "curriculum_entries" WHERE "categoryId" IN ('risale', 'pirlanta');
-    DELETE FROM "curriculum_progress" WHERE "entryId" LIKE 'risale-%' OR "entryId" LIKE 'pirlanta-%' OR "entryId" LIKE '%-risale-%' OR "entryId" LIKE '%-pirlanta-%';
-  `);
 }
 
-export function getUserGenderFromDb(userId: string): Gender | null {
-  ensureCurriculumEntriesTable();
-  if (typeof db?.query !== "function") return null;
+export async function getUserGenderFromDb(userId: string): Promise<Gender | null> {
+  await ensureCurriculumEntriesTable();
   try {
-    const row = db
-      .query<{ gender: string }, [string]>(
-        `SELECT "gender" FROM "user_preferences" WHERE "userId" = ?`
-      )
-      .get(userId);
+    const row = await queryOne<{ gender: string }>(
+      `SELECT "gender" FROM "user_preferences" WHERE "userId" = $1`,
+      [userId]
+    );
     return (row?.gender as Gender) || null;
   } catch {
     return null;
   }
 }
 
-export function setUserGenderInDb(userId: string, gender: Gender): void {
-  ensureCurriculumEntriesTable();
-  if (typeof db?.prepare !== "function") return;
+export async function setUserGenderInDb(userId: string, gender: Gender): Promise<void> {
+  await ensureCurriculumEntriesTable();
   const now = new Date().toISOString();
   try {
-    const stmt = db.prepare(`
-      INSERT INTO "user_preferences" ("userId", "gender", "createdAt", "updatedAt")
-      VALUES (?, ?, ?, ?)
-      ON CONFLICT("userId") DO UPDATE SET "gender" = excluded.gender, "updatedAt" = excluded.updatedAt
-    `);
-    stmt.run(userId, gender, now, now);
+    await execute(
+      `INSERT INTO "user_preferences" ("userId", "gender", "createdAt", "updatedAt")
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT("userId") DO UPDATE SET "gender" = EXCLUDED.gender, "updatedAt" = EXCLUDED.updatedAt`,
+      [userId, gender, now, now]
+    );
   } catch (err) {
     console.error("Failed to set user gender in DB:", err);
   }
 }
 
-/**
- * Ensures adab-i-muaseret entries are fully synced across all 6 grades (54 entries each, total 324).
- * If old placeholder entries are present or count < 324, this cleanly syncs adab-i-muaseret
- * without touching other categories or user progress.
- */
-export function syncAdabCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
+export async function bulkUpsertCurriculumEntries(rows: Array<CurriculumEntryRow>): Promise<void> {
+  if (rows.length === 0) return;
+  const CHUNK_SIZE = 50;
+
+  for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
+    const chunk = rows.slice(i, i + CHUNK_SIZE);
+    const valuePlaceholders: string[] = [];
+    const params: unknown[] = [];
+    let pIdx = 1;
+
+    for (const r of chunk) {
+      valuePlaceholders.push(
+        `($${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++})`
+      );
+      params.push(
+        r.id,
+        r.grade,
+        r.categoryId,
+        r.gender ?? null,
+        r.month ?? null,
+        r.week ?? null,
+        r.year ?? 2026,
+        r.isExtra ? 1 : 0,
+        r.extraOrder ?? null,
+        r.title,
+        r.body ?? null,
+        r.resourceUrl ?? null,
+        r.pdfUrl ?? null,
+        r.pageCount ?? null,
+        r.createdAt,
+        r.updatedAt
+      );
+    }
+
+    const sql = `
+      INSERT INTO "curriculum_entries" (
+        "id", "grade", "categoryId", "gender", "month", "week", "year",
+        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "pageCount", "createdAt", "updatedAt"
+      ) VALUES ${valuePlaceholders.join(", ")}
+      ON CONFLICT ("id") DO UPDATE SET
+        "grade" = EXCLUDED."grade",
+        "categoryId" = EXCLUDED."categoryId",
+        "gender" = EXCLUDED."gender",
+        "month" = EXCLUDED."month",
+        "week" = EXCLUDED."week",
+        "year" = EXCLUDED."year",
+        "isExtra" = EXCLUDED."isExtra",
+        "extraOrder" = EXCLUDED."extraOrder",
+        "title" = EXCLUDED."title",
+        "body" = EXCLUDED."body",
+        "resourceUrl" = EXCLUDED."resourceUrl",
+        "pdfUrl" = EXCLUDED."pdfUrl",
+        "pageCount" = EXCLUDED."pageCount",
+        "updatedAt" = EXCLUDED."updatedAt"
+    `;
+
+    await execute(sql, params);
   }
+}
 
+async function syncCategoryIfOutdated(
+  categoryId: string,
+  minCount: number,
+  generateRows: () => CurriculumEntryRow[]
+): Promise<void> {
   try {
-    const row = db
-      .query<{ count: number }, []>(
-        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'adab-i-muaseret'`
-      )
-      .get();
+    const row = await queryOne<{ c: number | string }>(
+      `SELECT COUNT(*) as c FROM "curriculum_entries" WHERE "categoryId" = $1`,
+      [categoryId]
+    );
 
-    // 6 grades * 54 weeks = 324 entries
-    if (row && row.count >= 324) {
+    if (row && Number(row.c) >= minCount) {
       return;
     }
 
+    const batch = generateRows();
+    await execute(`DELETE FROM "curriculum_entries" WHERE "categoryId" = $1`, [categoryId]);
+    await bulkUpsertCurriculumEntries(batch);
+  } catch (err) {
+    console.error(`Failed to sync category ${categoryId}:`, err);
+  }
+}
+
+export async function syncAdabCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("adab-i-muaseret", 324, () => {
     const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const adabBatch: Array<{
-      id: string;
-      grade: number;
-      categoryId: string;
-      month: number | null;
-      week: number | null;
-      year: number;
-      isExtra: number;
-      extraOrder: number | null;
-      title: string;
-      body: string | null;
-      resourceUrl: string | null;
-      pageCount: number | null;
-      createdAt: string;
-      updatedAt: string;
-    }> = [];
-
+    const batch: CurriculumEntryRow[] = [];
     for (let grade = 1; grade <= 6; grade++) {
       const entries = getAdabEntriesForGrade(grade);
       for (const entry of entries) {
-        adabBatch.push({
+        batch.push({
           id: entry.id,
           grade,
           categoryId: "adab-i-muaseret",
+          gender: null,
           month: entry.month,
           week: entry.week,
           year: entry.year,
@@ -244,681 +230,322 @@ export function syncAdabCurriculumIfOutdated(): void {
           title: entry.title,
           body: entry.body ?? null,
           resourceUrl: entry.resourceUrl ?? null,
+          pdfUrl: null,
           pageCount: entry.pageCount ?? null,
           createdAt: now,
           updatedAt: now,
         });
       }
     }
-
-    const runSync = db.transaction((rows: typeof adabBatch) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'adab-i-muaseret'`);
-      for (const r of rows) {
-        insertStmt.run({
-          $id: r.id,
-          $grade: r.grade,
-          $categoryId: r.categoryId,
-          $month: r.month,
-          $week: r.week,
-          $year: r.year,
-          $isExtra: r.isExtra,
-          $extraOrder: r.extraOrder,
-          $title: r.title,
-          $body: r.body,
-          $resourceUrl: r.resourceUrl,
-          $pageCount: r.pageCount,
-          $createdAt: r.createdAt,
-          $updatedAt: r.updatedAt,
-        });
-      }
-    });
-
-    runSync(adabBatch);
-  } catch (err) {
-    console.error("Failed to sync adab curriculum:", err);
-  }
+    return batch;
+  });
 }
 
-/**
- * Ensures ilmihal entries are fully synced across all 6 grades and both genders (total 774 entries).
- * If old placeholder entries are present or count < 774, this cleanly syncs ilmihal
- * without touching other categories or user progress.
- */
-export function syncIlmihalCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
-  }
-
-  try {
-    const row = db
-      .query<{ count: number; withPdf: number }, []>(
-        `SELECT COUNT(*) as count, SUM(CASE WHEN "pdfUrl" IS NOT NULL THEN 1 ELSE 0 END) as withPdf FROM "curriculum_entries" WHERE "categoryId" = 'ilmihal'`
-      )
-      .get();
-
-    // 6 grades * (28 ortaokul + 104/98 lise) * 2 genders = 774 entries with pdfUrl populated
-    if (row && row.count >= 774 && (row.withPdf ?? 0) >= 774) {
-      return;
-    }
-
+export async function syncIlmihalCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("ilmihal", 774, () => {
     const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $gender, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const ilmihalEntries = getAllIlmihalEntries();
-    const runSync = db.transaction((entries: typeof ilmihalEntries) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'ilmihal'`);
-      for (const e of entries) {
-        insertStmt.run({
-          $id: e.id,
-          $grade: e.grade ?? 1,
-          $categoryId: "ilmihal",
-          $gender: e.gender ?? null,
-          $month: e.month,
-          $week: e.week,
-          $year: e.year,
-          $isExtra: e.isExtra ? 1 : 0,
-          $extraOrder: e.extraOrder ?? null,
-          $title: e.title,
-          $body: e.body ?? null,
-          $resourceUrl: e.resourceUrl ?? null,
-          $pdfUrl: isPdf(e.pdfUrl) ? e.pdfUrl : isPdf(e.resourceUrl) ? e.resourceUrl : null,
-          $pageCount: e.pageCount ?? null,
-          $createdAt: now,
-          $updatedAt: now,
-        });
-      }
-    });
-
-    runSync(ilmihalEntries);
-  } catch (err) {
-    console.error("Failed to sync ilmihal curriculum:", err);
-  }
-}
-
-/**
- * Ensures ayet entries are fully synced across all 6 grades (55 entries each, total 330).
- * If old placeholder entries are present or count < 330, this cleanly syncs ayet
- * without touching other categories or user progress.
- */
-export function syncAyetCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
-  }
-
-  try {
-    const row = db
-      .query<{ count: number }, []>(
-        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'ayet'`
-      )
-      .get();
-
-    // 6 grades * 55 weeks = 330 entries
-    if (row && row.count >= 330) {
-      return;
+    const batch: CurriculumEntryRow[] = [];
+    const allIlmihal = getAllIlmihalEntries();
+    for (const entry of allIlmihal) {
+      batch.push({
+        id: entry.id,
+        grade: entry.grade ?? 1,
+        categoryId: "ilmihal",
+        gender: entry.gender ?? null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: entry.isExtra ? 1 : 0,
+        extraOrder: entry.extraOrder ?? null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: isPdf(entry.pdfUrl)
+          ? entry.pdfUrl
+          : isPdf(entry.resourceUrl)
+            ? entry.resourceUrl
+            : null,
+        pageCount: entry.pageCount ?? null,
+        createdAt: now,
+        updatedAt: now,
+      });
     }
-
-    const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $gender, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const ayetEntries = getAllAyetEntries();
-    const runSync = db.transaction((entries: typeof ayetEntries) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'ayet'`);
-      for (const e of entries) {
-        insertStmt.run({
-          $id: e.id,
-          $grade: e.grade ?? 1,
-          $categoryId: "ayet",
-          $gender: null,
-          $month: e.month,
-          $week: e.week,
-          $year: e.year,
-          $isExtra: e.isExtra ? 1 : 0,
-          $extraOrder: e.extraOrder ?? null,
-          $title: e.title,
-          $body: e.body ?? null,
-          $resourceUrl: e.resourceUrl ?? null,
-          $pdfUrl: null,
-          $pageCount: null,
-          $createdAt: now,
-          $updatedAt: now,
-        });
-      }
-    });
-
-    runSync(ayetEntries);
-  } catch (err) {
-    console.error("Failed to sync ayet curriculum:", err);
-  }
+    return batch;
+  });
 }
 
-/**
- * Ensures hadis entries are fully synced across all 6 grades (55 entries each, total 330).
- * If old placeholder entries are present or count < 330, this cleanly syncs hadis
- * without touching other categories or user progress.
- */
-export function syncHadisCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
-  }
-
-  try {
-    const row = db
-      .query<{ count: number }, []>(
-        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'hadis'`
-      )
-      .get();
-
-    // 6 grades * 55 weeks = 330 entries
-    if (row && row.count >= 330) {
-      return;
+export async function syncAyetCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("ayet", 330, () => {
+    const now = new Date().toISOString();
+    const batch: CurriculumEntryRow[] = [];
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getAyetEntriesForGrade(grade);
+      for (const entry of entries) {
+        batch.push({
+          id: entry.id,
+          grade,
+          categoryId: "ayet",
+          gender: null,
+          month: entry.month,
+          week: entry.week,
+          year: entry.year,
+          isExtra: entry.isExtra ? 1 : 0,
+          extraOrder: entry.extraOrder ?? null,
+          title: entry.title,
+          body: entry.body ?? null,
+          resourceUrl: entry.resourceUrl ?? null,
+          pdfUrl: isPdf(entry.pdfUrl)
+            ? entry.pdfUrl
+            : isPdf(entry.resourceUrl)
+              ? entry.resourceUrl
+              : null,
+          pageCount: entry.pageCount ?? null,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
     }
-
-    const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $gender, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const hadisEntries = getAllHadisEntries();
-    const runSync = db.transaction((entries: typeof hadisEntries) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'hadis'`);
-      for (const e of entries) {
-        insertStmt.run({
-          $id: e.id,
-          $grade: e.grade ?? 1,
-          $categoryId: "hadis",
-          $gender: null,
-          $month: e.month,
-          $week: e.week,
-          $year: e.year,
-          $isExtra: e.isExtra ? 1 : 0,
-          $extraOrder: e.extraOrder ?? null,
-          $title: e.title,
-          $body: e.body ?? null,
-          $resourceUrl: e.resourceUrl ?? null,
-          $pdfUrl: null,
-          $pageCount: null,
-          $createdAt: now,
-          $updatedAt: now,
-        });
-      }
-    });
-
-    runSync(hadisEntries);
-  } catch (err) {
-    console.error("Failed to sync hadis curriculum:", err);
-  }
+    return batch;
+  });
 }
 
-/**
- * Ensures esma entries are fully synced across all 6 grades (55 entries each, total 330).
- * If old placeholder entries are present or count < 330, this cleanly syncs esma
- * without touching other categories or user progress.
- */
-export function syncEsmaCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
-  }
-
-  try {
-    const row = db
-      .query<{ count: number }, []>(
-        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'esma'`
-      )
-      .get();
-
-    // 6 grades * 55 weeks = 330 entries
-    if (row && row.count >= 330) {
-      return;
+export async function syncHadisCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("hadis", 330, () => {
+    const now = new Date().toISOString();
+    const batch: CurriculumEntryRow[] = [];
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getHadisEntriesForGrade(grade);
+      for (const entry of entries) {
+        batch.push({
+          id: entry.id,
+          grade,
+          categoryId: "hadis",
+          gender: null,
+          month: entry.month,
+          week: entry.week,
+          year: entry.year,
+          isExtra: entry.isExtra ? 1 : 0,
+          extraOrder: entry.extraOrder ?? null,
+          title: entry.title,
+          body: entry.body ?? null,
+          resourceUrl: entry.resourceUrl ?? null,
+          pdfUrl: isPdf(entry.pdfUrl)
+            ? entry.pdfUrl
+            : isPdf(entry.resourceUrl)
+              ? entry.resourceUrl
+              : null,
+          pageCount: entry.pageCount ?? null,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
     }
-
-    const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $gender, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const esmaEntries = getAllEsmaEntries();
-    const runSync = db.transaction((entries: typeof esmaEntries) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'esma'`);
-      for (const e of entries) {
-        insertStmt.run({
-          $id: e.id,
-          $grade: e.grade ?? 1,
-          $categoryId: "esma",
-          $gender: null,
-          $month: e.month,
-          $week: e.week,
-          $year: e.year,
-          $isExtra: e.isExtra ? 1 : 0,
-          $extraOrder: e.extraOrder ?? null,
-          $title: e.title,
-          $body: e.body ?? null,
-          $resourceUrl: e.resourceUrl ?? null,
-          $pdfUrl: null,
-          $pageCount: null,
-          $createdAt: now,
-          $updatedAt: now,
-        });
-      }
-    });
-
-    runSync(esmaEntries);
-  } catch (err) {
-    console.error("Failed to sync esma curriculum:", err);
-  }
+    return batch;
+  });
 }
 
-/**
- * Ensures efendimiz entries are fully synced across all 6 grades (55 entries each, total 330).
- * If old placeholder entries are present or count < 330, this cleanly syncs efendimiz
- * without touching other categories or user progress.
- */
-export function syncEfendimizCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
-  }
-
-  try {
-    const row = db
-      .query<{ count: number }, []>(
-        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'efendimiz'`
-      )
-      .get();
-
-    // 6 grades * 55 weeks = 330 entries
-    if (row && row.count >= 330) {
-      return;
+export async function syncEsmaCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("esma", 330, () => {
+    const now = new Date().toISOString();
+    const batch: CurriculumEntryRow[] = [];
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getEsmaEntriesForGrade(grade);
+      for (const entry of entries) {
+        batch.push({
+          id: entry.id,
+          grade,
+          categoryId: "esma",
+          gender: null,
+          month: entry.month,
+          week: entry.week,
+          year: entry.year,
+          isExtra: entry.isExtra ? 1 : 0,
+          extraOrder: entry.extraOrder ?? null,
+          title: entry.title,
+          body: entry.body ?? null,
+          resourceUrl: entry.resourceUrl ?? null,
+          pdfUrl: isPdf(entry.pdfUrl)
+            ? entry.pdfUrl
+            : isPdf(entry.resourceUrl)
+              ? entry.resourceUrl
+              : null,
+          pageCount: entry.pageCount ?? null,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
     }
-
-    const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $gender, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const efendimizEntries = getAllEfendimizEntries();
-    const runSync = db.transaction((entries: typeof efendimizEntries) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" IN ('efendimiz', 'siyer')`);
-      for (const e of entries) {
-        insertStmt.run({
-          $id: e.id,
-          $grade: e.grade ?? 1,
-          $categoryId: "efendimiz",
-          $gender: null,
-          $month: e.month,
-          $week: e.week,
-          $year: e.year,
-          $isExtra: e.isExtra ? 1 : 0,
-          $extraOrder: e.extraOrder ?? null,
-          $title: e.title,
-          $body: e.body ?? null,
-          $resourceUrl: e.resourceUrl ?? null,
-          $pdfUrl: null,
-          $pageCount: null,
-          $createdAt: now,
-          $updatedAt: now,
-        });
-      }
-    });
-
-    runSync(efendimizEntries);
-  } catch (err) {
-    console.error("Failed to sync efendimiz curriculum:", err);
-  }
+    return batch;
+  });
 }
 
-/**
- * Ensures sahabe-kissalari entries are fully synced across all 6 grades (55 entries each, total 330).
- * If old placeholder entries are present or count < 330, this cleanly syncs sahabe
- * without touching other categories or user progress.
- */
-export function syncSahabeCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
-  }
-
-  try {
-    const row = db
-      .query<{ count: number }, []>(
-        `SELECT COUNT(*) as count FROM "curriculum_entries" WHERE "categoryId" = 'sahabe-kissalari'`
-      )
-      .get();
-
-    // 6 grades * 55 weeks = 330 entries
-    if (row && row.count >= 330) {
-      return;
+export async function syncEfendimizCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("efendimiz", 330, () => {
+    const now = new Date().toISOString();
+    const batch: CurriculumEntryRow[] = [];
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getEfendimizEntriesForGrade(grade);
+      for (const entry of entries) {
+        batch.push({
+          id: entry.id,
+          grade,
+          categoryId: "efendimiz",
+          gender: null,
+          month: entry.month,
+          week: entry.week,
+          year: entry.year,
+          isExtra: entry.isExtra ? 1 : 0,
+          extraOrder: entry.extraOrder ?? null,
+          title: entry.title,
+          body: entry.body ?? null,
+          resourceUrl: entry.resourceUrl ?? null,
+          pdfUrl: isPdf(entry.pdfUrl)
+            ? entry.pdfUrl
+            : isPdf(entry.resourceUrl)
+              ? entry.resourceUrl
+              : null,
+          pageCount: entry.pageCount ?? null,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
     }
-
-    const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $gender, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const sahabeEntries = getAllSahabeEntries();
-    const runSync = db.transaction((entries: typeof sahabeEntries) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'sahabe-kissalari'`);
-      for (const e of entries) {
-        insertStmt.run({
-          $id: e.id,
-          $grade: e.grade ?? 1,
-          $categoryId: "sahabe-kissalari",
-          $gender: null,
-          $month: e.month,
-          $week: e.week,
-          $year: e.year,
-          $isExtra: e.isExtra ? 1 : 0,
-          $extraOrder: e.extraOrder ?? null,
-          $title: e.title,
-          $body: e.body ?? null,
-          $resourceUrl: e.resourceUrl ?? null,
-          $pdfUrl: null,
-          $pageCount: null,
-          $createdAt: now,
-          $updatedAt: now,
-        });
-      }
-    });
-
-    runSync(sahabeEntries);
-  } catch (err) {
-    console.error("Failed to sync sahabe curriculum:", err);
-  }
+    return batch;
+  });
 }
 
-/**
- * Ensures hocaefendi-dinleme entries are fully synced across all 6 grades (48 entries each, total 288).
- * If old placeholder entries are present or count < 288, this cleanly syncs hocaefendi-dinleme
- * without touching other categories or user progress.
- */
-export function syncHocaefendiCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
-  }
-
-  try {
-    const row = db
-      .query<{ count: number; distinctGrades: number }, []>(
-        `SELECT COUNT(*) as count, COUNT(DISTINCT grade) as distinctGrades FROM "curriculum_entries" WHERE "categoryId" = 'hocaefendi-dinleme'`
-      )
-      .get();
-
-    const sample = db
-      .query<{ body: string }, []>(
-        `SELECT body FROM "curriculum_entries" WHERE "id" = 'hocaefendi-dinleme-eylul-1'`
-      )
-      .get();
-
-    // 6 grades * 48 weeks = 288 entries, distributed across all 6 grades, with rich vocabulary
-    if (row && row.count >= 288 && row.distinctGrades === 6 && sample?.body?.includes("Âbid")) {
-      return;
+export async function syncSahabeCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("sahabe-kissalari", 330, () => {
+    const now = new Date().toISOString();
+    const batch: CurriculumEntryRow[] = [];
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getSahabeEntriesForGrade(grade);
+      for (const entry of entries) {
+        batch.push({
+          id: entry.id,
+          grade,
+          categoryId: "sahabe-kissalari",
+          gender: null,
+          month: entry.month,
+          week: entry.week,
+          year: entry.year,
+          isExtra: entry.isExtra ? 1 : 0,
+          extraOrder: entry.extraOrder ?? null,
+          title: entry.title,
+          body: entry.body ?? null,
+          resourceUrl: entry.resourceUrl ?? null,
+          pdfUrl: isPdf(entry.pdfUrl)
+            ? entry.pdfUrl
+            : isPdf(entry.resourceUrl)
+              ? entry.resourceUrl
+              : null,
+          pageCount: entry.pageCount ?? null,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
     }
-
-    const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $gender, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const hocaefendiEntries = getAllHocaefendiEntries();
-    const runSync = db.transaction((entries: typeof hocaefendiEntries) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'hocaefendi-dinleme'`);
-      for (const e of entries) {
-        insertStmt.run({
-          $id: e.id,
-          $grade: e.grade ?? 1,
-          $categoryId: "hocaefendi-dinleme",
-          $gender: null,
-          $month: e.month,
-          $week: e.week,
-          $year: e.year,
-          $isExtra: e.isExtra ? 1 : 0,
-          $extraOrder: e.extraOrder ?? null,
-          $title: e.title,
-          $body: e.body ?? null,
-          $resourceUrl: e.resourceUrl ?? null,
-          $pdfUrl: null,
-          $pageCount: null,
-          $createdAt: now,
-          $updatedAt: now,
-        });
-      }
-    });
-
-    runSync(hocaefendiEntries);
-  } catch (err) {
-    console.error("Failed to sync hocaefendi curriculum:", err);
-  }
+    return batch;
+  });
 }
 
-/**
- * Ensures konu (Haftanın Konusu) entries are present and up-to-date across all 6 grades (total 12 entries).
- */
-export function syncKonuCurriculumIfOutdated(): void {
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function" ||
-    typeof db?.exec !== "function"
-  ) {
-    return;
-  }
-
-  try {
-    db.exec(`
-      DELETE FROM "curriculum_entries" WHERE "categoryId" IN ('risale', 'pirlanta');
-      DELETE FROM "curriculum_progress" WHERE "entryId" LIKE 'risale-%' OR "entryId" LIKE 'pirlanta-%' OR "entryId" LIKE '%-risale-%' OR "entryId" LIKE '%-pirlanta-%';
-    `);
-
-    const row = db
-      .query<{ count: number; distinctGrades: number }, []>(
-        `SELECT COUNT(*) as count, COUNT(DISTINCT grade) as distinctGrades FROM "curriculum_entries" WHERE "categoryId" = 'konu'`
-      )
-      .get();
-
-    const sample = db
-      .query<{ title: string; body: string }, []>(
-        `SELECT title, body FROM "curriculum_entries" WHERE "id" = 'konu-eylul-1'`
-      )
-      .get();
-
-    if (
-      row &&
-      row.count >= 12 &&
-      row.distinctGrades === 6 &&
-      sample?.title?.includes("BİR KİTABIN SIRA DIŞI YOLCULUĞU")
-    ) {
-      return;
+export async function syncHocaefendiCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("hocaefendi-dinleme", 288, () => {
+    const now = new Date().toISOString();
+    const batch: CurriculumEntryRow[] = [];
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getHocaefendiEntriesForGrade(grade);
+      for (const entry of entries) {
+        batch.push({
+          id: entry.id,
+          grade,
+          categoryId: "hocaefendi-dinleme",
+          gender: null,
+          month: entry.month,
+          week: entry.week,
+          year: entry.year,
+          isExtra: entry.isExtra ? 1 : 0,
+          extraOrder: entry.extraOrder ?? null,
+          title: entry.title,
+          body: entry.body ?? null,
+          resourceUrl: entry.resourceUrl ?? null,
+          pdfUrl: isPdf(entry.pdfUrl)
+            ? entry.pdfUrl
+            : isPdf(entry.resourceUrl)
+              ? entry.resourceUrl
+              : null,
+          pageCount: entry.pageCount ?? null,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
     }
-
-    const now = new Date().toISOString();
-    const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO "curriculum_entries" (
-        "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-        "pageCount", "createdAt", "updatedAt"
-      ) VALUES (
-        $id, $grade, $categoryId, $gender, $month, $week, $year,
-        $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-        $pageCount, $createdAt, $updatedAt
-      )
-    `);
-
-    const konuEntries = getAllKonuEntries();
-    const runSync = db.transaction((entries: typeof konuEntries) => {
-      db.exec(`DELETE FROM "curriculum_entries" WHERE "categoryId" = 'konu'`);
-      for (const e of entries) {
-        insertStmt.run({
-          $id: e.id,
-          $grade: e.grade ?? 1,
-          $categoryId: "konu",
-          $gender: null,
-          $month: e.month,
-          $week: e.week,
-          $year: e.year,
-          $isExtra: e.isExtra ? 1 : 0,
-          $extraOrder: e.extraOrder ?? null,
-          $title: e.title,
-          $body: e.body ?? null,
-          $resourceUrl: null,
-          $pdfUrl: null,
-          $pageCount: 2,
-          $createdAt: now,
-          $updatedAt: now,
-        });
-      }
-    });
-
-    runSync(konuEntries);
-  } catch (err) {
-    console.error("Failed to sync konu curriculum:", err);
-  }
+    return batch;
+  });
 }
 
-/**
- * Seeds initial curriculum entries for all 6 Belgium grades,
- * including 48-week standard curriculum and extra contents.
- */
-export function seedCurriculumDatabase(force = false): void {
-  ensureCurriculumEntriesTable();
+export async function syncKonuCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("konu", 12, () => {
+    const now = new Date().toISOString();
+    const batch: CurriculumEntryRow[] = [];
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getKonuEntriesForGrade(grade);
+      for (const entry of entries) {
+        batch.push({
+          id: entry.id,
+          grade,
+          categoryId: "konu",
+          gender: null,
+          month: entry.month,
+          week: entry.week,
+          year: entry.year,
+          isExtra: 0,
+          extraOrder: null,
+          title: entry.title,
+          body: entry.body ?? null,
+          resourceUrl: null,
+          pdfUrl: null,
+          pageCount: 2,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+    }
+    return batch;
+  });
+}
 
-  if (
-    typeof db?.query !== "function" ||
-    typeof db?.prepare !== "function" ||
-    typeof db?.transaction !== "function"
-  ) {
-    return;
-  }
+export async function seedCurriculumDatabase(force = false): Promise<void> {
+  await ensureCurriculumEntriesTable();
 
-  const countRow = db
-    .query<{ count: number }, []>(`SELECT COUNT(*) as count FROM "curriculum_entries"`)
-    .get();
+  const countRow = await queryOne<{ c: number | string }>(
+    `SELECT COUNT(*) as c FROM "curriculum_entries"`
+  );
 
-  if (!force && countRow && countRow.count > 0) {
-    syncAyetCurriculumIfOutdated();
-    syncHadisCurriculumIfOutdated();
-    syncAdabCurriculumIfOutdated();
-    syncIlmihalCurriculumIfOutdated();
-    syncEsmaCurriculumIfOutdated();
-    syncEfendimizCurriculumIfOutdated();
-    syncSahabeCurriculumIfOutdated();
-    syncHocaefendiCurriculumIfOutdated();
-    syncKonuCurriculumIfOutdated();
+  const count = Number(countRow?.c ?? 0);
+  if (!force && count > 0) {
+    await syncAyetCurriculumIfOutdated();
+    await syncHadisCurriculumIfOutdated();
+    await syncAdabCurriculumIfOutdated();
+    await syncIlmihalCurriculumIfOutdated();
+    await syncEsmaCurriculumIfOutdated();
+    await syncEfendimizCurriculumIfOutdated();
+    await syncSahabeCurriculumIfOutdated();
+    await syncHocaefendiCurriculumIfOutdated();
+    await syncKonuCurriculumIfOutdated();
     return;
   }
 
   const now = new Date().toISOString();
-
-  // Prepare seed batch
-  const seedBatch: Array<{
-    id: string;
-    grade: number;
-    categoryId: string;
-    gender: string | null;
-    month: number | null;
-    week: number | null;
-    year: number;
-    isExtra: number;
-    extraOrder: number | null;
-    title: string;
-    body: string | null;
-    resourceUrl: string | null;
-    pdfUrl: string | null;
-    pageCount: number | null;
-    createdAt: string;
-    updatedAt: string;
-  }> = [];
+  const seedBatch: CurriculumEntryRow[] = [];
 
   // 1. Seed Grade 1 from existing static entries (which includes 54 adab entries)
   for (const entry of curriculumEntries) {
@@ -949,7 +576,6 @@ export function seedCurriculumDatabase(force = false): void {
 
   // 2. Seed template standard entries for Grades 2 through 6
   for (let grade = 2; grade <= 6; grade++) {
-    // 2a. Categories other than adab-i-muaseret, ilmihal, ayet, hadis, esma, efendimiz, and sahabe-kissalari
     for (const cat of curriculumCategories) {
       if (
         cat.id === "adab-i-muaseret" ||
@@ -961,8 +587,9 @@ export function seedCurriculumDatabase(force = false): void {
         cat.id === "sahabe-kissalari" ||
         cat.id === "hocaefendi-dinleme" ||
         cat.id === "konu"
-      )
+      ) {
         continue;
+      }
       seedBatch.push({
         id: `g${grade}-${cat.id}-eylul-1`,
         grade,
@@ -1002,13 +629,34 @@ export function seedCurriculumDatabase(force = false): void {
       });
     }
 
-    // 2b. Adab-ı Muaşeret for Grades 2 through 6 (54 weeks)
     const gradeAdabEntries = getAdabEntriesForGrade(grade);
     for (const entry of gradeAdabEntries) {
       seedBatch.push({
         id: entry.id,
         grade,
         categoryId: "adab-i-muaseret",
+        gender: null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: entry.isExtra ? 1 : 0,
+        extraOrder: entry.extraOrder ?? null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: null,
+        pageCount: entry.pageCount ?? null,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    const gradeAyetEntries = getAyetEntriesForGrade(grade);
+    for (const entry of gradeAyetEntries) {
+      seedBatch.push({
+        id: entry.id,
+        grade,
+        categoryId: "ayet",
         gender: null,
         month: entry.month,
         week: entry.week,
@@ -1029,30 +677,6 @@ export function seedCurriculumDatabase(force = false): void {
       });
     }
 
-    // 2c. Ayet for Grades 2 through 6 (55 weeks)
-    const gradeAyetEntries = getAyetEntriesForGrade(grade);
-    for (const entry of gradeAyetEntries) {
-      seedBatch.push({
-        id: entry.id,
-        grade,
-        categoryId: "ayet",
-        gender: null,
-        month: entry.month,
-        week: entry.week,
-        year: entry.year,
-        isExtra: entry.isExtra ? 1 : 0,
-        extraOrder: entry.extraOrder ?? null,
-        title: entry.title,
-        body: entry.body ?? null,
-        resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: null,
-        pageCount: null,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
-
-    // 2d. Hadis for Grades 2 through 6 (55 weeks)
     const gradeHadisEntries = getHadisEntriesForGrade(grade);
     for (const entry of gradeHadisEntries) {
       seedBatch.push({
@@ -1068,14 +692,17 @@ export function seedCurriculumDatabase(force = false): void {
         title: entry.title,
         body: entry.body ?? null,
         resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: null,
-        pageCount: null,
+        pdfUrl: isPdf(entry.pdfUrl)
+          ? entry.pdfUrl
+          : isPdf(entry.resourceUrl)
+            ? entry.resourceUrl
+            : null,
+        pageCount: entry.pageCount ?? null,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    // 2e. Esmâü'l-Hüsnâ for Grades 2 through 6 (55 weeks)
     const gradeEsmaEntries = getEsmaEntriesForGrade(grade);
     for (const entry of gradeEsmaEntries) {
       seedBatch.push({
@@ -1091,14 +718,17 @@ export function seedCurriculumDatabase(force = false): void {
         title: entry.title,
         body: entry.body ?? null,
         resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: null,
-        pageCount: null,
+        pdfUrl: isPdf(entry.pdfUrl)
+          ? entry.pdfUrl
+          : isPdf(entry.resourceUrl)
+            ? entry.resourceUrl
+            : null,
+        pageCount: entry.pageCount ?? null,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    // 2f. Efendimiz for Grades 2 through 6 (55 weeks)
     const gradeEfendimizEntries = getEfendimizEntriesForGrade(grade);
     for (const entry of gradeEfendimizEntries) {
       seedBatch.push({
@@ -1114,14 +744,17 @@ export function seedCurriculumDatabase(force = false): void {
         title: entry.title,
         body: entry.body ?? null,
         resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: null,
-        pageCount: null,
+        pdfUrl: isPdf(entry.pdfUrl)
+          ? entry.pdfUrl
+          : isPdf(entry.resourceUrl)
+            ? entry.resourceUrl
+            : null,
+        pageCount: entry.pageCount ?? null,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    // 2g. Sahabe Kıssaları for Grades 2 through 6 (55 weeks)
     const gradeSahabeEntries = getSahabeEntriesForGrade(grade);
     for (const entry of gradeSahabeEntries) {
       seedBatch.push({
@@ -1137,14 +770,17 @@ export function seedCurriculumDatabase(force = false): void {
         title: entry.title,
         body: entry.body ?? null,
         resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: null,
-        pageCount: null,
+        pdfUrl: isPdf(entry.pdfUrl)
+          ? entry.pdfUrl
+          : isPdf(entry.resourceUrl)
+            ? entry.resourceUrl
+            : null,
+        pageCount: entry.pageCount ?? null,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    // 2h. Hocaefendi Sohbetleri for Grades 2 through 6 (48 weeks)
     const gradeHocaefendiEntries = getHocaefendiEntriesForGrade(grade);
     for (const entry of gradeHocaefendiEntries) {
       seedBatch.push({
@@ -1155,19 +791,22 @@ export function seedCurriculumDatabase(force = false): void {
         month: entry.month,
         week: entry.week,
         year: entry.year,
-        isExtra: 0,
-        extraOrder: null,
+        isExtra: entry.isExtra ? 1 : 0,
+        extraOrder: entry.extraOrder ?? null,
         title: entry.title,
         body: entry.body ?? null,
         resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: null,
-        pageCount: null,
+        pdfUrl: isPdf(entry.pdfUrl)
+          ? entry.pdfUrl
+          : isPdf(entry.resourceUrl)
+            ? entry.resourceUrl
+            : null,
+        pageCount: entry.pageCount ?? null,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    // 2i. Haftanın Konusu for Grades 2 through 6 (2 weeks)
     const gradeKonuEntries = getKonuEntriesForGrade(grade);
     for (const entry of gradeKonuEntries) {
       seedBatch.push({
@@ -1218,45 +857,10 @@ export function seedCurriculumDatabase(force = false): void {
     });
   }
 
-  const insertStmt = db.prepare(`
-    INSERT OR REPLACE INTO "curriculum_entries" (
-      "id", "grade", "categoryId", "gender", "month", "week", "year",
-      "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
-      "pageCount", "createdAt", "updatedAt"
-    ) VALUES (
-      $id, $grade, $categoryId, $gender, $month, $week, $year,
-      $isExtra, $extraOrder, $title, $body, $resourceUrl, $pdfUrl,
-      $pageCount, $createdAt, $updatedAt
-    )
-  `);
-
-  const runTransaction = db.transaction((rows: typeof seedBatch) => {
-    for (const row of rows) {
-      insertStmt.run({
-        $id: row.id,
-        $grade: row.grade,
-        $categoryId: row.categoryId,
-        $gender: row.gender,
-        $month: row.month,
-        $week: row.week,
-        $year: row.year,
-        $isExtra: row.isExtra,
-        $extraOrder: row.extraOrder,
-        $title: row.title,
-        $body: row.body,
-        $resourceUrl: row.resourceUrl,
-        $pdfUrl: row.pdfUrl,
-        $pageCount: row.pageCount,
-        $createdAt: row.createdAt,
-        $updatedAt: row.updatedAt,
-      });
-    }
-  });
-
-  runTransaction(seedBatch);
+  await bulkUpsertCurriculumEntries(seedBatch);
 }
 
-function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] {
+export function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] {
   if (typeof grade === "number" && grade >= 1 && grade <= 6) {
     const ayet = getAyetEntriesForGrade(grade);
     const hadis = getHadisEntriesForGrade(grade);
@@ -1304,30 +908,26 @@ function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] 
 }
 
 /**
- * Retrieves all entries from SQLite, optionally filtered by Belgium grade and gender for İlmihal.
+ * Retrieves all entries from PostgreSQL or SQLite, optionally filtered by Belgium grade and gender for İlmihal.
  */
-export function getCurriculumEntriesFromDb(grade?: number, gender?: Gender): CurriculumEntry[] {
-  ensureCurriculumEntriesTable();
-  seedCurriculumDatabase();
-
-  if (typeof db?.query !== "function") {
-    return getFallbackEntries(grade, gender);
-  }
+export async function getCurriculumEntriesFromDb(
+  grade?: number,
+  gender?: Gender
+): Promise<CurriculumEntry[]> {
+  await ensureCurriculumEntriesTable();
+  await seedCurriculumDatabase();
 
   try {
     let rows: CurriculumEntryRow[];
     if (typeof grade === "number" && grade >= 1 && grade <= 6) {
-      rows = db
-        .query<CurriculumEntryRow, [number]>(
-          `SELECT * FROM "curriculum_entries" WHERE "grade" = ? ORDER BY "isExtra" ASC, "year" ASC, "month" ASC, "week" ASC, "extraOrder" ASC`
-        )
-        .all(grade);
+      rows = await query<CurriculumEntryRow>(
+        `SELECT * FROM "curriculum_entries" WHERE "grade" = $1 ORDER BY "isExtra" ASC, "year" ASC, "month" ASC, "week" ASC, "extraOrder" ASC`,
+        [grade]
+      );
     } else {
-      rows = db
-        .query<CurriculumEntryRow, []>(
-          `SELECT * FROM "curriculum_entries" ORDER BY "grade" ASC, "isExtra" ASC, "year" ASC, "month" ASC, "week" ASC, "extraOrder" ASC`
-        )
-        .all();
+      rows = await query<CurriculumEntryRow>(
+        `SELECT * FROM "curriculum_entries" ORDER BY "grade" ASC, "isExtra" ASC, "year" ASC, "month" ASC, "week" ASC, "extraOrder" ASC`
+      );
     }
 
     if (!rows || rows.length === 0) {
@@ -1348,22 +948,15 @@ export function getCurriculumEntriesFromDb(grade?: number, gender?: Gender): Cur
 /**
  * Finds a single curriculum entry by ID.
  */
-export function getCurriculumEntryByIdFromDb(id: string): CurriculumEntry | null {
-  ensureCurriculumEntriesTable();
-  seedCurriculumDatabase();
-
-  if (typeof db?.query !== "function") {
-    for (let g = 1; g <= 6; g++) {
-      const match = getFallbackEntries(g).find((e) => e.id === id);
-      if (match) return match;
-    }
-    return null;
-  }
+export async function getCurriculumEntryByIdFromDb(id: string): Promise<CurriculumEntry | null> {
+  await ensureCurriculumEntriesTable();
+  await seedCurriculumDatabase();
 
   try {
-    const row = db
-      .query<CurriculumEntryRow, [string]>(`SELECT * FROM "curriculum_entries" WHERE "id" = ?`)
-      .get(id);
+    const row = await queryOne<CurriculumEntryRow>(
+      `SELECT * FROM "curriculum_entries" WHERE "id" = $1`,
+      [id]
+    );
 
     if (!row) {
       for (let g = 1; g <= 6; g++) {
@@ -1376,17 +969,15 @@ export function getCurriculumEntryByIdFromDb(id: string): CurriculumEntry | null
     // Resolve within its category to ensure accurate 48-week extra status
     let categoryRows: CurriculumEntryRow[];
     if (row.categoryId === "ilmihal" && row.gender) {
-      categoryRows = db
-        .query<CurriculumEntryRow, [number, string, string]>(
-          `SELECT * FROM "curriculum_entries" WHERE "grade" = ? AND "categoryId" = ? AND "gender" = ?`
-        )
-        .all(row.grade, row.categoryId, row.gender);
+      categoryRows = await query<CurriculumEntryRow>(
+        `SELECT * FROM "curriculum_entries" WHERE "grade" = $1 AND "categoryId" = $2 AND "gender" = $3`,
+        [row.grade, row.categoryId, row.gender]
+      );
     } else {
-      categoryRows = db
-        .query<CurriculumEntryRow, [number, string]>(
-          `SELECT * FROM "curriculum_entries" WHERE "grade" = ? AND "categoryId" = ?`
-        )
-        .all(row.grade, row.categoryId);
+      categoryRows = await query<CurriculumEntryRow>(
+        `SELECT * FROM "curriculum_entries" WHERE "grade" = $1 AND "categoryId" = $2`,
+        [row.grade, row.categoryId]
+      );
     }
 
     const resolvedCategoryEntries = resolveCategoryEntries(categoryRows.map(rowToEntry));

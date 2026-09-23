@@ -21,9 +21,9 @@ export default async function CurriculumPage(props: CurriculumPageProps) {
   const initialGrade = gradeParam >= 1 && gradeParam <= 6 ? gradeParam : 1;
 
   const session = await auth.api.getSession({ headers: await headers() });
-  const completedEntryIds = session?.user ? getCompletedEntryIds(session.user.id) : [];
-  const initialGender = session?.user ? getUserGenderFromDb(session.user.id) : null;
-  const entries = getCurriculumEntriesFromDb();
+  const completedEntryIds = session?.user ? await getCompletedEntryIds(session.user.id) : [];
+  const initialGender = session?.user ? await getUserGenderFromDb(session.user.id) : null;
+  const entries = await getCurriculumEntriesFromDb();
 
   return (
     <main className="curriculum-page page-shell archive-page-shell">

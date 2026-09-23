@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Oturum açmanız gerekiyor." }, { status: 401 });
     }
 
-    deleteUserAccount(session.user.id);
+    await deleteUserAccount(session.user.id);
 
     const response = NextResponse.json({
       success: true,

@@ -38,12 +38,12 @@ describe("Anonymous Auth & Slot Assignment", () => {
       expect(syntheticEmailToUsername(email)).toBe("user1");
     });
 
-    it("should assign user1 when database is empty", () => {
-      const nextUsername = getNextAvailableUsername(db);
+    it("should assign user1 when database is empty", async () => {
+      const nextUsername = await getNextAvailableUsername(db);
       expect(nextUsername).toBe("user1");
     });
 
-    it("should perform gap-filling when middle accounts are deleted", () => {
+    it("should perform gap-filling when middle accounts are deleted", async () => {
       // In-memory test DB
       const testDb = new Database(":memory:");
       testDb.exec(`
@@ -53,22 +53,22 @@ describe("Anonymous Auth & Slot Assignment", () => {
         );
       `);
 
-      expect(getNextAvailableUsername(testDb)).toBe("user1");
+      expect(await getNextAvailableUsername(testDb)).toBe("user1");
 
       testDb
         .query(
           `INSERT INTO "user" (id, name) VALUES ('1', 'user1'), ('2', 'user2'), ('3', 'user3')`
         )
         .run();
-      expect(getNextAvailableUsername(testDb)).toBe("user4");
+      expect(await getNextAvailableUsername(testDb)).toBe("user4");
 
       // Delete user2 -> Gap filling must return user2
       testDb.query(`DELETE FROM "user" WHERE name = 'user2'`).run();
-      expect(getNextAvailableUsername(testDb)).toBe("user2");
+      expect(await getNextAvailableUsername(testDb)).toBe("user2");
 
       // Delete user1 -> Gap filling must return user1
       testDb.query(`DELETE FROM "user" WHERE name = 'user1'`).run();
-      expect(getNextAvailableUsername(testDb)).toBe("user1");
+      expect(await getNextAvailableUsername(testDb)).toBe("user1");
 
       testDb.close();
     });

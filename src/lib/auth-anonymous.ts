@@ -1,5 +1,5 @@
 import type { Database } from "bun:sqlite";
-import { db } from "@/lib/auth";
+import { execute, query } from "@/lib/db";
 import { hashPassword } from "better-auth/crypto";
 
 export const ANONYMOUS_EMAIL_DOMAIN = "anon.jetacademie.local";
@@ -34,10 +34,15 @@ export function syntheticEmailToUsername(email: string): string {
  * Finds the lowest missing positive integer k >= 1 such that `user${k}` is not taken.
  * If user2 was deleted while user1 and user3 exist, this returns "user2" (gap filling).
  */
-export function getNextAvailableUsername(database: Database = db): string {
-  const rows = database
-    .query<{ name: string }, []>(`SELECT "name" FROM "user" WHERE "name" LIKE 'user%'`)
-    .all();
+export async function getNextAvailableUsername(database?: Database): Promise<string> {
+  let rows: { name: string }[];
+  if (database && typeof database.query === "function") {
+    rows = database
+      .query<{ name: string }, []>(`SELECT "name" FROM "user" WHERE "name" LIKE 'user%'`)
+      .all();
+  } else {
+    rows = await query<{ name: string }>(`SELECT "name" FROM "user" WHERE "name" LIKE 'user%'`);
+  }
 
   const takenNumbers = new Set<number>();
   for (const row of rows) {
@@ -64,27 +69,41 @@ export function getNextAvailableUsername(database: Database = db): string {
 export async function updateUserPassword(
   userId: string,
   newPassword: string,
-  database: Database = db
+  database?: Database
 ): Promise<void> {
   const hashedPassword = await hashPassword(newPassword);
-  database
-    .query(
-      `UPDATE "account"
-       SET "password" = ?, "updatedAt" = ?
-       WHERE "userId" = ?`
-    )
-    .run(hashedPassword, new Date().toISOString(), userId);
+  if (database && typeof database.query === "function") {
+    database
+      .query(`UPDATE "account" SET "password" = ?, "updatedAt" = ? WHERE "userId" = ?`)
+      .run(hashedPassword, new Date().toISOString(), userId);
+    return;
+  }
+
+  await execute(
+    `UPDATE "account"
+     SET "password" = $1, "updatedAt" = $2
+     WHERE "userId" = $3`,
+    [hashedPassword, new Date().toISOString(), userId]
+  );
 }
 
 /**
  * Permanently deletes a user account, sessions, and learning progress.
  * Cascades cleanly so the username slot is freed for future users.
  */
-export function deleteUserAccount(userId: string, database: Database = db): void {
-  database.transaction(() => {
-    database.query(`DELETE FROM "curriculum_progress" WHERE "userId" = ?`).run(userId);
-    database.query(`DELETE FROM "session" WHERE "userId" = ?`).run(userId);
-    database.query(`DELETE FROM "account" WHERE "userId" = ?`).run(userId);
-    database.query(`DELETE FROM "user" WHERE "id" = ?`).run(userId);
-  })();
+export async function deleteUserAccount(userId: string, database?: Database): Promise<void> {
+  if (database && typeof database.transaction === "function") {
+    database.transaction(() => {
+      database.query(`DELETE FROM "curriculum_progress" WHERE "userId" = ?`).run(userId);
+      database.query(`DELETE FROM "session" WHERE "userId" = ?`).run(userId);
+      database.query(`DELETE FROM "account" WHERE "userId" = ?`).run(userId);
+      database.query(`DELETE FROM "user" WHERE "id" = ?`).run(userId);
+    })();
+    return;
+  }
+
+  await execute(`DELETE FROM "curriculum_progress" WHERE "userId" = $1`, [userId]);
+  await execute(`DELETE FROM "session" WHERE "userId" = $1`, [userId]);
+  await execute(`DELETE FROM "account" WHERE "userId" = $1`, [userId]);
+  await execute(`DELETE FROM "user" WHERE "id" = $1`, [userId]);
 }

@@ -136,9 +136,11 @@ describe("Better Auth Server Setup", () => {
       expect(resolveDatabasePath("custom-test.sqlite", "test")).toBe("custom-test.sqlite");
     });
 
-    it("should default to auth.sqlite in development or production mode when unset", () => {
-      expect(resolveDatabasePath(undefined, "development", undefined)).toBe("auth.sqlite");
-      expect(resolveDatabasePath(undefined, "production", undefined)).toBe("auth.sqlite");
+    it("should default to PostgreSQL URL in development or production mode when unset", () => {
+      const expected =
+        process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/jetacademie";
+      expect(resolveDatabasePath(undefined, "development", undefined)).toBe(expected);
+      expect(resolveDatabasePath(undefined, "production", undefined)).toBe(expected);
     });
 
     it("should honor production DATABASE_URL", () => {

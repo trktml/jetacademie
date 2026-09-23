@@ -27,18 +27,18 @@ export async function markEntryAsRead(entryId: string) {
   if (!session?.user) throw new Error("İlerlemenizi kaydetmek için giriş yapın.");
 
   const entry =
-    getCurriculumEntryByIdFromDb(parsedEntryId.data) ??
+    (await getCurriculumEntryByIdFromDb(parsedEntryId.data)) ??
     curriculumEntries.find((candidate) => candidate.id === parsedEntryId.data);
   if (!entry) throw new Error("Dosya bulunamadı.");
 
-  const completedEntryIds = new Set(getCompletedEntryIds(session.user.id));
-  const gradeEntries = getCurriculumEntriesFromDb(entry.grade ?? 1);
+  const completedEntryIds = new Set(await getCompletedEntryIds(session.user.id));
+  const gradeEntries = await getCurriculumEntriesFromDb(entry.grade ?? 1);
   const categoryEntries = getCategoryEntries(entry.categoryId, gradeEntries);
   if (!canCompleteEntry(entry.id, categoryEntries, completedEntryIds)) {
     throw new Error("Önce sıradaki dosyayı tamamlayın.");
   }
 
-  saveCompletedEntry(session.user.id, entry.id);
+  await saveCompletedEntry(session.user.id, entry.id);
   revalidatePath("/mufredat");
   return { entryId: entry.id };
 }
@@ -51,18 +51,18 @@ export async function unmarkEntryAsRead(entryId: string) {
   if (!session?.user) throw new Error("İlerlemenizi güncellemek için giriş yapın.");
 
   const entry =
-    getCurriculumEntryByIdFromDb(parsedEntryId.data) ??
+    (await getCurriculumEntryByIdFromDb(parsedEntryId.data)) ??
     curriculumEntries.find((candidate) => candidate.id === parsedEntryId.data);
   if (!entry) throw new Error("Dosya bulunamadı.");
 
-  const completedEntryIds = new Set(getCompletedEntryIds(session.user.id));
-  const gradeEntries = getCurriculumEntriesFromDb(entry.grade ?? 1);
+  const completedEntryIds = new Set(await getCompletedEntryIds(session.user.id));
+  const gradeEntries = await getCurriculumEntriesFromDb(entry.grade ?? 1);
   const categoryEntries = getCategoryEntries(entry.categoryId, gradeEntries);
   if (!canUnmarkEntry(entry.id, categoryEntries, completedEntryIds)) {
     throw new Error("Yalnızca en son tamamlanan dosya geri alınabilir.");
   }
 
-  removeCompletedEntry(session.user.id, entry.id);
+  await removeCompletedEntry(session.user.id, entry.id);
   revalidatePath("/mufredat");
   return { entryId: entry.id };
 }
