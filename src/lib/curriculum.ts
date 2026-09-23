@@ -17,6 +17,7 @@ import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
 import { getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
 import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
 import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
+import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
 import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 
 export const curriculumCategoryIds = [
@@ -190,25 +191,8 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
   // ── Hocaefendi Sohbetleri (1. Sınıf – 48 Hafta) ────────────────
   ...getHocaefendiEntriesForGrade(1),
 
-  // ── Haftanın Konusu ─────────────────────────────
-  {
-    id: "konu-eylul-1",
-    categoryId: "konu",
-    month: 9,
-    week: 1,
-    year: 2026,
-    title: "İman — Kalbin Ziyası ve Hayatın Anlamı",
-    body: "İman esasları, kalpte iman nurunun nasıl oluştuğu, muhafazası ve günlük hayata yansımaları üzerine haftalık müzakere ve tefekkür.",
-  },
-  {
-    id: "konu-eylul-2",
-    categoryId: "konu",
-    month: 9,
-    week: 2,
-    year: 2026,
-    title: "İhlas — Saf ve Katışıksız İstikamet",
-    body: "Amellerde rıza-i ilahiyi esas alma, samimiyet ve ihlası koruma yolları üzerine haftalık tahlil ve değerlendirme.",
-  },
+  // ── Haftanın Konusu (1. Sınıf – 2 Hafta Başlangıç) ───────────
+  ...getKonuEntriesForGrade(1),
 
   // ── İlmihal (Ortaokul 1. Sınıf – Erkek & Bayan) ───────────────
   ...getIlmihalEntriesForGrade(1, "erkek"),

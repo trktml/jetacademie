@@ -116,8 +116,8 @@ describe("curriculum", () => {
     const konuEntries = getCategoryEntries("konu");
     expect(konuEntries[0].week).toBe(1);
     expect(konuEntries[1].week).toBe(2);
-    expect(konuEntries[0].title).toContain("İman");
-    expect(konuEntries[1].title).toContain("İhlas");
+    expect(konuEntries[0].title).toContain("RİSALE-İ NUR");
+    expect(konuEntries[1].title).toContain("BEDİÜZZAMAN");
   });
 
   describe("canUnmarkEntry", () => {

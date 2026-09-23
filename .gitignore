@@ -25,6 +25,7 @@
 *.pem
 __pycache__/
 *.py[cod]
+.backup_ileri/
 
 # debug
 npm-debug.log*

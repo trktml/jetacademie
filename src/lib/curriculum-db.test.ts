@@ -423,4 +423,38 @@ describe("Curriculum SQLite Database Module", () => {
     expect(g6Entry?.categoryId).toBe("hocaefendi-dinleme");
     expect(g6Entry?.resourceUrl).toStartWith("https://www.youtube.com/");
   });
+
+  it("should have 2 Haftanın Konusu entries for all 6 grades (12 total)", () => {
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getCurriculumEntriesFromDb(grade).filter((e) => e.categoryId === "konu");
+      expect(entries.length).toBe(2);
+      expect(entries[0].week).toBe(1);
+      expect(entries[1].week).toBe(2);
+      expect(entries[0].month).toBe(9);
+      expect(entries[1].month).toBe(9);
+      expect(entries.every((e) => !e.isExtra)).toBe(true);
+    }
+  });
+
+  it("should retrieve Haftanın Konusu entries across grades with real titles and content", () => {
+    const g1w1 = getCurriculumEntryByIdFromDb("konu-eylul-1");
+    expect(g1w1).not.toBeNull();
+    expect(g1w1?.title).toBe("RİSALE-İ NUR: BİR KİTABIN SIRA DIŞI YOLCULUĞU");
+    expect(g1w1?.body).toContain("📚 **Kelimeler ve Anlamları**:");
+
+    const g2w1 = getCurriculumEntryByIdFromDb("g2-konu-eylul-1");
+    expect(g2w1).not.toBeNull();
+    expect(g2w1?.title).toBe("İKİ KİLİMLİK BİR DÜKKÂNDA BAŞLAYAN YOLCULUK");
+
+    const g6w1 = getCurriculumEntryByIdFromDb("g6-konu-eylul-1");
+    expect(g6w1).not.toBeNull();
+    expect(g6w1?.title).toBe("BAZI KİTAPLAR NEDEN İNSANIN BAKIŞINI DEĞİŞTİRİR?");
+    // M6-01 does not have vocab section as per user specification
+    expect(g6w1?.body).not.toContain("📚 **Kelimeler ve Anlamları**:");
+
+    const g6w2 = getCurriculumEntryByIdFromDb("g6-konu-eylul-2");
+    expect(g6w2).not.toBeNull();
+    expect(g6w2?.title).toBe("BİR ÖMRÜN MERKEZİNDE NE VARDI?");
+    expect(g6w2?.body).toContain("📚 **Kelimeler ve Anlamları**:");
+  });
 });

@@ -823,4 +823,30 @@ describe("CurriculumArchive Component", () => {
     // Verify external watch on YouTube action link
     expect(html).toContain("YouTube&#x27;da İzle");
   });
+
+  it("should render Haftanın Konusu card with subtitle, concept pills, and Dersi Oku action", () => {
+    const html = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        initialCategoryId="konu"
+      />
+    );
+
+    // Verify title
+    expect(html).toContain("RİSALE-İ NUR: BİR KİTABIN SIRA DIŞI YOLCULUĞU");
+
+    // Verify subtitle hook quote
+    expect(html).toContain("Bu kadar farklı insanın yıllardır okuduğu");
+
+    // Verify concept preview pills
+    expect(html).toContain("Bu Haftanın Kavramları:");
+    expect(html).toContain("Risale");
+    expect(html).toContain("Külliyat");
+    expect(html).toContain("Nüsha");
+
+    // Verify Dersi Oku button and reading time
+    expect(html).toContain("Dersi Oku");
+    expect(html).toContain("dk");
+  });
 });

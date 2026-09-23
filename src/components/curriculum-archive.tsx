@@ -37,6 +37,8 @@ import { updateUserGender } from "@/app/mufredat/gender-actions";
 import { type Gender } from "@/lib/data/ilmihal-curriculum";
 import { GenderSelector } from "@/components/gender-selector";
 import { InlinePdfViewer } from "@/components/inline-pdf-viewer";
+import { KonuLessonReader } from "@/components/konu-lesson-reader";
+import { getKonuItem } from "@/lib/data/konu-curriculum";
 
 import { useUiStore } from "@/store/use-ui-store";
 import { useGuestStore } from "@/store/use-guest-store";
@@ -200,15 +202,87 @@ export function parseEntryContent(body?: string | null): {
 export function EntryContentRenderer({
   entry,
   renderMedia = true,
+  isExpanded = false,
+  onToggleExpand,
 }: {
   entry: CurriculumEntry;
   renderMedia?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }) {
-  const { summary, vocabList } = useMemo(() => parseEntryContent(entry.body), [entry.body]);
-  const videoId = useMemo(
-    () => (renderMedia ? getYouTubeVideoId(entry.resourceUrl) : null),
-    [entry.resourceUrl, renderMedia]
+  const isKonu = entry.categoryId === "konu";
+  const konuItem = useMemo(() => (isKonu ? getKonuItem(entry.id) : null), [isKonu, entry.id]);
+
+  const { summary, vocabList } = useMemo(
+    () => (isKonu ? { summary: "", vocabList: [] } : parseEntryContent(entry.body)),
+    [isKonu, entry.body]
   );
+  const videoId = useMemo(
+    () => (renderMedia && !isKonu ? getYouTubeVideoId(entry.resourceUrl) : null),
+    [entry.resourceUrl, renderMedia, isKonu]
+  );
+
+  if (isKonu) {
+    if (isExpanded) {
+      return (
+        <div className="archive-entry-rendered-content flex flex-col gap-3">
+          <KonuLessonReader entry={entry} onClose={onToggleExpand} />
+        </div>
+      );
+    }
+
+    const previewSubtitle =
+      konuItem?.subtitle || entry.body?.split("\n").find((l) => l.trim().length > 0) || "";
+
+    return (
+      <div className="archive-entry-rendered-content flex flex-col gap-3">
+        {previewSubtitle && (
+          <div className="rounded-xl border-l-4 border-teal-500 bg-teal-50/70 p-3 text-xs leading-relaxed font-medium text-teal-950 italic sm:p-3.5 sm:text-sm dark:bg-teal-950/30 dark:text-teal-100">
+            “{previewSubtitle}”
+          </div>
+        )}
+
+        {konuItem && konuItem.vocab.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <span className="flex items-center gap-1 text-[11px] font-bold text-teal-800 dark:text-teal-300">
+              <BookA className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
+              <span>Bu Haftanın Kavramları:</span>
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {konuItem.vocab.map((v, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1 rounded-md border border-teal-200/80 bg-teal-50/70 px-2 py-0.5 text-[11px] font-semibold text-teal-900 dark:border-teal-800/60 dark:bg-teal-950/60 dark:text-teal-200"
+                  title={`${v.word}: ${v.definition}`}
+                >
+                  {v.word}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-1 flex items-center gap-2">
+          <button
+            type="button"
+            className="inline-flex min-h-[40px] cursor-pointer items-center gap-2 rounded-xl bg-teal-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-teal-700 active:scale-[0.98] sm:text-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleExpand?.();
+            }}
+            aria-expanded={isExpanded}
+            aria-label={`${entry.title} dersini oku`}
+          >
+            <BookOpen className="h-4 w-4" />
+            <span>Dersi Oku</span>
+            <span className="rounded-md bg-teal-700/80 px-1.5 py-0.5 text-[10px] font-medium text-teal-100">
+              ⏱️ {konuItem?.readingMinutes ?? 5} dk
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="archive-entry-rendered-content flex flex-col gap-3">
@@ -1145,7 +1219,13 @@ export function CurriculumArchive({
                       </div>
 
                       <h3 className="archive-entry-title">{entry.title}</h3>
-                      <EntryContentRenderer entry={entry} />
+                      <EntryContentRenderer
+                        entry={entry}
+                        isExpanded={expandedReadingEntryId === entry.id}
+                        onToggleExpand={() =>
+                          setExpandedReadingEntryId((prev) => (prev === entry.id ? null : entry.id))
+                        }
+                      />
 
                       {entry.pdfUrl && (
                         <div className="archive-history-reading-action mt-2 mb-2 flex flex-col gap-2">
@@ -1454,7 +1534,16 @@ export function CurriculumArchive({
                                   </div>
 
                                   <h3 className="archive-entry-title">{entry.title}</h3>
-                                  <EntryContentRenderer entry={entry} renderMedia={isFront} />
+                                  <EntryContentRenderer
+                                    entry={entry}
+                                    renderMedia={isFront}
+                                    isExpanded={isFront && expandedReadingEntryId === entry.id}
+                                    onToggleExpand={() =>
+                                      setExpandedReadingEntryId((prev) =>
+                                        prev === entry.id ? null : entry.id
+                                      )
+                                    }
+                                  />
 
                                   {isFront && entry.pdfUrl && (
                                     <div className="archive-history-reading-action mt-3 flex flex-col gap-2">
@@ -1586,7 +1675,16 @@ export function CurriculumArchive({
                                 </div>
 
                                 <h3 className="archive-entry-title">{currentEntry.title}</h3>
-                                <EntryContentRenderer entry={currentEntry} renderMedia={true} />
+                                <EntryContentRenderer
+                                  entry={currentEntry}
+                                  renderMedia={true}
+                                  isExpanded={expandedReadingEntryId === currentEntry.id}
+                                  onToggleExpand={() =>
+                                    setExpandedReadingEntryId((prev) =>
+                                      prev === currentEntry.id ? null : currentEntry.id
+                                    )
+                                  }
+                                />
 
                                 {currentEntry.pdfUrl && (
                                   <div className="archive-reading-action mb-4 flex flex-col gap-3">
