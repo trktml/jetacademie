@@ -81,12 +81,22 @@ ssh "$TARGET_HOST" "bash -s '$TARGET_DIR' '$TAILSCALE_IP'" << 'EOF'
     grep -q "POSTGRES_USER=" .env || echo "POSTGRES_USER=jetacademie" >> .env
     grep -q "POSTGRES_PASSWORD=" .env || echo "POSTGRES_PASSWORD=$PG_PASS" >> .env
     grep -q "POSTGRES_DB=" .env || echo "POSTGRES_DB=jetacademie" >> .env
-    grep -q "DATABASE_URL=" .env || echo "DATABASE_URL=postgres://jetacademie:$PG_PASS@db:5432/jetacademie" >> .env
+    if grep -q "DATABASE_URL=" .env; then
+      sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=postgres://jetacademie:$PG_PASS@db:5432/jetacademie|g" .env 2>/dev/null || true
+    else
+      echo "DATABASE_URL=postgres://jetacademie:$PG_PASS@db:5432/jetacademie" >> .env
+    fi
     
     rm -f .env.bak
     echo "✓ New .env created with cryptographically secure passwords (PG_BIND_IP=$TAILSCALE_IP, PG_HOST_PORT=5433, HOST_PORT=3001)."
   else
     echo "✓ Existing remote .env retained."
+    # Ensure DATABASE_URL uses internal port 5432 (not external host port 5433)
+    if grep -q "DATABASE_URL=" .env; then
+      sed -i.bak -E 's|:5433/|:5432/|g; s|@localhost:|@db:|g; s|@127.0.0.1:|@db:|g' .env 2>/dev/null || true
+      rm -f .env.bak
+      echo "✓ Ensured DATABASE_URL points to internal db:5432."
+    fi
     # Ensure PG_BIND_IP is bound strictly to Tailscale IP
     if ! grep -q "PG_BIND_IP=" .env; then
       echo "PG_BIND_IP=$TAILSCALE_IP" >> .env

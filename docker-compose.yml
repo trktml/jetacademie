@@ -37,8 +37,8 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - HOSTNAME=0.0.0.0
-      - DATABASE_URL=${DATABASE_URL:-postgres://${POSTGRES_USER:-jetacademie}:${POSTGRES_PASSWORD:-change-me-in-production}@db:5432/${POSTGRES_DB:-jetacademie}}
+      # Internal Docker network connection: db container listens on port 5432 (port 5433 is only for host/Tailscale)
+      - DATABASE_URL=postgres://${POSTGRES_USER:-jetacademie}:${POSTGRES_PASSWORD:-change-me-in-production}@db:5432/${POSTGRES_DB:-jetacademie}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3000}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
