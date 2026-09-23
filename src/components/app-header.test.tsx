@@ -109,4 +109,32 @@ describe("AppHeader Component", () => {
     expect(html).toContain("site-header__breadcrumb");
     expect(html).toContain("Kampanyalar");
   });
+
+  it("should render select element with all navigation options on inner pages", () => {
+    currentPathname = "/mufredat";
+    mockSessionData = null;
+    const html = renderToString(<AppHeader />);
+
+    expect(html).toContain("site-header__nav-select");
+    expect(html).toContain('aria-label="Sayfa navigasyonu"');
+    expect(html).toContain('value="/"');
+    expect(html).toContain('value="/mufredat"');
+    expect(html).toContain('value="/hedefler"');
+    expect(html).toContain('value="/mufredat-kitaplari"');
+    expect(html).toContain('value="/kampanyalar"');
+    expect(html).toContain("Ana Sayfa");
+    expect(html).toContain("Müfredat");
+    expect(html).toContain("Hedefler");
+    expect(html).toContain("Müfredat Kitapları");
+    expect(html).toContain("Kampanyalar");
+  });
+
+  it("should mark current path as selected value in select navigation", () => {
+    currentPathname = "/hedefler";
+    mockSessionData = null;
+    const html = renderToString(<AppHeader />);
+
+    expect(html).toContain('value="/hedefler"');
+    expect(html).toContain("Hedefler");
+  });
 });

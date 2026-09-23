@@ -1,30 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { useUiStore } from "@/store/use-ui-store";
-import { BookOpenText, ChevronDown, Flame, Library, LogIn, Target } from "lucide-react";
+import { ChevronDown, LogIn } from "lucide-react";
 import { JetLogo } from "@/components/jet-logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { AccountSheet } from "@/components/account-sheet";
 import { authClient } from "@/lib/auth-client";
 import { useGuestStore } from "@/store/use-guest-store";
 
-const NAV_PAGES = [
-  { href: "/mufredat", title: "Müfredat", subtitle: "Haftalık dosyalar", icon: BookOpenText },
-  { href: "/hedefler", title: "Hedefler", subtitle: "Dönem planı", icon: Target },
-  {
-    href: "/mufredat-kitaplari",
-    title: "Müfredat Kitapları",
-    subtitle: "Ders kaynakları",
-    icon: Library,
-  },
-  { href: "/kampanyalar", title: "Kampanyalar", subtitle: "Okuma & İbadet", icon: Flame },
-];
+export const NAV_OPTIONS = [
+  { href: "/", label: "Ana Sayfa" },
+  { href: "/mufredat", label: "Müfredat" },
+  { href: "/hedefler", label: "Hedefler" },
+  { href: "/mufredat-kitaplari", label: "Müfredat Kitapları" },
+  { href: "/kampanyalar", label: "Kampanyalar" },
+] as const;
 
-function getPageTitle(pathname: string | null): string | null {
+export function getActiveNavValue(pathname: string | null): string {
+  if (!pathname || pathname === "/") return "/";
+  if (pathname.startsWith("/mufredat-kitaplari") || pathname.startsWith("/kitaplar")) {
+    return "/mufredat-kitaplari";
+  }
+  if (pathname.startsWith("/mufredat")) return "/mufredat";
+  if (pathname.startsWith("/hedefler")) return "/hedefler";
+  if (pathname.startsWith("/kampanyalar")) return "/kampanyalar";
+  return "/";
+}
+
+export function getPageTitle(pathname: string | null): string | null {
   if (!pathname || pathname === "/") return null;
   if (pathname.startsWith("/mufredat-kitaplari") || pathname.startsWith("/kitaplar")) {
     return "Müfredat Kitapları";
@@ -36,11 +42,11 @@ function getPageTitle(pathname: string | null): string | null {
 }
 
 export function AppHeader() {
+  const router = useRouter();
   const pathname = usePathname();
   const isHome = pathname === "/";
   const pageTitle = getPageTitle(pathname);
-  const [isNavOpen, setIsNavOpen] = useState(false);
-  const navDropdownRef = useRef<HTMLDivElement>(null);
+  const activeNav = getActiveNavValue(pathname);
 
   const openAccount = useUiStore((state) => state.openAccount);
   const { data: session } = authClient.useSession();
@@ -48,35 +54,6 @@ export function AppHeader() {
   const isGuest = useGuestStore((s) => s.isGuest);
   const initial = (user?.name || "U").charAt(0).toUpperCase();
   const displayName = user?.name?.split(" ")[0] || "Hesap";
-
-  // Close dropdown on outside click or escape
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (navDropdownRef.current && !navDropdownRef.current.contains(e.target as Node)) {
-        setIsNavOpen(false);
-      }
-    }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setIsNavOpen(false);
-      }
-    }
-    if (isNavOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isNavOpen]);
-
-  // Close dropdown when pathname changes
-  const [prevPathname, setPrevPathname] = useState(pathname);
-  if (prevPathname !== pathname) {
-    setPrevPathname(pathname);
-    setIsNavOpen(false);
-  }
 
   const logoMarkup = (size: "sm" | "md" = "sm") => (
     <motion.div
@@ -107,84 +84,43 @@ export function AppHeader() {
               {isHome ? (
                 logoMarkup("md")
               ) : (
-                <div className="relative" ref={navDropdownRef}>
+                <div className="site-header__nav-select-wrap">
                   <AnimatePresence mode="wait">
                     {pageTitle && (
-                      <motion.button
+                      <motion.div
                         key={pathname}
-                        type="button"
-                        onClick={() => setIsNavOpen((prev) => !prev)}
                         initial={{ opacity: 0, scale: 0.92, y: 3 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.92, y: -3 }}
                         transition={{ duration: 0.22, ease: "easeOut" }}
-                        className="site-header__breadcrumb group/crumb flex cursor-pointer items-center gap-1.5 rounded-xl px-2 py-1 transition hover:bg-zinc-800/40"
-                        aria-expanded={isNavOpen}
-                        aria-haspopup="true"
-                        aria-label={`Bölüm menüsü: ${pageTitle}`}
+                        className="site-header__breadcrumb site-header__nav-select-pill group/crumb"
                       >
                         <span>{pageTitle}</span>
                         <ChevronDown
-                          className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${
-                            isNavOpen
-                              ? "rotate-180 text-rose-400"
-                              : "group-hover/crumb:text-zinc-200"
-                          }`}
+                          className="h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 group-hover/crumb:text-zinc-200"
                           aria-hidden="true"
                         />
-                      </motion.button>
+                      </motion.div>
                     )}
                   </AnimatePresence>
 
-                  {/* Section Switcher Popover */}
-                  <AnimatePresence>
-                    {isNavOpen && (
-                      <motion.nav
-                        initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full left-1/2 z-50 mt-2 w-64 -translate-x-1/2 space-y-0.5 rounded-2xl border border-zinc-800/90 bg-zinc-950/95 p-1.5 shadow-2xl backdrop-blur-xl"
-                        aria-label="JetAcademie ana bölümleri"
-                      >
-                        {NAV_PAGES.map((nav) => {
-                          const Icon = nav.icon;
-                          const isActive =
-                            pathname === nav.href ||
-                            (nav.href === "/mufredat-kitaplari" &&
-                              pathname.startsWith("/mufredat-kitaplari"));
-                          return (
-                            <Link
-                              key={nav.href}
-                              href={nav.href}
-                              onClick={() => setIsNavOpen(false)}
-                              className={`flex min-h-[44px] items-center gap-3 rounded-xl p-2 transition ${
-                                isActive
-                                  ? "border border-rose-500/30 bg-rose-600/20 text-white"
-                                  : "text-zinc-300 hover:bg-zinc-900 hover:text-white"
-                              }`}
-                            >
-                              <span
-                                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                                  isActive
-                                    ? "bg-rose-600 text-white"
-                                    : "border border-zinc-800 bg-zinc-900 text-zinc-400"
-                                }`}
-                              >
-                                <Icon className="h-4 w-4" aria-hidden="true" />
-                              </span>
-                              <div className="flex flex-col text-left">
-                                <span className="text-xs leading-tight font-bold">{nav.title}</span>
-                                <span className="text-[10px] leading-tight text-zinc-400">
-                                  {nav.subtitle}
-                                </span>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </motion.nav>
-                    )}
-                  </AnimatePresence>
+                  <select
+                    aria-label="Sayfa navigasyonu"
+                    value={activeNav}
+                    onChange={(e) => {
+                      const target = e.target.value;
+                      if (target && target !== pathname) {
+                        router.push(target);
+                      }
+                    }}
+                    className="site-header__nav-select"
+                  >
+                    {NAV_OPTIONS.map((opt) => (
+                      <option key={opt.href} value={opt.href}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
             </div>

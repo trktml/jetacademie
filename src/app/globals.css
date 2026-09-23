@@ -255,9 +255,17 @@ body:has(.landing-page),
   align-items: center;
 }
 
+.site-header__nav-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
 .site-header__breadcrumb {
   display: inline-flex;
   align-items: center;
+  gap: 0.38rem;
+  min-height: 38px;
   padding: 0.28rem 0.85rem;
   border-radius: 9999px;
   border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
@@ -266,8 +274,56 @@ body:has(.landing-page),
   font-weight: 650;
   letter-spacing: 0.02em;
   color: var(--ink);
-  pointer-events: none;
   box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 60%, transparent);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+  pointer-events: none;
+}
+
+.site-header__nav-select-wrap:hover .site-header__breadcrumb {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  background: color-mix(in srgb, var(--brand) 10%, var(--surface-muted));
+  color: var(--brand-strong);
+  transform: translateY(-0.5px);
+}
+
+.site-header__nav-select-wrap:hover .site-header__breadcrumb svg {
+  color: var(--brand-strong);
+}
+
+.site-header__nav-select-wrap:focus-within .site-header__breadcrumb {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.site-header__nav-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 44px;
+  opacity: 0;
+  cursor: pointer;
+  border-radius: 9999px;
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.site-header__nav-select option {
+  background-color: #18181b;
+  color: #fafafa;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+:root[data-theme="light"] .site-header__nav-select option {
+  background-color: #ffffff;
+  color: #18181b;
 }
 
 :root[data-theme="dark"] .site-header__breadcrumb,
@@ -276,6 +332,19 @@ body:has(.landing-page),
   background: rgb(255 255 255 / 6%);
   color: #f1f5f9;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%);
+}
+
+:root[data-theme="dark"] .site-header__nav-select-wrap:hover .site-header__breadcrumb,
+.site-header[data-home="true"] .site-header__nav-select-wrap:hover .site-header__breadcrumb {
+  background: rgb(225 29 72 / 16%);
+  border-color: rgb(244 63 94 / 45%);
+  color: #fda4af;
+  box-shadow: 0 4px 18px rgb(225 29 72 / 20%);
+}
+
+:root[data-theme="dark"] .site-header__nav-select-wrap:hover .site-header__breadcrumb svg,
+.site-header[data-home="true"] .site-header__nav-select-wrap:hover .site-header__breadcrumb svg {
+  color: #fda4af;
 }
 
 :root[data-theme="dark"] .site-header__island,
@@ -4401,6 +4470,19 @@ body:has(.landing-page),
   }
 
   .site-header__breadcrumb {
+    padding: 0.22rem 0.6rem;
+    font-size: 0.76rem;
+    min-height: 36px;
+    max-width: 140px;
+  }
+
+  .site-header__breadcrumb span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .site-header:not([data-home="true"]) .jet-logo__wordmark .jet-logo__name {
     display: none;
   }
 
