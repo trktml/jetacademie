@@ -91,4 +91,22 @@ describe("AppHeader Component", () => {
     expect(html).toContain("header-actions");
     expect(html).toContain("theme-switcher");
   });
+
+  it("should render Müfredat Kitapları breadcrumb on /mufredat-kitaplari", () => {
+    currentPathname = "/mufredat-kitaplari";
+    mockSessionData = null;
+    const html = renderToString(<AppHeader />);
+
+    expect(html).toContain("site-header__breadcrumb");
+    expect(html).toContain("Müfredat Kitapları");
+  });
+
+  it("should render Kampanyalar breadcrumb on /kampanyalar", () => {
+    currentPathname = "/kampanyalar";
+    mockSessionData = null;
+    const html = renderToString(<AppHeader />);
+
+    expect(html).toContain("site-header__breadcrumb");
+    expect(html).toContain("Kampanyalar");
+  });
 });
