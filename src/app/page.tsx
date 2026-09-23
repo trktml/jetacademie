@@ -7,17 +7,20 @@ export default function Home() {
         <HeroTree />
       </section>
 
-      <section className="home-quote-section" aria-label="Günün hadisi">
+      <section className="home-quote-section" aria-label="İlham veren söz">
         <div className="home-quote-card">
           <blockquote>
             <p>&ldquo;İlim öğrenmek her Müslüman&apos;a farzdır.&rdquo;</p>
-            <footer>— Hz. Muhammed (s.a.v.)</footer>
+            <footer className="text-[11px] text-zinc-400 sm:text-xs">
+              — Hz. Muhammed (s.a.v.) <span className="text-zinc-600">&bull;</span> İbn Mâce,
+              Mukaddime 17
+            </footer>
           </blockquote>
         </div>
       </section>
 
       <footer className="landing-footer">
-        © {new Date().getFullYear()} JetAcademie — Belçika ❤️
+        © {new Date().getFullYear()} JetAcademie · Belçika&apos;da hazırlandı
       </footer>
     </main>
   );
