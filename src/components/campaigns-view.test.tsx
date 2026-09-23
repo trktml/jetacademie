@@ -4,29 +4,28 @@ import { renderToString } from "react-dom/server";
 import { CampaignsView } from "./campaigns-view";
 
 describe("CampaignsView Component", () => {
-  it("should render page title, stats ribbon and search bar", () => {
+  it("should render page title and header badge", () => {
     const html = renderToString(<CampaignsView />);
 
-    expect(html).toContain("Öğrenci Gelişim Kampanyaları");
-    expect(html).toContain("Gelişim &amp; Amel Seferberliği");
-    expect(html).toContain("Aktif Kampanya");
-    expect(html).toContain("Kampanya başlığı, hedef veya slogan ara...");
+    expect(html).toContain("Dönemsel Kampanyalar");
   });
 
-  it("should render status tabs: Aktif, Yaklaşanlar, Tamamlananlar", () => {
+  it("should showcase the campaign visual poster with full-screen and download actions", () => {
     const html = renderToString(<CampaignsView />);
 
-    expect(html).toContain("Aktif Kampanyalar");
-    expect(html).toContain("Yaklaşanlar");
-    expect(html).toContain("Tamamlananlar");
-  });
+    // Poster image & title
+    expect(html).toContain("Risale-i Nur Külliyatı Okuma Kampanyası");
+    expect(html).toContain("/kampanyalar/risale-okuma-kampanyasi.jpg");
+    expect(html).toContain("2026 – 2027");
 
-  it("should render category buttons and campaign cards", () => {
-    const html = renderToString(<CampaignsView />);
+    // Action buttons
+    expect(html).toContain("Tam Ekran");
+    expect(html).toContain("Afişi İndir");
 
-    expect(html).toContain("30 Günde 1 Kitap");
-    expect(html).toContain("100.000 Salavat");
-    expect(html).toContain("Sabah Namazı İstikameti");
-    expect(html).toContain("Kampanyaya Katıl");
+    // Must NOT contain redundant textual duplications already present in the poster
+    expect(html).not.toContain("3 OKUMA KADEMESİ");
+    expect(html).not.toContain("Bediüzzaman Said Nursî");
+    expect(html).not.toContain("Aktif Kampanyalar");
+    expect(html).not.toContain("Bu Kampanyaya Katıl");
   });
 });
