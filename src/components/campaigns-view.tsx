@@ -25,9 +25,7 @@ export function CampaignsView() {
     <div className="campaigns-view mx-auto max-w-5xl space-y-8 px-4 py-6 sm:px-6">
       {/* Page Header */}
       <header className="space-y-3 pt-2 pb-2 text-center">
-        <h1 className="text-4xl font-black tracking-tight text-white">
-          Dönemsel Kampanyalar
-        </h1>
+        <h1 className="text-4xl font-black tracking-tight text-white">Dönemsel Kampanyalar</h1>
       </header>
 
       {/* Posters Gallery */}

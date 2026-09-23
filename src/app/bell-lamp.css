@@ -703,7 +703,6 @@
 
 .hero-desktop-layout {
   --hero-gap: clamp(2.75rem, 5vw, 5.5rem);
-  --connector-length: calc(var(--hero-gap) + 6.5rem);
   position: relative;
   z-index: 16;
   display: grid;
@@ -745,32 +744,6 @@
     box-shadow 180ms ease;
 }
 
-.hero-nav-card::after {
-  position: absolute;
-  top: 50%;
-  z-index: -1;
-  width: var(--connector-length);
-  height: 1px;
-  background: linear-gradient(90deg, rgb(244 63 94 / 82%), rgb(251 113 133 / 34%));
-  box-shadow: 0 0 0.65rem rgb(244 63 94 / 55%);
-  content: "";
-  transition: opacity 300ms ease;
-}
-
-.hero-nav-card[data-side="left"]::after {
-  right: calc(var(--connector-length) * -1);
-}
-
-.hero-nav-card[data-side="right"]::after {
-  left: calc(var(--connector-length) * -1);
-  transform: rotate(180deg);
-}
-
-.hero-nav-card:not([data-lamp-on])::after {
-  opacity: 0.18;
-  box-shadow: none;
-}
-
 .hero-nav-card:hover,
 .hero-nav-card:focus-visible,
 .hero-nav-card[data-active="true"] {
@@ -795,24 +768,70 @@
   box-shadow:
     0 0 0 0.22rem rgb(244 63 94 / 15%),
     0 0 0.7rem #f43f5e;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    background-color 200ms ease;
 }
 
 .hero-nav-card[data-side="left"] .hero-nav-card__port {
   right: -0.3rem;
-  box-shadow:
-    var(--connector-length) 0 0 -0.08rem #fb7185,
-    var(--connector-length) 0 0.8rem rgb(244 63 94 / 75%),
-    0 0 0 0.22rem rgb(244 63 94 / 15%),
-    0 0 0.7rem #f43f5e;
 }
 
 .hero-nav-card[data-side="right"] .hero-nav-card__port {
   left: -0.3rem;
+}
+
+.hero-nav-card:hover .hero-nav-card__port,
+.hero-nav-card[data-active="true"] .hero-nav-card__port {
+  transform: translateY(-50%) scale(1.25);
   box-shadow:
-    calc(var(--connector-length) * -1) 0 0 -0.08rem #fb7185,
-    calc(var(--connector-length) * -1) 0 0.8rem rgb(244 63 94 / 75%),
-    0 0 0 0.22rem rgb(244 63 94 / 15%),
-    0 0 0.7rem #f43f5e;
+    0 0 0 0.28rem rgb(244 63 94 / 32%),
+    0 0 1rem #f43f5e,
+    0 0 1.6rem rgb(251 113 133 / 60%);
+}
+
+.is-off .hero-nav-card__port {
+  border-color: #71717a;
+  background: #52525b;
+  box-shadow: none;
+}
+
+.hero-leaf-cables {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  overflow: visible;
+  transition: opacity 600ms ease;
+}
+
+.is-off .hero-leaf-cables {
+  opacity: 0.22;
+}
+
+@keyframes heroCableFlow {
+  from {
+    stroke-dashoffset: 64;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.hero-cable-pulse {
+  animation: heroCableFlow 4s linear infinite;
+}
+
+.hero-cable-pulse.is-active {
+  animation-duration: 1.8s;
+  filter: drop-shadow(0 0 3px #fb7185);
+}
+
+@media (max-width: 900px) {
+  .hero-leaf-cables {
+    display: none;
+  }
 }
 
 .hero-nav-card__icon {
@@ -995,10 +1014,6 @@
     gap: 0.65rem;
     padding: 0.65rem;
     border-radius: 1rem;
-  }
-
-  .hero-nav-card[data-mobile="true"]::after {
-    display: none;
   }
 
   .hero-nav-card[data-mobile="true"] .hero-nav-card__icon {

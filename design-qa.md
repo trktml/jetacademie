@@ -41,10 +41,12 @@ No actionable P0, P1, or P2 issues remain.
 3. P2 — “Müfredat Kitapları” truncated at 1024 px. Fixed by allowing a two-line title within the compact desktop breakpoint.
 4. Post-fix evidence: 1910 px, 1024 px, 390 px, and 320 px browser captures show no clipping or horizontal overflow. Browser console errors: none.
 5. User annotation — Removed the four card descriptions, both tree-tagline lines, and the visible “İlham veren söz” label without changing navigation or layout behavior.
+6. Foliage Connectors Refinement — Replaced horizontal lines with dynamic curved SVG cables (`HeroLeafCables`) connecting gracefully into specific tree foliage clusters with luminous leaf nodes, animated light pulses, and hover glow effects.
 
 ## Implementation Checklist
 
 - [x] Replace fixed-coordinate SVG telemetry with responsive grid-bound connectors.
+- [x] Upgrade connectors to dynamic curved cables routed into tree foliage with glowing leaf nodes.
 - [x] Move navigation below the tree on mobile.
 - [x] Remove Arabic landing-page copy.
 - [x] Verify lamp interaction, responsive labels, overflow, and console output.

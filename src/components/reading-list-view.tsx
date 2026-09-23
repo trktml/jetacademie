@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { BookOpen, ChevronDown, Library, Sparkles } from "lucide-react";
+import { BookOpen, ChevronDown, Sparkles } from "lucide-react";
 import {
   GRADES,
   GRADE_DETAILS,
@@ -145,17 +145,19 @@ function DesktopTable() {
                 return (
                   <th
                     key={grade}
-                    className={`min-w-[145px] border-r border-zinc-200 px-3 py-3.5 text-center transition-colors last:border-r-0 dark:border-zinc-800 ${isEven
-                      ? "bg-zinc-100/60 dark:bg-zinc-900/40"
-                      : "bg-zinc-100/30 dark:bg-zinc-950/60"
-                      }`}
+                    className={`min-w-[145px] border-r border-zinc-200 px-3 py-3.5 text-center transition-colors last:border-r-0 dark:border-zinc-800 ${
+                      isEven
+                        ? "bg-zinc-100/60 dark:bg-zinc-900/40"
+                        : "bg-zinc-100/30 dark:bg-zinc-950/60"
+                    }`}
                   >
                     <div className="flex flex-col items-center gap-1">
                       <span
-                        className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1 text-xs font-black tracking-wide shadow-xs ${isOrtaokul
-                          ? "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
-                          : "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300"
-                          }`}
+                        className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1 text-xs font-black tracking-wide shadow-xs ${
+                          isOrtaokul
+                            ? "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
+                            : "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300"
+                        }`}
                       >
                         {details.label}
                       </span>
@@ -181,17 +183,20 @@ function DesktopTable() {
               return (
                 <tr
                   key={period.id}
-                  className={`transition-colors hover:bg-zinc-50/70 dark:hover:bg-zinc-800/30 ${!isLast ? "border-b border-zinc-200/90 dark:border-zinc-800/80" : ""
-                    }`}
+                  className={`transition-colors hover:bg-zinc-50/70 dark:hover:bg-zinc-800/30 ${
+                    !isLast ? "border-b border-zinc-200/90 dark:border-zinc-800/80" : ""
+                  }`}
                 >
                   {/* Dönem Adı (Sticky sol sütun) */}
                   <td
-                    className={`sticky left-0 z-10 border-r border-zinc-200 bg-zinc-50/95 px-4 py-5 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/95 ${!isLast ? "border-b border-b-zinc-200/90 dark:border-b-zinc-800/80" : ""
-                      }`}
+                    className={`sticky left-0 z-10 border-r border-zinc-200 bg-zinc-50/95 px-4 py-5 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/95 ${
+                      !isLast ? "border-b border-b-zinc-200/90 dark:border-b-zinc-800/80" : ""
+                    }`}
                   >
                     <span
-                      className={`inline-block rounded-lg border px-2.5 py-1.5 text-xs font-bold shadow-xs ${colors?.badge ?? ""
-                        }`}
+                      className={`inline-block rounded-lg border px-2.5 py-1.5 text-xs font-bold shadow-xs ${
+                        colors?.badge ?? ""
+                      }`}
                     >
                       {period.label}
                     </span>
@@ -206,11 +211,13 @@ function DesktopTable() {
                     return (
                       <td
                         key={grade}
-                        className={`border-r border-zinc-200 px-3 py-5 text-center align-middle transition-colors last:border-r-0 dark:border-zinc-800 ${!isLast ? "border-b border-zinc-200/90 dark:border-zinc-800/80" : ""
-                          } ${isEven
+                        className={`border-r border-zinc-200 px-3 py-5 text-center align-middle transition-colors last:border-r-0 dark:border-zinc-800 ${
+                          !isLast ? "border-b border-zinc-200/90 dark:border-zinc-800/80" : ""
+                        } ${
+                          isEven
                             ? "bg-zinc-50/40 dark:bg-zinc-900/25"
                             : "bg-white dark:bg-zinc-900/10"
-                          }`}
+                        }`}
                       >
                         {books.length === 0 ? (
                           <EmptyCell />
@@ -267,10 +274,11 @@ function MobilePeriodCard({
 
   return (
     <div
-      className={`overflow-hidden rounded-2xl border transition-all duration-200 ${isOpen
-        ? `${colors?.border ?? "border-zinc-300 dark:border-zinc-700"} bg-gradient-to-b ${colors?.bgLight ?? ""} ${colors?.bgDark ?? ""} to-white shadow-md dark:to-zinc-900/90`
-        : "border-zinc-200 bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900/60"
-        }`}
+      className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
+        isOpen
+          ? `${colors?.border ?? "border-zinc-300 dark:border-zinc-700"} bg-gradient-to-b ${colors?.bgLight ?? ""} ${colors?.bgDark ?? ""} to-white shadow-md dark:to-zinc-900/90`
+          : "border-zinc-200 bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900/60"
+      }`}
     >
       {/* Kart Başlığı */}
       <button
@@ -280,14 +288,16 @@ function MobilePeriodCard({
         aria-expanded={isOpen}
       >
         <span
-          className={`inline-block rounded-lg border px-3 py-1 text-xs font-bold shadow-xs ${colors?.badge ?? ""
-            }`}
+          className={`inline-block rounded-lg border px-3 py-1 text-xs font-bold shadow-xs ${
+            colors?.badge ?? ""
+          }`}
         >
           {period.label}
         </span>
         <ChevronDown
-          className={`h-5 w-5 text-zinc-500 transition-transform duration-200 dark:text-zinc-400 ${isOpen ? "rotate-180" : ""
-            }`}
+          className={`h-5 w-5 text-zinc-500 transition-transform duration-200 dark:text-zinc-400 ${
+            isOpen ? "rotate-180" : ""
+          }`}
           aria-hidden="true"
         />
       </button>
@@ -308,10 +318,11 @@ function MobilePeriodCard({
               >
                 <div className="mb-3 flex items-center justify-center gap-2">
                   <span
-                    className={`inline-flex items-center justify-center rounded-md border px-2.5 py-0.5 text-xs font-black shadow-2xs ${isOrtaokul
-                      ? "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
-                      : "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300"
-                      }`}
+                    className={`inline-flex items-center justify-center rounded-md border px-2.5 py-0.5 text-xs font-black shadow-2xs ${
+                      isOrtaokul
+                        ? "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
+                        : "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300"
+                    }`}
                   >
                     {details.label}
                   </span>

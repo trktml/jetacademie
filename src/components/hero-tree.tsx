@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, BookOpenText, Flame, Library, Target } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { BellLamp } from "@/components/bell-lamp";
+import { HeroLeafCables } from "@/components/hero-leaf-cables";
 
 const navigationItems = [
   {
@@ -64,7 +65,9 @@ function NavigationCard({ item, isLampOn, isHovered, mobile, onHover }: Navigati
       onFocus={() => onHover(item.id)}
       onBlur={() => onHover(null)}
     >
-      {!mobile && <span className="hero-nav-card__port" aria-hidden="true" />}
+      {!mobile && (
+        <span className="hero-nav-card__port" data-port-id={item.id} aria-hidden="true" />
+      )}
       <span className="hero-nav-card__icon" aria-hidden="true">
         <Icon />
       </span>
@@ -79,6 +82,8 @@ function NavigationCard({ item, isLampOn, isHovered, mobile, onHover }: Navigati
 export function HeroTree() {
   const [isLampOn, setIsLampOn] = useState(true);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const layoutRef = useRef<HTMLDivElement>(null);
+  const treeArtRef = useRef<HTMLDivElement>(null);
   const leftItems = navigationItems.filter((item) => item.side === "left");
   const rightItems = navigationItems.filter((item) => item.side === "right");
 
@@ -122,7 +127,15 @@ export function HeroTree() {
             )}
           </AnimatePresence>
 
-          <div className="hero-desktop-layout">
+          <div ref={layoutRef} className="hero-desktop-layout">
+            <HeroLeafCables
+              isLampOn={isLampOn}
+              hoveredId={hoveredId}
+              items={navigationItems}
+              layoutRef={layoutRef}
+              treeArtRef={treeArtRef}
+            />
+
             <nav className="hero-side-nav hero-side-nav--left" aria-label="Öğrenme bölümleri">
               {leftItems.map((item) => (
                 <NavigationCard
@@ -136,7 +149,7 @@ export function HeroTree() {
             </nav>
 
             <div className="hero-tree-column">
-              <div className="hero-tree-art">
+              <div ref={treeArtRef} className="hero-tree-art">
                 <Image
                   src="/red-tree.png"
                   alt="Jet Academie kırmızı ilim ağacı"
