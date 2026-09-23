@@ -66,22 +66,62 @@ bun run format:check
 bun run build
 ```
 
-> **Note:** Unit tests automatically run against in-memory SQLite (`:memory:`), ensuring the local development database (`auth.sqlite`) is never reset during test runs.
+> **Note:** Unit tests automatically run against an isolated in-memory test driver (`:memory:`), ensuring tests run in under 2 seconds without requiring an external PostgreSQL daemon.
 
-## Deployment (Dokploy / Docker)
+## Database & Data Migration
 
-Key guidelines when deploying as a Compose application on Dokploy:
+- **Primary Database**: PostgreSQL 16 (connected via `pg.Pool` connection pooling in `src/lib/db.ts`).
+- **Better-Auth**: Configured with native PostgreSQL connection pool adapter.
+- **SQLite to PostgreSQL Migration**:
+  If migrating from an existing `auth.sqlite` database:
+  ```bash
+  DATABASE_URL="postgres://postgres:password@localhost:5432/jetacademie" bun scripts/migrate-sqlite-to-pg.ts
+  ```
+- **Backup & Restore**:
+  ```bash
+  ./scripts/backup-db.sh
+  ./scripts/restore-db.sh ./backups/jetacademie_backup_YYYYMMDD_HHMMSS.sql
+  ```
 
-1. **Port Conflict Prevention:**
-   - Dokploy's dashboard UI binds to host port `3000` by default. To prevent host port collisions (`port is already allocated`), `docker-compose.yml` uses `expose: 3000` rather than binding host ports directly.
-   - In Dokploy UI, go to your application's **Domains** tab, add your domain, and set the target service to **`web`** and port to **`3000`**. Dokploy's built-in Traefik reverse proxy handles automatic SSL (Let's Encrypt) and routes traffic to the container.
+## Remote Deployment (Tailscale & Docker)
 
-2. **Persistent Database (SQLite):**
-   - The `/app/data` container directory is mounted to the named `app-data` Docker volume to persist data across container recreations.
-   - Database location: `DATABASE_URL=/app/data/auth.sqlite`.
+For full Tailscale instructions, see [docs/tailscale.md](docs/tailscale.md).
 
-3. **Environment Variables (Dokploy UI > Environment):**
-   - `BETTER_AUTH_SECRET`: Secure random string of at least 32 characters (`openssl rand -base64 32`).
-   - `BETTER_AUTH_URL`: Your canonical production URL (e.g., `https://jetacademie.com`).
-   - `NEXT_PUBLIC_APP_URL`: Your canonical production URL (e.g., `https://jetacademie.com`).
-   - `DATABASE_URL`: `/app/data/auth.sqlite`.
+### 1. One-Command Tailscale Deploy
+
+Deploy directly from your local terminal to your Tailscale remote server (`100.80.51.7`):
+
+```bash
+./scripts/deploy.sh root@100.80.51.7
+# Or if deploy host is set:
+./scripts/deploy.sh
+```
+
+> **Port & IP Isolation (High Security)**:
+>
+> - PostgreSQL host port is mapped to `5433` (`PG_HOST_PORT=5433`) to prevent collision with any existing PostgreSQL instance running on port `5432`.
+> - PostgreSQL is strictly bound to Tailscale IP `100.80.51.7` (`PG_BIND_IP=100.80.51.7`), blocking all public WAN exposure so only authorized Tailnet devices can connect.
+> - Web app host port defaults to `3001` (`HOST_PORT=3001`) to prevent collision with Dokploy's dashboard on port `3000`.
+
+### 2. Tailscale Serve (Automatic HTTPS)
+
+Run on your remote server to enable instant HTTPS with Let's Encrypt certificates:
+
+```bash
+tailscale serve --bg 3001
+```
+
+Your application will be live at `https://<server-name>.<tailnet-name>.ts.net`.
+
+### 3. Dokploy / Docker Compose Guidelines
+
+- `docker-compose.yml` provides both `db` (Postgres 16 Alpine with persistent volume `pgdata`) and `web` (stateless Next.js 16 standalone container).
+- Health checks ensure `web` waits for `db` to be ready before starting.
+- Environment variables:
+  - `POSTGRES_USER`: `jetacademie`
+  - `POSTGRES_PASSWORD`: Strong password
+  - `POSTGRES_DB`: `jetacademie`
+  - `DATABASE_URL`: `postgres://jetacademie:<pass>@db:5432/jetacademie`
+  - `BETTER_AUTH_SECRET`: Random 32+ char secret (`openssl rand -base64 32`)
+  - `BETTER_AUTH_URL`: Canonical URL (e.g. `https://<tailnet>.ts.net` or domain)
+  - `NEXT_PUBLIC_APP_URL`: Canonical URL

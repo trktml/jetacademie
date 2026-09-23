@@ -1,27 +1,47 @@
 services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-jetacademie}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-production}
+      POSTGRES_DB: ${POSTGRES_DB:-jetacademie}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jetacademie} -d ${POSTGRES_DB:-jetacademie}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    # Host port mapped to 5433 to avoid collision with existing PostgreSQL on port 5432.
+    # Security: Bound strictly to Tailscale IP (100.80.51.7) so it is NEVER exposed to public WAN.
+    ports:
+      - "${PG_BIND_IP:-100.80.51.7}:${PG_HOST_PORT:-5433}:5432"
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    # Dokploy uses Traefik as reverse proxy and Dokploy's web UI binds to host port 3000.
-    # Using 'expose' prevents host port collisions while allowing Traefik to route to port 3000.
-    # In Dokploy UI > Domains: set Service to 'web' and Port to '3000'.
+    depends_on:
+      db:
+        condition: service_healthy
+    # Dokploy reverse proxy routes via internal network / expose.
+    # Host port allows direct access over Tailscale IP or Tailscale Serve.
     expose:
       - "3000"
-    # To expose directly on host (e.g., local Docker testing without Traefik):
-    # ports:
-    #   - "${HOST_PORT:-3001}:3000"
+    ports:
+      - "${HOST_PORT:-3001}:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
+      - DATABASE_URL=${DATABASE_URL:-postgres://${POSTGRES_USER:-jetacademie}:${POSTGRES_PASSWORD:-change-me-in-production}@db:5432/${POSTGRES_DB:-jetacademie}}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3000}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
-      - DATABASE_URL=${DATABASE_URL:-/app/data/auth.sqlite}
-    volumes:
-      - app-data:/app/data
     healthcheck:
       test:
         [
@@ -34,5 +54,5 @@ services:
       start_period: 15s
 
 volumes:
-  app-data:
+  pgdata:
     driver: local

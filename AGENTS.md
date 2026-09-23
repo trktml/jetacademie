@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # JetAcademie Agent & LLM Guidance
 
-This repository is **JetAcademie**, a full-stack Next.js 16 application with Bun, Tailwind CSS v4, Zustand v5, TanStack Query v5, Zod v4, Better-Auth (Bun SQLite), Prettier, and Docker/Dokploy.
+This repository is **JetAcademie**, a full-stack Next.js 16 application with Bun, Tailwind CSS v4, Zustand v5, TanStack Query v5, Zod v4, Better-Auth (PostgreSQL via pg.Pool), Prettier, and Docker/Dokploy.
 
 This guide provides authoritative rules and conventions for AI coding agents working on this project.
 
@@ -84,14 +84,15 @@ In Next.js App Router, QueryClient instances must be managed cleanly:
   export type MyInput = z.infer<typeof mySchema>;
   ```
 
-### 4. Authentication (Better-Auth + SQLite)
+### 4. Authentication & Database (Better-Auth + PostgreSQL)
 
-- Server instance: `src/lib/auth.ts` (configured with Bun SQLite adapter and auto-migration).
+- Database manager: `src/lib/db.ts` (manages `pg.Pool`, async queries, parameter mapping, and in-memory test fallback).
+- Server instance: `src/lib/auth.ts` (configured with Better-Auth PostgreSQL adapter and universal schema DDL).
 - React client: `src/lib/auth-client.ts` (`authClient`, `useSession`, `signIn`, `signUp`, `signOut`).
 - Route handler: `src/app/api/auth/[...all]/route.ts`.
-- Local DB: `./auth.sqlite` (ignored by Git).
-- Production DB: `/app/data/auth.sqlite` (mounted via Dokploy persistent volume).
-- Test DB: In-memory `:memory:` (automatically resolved in `NODE_ENV === "test"` to protect `./auth.sqlite` from being wiped during test runs).
+- Production DB: PostgreSQL 16 Alpine via `docker-compose.yml` (`db` service with `pgdata` volume).
+- Remote Deployment: Tailscale deploy script (`scripts/deploy.sh`) and Tailscale Serve HTTPS (`docs/tailscale.md`).
+- Test DB: In-memory `:memory:` (automatically resolved in `NODE_ENV === "test"` to protect developer data and allow fast CI/CD).
 
 ### 5. Next.js 16 & React 19 Specifics
 
