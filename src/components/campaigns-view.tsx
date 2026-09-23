@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Download, Maximize2, Sparkles, X } from "lucide-react";
+import { Download, Maximize2, X } from "lucide-react";
 import { CampaignAnnouncement, getAllCampaignAnnouncements } from "@/lib/data/campaigns";
 
 export function CampaignsView() {
@@ -55,7 +55,6 @@ export function CampaignsView() {
             {/* Poster Header Ribbon */}
             <div className="relative flex items-center justify-between border-b border-amber-500/20 bg-amber-950/40 px-4 py-2.5 text-xs font-bold text-amber-300">
               <span className="flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
                 <span>{campaign.badge ?? "Resmi Kampanya Afişi"}</span>
               </span>
               {campaign.period && (
@@ -134,7 +133,6 @@ export function CampaignsView() {
             {/* Lightbox Controls Header */}
             <div className="mb-2 flex w-full items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/90 px-4 py-2">
               <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
-                <Sparkles className="h-4 w-4 text-amber-400" aria-hidden="true" />
                 <span>
                   {lightboxCampaign.title}
                   {lightboxCampaign.period ? ` (${lightboxCampaign.period})` : ""}
