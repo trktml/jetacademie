@@ -2,12 +2,12 @@ import { ensureDatabaseSchema } from "@/lib/auth";
 import { execute, query, queryOne } from "@/lib/db";
 import {
   curriculumCategories,
-  curriculumEntries,
   resolveAllCurriculumEntries,
   resolveCategoryEntries,
   type CurriculumCategoryId,
   type CurriculumEntry,
 } from "@/lib/curriculum";
+import { curriculumEntries } from "@/lib/curriculum-data";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
 import { getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
 import { getEfendimizEntriesForGrade } from "@/lib/data/efendimiz-curriculum";
@@ -98,7 +98,7 @@ export async function ensureCurriculumEntriesTable(): Promise<void> {
 }
 
 export async function getUserGenderFromDb(userId: string): Promise<Gender | null> {
-  await ensureCurriculumEntriesTable();
+  await ensureDatabaseSchema();
   try {
     const row = await queryOne<{ gender: string }>(
       `SELECT "gender" FROM "user_preferences" WHERE "userId" = $1`,
@@ -111,7 +111,7 @@ export async function getUserGenderFromDb(userId: string): Promise<Gender | null
 }
 
 export async function setUserGenderInDb(userId: string, gender: Gender): Promise<void> {
-  await ensureCurriculumEntriesTable();
+  await ensureDatabaseSchema();
   const now = new Date().toISOString();
   try {
     await execute(
@@ -523,7 +523,22 @@ export async function syncKonuCurriculumIfOutdated(): Promise<void> {
   });
 }
 
-export async function seedCurriculumDatabase(force = false): Promise<void> {
+let seedPromise: Promise<void> | null = null;
+
+export function seedCurriculumDatabase(force = false): Promise<void> {
+  if (force) {
+    seedPromise = null;
+    return seedCurriculumDatabaseOnce(true);
+  }
+
+  seedPromise ??= seedCurriculumDatabaseOnce(false).catch((error: unknown) => {
+    seedPromise = null;
+    throw error;
+  });
+  return seedPromise;
+}
+
+async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
   await ensureCurriculumEntriesTable();
 
   const countRow = await queryOne<{ c: number | string }>(
@@ -914,7 +929,6 @@ export async function getCurriculumEntriesFromDb(
   grade?: number,
   gender?: Gender
 ): Promise<CurriculumEntry[]> {
-  await ensureCurriculumEntriesTable();
   await seedCurriculumDatabase();
 
   try {
@@ -949,7 +963,6 @@ export async function getCurriculumEntriesFromDb(
  * Finds a single curriculum entry by ID.
  */
 export async function getCurriculumEntryByIdFromDb(id: string): Promise<CurriculumEntry | null> {
-  await ensureCurriculumEntriesTable();
   await seedCurriculumDatabase();
 
   try {

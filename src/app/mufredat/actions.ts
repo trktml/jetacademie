@@ -4,12 +4,8 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
-import {
-  canCompleteEntry,
-  canUnmarkEntry,
-  curriculumEntries,
-  getCategoryEntries,
-} from "@/lib/curriculum";
+import { canCompleteEntry, canUnmarkEntry, getCategoryEntries } from "@/lib/curriculum";
+import { curriculumEntries } from "@/lib/curriculum-data";
 import { getCurriculumEntriesFromDb, getCurriculumEntryByIdFromDb } from "@/lib/curriculum-db";
 import {
   getCompletedEntryIds,

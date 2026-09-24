@@ -3,10 +3,15 @@ import React from "react";
 import { renderToString } from "react-dom/server";
 
 import {
-  CurriculumArchive,
+  CurriculumArchive as CurriculumArchiveComponent,
   UNDO_DURATION_SECONDS,
   scrollCategoryIntoView,
 } from "./curriculum-archive";
+import { curriculumEntries } from "@/lib/curriculum-data";
+
+function CurriculumArchive(props: React.ComponentProps<typeof CurriculumArchiveComponent>) {
+  return <CurriculumArchiveComponent allEntries={curriculumEntries} {...props} />;
+}
 
 describe("CurriculumArchive Component", () => {
   it("should render fixed capsule navigation with 9 category items", () => {

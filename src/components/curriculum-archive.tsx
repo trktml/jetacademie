@@ -25,10 +25,10 @@ import {
 } from "lucide-react";
 import {
   curriculumCategories,
-  curriculumEntries,
   getCategoryEntries,
   getCategoryShortLabel,
   getUnlockedEntryIndex,
+  type BelgiumGrade,
   type CurriculumCategoryId,
   type CurriculumEntry,
 } from "@/lib/curriculum";
@@ -84,6 +84,11 @@ interface CurriculumArchiveProps {
   initialGrade?: number;
   initialCategoryId?: CurriculumCategoryId;
   initialHistoryViewCategoryIds?: Record<string, boolean>;
+  selectedGradeOverride?: BelgiumGrade;
+  onGradeChange?: (grade: BelgiumGrade) => void;
+  isGradeLoading?: boolean;
+  gradeLoadError?: string | null;
+  onRetryGrade?: () => void;
 }
 
 export function scrollCategoryIntoView(categoryId: string) {
@@ -362,6 +367,11 @@ export function CurriculumArchive({
   initialGrade = 1,
   initialCategoryId = curriculumCategories[0].id,
   initialHistoryViewCategoryIds = {},
+  selectedGradeOverride,
+  onGradeChange,
+  isGradeLoading = false,
+  gradeLoadError,
+  onRetryGrade,
 }: CurriculumArchiveProps) {
   const [activeCategoryId, setActiveCategoryId] = useState<CurriculumCategoryId>(initialCategoryId);
   const [completedEntryIds, setCompletedEntryIds] = useState(initialCompletedEntryIds);
@@ -547,7 +557,8 @@ export function CurriculumArchive({
     return () => window.removeEventListener("popstate", syncHistoryFromUrl);
   }, [initialHistoryCategory]);
 
-  const selectedGrade = useCurriculumStore((s) => s.selectedGrade);
+  const storeGrade = useCurriculumStore((s) => s.selectedGrade);
+  const selectedGrade = selectedGradeOverride ?? storeGrade;
   const setSelectedGrade = useCurriculumStore((s) => s.setSelectedGrade);
 
   useEffect(() => {
@@ -575,10 +586,10 @@ export function CurriculumArchive({
       }
       return customEntries;
     }
-    if (allEntries && allEntries.length > 0) {
+    if (allEntries) {
       return allEntries.filter((entry) => (entry.grade ?? 1) === selectedGrade);
     }
-    return curriculumEntries.filter((entry) => (entry.grade ?? 1) === selectedGrade);
+    return [];
   }, [allEntries, customEntries, selectedGrade]);
 
   // Dedicated history state and helpers
@@ -918,7 +929,10 @@ export function CurriculumArchive({
           <GradeSelector
             compact
             value={selectedGrade}
-            onGradeChange={(grade) => setSelectedGrade(grade)}
+            onGradeChange={(grade) => {
+              setSelectedGrade(grade);
+              onGradeChange?.(grade);
+            }}
           />
         </div>
 
@@ -983,7 +997,18 @@ export function CurriculumArchive({
       </aside>
 
       {/* Eğer bir kategori geçmişi seçildiyse bağımsız Özel Geçmiş Alanı gösterilir */}
-      {activeHistoryCategory ? (
+      {isGradeLoading || gradeLoadError ? (
+        <div className="archive-main-column" role="status" aria-live="polite">
+          <div className="archive-history-empty">
+            <p>{gradeLoadError ?? "Müfredat yükleniyor…"}</p>
+            {gradeLoadError && onRetryGrade && (
+              <button type="button" className="primary-button min-h-[44px]" onClick={onRetryGrade}>
+                Tekrar dene
+              </button>
+            )}
+          </div>
+        </div>
+      ) : activeHistoryCategory ? (
         <div className="archive-main-column archive-main-column--history">
           <div
             className="archive-history-screen"

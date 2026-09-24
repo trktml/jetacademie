@@ -3,11 +3,20 @@ import {
   canCompleteEntry,
   canUnmarkEntry,
   curriculumCategories,
-  curriculumEntries,
-  getCategoryEntries,
+  getCategoryEntries as getCategoryEntriesWithData,
   getUnlockedEntryIndex,
   makeEntryId,
 } from "./curriculum";
+import { curriculumEntries } from "./curriculum-data";
+
+function getCategoryEntries(
+  categoryId: Parameters<typeof getCategoryEntriesWithData>[0],
+  entries: Parameters<typeof getCategoryEntriesWithData>[1] = curriculumEntries,
+  grade?: Parameters<typeof getCategoryEntriesWithData>[2],
+  gender?: Parameters<typeof getCategoryEntriesWithData>[3]
+) {
+  return getCategoryEntriesWithData(categoryId, entries, grade, gender);
+}
 
 describe("curriculum", () => {
   it("contains all nine real curriculum categories", () => {

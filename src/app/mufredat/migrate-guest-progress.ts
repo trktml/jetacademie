@@ -18,6 +18,14 @@ export async function migrateGuestProgress(
   guestEntryIds: string[],
   guestGender?: "erkek" | "bayan" | null
 ) {
+  if (
+    !Array.isArray(guestEntryIds) ||
+    guestEntryIds.length > 5000 ||
+    guestEntryIds.some((id) => typeof id !== "string" || id.length === 0 || id.length > 120)
+  ) {
+    throw new Error("Geçersiz ilerleme verisi.");
+  }
+
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Oturum bulunamadı.");
 

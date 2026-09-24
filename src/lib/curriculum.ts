@@ -10,15 +10,6 @@ import {
 } from "lucide-react";
 import { EsmaIcon } from "@/components/icons/esma-icon";
 import { GoncaGulIcon } from "@/components/icons/gonca-gul-icon";
-import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
-import { getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
-import { getEfendimizEntriesForGrade } from "@/lib/data/efendimiz-curriculum";
-import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
-import { getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
-import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
-import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
-import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
-import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 
 export const curriculumCategoryIds = [
   "esma",
@@ -174,37 +165,6 @@ export function makeEntryId(
     : `g${grade}-${categoryId}-${monthSlug}-${week}`;
 }
 
-// 2 haftalık örnek müfredat içerikleri — Eylül 2026
-export const curriculumEntries: readonly CurriculumEntry[] = [
-  // ── Ayet (Ortaokul 1. Sınıf – 55 Hafta) ────────────────────────
-  ...getAyetEntriesForGrade(1),
-
-  // ── Hadis (Ortaokul 1. Sınıf – 55 Hafta) ───────────────────────
-  ...getHadisEntriesForGrade(1),
-
-  // ── Efendimiz (Ortaokul 1. Sınıf – 55 Hafta) ───────────────────
-  ...getEfendimizEntriesForGrade(1),
-
-  // ── Sahabe Kıssaları (Ortaokul 1. Sınıf – 55 Hafta) ────────────
-  ...getSahabeEntriesForGrade(1),
-
-  // ── Hocaefendi Sohbetleri (1. Sınıf – 48 Hafta) ────────────────
-  ...getHocaefendiEntriesForGrade(1),
-
-  // ── Haftanın Konusu (1. Sınıf – 2 Hafta Başlangıç) ───────────
-  ...getKonuEntriesForGrade(1),
-
-  // ── İlmihal (Ortaokul 1. Sınıf – Erkek & Bayan) ───────────────
-  ...getIlmihalEntriesForGrade(1, "erkek"),
-  ...getIlmihalEntriesForGrade(1, "bayan"),
-
-  // ── Adab-ı Muaşeret (Ortaokul 1. Sınıf – 54 Hafta) ─────────────
-  ...getAdabEntriesForGrade(1),
-
-  // ── Esmâü'l-Hüsnâ (Ortaokul 1. Sınıf – 55 Hafta) ───────────────
-  ...getEsmaEntriesForGrade(1),
-];
-
 export function sortCurriculumEntries(entries: readonly CurriculumEntry[]): CurriculumEntry[] {
   return entries.toSorted((a, b) => {
     const gradeA = a.grade ?? 1;
@@ -286,7 +246,7 @@ export function resolveAllCurriculumEntries(
 
 export function getCategoryEntries(
   categoryId: CurriculumCategoryId,
-  entries: readonly CurriculumEntry[] = curriculumEntries,
+  entries: readonly CurriculumEntry[],
   grade?: number,
   gender?: "erkek" | "bayan"
 ): CurriculumEntry[] {
