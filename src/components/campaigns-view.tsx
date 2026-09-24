@@ -42,14 +42,14 @@ export function CampaignsView() {
             aria-label={campaign.title}
             className="group relative w-full overflow-hidden rounded-3xl border-2 border-amber-500/40 bg-zinc-900/90 shadow-2xl shadow-amber-950/40 transition-all duration-300 hover:border-amber-400"
           >
-            {/* Ambient Background Glow */}
+            {/* Ambient Background Glow (Radial gradient - zero GPU blur compositing cost) */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl"
+              className="pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full [background:radial-gradient(circle,rgba(245,158,11,0.15)_0%,transparent_70%)]"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -right-16 -bottom-16 h-64 w-64 rounded-full bg-rose-500/10 blur-3xl"
+              className="pointer-events-none absolute -right-16 -bottom-16 h-64 w-64 rounded-full [background:radial-gradient(circle,rgba(244,63,94,0.12)_0%,transparent_70%)]"
             />
 
             {/* Poster Header Ribbon */}
@@ -68,16 +68,16 @@ export function CampaignsView() {
                 src={campaign.image}
                 alt={`${campaign.title} Resmi Afişi`}
                 fill
+                unoptimized
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 540px"
-                priority
-                className="object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                className="object-contain"
               />
 
               {/* Click to Zoom Hover Overlay */}
               <button
                 type="button"
                 onClick={() => setLightboxCampaign(campaign)}
-                className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/50 opacity-0 backdrop-blur-xs transition-opacity duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none"
                 aria-label="Afişi tam ekran büyüt"
               >
                 <div className="flex h-14 w-14 items-center justify-center rounded-full border border-amber-400/60 bg-amber-500/20 text-amber-300 shadow-xl shadow-black/60">
@@ -166,7 +166,7 @@ export function CampaignsView() {
                 alt={`${lightboxCampaign.title} Afişi Tam Ekran`}
                 width={904}
                 height={1280}
-                priority
+                unoptimized
                 className="max-h-[85vh] w-auto object-contain"
               />
             </div>
