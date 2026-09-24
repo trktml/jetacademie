@@ -94,6 +94,45 @@ describe("Anonymous Auth & Slot Assignment", () => {
       expect((await nativeAuthPOST(nativeRequest)).status).toBe(404);
     });
 
+    it("should register through a public reverse proxy origin even when the auth base URL differs", async () => {
+      const headers = {
+        "Content-Type": "application/json",
+        Origin: "https://jetacademie.be",
+        Host: "localhost:3000",
+        "X-Forwarded-Host": "jetacademie.be",
+        "X-Forwarded-Proto": "https",
+        "Sec-Fetch-Site": "same-origin",
+      };
+
+      const response = await registerPOST(
+        new Request("http://localhost:3000/api/auth/register-anonymous", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ password: "1234" }),
+        })
+      );
+      expect(response.status).toBe(200);
+      expect(((await response.json()) as { username: string }).username).toBe("user1");
+
+      const signInResponse = await signInPOST(
+        new Request("http://localhost:3000/api/auth/sign-in-anonymous", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ username: "user1", password: "1234" }),
+        })
+      );
+      expect(signInResponse.status).toBe(200);
+
+      const foreignResponse = await registerPOST(
+        new Request("http://localhost:3000/api/auth/register-anonymous", {
+          method: "POST",
+          headers: { ...headers, Origin: "https://evil.example" },
+          body: JSON.stringify({ password: "1234" }),
+        })
+      );
+      expect(foreignResponse.status).toBe(403);
+    });
+
     it("should register anonymous user without asking for email or name", async () => {
       const req = new Request("http://localhost:3000/api/auth/register-anonymous", {
         method: "POST",

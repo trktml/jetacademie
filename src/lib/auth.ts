@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { getRequestOrigin } from "@/lib/request-origin";
 import { Database } from "bun:sqlite";
 import {
   activeDatabaseUrl,
@@ -165,6 +166,10 @@ export const auth = betterAuth({
     : (getSqlite() as NonNullable<ReturnType<typeof getSqlite>>),
   secret: getAuthSecret(),
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  trustedOrigins: (request) => {
+    const origin = request ? getRequestOrigin(request) : null;
+    return origin ? [origin] : [];
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 4,

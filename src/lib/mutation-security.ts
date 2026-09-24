@@ -1,5 +1,6 @@
 /** Checks browser mutation requests before they reach custom authentication routes. */
 import { auth } from "@/lib/auth";
+import { getRequestOrigin } from "@/lib/request-origin";
 
 export function dispatchAuthRequest(
   request: Request,
@@ -29,8 +30,7 @@ export function validateMutationRequest(request: Request): Response | null {
   }
 
   const origin = request.headers.get("origin");
-  const allowedUrl = process.env.BETTER_AUTH_URL || new URL(request.url).origin;
-  if (!origin || origin !== new URL(allowedUrl).origin) {
+  if (!origin || origin !== getRequestOrigin(request)) {
     return Response.json({ error: "İstek reddedildi." }, { status: 403 });
   }
 

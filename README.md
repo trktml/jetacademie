@@ -130,6 +130,7 @@ Your application will be live at `https://<server-name>.<tailnet-name>.ts.net`.
 ### Security settings
 
 - Set `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` to the same external HTTPS origin before users sign in. Keep `BETTER_AUTH_SECRET` at least 32 random characters; production rejects a missing or example secret.
+- Behind a reverse proxy, preserve the public `Host` or send `X-Forwarded-Host` and `X-Forwarded-Proto`. Account mutations verify the browser's `Origin` against that public request origin, and the auth client uses the current browser origin. Set the canonical URLs to `https://jetacademie.be` when that is the public address.
 - The anonymous login and registration endpoints accept same-origin JSON requests only. New passwords must have at least four characters and can have up to 128. Login attempts for each existing account are limited to five per 15 minutes across app instances, alongside Better Auth's request rate limit. Password changes and account deletion require the current password. A password change invalidates other sessions.
 - The web port binds to loopback by default. If a remote reverse proxy needs a different bind address, set `HOST_BIND_IP` explicitly and restrict access at the network boundary.
 - Authentication and account responses are marked `no-store`. Baseline browser security headers restrict framing, object embeds, base URL changes, and form submissions.
