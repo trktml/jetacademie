@@ -1043,6 +1043,29 @@
   }
 }
 
+@media (max-width: 640px) {
+  .hero-stage-wrap {
+    padding-top: 6rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .hero-light-particles {
+    top: 6rem;
+  }
+
+  .hero-tree-art {
+    aspect-ratio: 1;
+  }
+
+  .hero-tree-art img {
+    object-fit: cover;
+  }
+
+  .hero-mobile-nav {
+    margin-top: 1.25rem;
+  }
+}
+
 @media (max-width: 380px) {
   .hero-shell {
     padding-inline: 0.7rem;
