@@ -4,10 +4,12 @@ import { renderToString } from "react-dom/server";
 import { CampaignsView } from "./campaigns-view";
 
 describe("CampaignsView Component", () => {
-  it("should render page title and header badge", () => {
+  it("should render page title and header badge with theme-adaptive styling", () => {
     const html = renderToString(<CampaignsView />);
 
     expect(html).toContain("Dönemsel Kampanyalar");
+    expect(html).toContain("text-zinc-900");
+    expect(html).toContain("dark:text-white");
   });
 
   it("should showcase the campaign visual poster with full-screen and download actions", () => {
