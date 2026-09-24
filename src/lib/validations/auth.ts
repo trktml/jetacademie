@@ -1,7 +1,9 @@
 import { z } from "zod";
 
+const passwordSchema = z.string().min(4, "Şifre en az 4 karakter olmalıdır").max(128);
+
 export const anonymousSignUpSchema = z.object({
-  password: z.string().min(6, "Şifre en az 6 karakter olmalıdır"),
+  password: passwordSchema,
 });
 
 export const anonymousSignInSchema = z.object({
@@ -9,12 +11,18 @@ export const anonymousSignInSchema = z.object({
     .string()
     .trim()
     .min(1, "Kullanıcı adı zorunludur")
+    .max(32, "Kullanıcı adı çok uzun")
     .regex(/^user\d+$/i, "Geçerli bir kullanıcı adı giriniz (ör. user1)"),
-  password: z.string().min(1, "Şifre zorunludur"),
+  password: z.string().min(1, "Şifre zorunludur").max(128),
 });
 
 export const changePasswordSchema = z.object({
-  newPassword: z.string().min(6, "Yeni şifre en az 6 karakter olmalıdır"),
+  currentPassword: z.string().min(1, "Mevcut şifre zorunludur").max(128),
+  newPassword: passwordSchema,
+});
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, "Şifre zorunludur").max(128),
 });
 
 export type AnonymousSignUpInput = z.infer<typeof anonymousSignUpSchema>;

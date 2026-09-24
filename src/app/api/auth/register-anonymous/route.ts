@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { getNextAvailableUsername, usernameToSyntheticEmail } from "@/lib/auth-anonymous";
 import { anonymousSignUpSchema } from "@/lib/validations/auth";
+import {
+  dispatchAuthRequest,
+  mutationErrorResponse,
+  readMutationJson,
+  validateMutationRequest,
+} from "@/lib/mutation-security";
 
 export async function POST(req: Request) {
+  const rejected = validateMutationRequest(req);
+  if (rejected) return rejected;
   try {
-    const json = await req.json().catch(() => ({}));
+    const json = await readMutationJson(req);
     const parseResult = anonymousSignUpSchema.safeParse(json);
 
     if (!parseResult.success) {
@@ -18,30 +25,22 @@ export async function POST(req: Request) {
     const username = await getNextAvailableUsername();
     const email = usernameToSyntheticEmail(username);
 
-    const signUpResponse = await auth.api.signUpEmail({
-      body: {
-        name: username,
-        email,
-        password: parseResult.data.password,
-      },
-      headers: req.headers,
-      asResponse: true,
+    const signUpResponse = await dispatchAuthRequest(req, "sign-up/email", {
+      name: username,
+      email,
+      password: parseResult.data.password,
     });
 
     if (signUpResponse.status !== 200) {
-      const errData = (await signUpResponse.json().catch(() => ({}))) as { message?: string };
       return NextResponse.json(
-        { error: errData.message || "Kayıt işlemi başarısız oldu." },
-        { status: signUpResponse.status }
+        { error: "Kayıt işlemi başarısız oldu." },
+        { status: signUpResponse.status === 429 ? 429 : 400 }
       );
     }
 
     const responseHeaders = new Headers();
-    signUpResponse.headers.forEach((val, key) => {
-      if (key.toLowerCase() === "set-cookie") {
-        responseHeaders.append("set-cookie", val);
-      }
-    });
+    for (const cookie of signUpResponse.headers.getSetCookie())
+      responseHeaders.append("set-cookie", cookie);
     responseHeaders.set("content-type", "application/json");
 
     return new Response(JSON.stringify({ success: true, username }), {
@@ -49,7 +48,6 @@ export async function POST(req: Request) {
       headers: responseHeaders,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Beklenmedik bir hata oluştu.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return mutationErrorResponse(error, "Kayıt işlemi başarısız oldu.");
   }
 }

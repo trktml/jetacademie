@@ -12,6 +12,12 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV BETTER_AUTH_URL=$NEXT_PUBLIC_APP_URL
+# Only build-time placeholders; runtime values come from the container environment.
+ENV BETTER_AUTH_SECRET=build-only-placeholder-never-use-for-sessions
+ENV DATABASE_URL=:memory:
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 

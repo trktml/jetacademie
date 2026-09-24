@@ -9,27 +9,26 @@ import {
 
 describe("Anonymous Auth Zod Schemas", () => {
   describe("anonymousSignUpSchema", () => {
-    it("should accept valid password of at least 6 characters", () => {
-      const validData = {
-        password: "secret",
-      };
-      const result = anonymousSignUpSchema.safeParse(validData);
-      expect(result.success).toBe(true);
+    it("should accept passwords of at least four characters", () => {
+      for (const password of ["0427", "12345", "12a!", "long-password"]) {
+        expect(anonymousSignUpSchema.safeParse({ password }).success).toBe(true);
+      }
     });
 
-    it("should reject password shorter than 6 characters", () => {
+    it("should reject passwords shorter than four characters", () => {
       const invalidData = {
-        password: "12345",
+        password: "123",
       };
       const result = anonymousSignUpSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Şifre en az 6 karakter olmalıdır");
+        expect(result.error.issues[0].message).toBe("Şifre en az 4 karakter olmalıdır");
       }
+      expect(anonymousSignUpSchema.safeParse({ password: "a".repeat(129) }).success).toBe(false);
     });
 
     it("should work via signUpSchema alias", () => {
-      expect(signUpSchema.safeParse({ password: "mypassword" }).success).toBe(true);
+      expect(signUpSchema.safeParse({ password: "1234" }).success).toBe(true);
     });
   });
 
@@ -81,23 +80,28 @@ describe("Anonymous Auth Zod Schemas", () => {
   });
 
   describe("changePasswordSchema", () => {
-    it("should accept valid new password", () => {
-      const validData = {
-        newPassword: "newpassword123",
-      };
-      const result = changePasswordSchema.safeParse(validData);
-      expect(result.success).toBe(true);
+    it("should accept new passwords of at least four characters", () => {
+      for (const newPassword of ["1234", "12a!", "long-password"]) {
+        expect(
+          changePasswordSchema.safeParse({ currentPassword: "oldpassword123", newPassword }).success
+        ).toBe(true);
+      }
     });
 
     it("should reject short new password", () => {
       const invalidData = {
+        currentPassword: "oldpassword123",
         newPassword: "123",
       };
       const result = changePasswordSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Yeni şifre en az 6 karakter olmalıdır");
+        expect(result.error.issues[0].message).toBe("Şifre en az 4 karakter olmalıdır");
       }
+    });
+
+    it("should require the current password", () => {
+      expect(changePasswordSchema.safeParse({ newPassword: "1234" }).success).toBe(false);
     });
   });
 });

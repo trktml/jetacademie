@@ -11,7 +11,7 @@ JetAcademie is a mobile-first Progressive Web Application (PWA) designed for stu
 - `/hedefler`: Targets & Annual Plans section showcasing the comprehensive 6-year development roadmap (M1–M6 for Belgian Grades 1–6). Features an interactive progression ladder (_Curiosity → Understanding → Life → Need → Investigation → Representation_), year-end student achievement showcases (_What Will the Student Achieve at Year-End?_), core competencies, student declarations, methodology flow, an expandable 9-unit / 36-week thematic question & source guide mapped to the 9 school months (_September – May_), and the integrated 6-year family respect development lineage (_Parents and Elders Respect Lineage_).
 - `/mufredat-kitaplari` (and `/kitaplar`): Curriculum Books and Reference Works library. Contains core textbooks, fiqh manuals (ilmihal), hadith and sirah compendiums, Risale-i Nur collections, and prayer books studied across the 6-year educational curriculum. Features level filtering (Middle School M1–M3, High School M4–M6, Grades 1–6), category tabs, live search, and a detailed book view modal.
 - `/kampanyalar`: Seasonal Campaigns and Mobilization Announcements section. Displays official campaign posters (Risale-i Nur Works Reading Campaign, etc.), reading tiers (Groups A, B, C), book lists, and incentive rewards in a visual gallery format; supports full-screen poster inspection and high-resolution downloads.
-- Account: Privacy-first anonymous authentication. No personal data (name, email) is collected; users only choose a password, and sequential usernames (`user1`, `user2`, etc.) are assigned automatically with gap-filling on account deletion. Direct password updates and account deletion are supported.
+- Account: Privacy-first anonymous authentication. No personal data (name, email) is collected; users only choose a password, and sequential usernames (`user1`, `user2`, etc.) are assigned automatically with gap-filling on account deletion. Password changes and account deletion require the current password.
 - Theme: Persistent semantic theme architecture supporting light, dark, and system preferences.
 
 Curriculum entries are managed directly via SQLite (`curriculum_entries` table with auto-seeding across all 6 Belgium grades: Grade 1 – Grade 6) and can be easily extended or linked to administrative endpoints.
@@ -72,6 +72,7 @@ bun run build
 
 - **Primary Database**: PostgreSQL 16 (connected via `pg.Pool` connection pooling in `src/lib/db.ts`).
 - **Better-Auth**: Configured with native PostgreSQL connection pool adapter.
+- **Schema bootstrap**: `bun run db:migrate` creates missing tables and indexes from the app's `SCHEMA_SQL` and exits on database errors. Existing columns are not altered; schema changes need explicit migration SQL. The older Better Auth CLI dependency was removed from the install tree.
 - **SQLite to PostgreSQL Migration**:
   If migrating from an existing `auth.sqlite` database:
   ```bash
@@ -101,7 +102,7 @@ Deploy directly from your local terminal to your Tailscale remote server (`100.8
 >
 > - PostgreSQL host port is mapped to `5433` (`PG_HOST_PORT=5433`) to prevent collision with any existing PostgreSQL instance running on port `5432`.
 > - PostgreSQL is strictly bound to Tailscale IP `100.80.51.7` (`PG_BIND_IP=100.80.51.7`), blocking all public WAN exposure so only authorized Tailnet devices can connect.
-> - Web app host port defaults to `3001` (`HOST_PORT=3001`) to prevent collision with Dokploy's dashboard on port `3000`.
+> - Web app host port defaults to `3001` and binds to loopback (`HOST_BIND_IP=127.0.0.1`) for Tailscale Serve or a local reverse proxy.
 
 ### 2. Tailscale Serve (Automatic HTTPS)
 
@@ -125,3 +126,10 @@ Your application will be live at `https://<server-name>.<tailnet-name>.ts.net`.
   - `BETTER_AUTH_SECRET`: Random 32+ char secret (`openssl rand -base64 32`)
   - `BETTER_AUTH_URL`: Canonical URL (e.g. `https://<tailnet>.ts.net` or domain)
   - `NEXT_PUBLIC_APP_URL`: Canonical URL
+
+### Security settings
+
+- Set `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` to the same external HTTPS origin before users sign in. Keep `BETTER_AUTH_SECRET` at least 32 random characters; production rejects a missing or example secret.
+- The anonymous login and registration endpoints accept same-origin JSON requests only. New passwords must have at least four characters and can have up to 128. Login attempts for each existing account are limited to five per 15 minutes across app instances, alongside Better Auth's request rate limit. Password changes and account deletion require the current password. A password change invalidates other sessions.
+- The web port binds to loopback by default. If a remote reverse proxy needs a different bind address, set `HOST_BIND_IP` explicitly and restrict access at the network boundary.
+- Authentication and account responses are marked `no-store`. Baseline browser security headers restrict framing, object embeds, base URL changes, and form submissions.

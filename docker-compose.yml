@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-jetacademie}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-production}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a strong POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-jetacademie}
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -24,24 +24,26 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?Set the external HTTPS URL}
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     # Dokploy reverse proxy routes via internal network / expose.
-    # Host port allows direct access over Tailscale IP or Tailscale Serve.
+    # Loopback host port is consumed by Tailscale Serve or a local reverse proxy.
     expose:
       - "3000"
     ports:
-      - "${HOST_PORT:-3001}:3000"
+      - "${HOST_BIND_IP:-127.0.0.1}:${HOST_PORT:-3001}:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
       # Internal Docker network connection: db container listens on port 5432 (port 5433 is only for host/Tailscale)
-      - DATABASE_URL=postgres://${POSTGRES_USER:-jetacademie}:${POSTGRES_PASSWORD:-change-me-in-production}@db:5432/${POSTGRES_DB:-jetacademie}
-      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3000}
-      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-jetacademie}:${POSTGRES_PASSWORD:?Set a strong POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-jetacademie}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:?Set a random BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL:?Set the external HTTPS URL}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:?Set the external HTTPS URL}
     healthcheck:
       test:
         [

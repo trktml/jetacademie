@@ -37,6 +37,8 @@ export function AccountSheet() {
   const [mode, setMode] = useState<"signIn" | "signUp">("signUp");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -61,6 +63,8 @@ export function AccountSheet() {
 
   function resetForm() {
     setPassword("");
+    setCurrentPassword("");
+    setDeletePassword("");
     setNewPassword("");
     setMessage(null);
     setSuccessMessage(null);
@@ -165,7 +169,7 @@ export function AccountSheet() {
     setMessage(null);
     setSuccessMessage(null);
 
-    const result = changePasswordSchema.safeParse({ newPassword });
+    const result = changePasswordSchema.safeParse({ currentPassword, newPassword });
     if (!result.success) {
       setMessage(result.error.issues[0]?.message ?? "Geçersiz şifre.");
       return;
@@ -176,7 +180,7 @@ export function AccountSheet() {
       const response = await fetch("/api/account/change-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify(result.data),
       });
 
       const data = await response.json();
@@ -187,6 +191,7 @@ export function AccountSheet() {
 
       setSuccessMessage("Şifreniz başarıyla güncellendi.");
       setNewPassword("");
+      setCurrentPassword("");
       setShowChangePassword(false);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Şifre güncellenemedi.");
@@ -196,11 +201,17 @@ export function AccountSheet() {
   }
 
   async function handleDeleteAccount() {
+    if (!deletePassword) {
+      setMessage("Hesabınızı silmek için şifrenizi girin.");
+      return;
+    }
     setIsSubmitting(true);
     setMessage(null);
     try {
       const response = await fetch("/api/account/delete", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: deletePassword }),
       });
 
       const data = await response.json();
@@ -366,15 +377,26 @@ export function AccountSheet() {
                   <form className="auth-form mt-0" onSubmit={handleChangePassword}>
                     <h3 className="account-subheading">
                       <KeyRound aria-hidden="true" className="h-4 w-4 text-[var(--brand)]" />
-                      Yeni Şifre Belirleyin
+                      Şifre Değiştirin
                     </h3>
                     <label>
-                      <span>Yeni Şifre</span>
+                      <span>Mevcut Şifre</span>
+                      <input
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        autoComplete="current-password"
+                        required
+                      />
+                    </label>
+                    <label>
+                      <span>Yeni Şifre (en az 4 karakter)</span>
                       <input
                         type="password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="En az 6 karakter"
+                        placeholder="En az 4 karakter"
+                        maxLength={128}
                         autoComplete="new-password"
                       />
                     </label>
@@ -391,6 +413,7 @@ export function AccountSheet() {
                         className="secondary-button"
                         onClick={() => {
                           setShowChangePassword(false);
+                          setCurrentPassword("");
                           setNewPassword("");
                         }}
                       >
@@ -422,6 +445,16 @@ export function AccountSheet() {
                       Hesabınız ve tüm müfredat okuma ilerlemeniz kalıcı olarak silinecektir. Bu
                       işlem geri alınamaz.
                     </p>
+                    <label className="auth-form">
+                      <span>Onay için şifreniz</span>
+                      <input
+                        type="password"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
+                        autoComplete="current-password"
+                        required
+                      />
+                    </label>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -434,7 +467,10 @@ export function AccountSheet() {
                       <button
                         type="button"
                         className="secondary-button"
-                        onClick={() => setShowDeleteConfirm(false)}
+                        onClick={() => {
+                          setShowDeleteConfirm(false);
+                          setDeletePassword("");
+                        }}
                       >
                         Vazgeç
                       </button>
@@ -558,12 +594,13 @@ export function AccountSheet() {
                     </span>
                   </div>
                   <label>
-                    <span>Şifreniz</span>
+                    <span>Şifreniz (en az 4 karakter)</span>
                     <input
                       type="password"
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
-                      placeholder="En az 6 karakter"
+                      placeholder="En az 4 karakter"
+                      maxLength={128}
                       autoComplete="new-password"
                     />
                   </label>

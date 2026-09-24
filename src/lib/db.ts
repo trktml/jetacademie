@@ -20,6 +20,16 @@ export function resolveDatabaseUrl(
     return ":memory:";
   }
 
+  if (nodeEnv === "production") {
+    if (!url) throw new Error("Production requires DATABASE_URL.");
+    if (url.startsWith("postgres")) {
+      const password = new URL(url).password;
+      if (!password || password === "postgres" || password === "change-me-in-production") {
+        throw new Error("Production requires a non-default database password.");
+      }
+    }
+  }
+
   return url || "postgres://postgres:postgres@localhost:5432/jetacademie";
 }
 

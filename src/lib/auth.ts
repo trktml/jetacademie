@@ -62,6 +62,12 @@ export const SCHEMA_SQL = `
   CREATE INDEX IF NOT EXISTS "account_userId_idx" on "account" ("userId");
   CREATE INDEX IF NOT EXISTS "verification_identifier_idx" on "verification" ("identifier");
 
+  CREATE TABLE IF NOT EXISTS "auth_login_attempts" (
+    "userId" text not null primary key references "user" ("id") on delete cascade,
+    "attempts" integer not null,
+    "windowStartedAt" bigint not null
+  );
+
   CREATE TABLE IF NOT EXISTS "curriculum_progress" (
     "userId" text not null references "user" ("id") on delete cascade,
     "entryId" text not null,
@@ -113,14 +119,21 @@ if (!isPostgres) {
 }
 
 let schemaInitialized = false;
+let schemaPromise: Promise<void> | null = null;
 export async function ensureDatabaseSchema(): Promise<void> {
   if (schemaInitialized) return;
-  try {
-    await execute(SCHEMA_SQL);
-    schemaInitialized = true;
-  } catch (err) {
-    console.error("[auth] Failed to initialize database schema:", err);
-  }
+  schemaPromise ??= execute(SCHEMA_SQL)
+    .then(() => {
+      schemaInitialized = true;
+    })
+    .catch((err: unknown) => {
+      console.error("[auth] Failed to initialize database schema:", err);
+      throw err;
+    })
+    .finally(() => {
+      schemaPromise = null;
+    });
+  await schemaPromise;
 }
 
 // Database instance exported for tests & legacy compatibility
@@ -150,11 +163,12 @@ export const auth = betterAuth({
   database: isPostgres
     ? (getPool() as NonNullable<ReturnType<typeof getPool>>)
     : (getSqlite() as NonNullable<ReturnType<typeof getSqlite>>),
-  secret:
-    process.env.BETTER_AUTH_SECRET || "development-secret-must-be-at-least-32-characters-long",
+  secret: getAuthSecret(),
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 4,
+    maxPasswordLength: 128,
   },
   user: {
     deleteUser: {
@@ -162,3 +176,16 @@ export const auth = betterAuth({
     },
   },
 });
+
+function getAuthSecret(): string {
+  const secret = process.env.BETTER_AUTH_SECRET;
+  if (
+    process.env.NODE_ENV === "production" &&
+    (!secret ||
+      secret.length < 32 ||
+      secret === "development-secret-must-be-at-least-32-characters-long")
+  ) {
+    throw new Error("Production requires a unique BETTER_AUTH_SECRET of at least 32 characters.");
+  }
+  return secret || "development-secret-must-be-at-least-32-characters-long";
+}

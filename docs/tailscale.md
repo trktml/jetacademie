@@ -15,6 +15,7 @@ Bu rehber, **JetAcademie** projesini Tailscale ağı üzerindeki `100.80.51.7` u
   - Sadece ve sadece Tailscale ağınızda kimliği doğrulanmış makineler `100.80.51.7:5433` üzerinden veritabanına erişebilir.
   - Konteyner içi ağ: `web` servisi `db:5432` ile doğrudan Docker iç ağı üzerinden görüşür.
   - Mevcut PostgreSQL veritabanınız (`5432`) **kesinlikle etkilenmez ve çakışma yaşanmaz**.
+- Web servisi varsayılan olarak `127.0.0.1:3001` üzerinde dinler; Tailscale Serve veya yerel ters vekil üzerinden erişilir.
 
 ---
 
@@ -43,15 +44,7 @@ Yerel terminalinizden projeyi `100.80.51.7` sunucunuza deploy etmek için:
 
 ## 🔒 3. Web Arayüzüne Erişim ve Otomatik HTTPS
 
-### Seçenek A: Doğrudan Tailscale IP
-
-Tailscale ağınıza bağlı herhangi bir cihazdan (Dokploy port 3000'de olduğu için JetAcademie port 3001'dedir):
-
-```text
-http://100.80.51.7:3001
-```
-
-### Seçenek B: Tailscale Serve ile Otomatik Let's Encrypt HTTPS (Tavsiye Edilen)
+### Tailscale Serve ile HTTPS
 
 Uzak sunucuya SSH ile bağlanıp tek komutla SSL sertifikalı alan adı elde edebilirsiniz:
 
@@ -60,6 +53,7 @@ tailscale serve --bg 3001
 ```
 
 Bu komut sonrası uygulamanız `https://<sunucu-adi>.<tailnet-adi>.ts.net` adresinde güvenli şekilde yayına geçer.
+Sunucudaki `.env` dosyasında `BETTER_AUTH_URL` ve `NEXT_PUBLIC_APP_URL` değerlerini bu HTTPS adresine ayarlayın. Uygulama portunu Tailscale IP üzerinden doğrudan açmanız gerekiyorsa `HOST_BIND_IP` değerini bilinçli olarak değiştirin ve ağ erişimini sınırlandırın.
 
 ---
 
@@ -72,11 +66,7 @@ Deploy tamamlandıktan sonra, yerel makinenizdeki `auth.sqlite` verilerini Tails
 DATABASE_URL="postgres://jetacademie:SIFRE@100.80.51.7:5433/jetacademie" bun scripts/migrate-sqlite-to-pg.ts
 ```
 
-> **Not:** Eğer şifreyi öğrenmek isterseniz, sunucuda şu komutu çalıştırabilirsiniz:
->
-> ```bash
-> ssh root@100.80.51.7 "grep '^POSTGRES_PASSWORD=' /opt/jetacademie/.env"
-> ```
+> **Not:** Veritabanı parolasını terminal çıktısına veya dağıtım günlüklerine yazdırmayın. Uzak `.env` dosyasını yalnızca yetkili hesaplarla erişilebilir tutun.
 
 ---
 

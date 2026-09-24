@@ -38,7 +38,7 @@ describe("Better Auth Server Setup", () => {
       body: {
         name: "Test User",
         email,
-        password: "securepassword123",
+        password: "1234",
       },
     });
 
@@ -55,14 +55,14 @@ describe("Better Auth Server Setup", () => {
       body: {
         name: "Sign In User",
         email,
-        password: "securepassword123",
+        password: "1234",
       },
     });
 
     const signInRes = await auth.api.signInEmail({
       body: {
         email,
-        password: "securepassword123",
+        password: "1234",
       },
     });
 
@@ -77,7 +77,7 @@ describe("Better Auth Server Setup", () => {
       body: {
         name: "Fail User",
         email,
-        password: "securepassword123",
+        password: "1234",
       },
     });
 
@@ -85,7 +85,7 @@ describe("Better Auth Server Setup", () => {
       await auth.api.signInEmail({
         body: {
           email,
-          password: "wrongpassword",
+          password: "0000",
         },
       });
       expect(true).toBe(false); // Should not reach here
@@ -94,25 +94,22 @@ describe("Better Auth Server Setup", () => {
     }
   });
 
-  it("should handle GET and POST through the Next.js auth route handler", async () => {
+  it("should expose session reads but block direct email registration", async () => {
     const getReq = new Request("http://localhost:3000/api/auth/get-session");
     const getRes = await GET(getReq);
     expect(getRes.status).toBe(200);
 
-    const email = `route_${Date.now()}@example.com`;
     const postReq = new Request("http://localhost:3000/api/auth/sign-up/email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: "Route User",
-        email,
-        password: "securepassword123",
+        email: "route@example.com",
+        password: "1234",
       }),
     });
     const postRes = await POST(postReq);
-    expect(postRes.status).toBe(200);
-    const postData = (await postRes.json()) as { user?: { email: string } };
-    expect(postData.user?.email).toBe(email);
+    expect(postRes.status).toBe(404);
   });
 
   it("should return ok status from the health check endpoint", async () => {
@@ -136,11 +133,22 @@ describe("Better Auth Server Setup", () => {
       expect(resolveDatabasePath("custom-test.sqlite", "test")).toBe("custom-test.sqlite");
     });
 
-    it("should default to PostgreSQL URL in development or production mode when unset", () => {
+    it("should default to PostgreSQL URL in development mode when unset", () => {
       const expected =
         process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/jetacademie";
       expect(resolveDatabasePath(undefined, "development", undefined)).toBe(expected);
-      expect(resolveDatabasePath(undefined, "production", undefined)).toBe(expected);
+    });
+
+    it("should reject production database URLs with default credentials", () => {
+      expect(() =>
+        resolveDatabasePath("postgres://postgres:postgres@localhost:5432/jetacademie", "production")
+      ).toThrow();
+      expect(() =>
+        resolveDatabasePath(
+          "postgres://jetacademie:change-me-in-production@db:5432/jetacademie",
+          "production"
+        )
+      ).toThrow();
     });
 
     it("should honor production DATABASE_URL", () => {

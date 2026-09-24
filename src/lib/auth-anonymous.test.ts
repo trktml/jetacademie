@@ -1,11 +1,9 @@
 import { beforeEach, describe, expect, it } from "bun:test";
 import { Database } from "bun:sqlite";
 import {
-  deleteUserAccount,
   getNextAvailableUsername,
   normalizeUsername,
   syntheticEmailToUsername,
-  updateUserPassword,
   usernameToSyntheticEmail,
 } from "./auth-anonymous";
 import { db } from "./auth";
@@ -13,6 +11,7 @@ import { POST as registerPOST } from "@/app/api/auth/register-anonymous/route";
 import { POST as signInPOST } from "@/app/api/auth/sign-in-anonymous/route";
 import { POST as changePasswordPOST } from "@/app/api/account/change-password/route";
 import { POST as deleteAccountPOST } from "@/app/api/account/delete/route";
+import { POST as nativeAuthPOST } from "@/app/api/auth/[...all]/route";
 
 describe("Anonymous Auth & Slot Assignment", () => {
   beforeEach(() => {
@@ -75,11 +74,31 @@ describe("Anonymous Auth & Slot Assignment", () => {
   });
 
   describe("API Endpoints & Lifecycle", () => {
+    it("should reject cross-origin account mutations and direct email registration", async () => {
+      const foreignRequest = new Request("http://localhost:3000/api/auth/register-anonymous", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Origin: "https://evil.example" },
+        body: JSON.stringify({ password: "1234" }),
+      });
+      expect((await registerPOST(foreignRequest)).status).toBe(403);
+
+      const nativeRequest = new Request("http://localhost:3000/api/auth/sign-up/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+        body: JSON.stringify({
+          name: "Admin",
+          email: "admin@example.com",
+          password: "1234",
+        }),
+      });
+      expect((await nativeAuthPOST(nativeRequest)).status).toBe(404);
+    });
+
     it("should register anonymous user without asking for email or name", async () => {
       const req = new Request("http://localhost:3000/api/auth/register-anonymous", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: "password123" }),
+        headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+        body: JSON.stringify({ password: "1234" }),
       });
 
       const res = await registerPOST(req);
@@ -95,16 +114,16 @@ describe("Anonymous Auth & Slot Assignment", () => {
       // Register user1
       const regReq = new Request("http://localhost:3000/api/auth/register-anonymous", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: "securepassword123" }),
+        headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+        body: JSON.stringify({ password: "2468" }),
       });
       await registerPOST(regReq);
 
       // Sign in with uppercase 'USER1'
       const signInReq = new Request("http://localhost:3000/api/auth/sign-in-anonymous", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "USER1", password: "securepassword123" }),
+        headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+        body: JSON.stringify({ username: "USER1", password: "2468" }),
       });
 
       const signInRes = await signInPOST(signInReq);
@@ -116,12 +135,64 @@ describe("Anonymous Auth & Slot Assignment", () => {
       expect(signInRes.headers.get("set-cookie")).toContain("better-auth.session_token");
     });
 
-    it("should allow changing password directly without current password", async () => {
+    it("should register and sign in with a longer nonnumeric password", async () => {
+      const registration = await registerPOST(
+        new Request("http://localhost:3000/api/auth/register-anonymous", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+          body: JSON.stringify({ password: "long-password-123" }),
+        })
+      );
+      expect(registration.status).toBe(200);
+
+      const response = await signInPOST(
+        new Request("http://localhost:3000/api/auth/sign-in-anonymous", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+          body: JSON.stringify({ username: "user1", password: "long-password-123" }),
+        })
+      );
+      expect(response.status).toBe(200);
+    });
+
+    it("should lock an account after five attempts and reset after the window", async () => {
+      await registerPOST(
+        new Request("http://localhost:3000/api/auth/register-anonymous", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+          body: JSON.stringify({ password: "1234" }),
+        })
+      );
+      const signIn = (password: string) =>
+        signInPOST(
+          new Request("http://localhost:3000/api/auth/sign-in-anonymous", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+            body: JSON.stringify({ username: "user1", password }),
+          })
+        );
+
+      for (let attempt = 0; attempt < 5; attempt++) {
+        expect((await signIn("9999")).status).toBe(401);
+      }
+      expect((await signIn("1234")).status).toBe(429);
+
+      db.query(`UPDATE "auth_login_attempts" SET "windowStartedAt" = ?`).run(
+        Date.now() - 16 * 60 * 1000
+      );
+      expect((await signIn("1234")).status).toBe(200);
+      const remaining = db
+        .query<{ count: number }, []>(`SELECT COUNT(*) as count FROM "auth_login_attempts"`)
+        .get();
+      expect(remaining?.count).toBe(0);
+    });
+
+    it("should require the current password and revoke other sessions", async () => {
       // Register user
       const regReq = new Request("http://localhost:3000/api/auth/register-anonymous", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: "originalpassword" }),
+        headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+        body: JSON.stringify({ password: "2468" }),
       });
       const regRes = await registerPOST(regReq);
       const cookie = regRes.headers.get("set-cookie") || "";
@@ -131,21 +202,38 @@ describe("Anonymous Auth & Slot Assignment", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Origin: "http://localhost:3000",
           cookie,
         },
-        body: JSON.stringify({ newPassword: "newsecretpassword" }),
+        body: JSON.stringify({
+          currentPassword: "9999",
+          newPassword: "1357",
+        }),
       });
 
-      const changeRes = await changePasswordPOST(changeReq);
+      const rejectedChange = await changePasswordPOST(changeReq);
+      expect(rejectedChange.status).toBe(400);
+
+      const changeRes = await changePasswordPOST(
+        new Request("http://localhost:3000/api/account/change-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Origin: "http://localhost:3000", cookie },
+          body: JSON.stringify({
+            currentPassword: "2468",
+            newPassword: "1357",
+          }),
+        })
+      );
       expect(changeRes.status).toBe(200);
+      expect(changeRes.headers.get("set-cookie")).toContain("better-auth.session_token");
       const changeData = (await changeRes.json()) as { success: boolean };
       expect(changeData.success).toBe(true);
 
       // Verify sign in with new password works
       const signInReq = new Request("http://localhost:3000/api/auth/sign-in-anonymous", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "user1", password: "newsecretpassword" }),
+        headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+        body: JSON.stringify({ username: "user1", password: "1357" }),
       });
       const signInRes = await signInPOST(signInReq);
       expect(signInRes.status).toBe(200);
@@ -156,8 +244,8 @@ describe("Anonymous Auth & Slot Assignment", () => {
       const reg1 = await registerPOST(
         new Request("http://localhost:3000/api/auth/register-anonymous", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: "password1" }),
+          headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+          body: JSON.stringify({ password: "1234" }),
         })
       );
       const data1 = (await reg1.json()) as { username: string };
@@ -168,8 +256,8 @@ describe("Anonymous Auth & Slot Assignment", () => {
       const reg2 = await registerPOST(
         new Request("http://localhost:3000/api/auth/register-anonymous", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: "password2" }),
+          headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+          body: JSON.stringify({ password: "2345" }),
         })
       );
       const data2 = (await reg2.json()) as { username: string };
@@ -178,45 +266,36 @@ describe("Anonymous Auth & Slot Assignment", () => {
       // 3. user1 deletes account
       const delReq = new Request("http://localhost:3000/api/account/delete", {
         method: "POST",
-        headers: { cookie: cookie1 },
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "http://localhost:3000",
+          cookie: cookie1,
+        },
+        body: JSON.stringify({ password: "9999" }),
       });
-      const delRes = await deleteAccountPOST(delReq);
+      expect((await deleteAccountPOST(delReq)).status).toBe(400);
+      const validDelReq = new Request("http://localhost:3000/api/account/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "http://localhost:3000",
+          cookie: cookie1,
+        },
+        body: JSON.stringify({ password: "1234" }),
+      });
+      const delRes = await deleteAccountPOST(validDelReq);
       expect(delRes.status).toBe(200);
 
       // 4. Register new user -> Gap filling MUST allocate user1 again!
       const reg3 = await registerPOST(
         new Request("http://localhost:3000/api/auth/register-anonymous", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: "password3" }),
+          headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+          body: JSON.stringify({ password: "3456" }),
         })
       );
       const data3 = (await reg3.json()) as { username: string };
       expect(data3.username).toBe("user1");
-    });
-
-    it("should directly execute updateUserPassword and deleteUserAccount functions", async () => {
-      const reg = await registerPOST(
-        new Request("http://localhost:3000/api/auth/register-anonymous", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: "oldPassword123" }),
-        })
-      );
-      expect(reg.status).toBe(200);
-
-      const user = db.query<{ id: string }, []>(`SELECT id FROM "user" WHERE name = 'user1'`).get();
-      expect(user?.id).toBeDefined();
-
-      if (user) {
-        await updateUserPassword(user.id, "newDirectPassword123", db);
-        deleteUserAccount(user.id, db);
-
-        const remaining = db
-          .query<{ count: number }, []>(`SELECT COUNT(*) as count FROM "user"`)
-          .get();
-        expect(remaining?.count).toBe(0);
-      }
     });
   });
 });

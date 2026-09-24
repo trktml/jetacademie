@@ -60,6 +60,7 @@ rsync -avz --delete \
 # 4. Configure remote environment & secrets
 echo -e "\n[4/5] Checking remote .env configuration..."
 ssh "$TARGET_HOST" "bash -s '$TARGET_DIR' '$TAILSCALE_IP'" << 'EOF'
+  set -e
   TARGET_DIR="$1"
   TAILSCALE_IP="$2"
   cd "$TARGET_DIR"
@@ -116,6 +117,17 @@ ssh "$TARGET_HOST" "bash -s '$TARGET_DIR' '$TAILSCALE_IP'" << 'EOF'
       echo "✓ Added HOST_PORT=3001 to existing .env."
     fi
   fi
+  if grep -q '^BETTER_AUTH_URL=http://localhost:3000$' .env || grep -q '^NEXT_PUBLIC_APP_URL=http://localhost:3000$' .env; then
+    TS_DNS=$(tailscale status --json | awk -F'"' '/"DNSName"/ {print $4; exit}' | sed 's/\.$//')
+    if [ -z "$TS_DNS" ]; then
+      echo "Set BETTER_AUTH_URL and NEXT_PUBLIC_APP_URL to the external HTTPS origin in .env." >&2
+      exit 1
+    fi
+    sed -i.bak "s|^BETTER_AUTH_URL=http://localhost:3000$|BETTER_AUTH_URL=https://$TS_DNS|; s|^NEXT_PUBLIC_APP_URL=http://localhost:3000$|NEXT_PUBLIC_APP_URL=https://$TS_DNS|" .env
+    rm -f .env.bak
+    echo "✓ Set application origin to https://$TS_DNS."
+  fi
+  chmod 600 .env
 EOF
 
 # 5. Build and launch containers via Docker Compose
@@ -127,18 +139,14 @@ echo -e "\n⏳ Verifying application health status..."
 sleep 5
 ssh "$TARGET_HOST" "cd '$TARGET_DIR' && docker compose ps"
 
-# Extract the remote postgres password to display migration command
-REMOTE_PG_PASS=$(ssh "$TARGET_HOST" "grep '^POSTGRES_PASSWORD=' '$TARGET_DIR/.env' | cut -d= -f2")
-
 echo -e "\n=============================================================================="
 echo "🎉 Deployment to Tailscale host ($TARGET_HOST) completed successfully!"
 echo "=============================================================================="
-echo "🌐 Web App Access (Port 3001 avoids conflict with Dokploy on 3000):"
-echo "   http://100.80.51.7:3001"
+echo "🌐 Web App Access: use the configured HTTPS reverse proxy or Tailscale Serve."
 echo ""
 echo "🔒 Instant HTTPS with Tailscale Serve:"
 echo "   ssh $TARGET_HOST 'tailscale serve --bg 3001'"
 echo ""
 echo "📦 PostgreSQL Migration (from local machine over Tailscale):"
-echo "   DATABASE_URL=\"postgres://jetacademie:${REMOTE_PG_PASS}@100.80.51.7:5433/jetacademie\" bun scripts/migrate-sqlite-to-pg.ts"
+echo "   Retrieve database credentials securely from the remote .env when needed."
 echo "=============================================================================="

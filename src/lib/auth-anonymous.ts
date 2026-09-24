@@ -1,6 +1,5 @@
 import type { Database } from "bun:sqlite";
-import { execute, query } from "@/lib/db";
-import { hashPassword } from "better-auth/crypto";
+import { query } from "@/lib/db";
 
 export const ANONYMOUS_EMAIL_DOMAIN = "anon.jetacademie.local";
 
@@ -61,49 +60,4 @@ export async function getNextAvailableUsername(database?: Database): Promise<str
   }
 
   return `user${candidate}`;
-}
-
-/**
- * Updates a user's password directly without requiring their old password.
- */
-export async function updateUserPassword(
-  userId: string,
-  newPassword: string,
-  database?: Database
-): Promise<void> {
-  const hashedPassword = await hashPassword(newPassword);
-  if (database && typeof database.query === "function") {
-    database
-      .query(`UPDATE "account" SET "password" = ?, "updatedAt" = ? WHERE "userId" = ?`)
-      .run(hashedPassword, new Date().toISOString(), userId);
-    return;
-  }
-
-  await execute(
-    `UPDATE "account"
-     SET "password" = $1, "updatedAt" = $2
-     WHERE "userId" = $3`,
-    [hashedPassword, new Date().toISOString(), userId]
-  );
-}
-
-/**
- * Permanently deletes a user account, sessions, and learning progress.
- * Cascades cleanly so the username slot is freed for future users.
- */
-export async function deleteUserAccount(userId: string, database?: Database): Promise<void> {
-  if (database && typeof database.transaction === "function") {
-    database.transaction(() => {
-      database.query(`DELETE FROM "curriculum_progress" WHERE "userId" = ?`).run(userId);
-      database.query(`DELETE FROM "session" WHERE "userId" = ?`).run(userId);
-      database.query(`DELETE FROM "account" WHERE "userId" = ?`).run(userId);
-      database.query(`DELETE FROM "user" WHERE "id" = ?`).run(userId);
-    })();
-    return;
-  }
-
-  await execute(`DELETE FROM "curriculum_progress" WHERE "userId" = $1`, [userId]);
-  await execute(`DELETE FROM "session" WHERE "userId" = $1`, [userId]);
-  await execute(`DELETE FROM "account" WHERE "userId" = $1`, [userId]);
-  await execute(`DELETE FROM "user" WHERE "id" = $1`, [userId]);
 }

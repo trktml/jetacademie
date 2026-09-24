@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { normalizeUsername, usernameToSyntheticEmail } from "@/lib/auth-anonymous";
 import { anonymousSignInSchema } from "@/lib/validations/auth";
+import { clearLoginAttempts, reserveLoginAttempt } from "@/lib/auth-login-limit";
+import {
+  dispatchAuthRequest,
+  mutationErrorResponse,
+  readMutationJson,
+  validateMutationRequest,
+} from "@/lib/mutation-security";
 
 export async function POST(req: Request) {
+  const rejected = validateMutationRequest(req);
+  if (rejected) return rejected;
   try {
-    const json = await req.json().catch(() => ({}));
+    const json = await readMutationJson(req);
     const parseResult = anonymousSignInSchema.safeParse(json);
 
     if (!parseResult.success) {
@@ -18,29 +26,31 @@ export async function POST(req: Request) {
     const normalizedUsername = normalizeUsername(parseResult.data.username);
     const email = usernameToSyntheticEmail(normalizedUsername);
 
-    const signInResponse = await auth.api.signInEmail({
-      body: {
-        email,
-        password: parseResult.data.password,
-      },
-      headers: req.headers,
-      asResponse: true,
-    });
-
-    if (signInResponse.status !== 200) {
-      const errData = (await signInResponse.json().catch(() => ({}))) as { message?: string };
+    const attempt = await reserveLoginAttempt(email);
+    if (!attempt.allowed) {
       return NextResponse.json(
-        { error: errData.message || "Kullanıcı adı veya şifre hatalı." },
-        { status: signInResponse.status }
+        { error: "Çok fazla deneme. 15 dakika sonra tekrar deneyin." },
+        { status: 429 }
       );
     }
 
-    const responseHeaders = new Headers();
-    signInResponse.headers.forEach((val, key) => {
-      if (key.toLowerCase() === "set-cookie") {
-        responseHeaders.append("set-cookie", val);
-      }
+    const signInResponse = await dispatchAuthRequest(req, "sign-in/email", {
+      email,
+      password: parseResult.data.password,
     });
+
+    if (signInResponse.status !== 200) {
+      return NextResponse.json(
+        { error: "Kullanıcı adı veya şifre hatalı." },
+        { status: signInResponse.status === 429 ? 429 : 401 }
+      );
+    }
+
+    if (attempt.userId) await clearLoginAttempts(attempt.userId);
+
+    const responseHeaders = new Headers();
+    for (const cookie of signInResponse.headers.getSetCookie())
+      responseHeaders.append("set-cookie", cookie);
     responseHeaders.set("content-type", "application/json");
 
     return new Response(JSON.stringify({ success: true, username: normalizedUsername }), {
@@ -48,7 +58,6 @@ export async function POST(req: Request) {
       headers: responseHeaders,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Giriş işlemi başarısız oldu.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return mutationErrorResponse(error, "Giriş işlemi başarısız oldu.");
   }
 }
