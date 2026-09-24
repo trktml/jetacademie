@@ -32,7 +32,11 @@ export function AccountSheet() {
   const router = useRouter();
   const isOpen = useUiStore((state) => state.isAccountOpen);
   const setOpen = useUiStore((state) => state.setAccountOpen);
-  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const {
+    data: session,
+    isPending: isSessionPending,
+    refetch: refetchSession,
+  } = authClient.useSession();
 
   const [mode, setMode] = useState<"signIn" | "signUp">("signUp");
   const [username, setUsername] = useState("");
@@ -111,6 +115,7 @@ export function AccountSheet() {
       }
       if (isGuest) disableGuest();
 
+      await refetchSession();
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Kayıt işlemi tamamlanamadı.");
@@ -154,6 +159,7 @@ export function AccountSheet() {
       }
       if (isGuest) disableGuest();
 
+      await refetchSession();
       resetForm();
       setOpen(false);
       router.refresh();
@@ -193,6 +199,7 @@ export function AccountSheet() {
       setNewPassword("");
       setCurrentPassword("");
       setShowChangePassword(false);
+      await refetchSession();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Şifre güncellenemedi.");
     } finally {
@@ -220,6 +227,7 @@ export function AccountSheet() {
         return;
       }
 
+      await refetchSession();
       resetForm();
       setOpen(false);
       router.refresh();
