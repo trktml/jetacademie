@@ -12,15 +12,14 @@ export default function Home() {
           <blockquote>
             <p>&ldquo;İlim öğrenmek her Müslüman&apos;a farzdır.&rdquo;</p>
             <footer className="text-[11px] text-zinc-400 sm:text-xs">
-              — Hz. Muhammed (s.a.v.) <span className="text-zinc-600">&bull;</span> İbn Mâce,
-              Mukaddime 17
+              — Hz. Muhammed (s.a.v.)
             </footer>
           </blockquote>
         </div>
       </section>
 
       <footer className="landing-footer">
-        © {new Date().getFullYear()} JetAcademie · Belçika&apos;da hazırlandı
+        © {new Date().getFullYear()} JetAcademie · Belçika ❤️
       </footer>
     </main>
   );
