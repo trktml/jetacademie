@@ -82,7 +82,7 @@ export function AppHeader() {
 
             <div className="site-header__slot site-header__slot--center">
               {isHome ? (
-                logoMarkup("md")
+                logoMarkup()
               ) : (
                 <div className="site-header__nav-select-wrap">
                   <AnimatePresence mode="wait">

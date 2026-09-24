@@ -223,13 +223,6 @@ body:has(.landing-page),
     background 200ms ease;
 }
 
-.site-header[data-home="true"] .site-header__island {
-  width: min(100%, 82rem);
-  min-height: 64px;
-  padding: 0.45rem 0.85rem 0.45rem 1rem;
-  border-radius: 1.5rem;
-}
-
 .site-header__slot--left {
   display: flex;
   align-items: center;
@@ -4455,9 +4448,6 @@ body:has(.landing-page),
 
   .site-header[data-home="true"] .site-header__island {
     grid-template-columns: minmax(0, 1fr) auto;
-    min-height: 56px;
-    padding: 0.3rem 0.45rem 0.3rem 0.55rem;
-    border-radius: 1.15rem;
   }
 
   .site-header[data-home="true"] .site-header__slot--left {
@@ -4523,27 +4513,6 @@ body:has(.landing-page),
 
   .hero-mobile-nav {
     max-width: 28rem;
-  }
-
-  .site-header[data-home="true"] .jet-logo--md {
-    gap: 0.5rem;
-  }
-
-  .site-header[data-home="true"] .jet-logo--md .jet-logo__icon-shell {
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0.18rem;
-    border-radius: 0.7rem;
-  }
-
-  .site-header[data-home="true"] .jet-logo--md .jet-logo__icon-shell > svg {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .site-header[data-home="true"] .jet-logo--md .jet-logo__jet,
-  .site-header[data-home="true"] .jet-logo--md .jet-logo__name {
-    font-size: 1rem;
   }
 
   .home-page {
