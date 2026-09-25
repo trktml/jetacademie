@@ -105,9 +105,9 @@ export function CampaignsView() {
               <a
                 href={campaign.image}
                 download={campaign.downloadFilename ?? "kampanya-afisi.jpg"}
-                className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-xs font-semibold text-amber-200 transition hover:bg-amber-500/20 hover:text-white"
+                className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-amber-400/80 bg-amber-500 px-4 py-2.5 text-xs font-bold text-zinc-950 shadow-md shadow-amber-950/20 transition hover:bg-amber-400 hover:text-zinc-900 active:scale-[0.98]"
               >
-                <Download className="h-4 w-4 text-amber-400" aria-hidden="true" />
+                <Download className="h-4 w-4 text-zinc-950" aria-hidden="true" />
                 <span>Afişi İndir</span>
               </a>
             </div>
@@ -144,10 +144,10 @@ export function CampaignsView() {
                 <a
                   href={lightboxCampaign.image}
                   download={lightboxCampaign.downloadFilename ?? "kampanya-afisi.jpg"}
-                  className="flex min-h-[44px] items-center gap-1.5 rounded-lg bg-amber-500/20 px-3 py-1 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/30"
+                  className="flex min-h-[44px] items-center gap-1.5 rounded-lg border border-amber-400/80 bg-amber-500 px-3 py-1 text-xs font-bold text-zinc-950 shadow-xs transition hover:bg-amber-400 hover:text-zinc-900 active:scale-[0.98]"
                   aria-label="Afişi indir"
                 >
-                  <Download className="h-4 w-4" aria-hidden="true" />
+                  <Download className="h-4 w-4 text-zinc-950" aria-hidden="true" />
                   <span className="hidden sm:inline">İndir</span>
                 </a>
                 <button

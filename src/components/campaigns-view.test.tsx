@@ -20,9 +20,11 @@ describe("CampaignsView Component", () => {
     expect(html).toContain("/kampanyalar/risale-okuma-kampanyasi.jpg");
     expect(html).toContain("2026 – 2027");
 
-    // Action buttons
+    // Action buttons with high-contrast readable styling
     expect(html).toContain("Tam Ekran");
     expect(html).toContain("Afişi İndir");
+    expect(html).toContain("text-zinc-950");
+    expect(html).toContain("bg-amber-500");
 
     // Must NOT contain redundant textual duplications already present in the poster
     expect(html).not.toContain("3 OKUMA KADEMESİ");
