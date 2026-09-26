@@ -1,8 +1,6 @@
 "use client";
 
-import { Compass } from "lucide-react";
 import type { GradePlan } from "@/lib/data/curriculum-plans";
-import { STAGE_ICONS } from "./target-outcome-card";
 
 interface TargetsProgressionLadderProps {
   plans: readonly GradePlan[];
@@ -15,14 +13,14 @@ export function TargetsProgressionLadder({
   selectedGrade,
   onSelectGrade,
 }: TargetsProgressionLadderProps) {
+  const activePlan = plans.find((p) => p.grade === selectedGrade) ?? plans[0];
+
   return (
     <nav className="targets-ladder" aria-label="Sınıf ve Basamak Seçimi">
-      {/* 6 Milestone Step Cards */}
+      {/* Sleek Segmented Switcher */}
       <div className="targets-ladder__track" role="tablist" aria-label="Sınıflar">
         {plans.map((plan) => {
           const isSelected = plan.grade === selectedGrade;
-          const Icon = STAGE_ICONS[plan.grade] ?? Compass;
-          const isOrtaokul = plan.grade <= 3;
 
           return (
             <button
@@ -32,30 +30,30 @@ export function TargetsProgressionLadder({
               aria-selected={isSelected}
               aria-controls={`target-panel-${plan.grade}`}
               id={`target-tab-${plan.grade}`}
-              className={`targets-ladder__step ${
-                isSelected ? "targets-ladder__step--active" : ""
-              } ${isOrtaokul ? "targets-ladder__step--orta" : "targets-ladder__step--lise"}`}
+              className={`targets-ladder__step ${isSelected ? "targets-ladder__step--active" : ""}`}
               onClick={() => onSelectGrade(plan.grade)}
             >
-              <div className="targets-ladder__step-header">
-                <div className="targets-ladder__step-badge">
-                  <span className="targets-ladder__code">{plan.code}</span>
-                  <span className="targets-ladder__grade-label">{`${plan.grade}. Sınıf`}</span>
-                </div>
-                <div className="targets-ladder__icon-wrap" aria-hidden="true">
-                  <Icon className="targets-ladder__icon" />
-                </div>
-              </div>
-
-              <div className="targets-ladder__step-content">
-                <span className="targets-ladder__step-stage">{plan.stage}</span>
-              </div>
-
-              <div className="targets-ladder__active-bar" aria-hidden="true" />
+              <span className="targets-ladder__code">{plan.code}</span>
+              <span className="targets-ladder__dot" aria-hidden="true">
+                ·
+              </span>
+              <span className="targets-ladder__grade-label">{`${plan.grade}. Sınıf`}</span>
             </button>
           );
         })}
       </div>
+
+      {/* Active Grade Stage Summary Line */}
+      {activePlan && (
+        <div className="targets-ladder__stage-summary">
+          <span className="targets-ladder__stage-pill">{activePlan.code} Basamağı</span>
+          <span className="targets-ladder__stage-text">
+            <strong>{activePlan.stage}</strong>
+            <span className="targets-ladder__stage-sep"> — </span>
+            <span className="targets-ladder__stage-motto">&ldquo;{activePlan.motto}&rdquo;</span>
+          </span>
+        </div>
+      )}
     </nav>
   );
 }

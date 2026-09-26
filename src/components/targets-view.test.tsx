@@ -27,7 +27,7 @@ describe("Targets UI Components (SSR & Rendering)", () => {
   });
 
   describe("TargetOutcomeCard", () => {
-    it("renders outcome showcase, motto, core goals, and method steps", () => {
+    it("renders outcome showcase, motto, and core goals without method steps", () => {
       const html = renderToString(<TargetOutcomeCard plan={planM1} />);
 
       expect(html).toContain("Sene Sonu Kazanımı");
@@ -40,10 +40,8 @@ describe("Targets UI Components (SSR & Rendering)", () => {
         expect(html).toContain(goal);
       }
 
-      // Method steps rendered
-      for (const step of planM1.methodSteps) {
-        expect(html).toContain(step);
-      }
+      // Method steps should not be rendered
+      expect(html).not.toContain("Çalışma Usulü");
     });
   });
 
@@ -56,14 +54,21 @@ describe("Targets UI Components (SSR & Rendering)", () => {
       expect(html).toContain("Ekim");
       expect(html).toContain("Mayıs");
       expect(html).toContain("1. Ünite");
-      expect(html).toContain("Tanışma ve Merak");
+      expect(html).toContain("Tanışma, Merak ve Okuma Kültürü");
       expect(html).toContain("2. Ünite");
-      expect(html).toContain("Besmele, İman ve Kulluk");
+      expect(html).toContain("Besmele, Bakış Açısı ve İbadet");
       expect(html).toContain("9. Ünite");
 
-      // First unit is expanded by default in SSR, with topic and month/week indicator
-      expect(html).toContain("Bu eser neden hâlâ okunuyor?");
+      // First unit is expanded by default in SSR, with topic, purpose (Maksat) and month/week indicator
+      expect(html).toContain("Benim Büyük Sorularım");
+      expect(html).toContain("Maksat");
       expect(html).toContain("Eylül 1");
+
+      // Search input should have attributes to prevent extension hydration mismatches
+      expect(html).toContain('data-protonpass-ignore="true"');
+      expect(html).toContain('data-1p-ignore="true"');
+      expect(html).toContain('data-bwignore="true"');
+      expect(html).toContain('autoComplete="off"');
     });
   });
 

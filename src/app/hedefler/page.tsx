@@ -17,7 +17,7 @@ export default async function TargetsPage(props: TargetsPageProps) {
   const initialGrade = gradeParam >= 1 && gradeParam <= 6 ? gradeParam : 1;
 
   return (
-    <main className="targets-page page-shell archive-page-shell">
+    <main className="targets-page page-shell archive-page-shell" suppressHydrationWarning>
       <TargetsView initialGrade={initialGrade} />
     </main>
   );

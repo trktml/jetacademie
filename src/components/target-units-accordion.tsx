@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown, ChevronUp, Heart, BookOpen } from "lucide-react";
+import { useState, useId } from "react";
+import { ChevronDown, ChevronUp, Heart, BookOpen, Search, X } from "lucide-react";
 import type { PlanUnit, PlanWeek } from "@/lib/data/curriculum-plans";
 
 interface TargetUnitsAccordionProps {
@@ -9,7 +9,7 @@ interface TargetUnitsAccordionProps {
   gradeCode: string;
 }
 
-const SCHOOL_MONTHS: readonly string[] = [
+export const SCHOOL_MONTHS: readonly string[] = [
   "Eylül",
   "Ekim",
   "Kasım",
@@ -25,7 +25,7 @@ export function getUnitMonth(unitNumber: number): string {
   return SCHOOL_MONTHS[unitNumber - 1] ?? `${unitNumber}. Ay`;
 }
 
-function formatUnitTitle(title: string): string {
+export function formatUnitTitle(title: string): string {
   const smallWords = new Set(["ve", "veya", "ile", "de", "da", "mi", "mu", "mü", "mı"]);
   const cleaned = title.replace(/^\d+\.\s*ÜNİTE\s*[—–-]\s*/i, "").trim();
   return cleaned
@@ -43,6 +43,9 @@ function formatUnitTitle(title: string): string {
 export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
   // First unit open by default
   const [openUnits, setOpenUnits] = useState<Record<number, boolean>>({ 1: true });
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const searchInputId = useId();
 
   const toggleUnit = (unitNumber: number) => {
     setOpenUnits((prev) => ({
@@ -63,27 +66,147 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
     setOpenUnits({});
   };
 
+  const handleMonthSelect = (monthIdx: number | null) => {
+    setSelectedMonth(monthIdx);
+    if (monthIdx !== null) {
+      setOpenUnits({ [monthIdx]: true });
+    }
+  };
+
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase("tr");
+
+  const filteredUnits = units
+    .filter((unit) => {
+      if (selectedMonth !== null && unit.unitNumber !== selectedMonth) {
+        return false;
+      }
+      return true;
+    })
+    .map((unit) => {
+      if (!normalizedQuery) {
+        return unit;
+      }
+      const matchingWeeks = unit.weeks.filter(
+        (w) =>
+          w.topic.toLocaleLowerCase("tr").includes(normalizedQuery) ||
+          w.purpose.toLocaleLowerCase("tr").includes(normalizedQuery) ||
+          w.mainQuestion.toLocaleLowerCase("tr").includes(normalizedQuery) ||
+          w.primarySource.toLocaleLowerCase("tr").includes(normalizedQuery)
+      );
+      return {
+        ...unit,
+        weeks: matchingWeeks,
+      };
+    })
+    .filter((unit) => unit.weeks.length > 0);
+
   const areAllOpen = units.every((u) => openUnits[u.unitNumber]);
 
   return (
     <section className="target-units-section" aria-labelledby="target-units-heading">
+      {/* Section Header */}
       <div className="target-units-section__header">
-        <h3 id="target-units-heading" className="target-units-section__title">
-          36 Haftalık Müfredat Planı (Eylül – Mayıs)
-        </h3>
+        <div className="target-units-section__title-group">
+          <h3 id="target-units-heading" className="target-units-section__title">
+            36 Haftalık Müfredat Planı (Eylül – Mayıs)
+          </h3>
+          <p className="target-units-section__subtitle">
+            Haftalık ders konuları ve temel öğrenim maksatları.
+          </p>
+        </div>
 
         <button
           type="button"
           className="target-units-btn"
           onClick={areAllOpen ? collapseAll : expandAll}
         >
-          {areAllOpen ? "Tümünü Kapat" : "Tümünü Genişlet"}
+          {areAllOpen ? "Tümünü Kapat" : "Tümünü Aç"}
         </button>
       </div>
 
+      {/* Filter Bar: Month Pills & Search Input */}
+      <div className="target-units-filters">
+        {/* Month Pills */}
+        <div className="target-month-pills" role="group" aria-label="Ay seçimi">
+          <button
+            type="button"
+            className={`target-month-pill ${selectedMonth === null ? "target-month-pill--active" : ""}`}
+            onClick={() => handleMonthSelect(null)}
+          >
+            Tümü (36 Hafta)
+          </button>
+          {SCHOOL_MONTHS.map((monthName, idx) => {
+            const unitNumber = idx + 1;
+            const isSelected = selectedMonth === unitNumber;
+            return (
+              <button
+                key={monthName}
+                type="button"
+                className={`target-month-pill ${isSelected ? "target-month-pill--active" : ""}`}
+                onClick={() => handleMonthSelect(isSelected ? null : unitNumber)}
+              >
+                {monthName}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Quick Search */}
+        <div className="target-units-search-wrap" role="search" suppressHydrationWarning>
+          <Search className="target-units-search-icon" aria-hidden="true" />
+          <input
+            id={searchInputId}
+            type="search"
+            name="curriculum-search"
+            className="target-units-search-input"
+            placeholder="Hafta, konu veya maksat ara..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Müfredatta ara"
+            autoComplete="off"
+            data-protonpass-ignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-lpignore="true"
+            suppressHydrationWarning
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              className="target-units-search-clear"
+              onClick={() => setSearchQuery("")}
+              aria-label="Aramayı temizle"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Empty State */}
+      {filteredUnits.length === 0 && (
+        <div className="target-units-empty">
+          <p className="target-units-empty__text">
+            &ldquo;{searchQuery}&rdquo; ile eşleşen bir hafta bulunamadı.
+          </p>
+          <button
+            type="button"
+            className="target-units-empty__btn"
+            onClick={() => {
+              setSearchQuery("");
+              setSelectedMonth(null);
+            }}
+          >
+            Filtreleri Temizle
+          </button>
+        </div>
+      )}
+
+      {/* Units List */}
       <div className="target-units-list">
-        {units.map((unit) => {
-          const isOpen = Boolean(openUnits[unit.unitNumber]);
+        {filteredUnits.map((unit) => {
+          const isSearching = Boolean(normalizedQuery);
+          const isOpen = isSearching || Boolean(openUnits[unit.unitNumber]);
           const hasFamilyHighlight = unit.weeks.some((w) => w.isFamilyRespectHighlight);
           const cleanTitle = formatUnitTitle(unit.title);
           const month = getUnitMonth(unit.unitNumber);
@@ -102,9 +225,8 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
                 id={`unit-trigger-${unit.unitNumber}`}
               >
                 <div className="target-unit-card__trigger-left">
-                  <span className="target-unit-card__month-pill">{month}</span>
                   <span className="target-unit-card__pill">{`${unit.unitNumber}. Ünite`}</span>
-                  <span className="target-unit-card__period">{unit.period}</span>
+                  <span className="target-unit-card__month-label">{month}</span>
                   <span className="target-unit-card__dot" aria-hidden="true">
                     ·
                   </span>
@@ -113,9 +235,12 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
 
                 <div className="target-unit-card__trigger-right">
                   {hasFamilyHighlight && (
-                    <span className="target-unit-card__family-tag">
+                    <span
+                      className="target-unit-card__family-tag"
+                      title="Anne-Baba ve Büyüklere Hürmet"
+                    >
                       <Heart className="h-3 w-3 text-rose-500" aria-hidden="true" />
-                      <span>Hürmet Hattı</span>
+                      <span>Hürmet</span>
                     </span>
                   )}
                   <span className="target-unit-card__chevron-wrap">
@@ -159,24 +284,35 @@ function WeekCard({ week, month }: { week: PlanWeek; month: string }) {
         week.isFamilyRespectHighlight ? "target-week-card--family" : ""
       }`}
     >
+      {/* Top Meta: Week Number, Month & Optional Tag */}
       <div className="target-week-card__top">
         <div className="target-week-card__numbers">
           <span className="target-week-card__number">{`${week.weekNumber}. Hafta`}</span>
-          <span className="target-week-card__month-sub">{`(${month} ${weekInMonth})`}</span>
+          <span className="target-week-card__month-sub">{`${month} ${weekInMonth}`}</span>
         </div>
         {week.isFamilyRespectHighlight && (
-          <span className="target-week-card__family-badge">
+          <span className="target-week-card__family-badge" title="Anne-Baba ve Büyüklere Hürmet">
             <Heart className="h-3 w-3 text-rose-500" aria-hidden="true" />
             <span>Hürmet</span>
           </span>
         )}
       </div>
 
+      {/* Week Topic (Konu) */}
       <h5 className="target-week-card__topic">{week.topic}</h5>
+
+      {/* Maksat (Purpose) */}
+      <div className="target-week-card__purpose">
+        <span className="target-week-card__purpose-label">🎯 Maksat:</span>
+        <p className="target-week-card__purpose-text">{week.purpose}</p>
+      </div>
+
+      {/* Guiding Question (Düşünce Sorusu) */}
       <p className="target-week-card__question">&ldquo;{week.mainQuestion}&rdquo;</p>
 
+      {/* Source Reference (Kaynak) */}
       <div className="target-week-card__source-box">
-        <BookOpen className="text-ink-faint h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+        <BookOpen className="text-ink-faint h-3 w-3 shrink-0" aria-hidden="true" />
         <span className="target-week-card__source">{week.primarySource}</span>
       </div>
     </article>

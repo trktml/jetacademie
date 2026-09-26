@@ -32,7 +32,7 @@ export function TargetsView({ initialGrade = 1 }: TargetsViewProps) {
   };
 
   return (
-    <div className="targets-view">
+    <div className="targets-view" suppressHydrationWarning>
       {/* Clean Minimalist Hero Header */}
       <header className="targets-view__hero">
         <h1 className="targets-view__hero-title">Hedefler ve Yıllık Planlar</h1>

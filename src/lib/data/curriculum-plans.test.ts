@@ -26,11 +26,11 @@ describe("curriculum-plans (M1–M6)", () => {
 
   it("contains valid stages, mottos, and outcomes for all grades", () => {
     const expectedStages = [
-      "Merak ve Muhabbet",
-      "Okuma ve Anlama",
-      "Hayata Taşıma",
-      "İhtiyaç Hissetme",
-      "Tahkik ve Mukayese",
+      "Merak, Hayret ve Muhabbet",
+      "Okuma, Anlama ve Bağlantı Kurma",
+      "Kendini Tanıma, İrade ve Hayata Taşıma",
+      "İhtiyaç Hissetme, Soru Sorma ve Kaynağa Gitme",
+      "Tahkik, Delil ve Mukayese",
       "Bütünlük, Şahsî Duruş ve Temsil",
     ];
 
@@ -45,6 +45,14 @@ describe("curriculum-plans (M1–M6)", () => {
       expect(plan?.coreGoals.length).toBeGreaterThanOrEqual(4);
       expect(plan?.methodSteps.length).toBeGreaterThanOrEqual(4);
       expect(plan?.familyRespectFocus.length).toBeGreaterThan(10);
+
+      // Verify that every week has a meaningful purpose (maksat)
+      for (const unit of plan?.units ?? []) {
+        for (const week of unit.weeks) {
+          expect(week.purpose.length).toBeGreaterThan(10);
+          expect(week.topic.length).toBeGreaterThan(3);
+        }
+      }
     }
   });
 
