@@ -27,7 +27,7 @@ export interface ReadingPeriod {
 const B01: ReadingBook = {
   id: "saadet-asrinda-dogruluk-ve-sadakat",
   title: "Saadet Asrında Doğruluk ve Sadakat",
-  image: "/kitaplar/01_saadet_asrinda_dogruluk_ve_sadakat.jpeg",
+  image: "/kitaplar/01_saadet_asrinda_dogruluk_ve_sadakat.png",
 };
 
 const B02: ReadingBook = {
@@ -92,9 +92,9 @@ const B11: ReadingBook = {
 };
 
 const B12: ReadingBook = {
-  id: "kucuk-sozler",
-  title: "Küçük Sözler",
-  image: "/kitaplar/12_kucuk_sozler.webp",
+  id: "kucuk-sozler-sadelestirilmis",
+  title: "Küçük Sözler (Sadeleştirilmiş)",
+  image: "/kitaplar/kucuk_sozler_sadelestirilmis.jpg",
 };
 
 const B13: ReadingBook = {
@@ -116,9 +116,9 @@ const B15: ReadingBook = {
 };
 
 const B16: ReadingBook = {
-  id: "lokman-suresi-tefsiri",
-  title: "Lokman Suresi Tefsiri",
-  image: "/kitaplar/16_lokman_suresi_tefsiri.jpg",
+  id: "tabiat-risalesi",
+  title: "Tabiat Risalesi",
+  image: "/kitaplar/16_tabiat_risalesi.png",
 };
 
 const B17: ReadingBook = {
@@ -134,15 +134,15 @@ const B18: ReadingBook = {
 };
 
 const B19: ReadingBook = {
-  id: "efendimiz",
-  title: "Efendimiz",
-  image: "/kitaplar/19_efendimiz.webp",
+  id: "gonlumuzun-gulu-efendimiz",
+  title: "Gönlümüzün Gülü Efendimiz",
+  image: "/kitaplar/19_gonlumuzun_gulu_efendimiz.png",
 };
 
 const B20: ReadingBook = {
-  id: "sefkat-gunesi",
-  title: "Şefkat Güneşi",
-  image: "/kitaplar/20_sefkat_gunesi.jpg",
+  id: "peygamberler-tarihi",
+  title: "Peygamberler Tarihi",
+  image: "/kitaplar/20_peygamberler_tarihi.jpg",
 };
 
 const B21: ReadingBook = {
@@ -187,6 +187,18 @@ const B26: ReadingBook = {
   image: "/kitaplar/26_hazreti_muhammed.jpg",
 };
 
+const B27: ReadingBook = {
+  id: "adanmislarin-vasiflari",
+  title: "Adanmışların Vasıfları",
+  image: "/kitaplar/27_adanmislarin_vasiflari.jpg",
+};
+
+const B28: ReadingBook = {
+  id: "efendimiz-sahabilerin-ahlaki-ve-sunneti",
+  title: "Efendimiz: Sahabilerin Ahlakı ve Sünneti",
+  image: "/kitaplar/28_efendimiz_sahabilerin_ahlaki_ve_sunneti.png",
+};
+
 /* ------------------------------------------------------------------ */
 /*  Dönem → Sınıf → Kitaplar matrisi                                  */
 /* ------------------------------------------------------------------  */
@@ -201,8 +213,8 @@ export const READING_PERIODS: readonly ReadingPeriod[] = [
       2: [B02],
       3: [B03],
       4: [B04],
-      5: [B04],
-      6: [B05],
+      5: [B05],
+      6: [B27],
     },
   },
   {
@@ -223,10 +235,10 @@ export const READING_PERIODS: readonly ReadingPeriod[] = [
     label: "Ocak – Şubat – Mart (3 Aylar)",
     shortLabel: "3 Aylar",
     books: {
-      1: [B02, B21, B22, B23, B24, B25],
-      2: [B02, B21, B22, B23, B24, B25],
-      3: [B12, B13],
-      4: [B12, B14],
+      1: [B02, B21, B22],
+      2: [B23, B24, B25],
+      3: [B12, B14],
+      4: [B12, B13],
       5: [B15],
       6: [B16],
     },
@@ -240,7 +252,7 @@ export const READING_PERIODS: readonly ReadingPeriod[] = [
       2: [B26],
       3: [B17],
       4: [B18],
-      5: [B19],
+      5: [B28],
       6: [B20],
     },
   },

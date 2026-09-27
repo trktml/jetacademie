@@ -227,7 +227,7 @@ function DesktopTable() {
                             <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
                               <span>Sahabe Serisi</span>
                               <span className="rounded bg-emerald-500/20 px-1 py-0.5 text-[9px] font-bold text-emerald-800 dark:text-emerald-200">
-                                6 Kitap
+                                3 Kitap
                               </span>
                             </div>
                             <div className="grid grid-cols-3 justify-items-center gap-2">
