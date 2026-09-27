@@ -842,7 +842,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("Benim Büyük Sorularım");
 
     // Verify subtitle hook quote
-    expect(html).toContain("Bir soruyu sormak, öğrenmenin ilk adımı olabilir mi?");
+    expect(html).toContain("Sorularımızı küçümsemeden, birlikte öğrenmeye başlamak");
 
     // Verify concept preview pills
     expect(html).toContain("Bu Haftanın Kavramları:");

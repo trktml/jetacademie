@@ -25,6 +25,7 @@ describe("konu-curriculum data integrity", () => {
   });
 
   it("correctly identifies entry IDs across grades", () => {
+    expect(getKonuItem("g1-konu-eylul-1")).toBe(getKonuItem("konu-eylul-1"));
     expect(getKonuItem("konu-eylul-1")?.title).toBe("Benim Büyük Sorularım");
     expect(getKonuItem("konu-eylul-2")?.title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
     expect(getKonuItem("konu-eylul-3")?.title).toBe("Bediüzzaman Kimdir?");

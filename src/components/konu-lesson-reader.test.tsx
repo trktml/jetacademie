@@ -14,9 +14,9 @@ describe("KonuLessonReader Component", () => {
 
     expect(html).toContain("1. Sınıf · 1. Hafta");
     expect(html).toContain("Benim Büyük Sorularım");
-    expect(html).toContain("Bir soruyu sormak, öğrenmenin ilk adımı olabilir mi?");
+    expect(html).toContain("Sorularımızı küçümsemeden, birlikte öğrenmeye başlamak");
     expect(html).toContain("dk okuma");
-    expect(html).toContain("3 Kavram");
+    expect(html).toContain("6 Kavram");
   });
 
   it("renders discussion questions, takeaway, and vocabulary cards for Grade 1 Week 1", () => {

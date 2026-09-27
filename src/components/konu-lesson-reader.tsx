@@ -179,6 +179,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
   }
 
   const renderParagraphWithVocab = (text: string, pIdx: number) => {
+    text = text.replace(/\*([^*]+)\*/g, "$1");
     if (!vocabRegex || item.vocab.length === 0) {
       return (
         <p
@@ -367,7 +368,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
                 ))}
                 {sec.citation && (
                   <footer className="mt-2 text-xs font-semibold text-amber-800 not-italic dark:text-amber-300">
-                    Dipnot [{sec.citation}]
+                    Dipnot <sup>{sec.citation}</sup>
                   </footer>
                 )}
               </blockquote>
@@ -378,7 +379,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
             )}
             {sec.citation && sec.kind !== "quote" && (
               <p className="text-right text-xs font-medium text-slate-500 dark:text-slate-400">
-                Dipnot [{sec.citation}]
+                Dipnot <sup>{sec.citation}</sup>
               </p>
             )}
           </article>
@@ -453,18 +454,6 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
         </section>
       )}
 
-      {/* Section 5: Sources if present */}
-      {item.sources.length > 0 && (
-        <div className="border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-slate-800/60 dark:text-slate-400">
-          <span className="font-semibold text-slate-600 dark:text-slate-300">Kaynaklar: </span>
-          {item.sources.map((s, idx) => (
-            <span key={idx} className="mr-2">
-              [{idx + 1}] {s}
-            </span>
-          ))}
-        </div>
-      )}
-
       {/* Section 6: Vocabulary Cards Deck (Bu Hafta Tanıştığımız Kelimeler) */}
       {item.vocab.length > 0 && (
         <section
@@ -501,6 +490,17 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {item.sources.length > 0 && (
+        <section className="border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-slate-800/60 dark:text-slate-400">
+          <h4 className="font-semibold text-slate-600 dark:text-slate-300">Dipnotlar</h4>
+          {item.sources.map((source, index) => (
+            <p key={index} className="mt-2">
+              <sup>{index + 1}</sup> {source}
+            </p>
+          ))}
         </section>
       )}
 

@@ -2358,7 +2358,7 @@ export const konuCurriculumMap: ReadonlyMap<string, KonuCurriculumItem> = new Ma
 );
 
 export function getKonuItem(id: string): KonuCurriculumItem | undefined {
-  return konuCurriculumMap.get(id);
+  return konuCurriculumMap.get(id.startsWith("g1-") ? id.slice(3) : id);
 }
 
 export function getKonuEntriesForGrade(grade: number): CurriculumEntry[] {

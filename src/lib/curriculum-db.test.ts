@@ -539,7 +539,7 @@ describe("Curriculum SQLite Database Module", () => {
     const g1w1 = await getCurriculumEntryByIdFromDb("konu-eylul-1");
     expect(g1w1).not.toBeNull();
     expect(g1w1?.title).toBe("Benim Büyük Sorularım");
-    expect(g1w1?.body).toContain("### Bana ne söylüyor?");
+    expect(g1w1?.body).toContain("# Bana Ne Söylüyor?");
 
     const g2w1 = await getCurriculumEntryByIdFromDb("g2-konu-eylul-1");
     expect(g2w1).not.toBeNull();
@@ -548,7 +548,7 @@ describe("Curriculum SQLite Database Module", () => {
     const g6w1 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-1");
     expect(g6w1).not.toBeNull();
     expect(g6w1?.title).toBe("Bu Yıl Parçaları Nasıl Bir Bütüne Dönüştüreceğiz?");
-    expect(g6w1?.body).toContain("### Kelimeler");
+    expect(g6w1?.body).toContain("# Kelimeler");
 
     const g6w2 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-2");
     expect(g6w2).not.toBeNull();

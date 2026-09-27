@@ -70,6 +70,20 @@ bun run sources:search -- --read "Lemalar" --page 160
 
 The application runs by default at `http://localhost:3000`. Refer to `.env.example` for environment variables.
 
+### M1–M6 İlk Hafta İçerikleri
+
+Altı sınıfın yalnız birinci haftası için konu, ayet, hadis, siyer, sahabe ve dinleme başlıklarında 36 kayıt hazırlanmıştır. Konu dersleri yaşa göre farklılaşır; 40 dakikalık öğretmen akışı, özgün kaynak pasajları, iki düşünme sorusu, uygulama, kelimeler ve İSNAD dipnotları içerir. İncelenebilir dosyalar `mufredat-docs/icerikler/ilk-hafta/M1-01.md`–`M6-01.md` altında bulunur.
+
+```bash
+# İçerikleri Markdown dosyalarına aktar; veritabanını değiştirme:
+bun scripts/import-first-week-curriculum.ts --export-only
+
+# .env ile yapılandırılmış PostgreSQL veritabanına yalnız 36 ilk hafta kaydını ekle/güncelle:
+bun scripts/import-first-week-curriculum.ts
+```
+
+İçe aktarma tek işlem içinde doğrulanır, mevcut tamamlanma kayıtlarını korur ve sonraki haftaların otomatik oluşmasını engelleyen kategori ayarlarını sürdürür. M3 dinleme kaydının başlığı, tarihi ve arşivde bildirilen süresi doğrulanmıştır. Diğer beş dinleme başlığı arşiv araştırma etkinliğidir; doğrulanmamış video ve zaman kodları hazır kesit olarak sunulmaz.
+
 ## Verification
 
 ```bash
