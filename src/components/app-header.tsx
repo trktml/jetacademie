@@ -42,6 +42,12 @@ export function getPageTitle(pathname: string | null): string | null {
 }
 
 export function AppHeader() {
+  const pathname = usePathname();
+  if (pathname === "/duzenle") return null;
+  return <PublicAppHeader />;
+}
+
+function PublicAppHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const isHome = pathname === "/";

@@ -13,10 +13,12 @@
     "icons:generate": "bun scripts/generate-icons.ts",
     "db:migrate": "bun scripts/migrate-db.ts",
     "sources:index": "python3 scripts/index-sources.py",
-    "sources:search": "bun scripts/search-sources.ts"
+    "sources:search": "bun scripts/search-sources.ts",
+    "editor:setup": "bun scripts/setup-curriculum-editor.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.102.8",
+    "@uiw/react-md-editor": "^4.1.2",
     "better-auth": "^1.7.4",
     "lucide-react": "^1.45.0",
     "motion": "^13.2.0",
@@ -25,6 +27,9 @@
     "pg": "^8.23.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
     "vaul": "^1.1.2",
     "zod": "^4.6.2",
     "zustand": "^5.0.15"

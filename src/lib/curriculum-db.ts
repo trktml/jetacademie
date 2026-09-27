@@ -21,6 +21,7 @@ import {
 import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
 import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
+import { getEditorOverrideById, mergeEditorContent } from "@/lib/editor/content";
 
 export interface CurriculumEntryRow {
   id: string;
@@ -1137,7 +1138,7 @@ export async function getCurriculumEntriesFromDb(
     }
 
     if (!rows || rows.length === 0) {
-      return getFallbackEntries(grade, gender);
+      return mergeEditorContent(getFallbackEntries(grade, gender), grade, gender);
     }
 
     const filteredRows = gender
@@ -1145,9 +1146,9 @@ export async function getCurriculumEntriesFromDb(
       : rows;
 
     const entries = filteredRows.map(rowToEntry);
-    return resolveAllCurriculumEntries(entries);
+    return mergeEditorContent(resolveAllCurriculumEntries(entries), grade, gender);
   } catch {
-    return getFallbackEntries(grade, gender);
+    return mergeEditorContent(getFallbackEntries(grade, gender), grade, gender);
   }
 }
 
@@ -1156,6 +1157,8 @@ export async function getCurriculumEntriesFromDb(
  */
 export async function getCurriculumEntryByIdFromDb(id: string): Promise<CurriculumEntry | null> {
   await seedCurriculumDatabase();
+  const override = await getEditorOverrideById(/^g[1-6]-/.test(id) ? id : `g1-${id}`);
+  if (override) return override;
 
   try {
     let row = await queryOne<CurriculumEntryRow>(

@@ -161,3 +161,23 @@ Your application will be live at `https://<server-name>.<tailnet-name>.ts.net`.
 - The anonymous login and registration endpoints accept same-origin JSON requests only. New passwords must have at least four characters and can have up to 128. Login attempts for each existing account are limited to five per 15 minutes across app instances, alongside Better Auth's request rate limit. Password changes and account deletion require the current password. A password change invalidates other sessions.
 - The web port binds to loopback by default. If a remote reverse proxy needs a different bind address, set `HOST_BIND_IP` explicitly and restrict access at the network boundary.
 - Authentication and account responses are marked `no-store`. Baseline browser security headers restrict framing, object embeds, base URL changes, and form submissions.
+
+## Özel Müfredat Düzenleme Ekranı
+
+`/duzenle` adresi yalnız elle açılır; uygulama menüsünde bağlantısı yoktur. Bu ekranın hesabı, oturum çerezi ve tabloları Better Auth kullanıcılarından ayrıdır. Tek yetkisi müfredat içeriğini eklemek ve düzenlemektir.
+
+```bash
+# Tek hesabı oluşturur; rastgele şifreyi bir kez terminalde gösterir.
+bun run editor:setup
+
+# Gerektiğinde şifreyi ve oturum anahtarını yeniler; eski oturumları geçersiz kılar.
+bun run editor:setup -- --rotate
+```
+
+Üretilen kullanıcı adı, scrypt şifre özeti ve ayrı oturum anahtarı Git tarafından dışlanan `.env` dosyasına yazılır. Şifrenin kendisi `.env` içinde tutulmaz. Geliştirme sunucusunu yeni ayarlardan sonra yeniden başlatın. `CURRICULUM_ADMIN_USERNAME`, `CURRICULUM_ADMIN_PASSWORD_HASH` ve `CURRICULUM_ADMIN_SECRET` değerlerini üretim ortamına güvenli biçimde aktarın; `CURRICULUM_ADMIN_ORIGIN` değerini dışarıdan kullanılan HTTPS origin olarak belirleyin (örneğin `https://jetacademie.be`, sonunda `/` olmadan). Docker Compose bu değişkenleri web servisine aktarır. Eksik veya geçersiz ayarlarda admin erişimi kapalıdır. Deploy betiği yerel `.env` dosyasını uzak sunucuya kopyalamaz; bu ayarlar uzak ortamda ayrıca tanımlanmalıdır.
+
+Sınıf, ay, hafta ve kategori seçimleriyle boş/dolu içerikler görünür. İlmihal içerikleri erkek/bayan hattına göre ayrılır. Mevcut haftalar düzenlenebilir, boş haftalara metin eklenebilir; 48 normal hafta tamamlandıktan sonra ek haftalar açılır. UIW Markdown editörü biçimlendirme araçları sunar; önizleme ve öğrenci ekranı aynı `react-markdown`, `remark-gfm` ve `rehype-sanitize` bileşenini kullanır. Ham HTML, görseller ve çalıştırılabilir bağlantılar render edilmez. Arapça paragrafların yazı yönü otomatik belirlenir. Kaydetme içeriği doğrudan yayınlar; kaydedilmemiş değişikliklerde gezinme uyarısı vardır.
+
+Düzenlemeler `curriculum_editor_content` tablosunda sürüm numarasıyla saklanır ve temel müfredata uygulanır. Bu yöntem seed işlemlerinin editör değişikliklerini ezmesini engeller, mevcut kayıt kimliklerini ve öğrenci ilerlemelerini korur. Aynı içeriğin eski sürümüyle kayıt yapılırsa 409 yanıtı döner; güncel içerik yüklenmelidir. Yedekler editör içerik tablosunu da kapsamalıdır.
+
+Güvenlik: 8 saatlik rastgele oturum anahtarının yalnız SHA-256 özeti veritabanında tutulur. Üretimde çerez `__Host-` öneki, `HttpOnly`, `Secure` ve `SameSite=Strict` kullanır. Tüm yazma işlemleri ayrı admin oturumu, sabit origin ve oturuma bağlı CSRF anahtarıyla doğrulanır. Girişler, farklı kullanıcı adları dâhil, tüm uygulama örnekleri için toplam 10 deneme / 15 dakika ile sınırlandırılır. JSON boyutu akış okunurken denetlenir; sorgular parametrelidir. Admin sayfası/API önbelleğe alınmaz ve indekslemeye kapalıdır. URL gizliliği bir güvenlik sınırı değildir; yetki kontrolü her API isteğinde uygulanır.

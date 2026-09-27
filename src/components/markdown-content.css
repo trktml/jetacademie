@@ -1,0 +1,71 @@
+.curriculum-markdown {
+  overflow-wrap: anywhere;
+  line-height: 1.85;
+  font-size: 14px;
+}
+.curriculum-markdown > * + * {
+  margin-top: 1em;
+}
+.curriculum-markdown h1,
+.curriculum-markdown h2,
+.curriculum-markdown h3 {
+  font-weight: 700;
+  line-height: 1.4;
+}
+.curriculum-markdown h1 {
+  font-size: 1.6em;
+}
+.curriculum-markdown h2 {
+  font-size: 1.35em;
+}
+.curriculum-markdown h3 {
+  font-size: 1.15em;
+}
+.curriculum-markdown ul,
+.curriculum-markdown ol {
+  padding-inline-start: 1.5em;
+}
+.curriculum-markdown ul {
+  list-style: disc;
+}
+.curriculum-markdown ol {
+  list-style: decimal;
+}
+.curriculum-markdown li + li {
+  margin-top: 0.4em;
+}
+.curriculum-markdown blockquote {
+  border-inline-start: 3px solid #72a98f;
+  padding: 0.6em 1em;
+  background: #72a98f12;
+}
+.curriculum-markdown a {
+  color: #399679;
+  text-decoration: underline;
+}
+.curriculum-markdown pre {
+  overflow-x: auto;
+  border-radius: 8px;
+  padding: 12px;
+  background: #70817a12;
+}
+.curriculum-markdown code {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.9em;
+  background: #70817a12;
+}
+.curriculum-markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.curriculum-markdown th,
+.curriculum-markdown td {
+  padding: 8px 12px;
+  border: 1px solid #70817a40;
+}
+.curriculum-markdown hr {
+  border: 0;
+  border-top: 1px solid #70817a40;
+}

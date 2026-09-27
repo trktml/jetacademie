@@ -6,6 +6,7 @@ import {
   CurriculumArchive as CurriculumArchiveComponent,
   UNDO_DURATION_SECONDS,
   scrollCategoryIntoView,
+  EntryContentRenderer,
 } from "./curriculum-archive";
 import { curriculumEntries } from "@/lib/curriculum-data";
 
@@ -14,6 +15,26 @@ function CurriculumArchive(props: React.ComponentProps<typeof CurriculumArchiveC
 }
 
 describe("CurriculumArchive Component", () => {
+  it("renders an edited topic from Markdown instead of the bundled lesson", () => {
+    const html = renderToString(
+      <EntryContentRenderer
+        entry={{
+          id: "g1-konu-eylul-1",
+          grade: 1,
+          categoryId: "konu",
+          month: 9,
+          week: 1,
+          year: 2026,
+          title: "Düzenlenen ders",
+          contentFormat: "markdown",
+          body: "## Güncellenen bölüm\n\n**Editörün metni**",
+        }}
+      />
+    );
+    expect(html).toContain("<h2>Güncellenen bölüm</h2>");
+    expect(html).toContain("<strong>Editörün metni</strong>");
+    expect(html).not.toContain("Benim Büyük Sorularım");
+  });
   it("should render fixed capsule navigation with 9 category items", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />

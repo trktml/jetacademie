@@ -38,6 +38,7 @@ import { type Gender } from "@/lib/data/ilmihal-curriculum";
 import { GenderSelector } from "@/components/gender-selector";
 import { InlinePdfViewer } from "@/components/inline-pdf-viewer";
 import { KonuLessonReader } from "@/components/konu-lesson-reader";
+import { MarkdownContent } from "@/components/markdown-content";
 import { getKonuItem } from "@/lib/data/konu-curriculum";
 
 import { useUiStore } from "@/store/use-ui-store";
@@ -215,12 +216,17 @@ export function EntryContentRenderer({
   isExpanded?: boolean;
   onToggleExpand?: () => void;
 }) {
-  const isKonu = entry.categoryId === "konu";
+  const isKonu = entry.categoryId === "konu" && entry.contentFormat !== "markdown";
   const konuItem = useMemo(() => (isKonu ? getKonuItem(entry.id) : null), [isKonu, entry.id]);
 
   const { summary, vocabList } = useMemo(
-    () => (isKonu ? { summary: "", vocabList: [] } : parseEntryContent(entry.body)),
-    [isKonu, entry.body]
+    () =>
+      isKonu
+        ? { summary: "", vocabList: [] }
+        : entry.contentFormat === "markdown"
+          ? { summary: entry.body ?? "", vocabList: [] }
+          : parseEntryContent(entry.body),
+    [isKonu, entry.body, entry.contentFormat]
   );
   const videoId = useMemo(
     () => (renderMedia && !isKonu ? getYouTubeVideoId(entry.resourceUrl) : null),
@@ -291,7 +297,11 @@ export function EntryContentRenderer({
 
   return (
     <div className="archive-entry-rendered-content flex flex-col gap-3">
-      {summary && <p className="archive-entry-desc text-sm leading-relaxed">{summary}</p>}
+      {summary && (
+        <MarkdownContent>
+          {entry.contentFormat === "markdown" ? (entry.body ?? "") : summary}
+        </MarkdownContent>
+      )}
 
       {videoId && (
         <div className="archive-video-wrapper my-1 overflow-hidden rounded-2xl border border-rose-500/20 bg-black/5 shadow-xs transition-shadow hover:shadow-md">

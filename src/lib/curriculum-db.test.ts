@@ -576,3 +576,16 @@ describe("Curriculum SQLite Database Module", () => {
     }
   });
 });
+
+describe("Curriculum editor week locations", () => {
+  it("keeps the 48 standard weeks independent for both İlmihal tracks", async () => {
+    const entries = await getCurriculumEntriesFromDb(4);
+    for (const gender of ["erkek", "bayan"]) {
+      const standard = entries.filter(
+        (entry) => entry.categoryId === "ilmihal" && entry.gender === gender && !entry.isExtra
+      );
+      expect(standard.length).toBe(48);
+      expect(new Set(standard.map((entry) => `${entry.month}:${entry.week}`)).size).toBe(48);
+    }
+  });
+});

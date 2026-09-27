@@ -26,6 +26,21 @@ const nextConfig: NextConfig = {
         source: "/api/account/:path*",
         headers: [{ key: "Cache-Control", value: "no-store" }],
       },
+      {
+        source: "/api/editor/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/duzenle",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
     ];
   },
   async redirects() {

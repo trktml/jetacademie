@@ -123,6 +123,7 @@ export interface CurriculumEntry {
   extraOrder?: number;
   title: string;
   body?: string;
+  contentFormat?: "markdown";
   resourceUrl?: string;
   pdfUrl?: string;
   pageCount?: number;
@@ -227,7 +228,7 @@ export function resolveAllCurriculumEntries(
 
   for (const entry of entries) {
     const grade = entry.grade ?? 1;
-    const key = `${grade}:${entry.categoryId}`;
+    const key = `${grade}:${entry.categoryId}:${entry.gender ?? "all"}`;
     let group = groups.get(key);
     if (!group) {
       group = [];
