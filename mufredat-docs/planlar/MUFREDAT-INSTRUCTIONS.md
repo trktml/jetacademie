@@ -1,7 +1,7 @@
 # Müfredat içeriği oluşturulurken uyulması gereken kurallar:
 
 - Dil ağır olmamalı çocuklar anlamalı. Senelere göre dili de düşün 12 yaşından 18 yaşına kadar değişiyor öğrenci yaşları.
-- Çocukların dikkatini çekecek cazip bir yazı üslubu olmalı. 
+- Çocukların dikkatini çekecek cazip bir yazı üslubu olmalı.
 - Yazılar çok uzun olmamalı ama çok kısa yaparsan da olmaz.
 - Tüm ürettiğin yazıları kaynakçalar ile üreteceksin.
 - Yapay bir dil kullanmamaya çalış.

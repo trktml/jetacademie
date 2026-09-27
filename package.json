@@ -11,7 +11,9 @@
     "format:check": "prettier --check .",
     "test": "DATABASE_URL=\":memory:\" bun test",
     "icons:generate": "bun scripts/generate-icons.ts",
-    "db:migrate": "bun scripts/migrate-db.ts"
+    "db:migrate": "bun scripts/migrate-db.ts",
+    "sources:index": "python3 scripts/index-sources.py",
+    "sources:search": "bun scripts/search-sources.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.102.8",

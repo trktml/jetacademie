@@ -55,6 +55,19 @@ bun install
 bun dev
 ```
 
+### Müfredat Kaynak Araştırma Motoru (Local AI & Developer Tool)
+
+Müfredat içerikleri üretilirken Risale-i Nur, Pırlanta ve `sources/` altındaki kaynaklarda AI context'ini şişirmeden 0 token ile araştırma yapmak için yerel SQLite FTS5 motoru kullanılır:
+
+```bash
+# Yeni kaynaklar sources/ klasörüne eklendiğinde indeksleme:
+bun run sources:index
+
+# Hızlı terminal arama komutu:
+bun run sources:search -- -q "ihlas" -n 5
+bun run sources:search -- --read "Lemalar" --page 160
+```
+
 The application runs by default at `http://localhost:3000`. Refer to `.env.example` for environment variables.
 
 ## Verification

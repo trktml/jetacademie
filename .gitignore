@@ -42,6 +42,10 @@ yarn-error.log*
 auth.sqlite*
 /data/
 
+# local curriculum sources (not committed to git)
+/sources/
+sources/
+
 # database backups contain private application data
 /backups/
 
