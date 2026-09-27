@@ -119,8 +119,8 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("Eylül-1");
     expect(html).toContain("Eylül-2");
 
-    // Active category should show "0 / 2 tamamlandı"
-    expect(html).toContain("0 / 2 tamamlandı");
+    // The opening grade-one topic track contains four entries.
+    expect(html).toContain("0 / 4 tamamlandı");
   });
 
   it("should render real sample entries with correct titles for active category", () => {
@@ -259,7 +259,7 @@ describe("CurriculumArchive Component", () => {
   it("should render all-completed celebratory state when all entries in a drawer are completed", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["konu-eylul-1", "konu-eylul-2"]}
+        initialCompletedEntryIds={["konu-eylul-1", "konu-eylul-2", "konu-eylul-3", "konu-eylul-4"]}
         isSignedIn={true}
         initialCategoryId="konu"
       />
@@ -269,7 +269,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("Tüm Haftanın Konusu Dosyaları Tamamlandı!");
     expect(html).not.toContain("archive-all-completed__desc");
     expect(html).not.toContain("Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız.");
-    expect(html).toContain("Geçmiş (2)");
+    expect(html).toContain("Geçmiş (4)");
     // No duplicate read-status badge inside completed cards
     expect(html).not.toContain("read-status--complete");
   });
@@ -447,7 +447,7 @@ describe("CurriculumArchive Component", () => {
   it("should assign relative depth 1 to behind card in all-completed view and preserve completed tab styling", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["konu-eylul-1", "konu-eylul-2"]}
+        initialCompletedEntryIds={["konu-eylul-1", "konu-eylul-2", "konu-eylul-3", "konu-eylul-4"]}
         isSignedIn={true}
         initialCategoryId="konu"
       />
@@ -839,16 +839,16 @@ describe("CurriculumArchive Component", () => {
     );
 
     // Verify title
-    expect(html).toContain("RİSALE-İ NUR: BİR KİTABIN SIRA DIŞI YOLCULUĞU");
+    expect(html).toContain("Benim Büyük Sorularım");
 
     // Verify subtitle hook quote
-    expect(html).toContain("Bu kadar farklı insanın yıllardır okuduğu");
+    expect(html).toContain("Bir soruyu sormak, öğrenmenin ilk adımı olabilir mi?");
 
     // Verify concept preview pills
     expect(html).toContain("Bu Haftanın Kavramları:");
-    expect(html).toContain("Risale");
-    expect(html).toContain("Külliyat");
-    expect(html).toContain("Nüsha");
+    expect(html).toContain("Tefekkür");
+    expect(html).toContain("Gözlem");
+    expect(html).toContain("Kaynak");
 
     // Verify Dersi Oku button and reading time
     expect(html).toContain("Dersi Oku");

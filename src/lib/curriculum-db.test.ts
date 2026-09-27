@@ -1,14 +1,19 @@
 import { describe, expect, it } from "bun:test";
 import {
+  allowCurriculumCategoriesToSeed,
+  excludeAndDeleteCurriculumCategoriesFromSeed,
   ensureCurriculumEntriesTable,
   getCurriculumEntriesFromDb,
   getCurriculumEntryByIdFromDb,
+  migrateLegacyGradeOneCurriculumEntryIds,
+  syncKonuCurriculumIfOutdated,
   getUserGenderFromDb,
   seedCurriculumDatabase,
   setUserGenderInDb,
 } from "./curriculum-db";
 import { BELGIUM_GRADES } from "./curriculum";
 import { db } from "./auth";
+import { queryOne } from "./db";
 
 describe("Curriculum SQLite Database Module", () => {
   it("should ensure table exists and seed data without errors", async () => {
@@ -27,6 +32,91 @@ describe("Curriculum SQLite Database Module", () => {
     }
   });
 
+  it("stores first-grade curriculum entries with grade-scoped IDs", async () => {
+    const gradeOneEntries = await getCurriculumEntriesFromDb(1);
+    expect(gradeOneEntries.length).toBeGreaterThan(0);
+    expect(gradeOneEntries.every((entry) => entry.id.startsWith("g1-"))).toBe(true);
+
+    const esmaEntry = await getCurriculumEntryByIdFromDb("g1-esma-kasim-2");
+    expect(esmaEntry?.id).toBe("g1-esma-kasim-2");
+    expect(esmaEntry?.grade).toBe(1);
+  });
+
+  it("migrates legacy first-grade entry IDs and saved progress", async () => {
+    await ensureCurriculumEntriesTable();
+
+    const migrationUserId = `curriculum_id_migration_${Date.now()}`;
+    const legacyEntryId = "esma-legacy-migration-fixture";
+    const gradeScopedId = `g1-${legacyEntryId}`;
+    const now = new Date().toISOString();
+
+    db.query(
+      `INSERT INTO "user" ("id", "name", "email", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?)`
+    ).run(migrationUserId, "Migration Test", `${migrationUserId}@example.com`, now, now);
+    db.query(
+      `INSERT INTO "curriculum_entries" ("id", "grade", "categoryId", "title", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?, ?)`
+    ).run(legacyEntryId, 1, "esma", "Legacy first-grade entry", now, now);
+    db.query(
+      `INSERT INTO "curriculum_progress" ("userId", "entryId", "completedAt") VALUES (?, ?, ?)`
+    ).run(migrationUserId, legacyEntryId, now);
+
+    try {
+      await migrateLegacyGradeOneCurriculumEntryIds();
+
+      const migratedEntry = await queryOne<{ id: string }>(
+        `SELECT "id" FROM "curriculum_entries" WHERE "id" = $1`,
+        [gradeScopedId]
+      );
+      const migratedProgress = await queryOne<{ entryId: string }>(
+        `SELECT "entryId" FROM "curriculum_progress" WHERE "userId" = $1`,
+        [migrationUserId]
+      );
+      expect(migratedEntry?.id).toBe(gradeScopedId);
+      expect(migratedProgress?.entryId).toBe(gradeScopedId);
+    } finally {
+      db.query(`DELETE FROM "curriculum_entries" WHERE "id" = ?`).run(gradeScopedId);
+      db.query(`DELETE FROM "user" WHERE "id" = ?`).run(migrationUserId);
+    }
+  });
+
+  it("removes the legacy M1 topic duplicate and preserves its completion", async () => {
+    await ensureCurriculumEntriesTable();
+    await seedCurriculumDatabase();
+
+    const migrationUserId = `konu_id_migration_${Date.now()}`;
+    const legacyEntryId = "g1-m1-konu-eylul-1";
+    const currentEntryId = "g1-konu-eylul-1";
+    const now = new Date().toISOString();
+
+    db.query(
+      `INSERT INTO "user" ("id", "name", "email", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?)`
+    ).run(migrationUserId, "Konu Migration Test", `${migrationUserId}@example.com`, now, now);
+    db.query(
+      `INSERT INTO "curriculum_entries" ("id", "grade", "categoryId", "title", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?, ?)`
+    ).run(legacyEntryId, 1, "konu", "Benim Büyük Sorularım", now, now);
+    db.query(
+      `INSERT INTO "curriculum_progress" ("userId", "entryId", "completedAt") VALUES (?, ?, ?)`
+    ).run(migrationUserId, legacyEntryId, now);
+
+    try {
+      await syncKonuCurriculumIfOutdated();
+
+      const legacyEntry = await queryOne<{ id: string }>(
+        `SELECT "id" FROM "curriculum_entries" WHERE "id" = $1`,
+        [legacyEntryId]
+      );
+      const migratedProgress = await queryOne<{ entryId: string }>(
+        `SELECT "entryId" FROM "curriculum_progress" WHERE "userId" = $1`,
+        [migrationUserId]
+      );
+      expect(legacyEntry).toBeNull();
+      expect(migratedProgress?.entryId).toBe(currentEntryId);
+    } finally {
+      db.query(`DELETE FROM "curriculum_progress" WHERE "userId" = ?`).run(migrationUserId);
+      db.query(`DELETE FROM "user" WHERE "id" = ?`).run(migrationUserId);
+    }
+  });
+
   it("should enforce standard entries and zero premature extras for categories under 48 weeks", async () => {
     const grade1Entries = await getCurriculumEntriesFromDb(1);
     const konuEntries = grade1Entries.filter((e) => e.categoryId === "konu");
@@ -34,8 +124,8 @@ describe("Curriculum SQLite Database Module", () => {
     const standardKonu = konuEntries.filter((e) => !e.isExtra);
     const extraKonu = konuEntries.filter((e) => e.isExtra);
 
-    expect(standardKonu.length).toBe(2);
-    expect(extraKonu.length).toBe(0); // 2 < 48: absolutely no extras before 48 weeks
+    expect(standardKonu.length).toBe(4);
+    expect(extraKonu.length).toBe(0); // 4 < 48: absolutely no extras before 48 weeks
   });
 
   it("should retrieve a specific entry by its deterministic ID", async () => {
@@ -430,16 +520,17 @@ describe("Curriculum SQLite Database Module", () => {
     expect(g6Entry?.resourceUrl).toStartWith("https://www.youtube.com/");
   });
 
-  it("should have 2 Haftanın Konusu entries for all 6 grades (12 total)", async () => {
+  it("should have four opening Haftanın Konusu entries in grade 1 and two in grades 2–6", async () => {
     for (let grade = 1; grade <= 6; grade++) {
       const entries = (await getCurriculumEntriesFromDb(grade)).filter(
         (e) => e.categoryId === "konu"
       );
-      expect(entries.length).toBe(2);
-      expect(entries[0].week).toBe(1);
-      expect(entries[1].week).toBe(2);
-      expect(entries[0].month).toBe(9);
-      expect(entries[1].month).toBe(9);
+      const expectedCount = grade === 1 ? 4 : 2;
+      expect(entries.length).toBe(expectedCount);
+      expect(entries.map((entry) => entry.week)).toEqual(
+        Array.from({ length: expectedCount }, (_, index) => index + 1)
+      );
+      expect(entries.every((entry) => entry.month === 9)).toBe(true);
       expect(entries.every((e) => !e.isExtra)).toBe(true);
     }
   });
@@ -447,22 +538,41 @@ describe("Curriculum SQLite Database Module", () => {
   it("should retrieve Haftanın Konusu entries across grades with real titles and content", async () => {
     const g1w1 = await getCurriculumEntryByIdFromDb("konu-eylul-1");
     expect(g1w1).not.toBeNull();
-    expect(g1w1?.title).toBe("RİSALE-İ NUR: BİR KİTABIN SIRA DIŞI YOLCULUĞU");
-    expect(g1w1?.body).toContain("📚 **Kelimeler ve Anlamları**:");
+    expect(g1w1?.title).toBe("Benim Büyük Sorularım");
+    expect(g1w1?.body).toContain("### Bana ne söylüyor?");
 
     const g2w1 = await getCurriculumEntryByIdFromDb("g2-konu-eylul-1");
     expect(g2w1).not.toBeNull();
-    expect(g2w1?.title).toBe("İKİ KİLİMLİK BİR DÜKKÂNDA BAŞLAYAN YOLCULUK");
+    expect(g2w1?.title).toBe("Geçen Yıldan Bugüne: Bir Metni İkinci Kez Okumak");
 
     const g6w1 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-1");
     expect(g6w1).not.toBeNull();
-    expect(g6w1?.title).toBe("BAZI KİTAPLAR NEDEN İNSANIN BAKIŞINI DEĞİŞTİRİR?");
-    // M6-01 does not have vocab section as per user specification
-    expect(g6w1?.body).not.toContain("📚 **Kelimeler ve Anlamları**:");
+    expect(g6w1?.title).toBe("Bu Yıl Parçaları Nasıl Bir Bütüne Dönüştüreceğiz?");
+    expect(g6w1?.body).toContain("### Kelimeler");
 
     const g6w2 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-2");
     expect(g6w2).not.toBeNull();
     expect(g6w2?.title).toBe("BİR ÖMRÜN MERKEZİNDE NE VARDI?");
     expect(g6w2?.body).toContain("📚 **Kelimeler ve Anlamları**:");
+  });
+
+  it("should keep excluded categories empty across regular and forced seeding", async () => {
+    const categoryId = "konu" as const;
+    await excludeAndDeleteCurriculumCategoriesFromSeed([categoryId]);
+
+    try {
+      await seedCurriculumDatabase(true);
+      await seedCurriculumDatabase();
+
+      const row = await queryOne<{ count: number | string }>(
+        `SELECT COUNT(*) AS "count" FROM "curriculum_entries" WHERE "categoryId" = $1`,
+        [categoryId]
+      );
+      expect(Number(row?.count ?? 0)).toBe(0);
+      expect(await getCurriculumEntryByIdFromDb("konu-eylul-1")).toBeNull();
+    } finally {
+      await allowCurriculumCategoriesToSeed([categoryId]);
+      await seedCurriculumDatabase(true);
+    }
   });
 });

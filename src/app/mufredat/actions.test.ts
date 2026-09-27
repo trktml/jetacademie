@@ -62,20 +62,28 @@ describe("mufredat server actions", () => {
 
     it("fails when trying to complete out of order", async () => {
       // Trying to complete week 2 before week 1
-      expect(markEntryAsRead("hadis-eylul-2")).rejects.toThrow("Önce sıradaki dosyayı tamamlayın.");
+      expect(markEntryAsRead("g1-hadis-eylul-2")).rejects.toThrow(
+        "Önce sıradaki dosyayı tamamlayın."
+      );
     });
 
     it("successfully marks the first entry as read", async () => {
+      const res = await markEntryAsRead("g1-hadis-eylul-1");
+      expect(res).toEqual({ entryId: "g1-hadis-eylul-1" });
+      expect(completedStore.has("g1-hadis-eylul-1")).toBe(true);
+    });
+
+    it("returns the grade-scoped ID when given a legacy grade-one ID", async () => {
       const res = await markEntryAsRead("hadis-eylul-1");
-      expect(res).toEqual({ entryId: "hadis-eylul-1" });
-      expect(completedStore.has("hadis-eylul-1")).toBe(true);
+      expect(res).toEqual({ entryId: "g1-hadis-eylul-1" });
+      expect(completedStore.has("g1-hadis-eylul-1")).toBe(true);
     });
   });
 
   describe("unmarkEntryAsRead", () => {
     it("fails when user is not authenticated", async () => {
       mockUser = null;
-      expect(unmarkEntryAsRead("hadis-eylul-1")).rejects.toThrow(
+      expect(unmarkEntryAsRead("g1-hadis-eylul-1")).rejects.toThrow(
         "İlerlemenizi güncellemek için giriş yapın."
       );
     });
@@ -95,28 +103,28 @@ describe("mufredat server actions", () => {
     });
 
     it("fails when trying to unmark an earlier entry while a later entry is completed", async () => {
-      completedStore.add("hadis-eylul-1");
-      completedStore.add("hadis-eylul-2");
+      completedStore.add("g1-hadis-eylul-1");
+      completedStore.add("g1-hadis-eylul-2");
 
       // Cannot unmark week 1 because week 2 is also completed
-      expect(unmarkEntryAsRead("hadis-eylul-1")).rejects.toThrow(
+      expect(unmarkEntryAsRead("g1-hadis-eylul-1")).rejects.toThrow(
         "Yalnızca en son tamamlanan dosya geri alınabilir."
       );
     });
 
     it("successfully unmarks the latest completed entry", async () => {
-      completedStore.add("hadis-eylul-1");
-      completedStore.add("hadis-eylul-2");
+      completedStore.add("g1-hadis-eylul-1");
+      completedStore.add("g1-hadis-eylul-2");
 
-      const res = await unmarkEntryAsRead("hadis-eylul-2");
-      expect(res).toEqual({ entryId: "hadis-eylul-2" });
-      expect(completedStore.has("hadis-eylul-2")).toBe(false);
-      expect(completedStore.has("hadis-eylul-1")).toBe(true);
+      const res = await unmarkEntryAsRead("g1-hadis-eylul-2");
+      expect(res).toEqual({ entryId: "g1-hadis-eylul-2" });
+      expect(completedStore.has("g1-hadis-eylul-2")).toBe(false);
+      expect(completedStore.has("g1-hadis-eylul-1")).toBe(true);
 
       // Now week 1 can be unmarked
-      const res2 = await unmarkEntryAsRead("hadis-eylul-1");
-      expect(res2).toEqual({ entryId: "hadis-eylul-1" });
-      expect(completedStore.has("hadis-eylul-1")).toBe(false);
+      const res2 = await unmarkEntryAsRead("g1-hadis-eylul-1");
+      expect(res2).toEqual({ entryId: "g1-hadis-eylul-1" });
+      expect(completedStore.has("g1-hadis-eylul-1")).toBe(false);
     });
   });
 });

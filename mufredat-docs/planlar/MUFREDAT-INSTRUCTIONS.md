@@ -1,14 +1,18 @@
 # Müfredat içeriği oluşturulurken uyulması gereken kurallar:
 
+- Dil ağır olmamalı çocuklar anlamalı. Senelere göre dili de düşün 12 yaşından 18 yaşına kadar değişiyor öğrenci yaşları.
+- Çocukların dikkatini çekecek cazip bir yazı üslubu olmalı. 
 - Yazılar çok uzun olmamalı ama çok kısa yaparsan da olmaz.
 - Tüm ürettiğin yazıları kaynakçalar ile üreteceksin.
 - Yapay bir dil kullanmamaya çalış.
 - Yapay zeka çıktısı gibi görünmesin.
 - Çocukların seviyesine uygun olsun. Ve senden istediğim sınıf ve konu başlığına uygun üslup tonu hitabeti belirle. Ve yapmacık olmadan merak uyandırıcı.
 - Kaynaklara bağımlı olsun ve çok yapmacık yapay zekadan gelen cümleler olmasın.
-- Kaynakları ISNAD sistemine göre yap.
+- Kaynakları İsnad Dipnotlu sisteme göre yap. İsnad Dipnotlu Sistem gereği numaralandırılıp aşşağıda verilecek.
 - İçerikleri üretirken çocukların dünyasında oluşabilecek çağrışımları da dikkate al.
 - Risale ve pırlantalardan pasajlar alacağız konu ile ilgili. Bu pasajlar orjinal metin olmalı. Ve ona uygun bir tasarımla eklenmeli diğer yazılardan tıpkı bir quote gibi ayırt edilmeli. Ve bunların da daha sonra açıklamasını yapacaksın.
+- Ayetleri Arapçasını da koy. Ayeti Suat Yıldırım mealinden tırnak içinde koy.
+- Her bölümde yazıyı ürettikten sonra. Bana ne söylüyor? şeklinde bir başlık ile ana noktaları madde madde sırala çocuklara uygun olarak.
 
 # Altı Yıllık Müfredatın Ana Fikri
 

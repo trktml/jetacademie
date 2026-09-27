@@ -13,10 +13,10 @@ describe("KonuLessonReader Component", () => {
     const html = renderToString(<KonuLessonReader entry={entry} />);
 
     expect(html).toContain("1. Sınıf · 1. Hafta");
-    expect(html).toContain("RİSALE-İ NUR: BİR KİTABIN SIRA DIŞI YOLCULUĞU");
-    expect(html).toContain("Bu kadar farklı insanın yıllardır okuduğu");
+    expect(html).toContain("Benim Büyük Sorularım");
+    expect(html).toContain("Bir soruyu sormak, öğrenmenin ilk adımı olabilir mi?");
     expect(html).toContain("dk okuma");
-    expect(html).toContain("5 Kavram");
+    expect(html).toContain("3 Kavram");
   });
 
   it("renders discussion questions, takeaway, and vocabulary cards for Grade 1 Week 1", () => {
@@ -24,37 +24,34 @@ describe("KonuLessonReader Component", () => {
     const html = renderToString(<KonuLessonReader entry={entry} />);
 
     expect(html).toContain("Düşünelim ve Konuşalım");
-    expect(html).toContain("Bu Hafta Aklımızda Kalsın");
+    expect(html).toContain("Bana ne söylüyor?");
     expect(html).toContain("Bu Hafta Tanıştığımız Kelimeler");
+    expect(html).toContain('dir="rtl" lang="ar"');
+    expect(html).toContain("Dipnot");
 
     // Vocabulary card words
-    expect(html).toContain("Risale");
-    expect(html).toContain("Külliyat");
-    expect(html).toContain("Nüsha");
-    expect(html).toContain("Sürgün");
-    expect(html).toContain("Matbaa");
+    expect(html).toContain("Tefekkür");
+    expect(html).toContain("Kaynak");
+    expect(html).toContain("Gözlem");
   });
 
   it("renders in-text vocabulary buttons with tooltip titles", () => {
     const entry = g1Entries[0];
     const html = renderToString(<KonuLessonReader entry={entry} />);
 
+    expect(html).toContain('title="Tefekkür: Bir şey üzerinde dikkatle düşünüp anlamını aramak."');
     expect(html).toContain(
-      'title="Risale: Belirli bir konuyu veya meseleyi ele alan yazılı eser ya da bölüm."'
-    );
-    expect(html).toContain(
-      'title="Külliyat: Birbirini tamamlayan eserlerin bir araya gelmiş bütünü."'
+      'title="Kaynak: Bir bilgi ya da düşünceyi öğrendiğimiz eser veya kişi."'
     );
   });
 
-  it("handles M6-01 without vocabulary cards section as expected", () => {
+  it("renders the M6-01 vocabulary cards and takeaway", () => {
     const entry = g6Entries[0];
     const html = renderToString(<KonuLessonReader entry={entry} />);
 
-    expect(html).toContain("BAZI KİTAPLAR NEDEN İNSANIN BAKIŞINI DEĞİŞTİRİR?");
-    expect(html).toContain("Bu Hafta Aklımızda Kalsın");
-    // Vocab section should NOT be present for M6-01
-    expect(html).not.toContain("Bu Hafta Tanıştığımız Kelimeler");
+    expect(html).toContain("Bu Yıl Parçaları Nasıl Bir Bütüne Dönüştüreceğiz?");
+    expect(html).toContain("Bana ne söylüyor?");
+    expect(html).toContain("Bu Hafta Tanıştığımız Kelimeler");
   });
 
   it("renders close button when onClose prop is provided", () => {
@@ -69,8 +66,8 @@ describe("KonuLessonReader Component", () => {
     const html = renderToString(<KonuLessonReader entry={entry} />);
 
     // In-text buttons should have aria-label and not render inline duplicate tooltips
-    expect(html).toContain('aria-label="Risale kelimesinin anlamı"');
-    expect(html).toContain('aria-label="Külliyat kelimesinin anlamı"');
+    expect(html).toContain('aria-label="Tefekkür kelimesinin anlamı"');
+    expect(html).toContain('aria-label="Kaynak kelimesinin anlamı"');
     // Does not render inline role=tooltip popovers that could clip
     expect(html).not.toContain('role="tooltip"');
   });

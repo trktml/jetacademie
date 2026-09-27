@@ -1,4 +1,5 @@
 import type { CurriculumEntry } from "@/lib/curriculum";
+import { firstWeekKonuItems } from "./konu-first-weeks";
 
 export interface KonuVocabItem {
   readonly word: string;
@@ -8,6 +9,8 @@ export interface KonuVocabItem {
 export interface KonuSection {
   readonly heading?: string | null;
   readonly paragraphs: readonly string[];
+  readonly kind?: "quote" | "arabic";
+  readonly citation?: string;
 }
 
 export interface KonuApplication {
@@ -34,7 +37,7 @@ export interface KonuCurriculumItem {
   readonly body: string;
 }
 
-export const konuCurriculumItems: readonly KonuCurriculumItem[] = [
+const existingKonuCurriculumItems: readonly KonuCurriculumItem[] = [
   {
     id: "konu-eylul-1",
     grade: 1,
@@ -2342,6 +2345,13 @@ export const konuCurriculumItems: readonly KonuCurriculumItem[] = [
     body: "Bediüzzaman Said Nursî’yi hayat çizgisiyle tanımak\n\nBir insanın hayatını sadece tarihlerle anlatabiliriz.\nDoğdu. Okudu. Bir şehre gitti. Başka bir yere gönderildi. Yazdı. Yargılandı. Hapsedildi.\nAma böyle bir liste, o insanın neden bunları yaptığını bize tam söylemez.\nBediüzzaman Said Nursî’yi tanımak için olayların arasındaki ortak yönü de görmek gerekir.\n\n### ÇOK FARKLI SAHNELER, TEKRAR EDEN BİR GAYE\nSaid Nursî’nin hayatında medrese yılları, Van ve İstanbul dönemi, savaş ve esaret, sürgünler, Barla, mahkemeler ve hapishaneler vardır.\nBu sahnelerin şartları birbirinden çok farklıdır.\nFakat kendi metinlerinde iman hakikatlerini kuvvetlendirmeyi tekrar tekrar öncelikli bir vazife olarak ifade eder.\nBu yüzden hayatının merkezini anlamak için “Hangi olayları yaşadı?” sorusunun yanına “Bütün bu olayların içinde hangi gaye tekrar etti?” sorusunu eklemek gerekir.\n\n### “EN MÜHİM İŞ”\nBediüzzaman bir yerde en önemli işin taklidî imanı tahkikî imana çevirmek, yani imanı daha bilinçli ve delile dayalı hâle getirmek olduğunu söyler.\nBu cümle onun kendi öncelik ifadesidir.\nBaşka bir yerde Risale-i Nur’u övmesindeki maksadının Kur’ân’ın hakikatlerini ve imanın esaslarını teyit, ispat ve neşir etmek olduğunu belirtir.\nBu iki ifade birlikte okunduğunda kendisini ve eserlerini hangi hizmetin içinde gördüğü daha açık hâle gelir.\n\n### BİR GAYE HAYATIN HER DÖNEMİNDE AYNI BİÇİMDE GÖRÜNMEZ\nGenç bir öğrenciyken yaptığı iş ile Barla’da yazdığı dönemde yaptığı iş aynı değildir.\nVan’da eğitim üzerine düşünmek başka bir faaliyet, savaş yıllarında yaşadıkları başka, mahkeme ve hapis dönemlerindeki tavrı başkadır.\nMerkezî gaye aynı kalabilir; fakat şartlara göre çalışma biçimi değişebilir.\nBu, kendi hayatımız için de önemli bir ölçüdür.\nBir değer sadece slogan değildir.\nFarklı şartlarda farklı davranışlara dönüşebilen bir yön duygusudur.\n\n### ÜSTAD’I SEVMEK, ONU İNSAN OLMAKTAN ÇIKARMAK DEĞİLDİR\nBirini sevmek, onun hayatındaki güzellikleri görmeyi kolaylaştırabilir.\nAma gerçek tanıma, kişiyi bir efsaneye dönüştürmeden neyi dert edindiğini anlamaktır.\nBediüzzaman’ın hayatında bizi etkileyebilecek yönler vardır:\nÖğrenme arzusu.\nBüyük sorulardan kaçmaması.\nZor şartlarda çalışmayı sürdürmesi.\nŞahsî rahatlıktan çok iman hizmetini öne çıkarması.\nBilgisini eser hâline getirip başkalarıyla paylaşması. Bu zorluklar karşısında devam edebilme kararlılığına sebat diyebiliriz.\nBunları görmek, onun her kararını tartışmasız kabul etmek anlamına gelmez.\nBir insanı hem sevebilir hem de onu gerçek bir tarihî şahsiyet olarak tanımaya çalışabiliriz.\n\n### RİSALE-İ NUR İLE HAYAT ARASINDAKİ BAĞ\nGeçen hafta Risale-i Nur’u, insana yeniden bakmayı öğreten bir eserler bütünü olarak tanıdık.\nBu hafta şu bağlantıyı görüyoruz:\nBu eserlerin arkasında, iman meselelerini yalnız teorik bir konu değil insanın hayatını, korkularını, ümitlerini ve sorumluluğunu etkileyen temel bir mesele olarak gören bir müellif vardır.\nBu yüzden Risale’de iman, sadece “doğru bilgi” şeklinde değil; insanın hadiseler karşısındaki duruşuna etki eden bir nur ve kuvvet olarak anlatılır.\n\n### BİR HAYATIN SESSİZ CÜMLESİ\nİnsan bazen neyi önemsediğini sözleriyle söyler.\nBazen de tekrar eden tercihleri onun yerine konuşur.\nNeye zaman verdiği,\nhangi zorlukta neyi bırakmadığı,\nhangi iş için fedakârlık yaptığı,\nve yıllar sonra hâlâ hangi meseleye döndüğü\nbir hayatın “sessiz cümlesi”ni oluşturur.\nBediüzzaman’ın sessiz cümlesini tek ifadeyle kurmamız gerekirse, kaynakların desteklediği en güçlü ifadelerden biri şudur: İmanı kuvvetlendirme ve Kur’ân hakikatlerine hizmet.\n\n### BU SORUYU KENDİMİZE ÇEVİRELİM\nHenüz lise çağında bir insanın hayatının tamamı için tek bir slogan seçmesi gerekmez.\nAma küçük işaretlere bakabiliriz.\nSon bir ayda en çok neye zaman verdim?\nNeyi kaybetmekten en çok korktum?\nHangi konuda kolayca vazgeçtim?\nHangi değeri korumak için çaba gösterdim?\nBunlar bize hayatımızın merkezinde gerçekten ne olduğunu göstermeye başlayabilir.\n\n### Düşünelim ve Konuşalım\n1. Bir biyografiyi yalnız tarihlerle okumak neden eksik kalabilir?\n2. Bediüzzaman’ın hayatının farklı dönemlerinde tekrar eden gaye nedir?\n3. “Merkezî gaye” ile “her kararın doğru olması” aynı şey midir?\n4. Bir değer farklı şartlarda farklı davranışlara nasıl dönüşebilir?\n5. Bir insanın tekrar eden tercihleri onun hakkında ne anlatır?\n6. Bediüzzaman’ın hayatında seni en çok etkileyen yön hangisi?\n7. Kendi hayatının şu anki “sessiz cümlesi” ne olabilir?\n\n### BU HAFTANIN KÜÇÜK UYGULAMASI\n• Bir “Hayat Çizgisi” hazırla.\n• Ortaya şu kelimeyi yaz: BEDİÜZZAMAN.\n• Etrafına beş durak yerleştir: GENÇLİK — VAN/İSTANBUL — SAVAŞ/ESARET — BARLA — HAPİS/MAHKEMELER.\n• Her durağın yanına tek bir soru yaz:\n• “Bu dönemde iman hizmeti nasıl görünüyordu?”\n• Sonunda altta bir cümle kur:\n• “Bu hayatın merkezinde bence … vardı; çünkü …”\n\n📚 **Kelimeler ve Anlamları**:\n• **Merkezî gaye**: Bir hayatın farklı alanlarını yönlendiren temel amaç.\n• **Tahkikî iman**: İmanı delil ve düşünmeyle daha bilinçli biçimde sağlamlaştırma.\n• **Teyit**: Doğrulama, güçlendirme.\n• **Neşir**: Yayma, yayımlama.\n• **Sebat**: Zorluklara rağmen doğru bildiği yolda kararlılıkla devam etme.",
   },
 ];
+
+const firstWeekReplacementIds = new Set(firstWeekKonuItems.map((item) => item.id));
+
+export const konuCurriculumItems: readonly KonuCurriculumItem[] = [
+  ...existingKonuCurriculumItems.filter((item) => !firstWeekReplacementIds.has(item.id)),
+  ...firstWeekKonuItems,
+].sort((a, b) => a.grade - b.grade || a.weekNumber - b.weekNumber);
 
 export const konuCurriculumMap: ReadonlyMap<string, KonuCurriculumItem> = new Map(
   konuCurriculumItems.map((item) => [item.id, item])

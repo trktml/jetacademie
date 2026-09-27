@@ -1,10 +1,12 @@
 import { execute, query } from "@/lib/db";
+import { ensureCurriculumEntriesTable } from "@/lib/curriculum-db";
 
 interface ProgressRow {
   entryId: string;
 }
 
 export async function getCompletedEntryIds(userId: string): Promise<string[]> {
+  await ensureCurriculumEntriesTable();
   const rows = await query<ProgressRow>(
     `SELECT "entryId" FROM "curriculum_progress" WHERE "userId" = $1 ORDER BY "completedAt"`,
     [userId]

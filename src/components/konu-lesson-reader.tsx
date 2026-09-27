@@ -257,7 +257,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
         {onClose && (
           <button
             type="button"
-            className="inline-flex min-h-[36px] cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800/80"
+            className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800/80"
             onClick={(e) => {
               e.stopPropagation();
               onClose();
@@ -279,7 +279,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
         <button
           type="button"
           onClick={() => scrollToSection("metin")}
-          className="inline-flex min-h-[32px] cursor-pointer items-center gap-1 rounded-lg border border-teal-200/70 bg-teal-50/60 px-2.5 py-1 text-teal-800 hover:bg-teal-100 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300"
+          className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg border border-teal-200/70 bg-teal-50/60 px-2.5 py-1 text-teal-800 hover:bg-teal-100 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300"
         >
           <BookOpen className="h-3.5 w-3.5" />
           <span>Ders Metni</span>
@@ -288,7 +288,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
           <button
             type="button"
             onClick={() => scrollToSection("sorular")}
-            className="inline-flex min-h-[32px] cursor-pointer items-center gap-1 rounded-lg border border-indigo-200/70 bg-indigo-50/60 px-2.5 py-1 text-indigo-800 hover:bg-indigo-100 dark:border-indigo-900/50 dark:bg-indigo-950/40 dark:text-indigo-300"
+            className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg border border-indigo-200/70 bg-indigo-50/60 px-2.5 py-1 text-indigo-800 hover:bg-indigo-100 dark:border-indigo-900/50 dark:bg-indigo-950/40 dark:text-indigo-300"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             <span>Sorular ({item.discussionQuestions.length})</span>
@@ -298,7 +298,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
           <button
             type="button"
             onClick={() => scrollToSection("uygulama")}
-            className="inline-flex min-h-[32px] cursor-pointer items-center gap-1 rounded-lg border border-emerald-200/70 bg-emerald-50/60 px-2.5 py-1 text-emerald-800 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300"
+            className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg border border-emerald-200/70 bg-emerald-50/60 px-2.5 py-1 text-emerald-800 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300"
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span>Uygulama</span>
@@ -308,17 +308,17 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
           <button
             type="button"
             onClick={() => scrollToSection("aklimizda-kalsin")}
-            className="inline-flex min-h-[32px] cursor-pointer items-center gap-1 rounded-lg border border-amber-200/70 bg-amber-50/60 px-2.5 py-1 text-amber-800 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300"
+            className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg border border-amber-200/70 bg-amber-50/60 px-2.5 py-1 text-amber-800 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300"
           >
             <Bookmark className="h-3.5 w-3.5" />
-            <span>Aklımızda Kalsın</span>
+            <span>Bana ne söylüyor?</span>
           </button>
         )}
         {item.vocab.length > 0 && (
           <button
             type="button"
             onClick={() => scrollToSection("kelimeler")}
-            className="inline-flex min-h-[32px] cursor-pointer items-center gap-1 rounded-lg border border-teal-200/70 bg-teal-50/60 px-2.5 py-1 text-teal-800 hover:bg-teal-100 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300"
+            className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg border border-teal-200/70 bg-teal-50/60 px-2.5 py-1 text-teal-800 hover:bg-teal-100 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300"
           >
             <BookA className="h-3.5 w-3.5" />
             <span>Kelimeler ({item.vocab.length})</span>
@@ -348,9 +348,39 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
                 {sec.heading}
               </h4>
             )}
-            <div className="flex flex-col gap-2.5">
-              {sec.paragraphs.map((p, pIdx) => renderParagraphWithVocab(p, pIdx))}
-            </div>
+            {sec.kind === "arabic" ? (
+              <div
+                dir="rtl"
+                lang="ar"
+                className="rounded-xl border border-teal-200/70 bg-teal-50/70 px-4 py-5 text-right font-serif text-2xl leading-[2.1] text-slate-900 sm:px-6 sm:text-3xl dark:border-teal-900/50 dark:bg-teal-950/30 dark:text-teal-100"
+              >
+                {sec.paragraphs.map((paragraph, pIdx) => (
+                  <p key={pIdx}>{paragraph}</p>
+                ))}
+              </div>
+            ) : sec.kind === "quote" ? (
+              <blockquote className="rounded-xl border-l-4 border-amber-500 bg-amber-50/80 px-4 py-3.5 text-sm leading-relaxed text-amber-950 sm:px-5 sm:text-base dark:bg-amber-950/30 dark:text-amber-100">
+                {sec.paragraphs.map((paragraph, pIdx) => (
+                  <p key={pIdx} className="font-medium italic">
+                    “{paragraph}”
+                  </p>
+                ))}
+                {sec.citation && (
+                  <footer className="mt-2 text-xs font-semibold text-amber-800 not-italic dark:text-amber-300">
+                    Dipnot [{sec.citation}]
+                  </footer>
+                )}
+              </blockquote>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                {sec.paragraphs.map((p, pIdx) => renderParagraphWithVocab(p, pIdx))}
+              </div>
+            )}
+            {sec.citation && sec.kind !== "quote" && (
+              <p className="text-right text-xs font-medium text-slate-500 dark:text-slate-400">
+                Dipnot [{sec.citation}]
+              </p>
+            )}
           </article>
         ))}
       </section>
@@ -405,7 +435,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
         </section>
       )}
 
-      {/* Section 4: Key Takeaway (Bu Hafta Aklımızda Kalsın) */}
+      {/* Section 4: Key Takeaway (Bana ne söylüyor?) */}
       {item.takeaway.length > 0 && (
         <section
           id={`${readerId}-aklimizda-kalsin`}
@@ -413,13 +443,13 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
         >
           <div className="mb-2.5 flex items-center gap-2 text-sm font-bold text-amber-900 dark:text-amber-300">
             <Lightbulb className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            <span>Bu Hafta Aklımızda Kalsın</span>
+            <span>Bana ne söylüyor?</span>
           </div>
-          <div className="flex flex-col gap-1.5 text-xs leading-relaxed text-amber-950 sm:text-sm dark:text-amber-100">
+          <ul className="flex list-disc flex-col gap-1.5 pl-5 text-xs leading-relaxed text-amber-950 sm:text-sm dark:text-amber-100">
             {item.takeaway.map((t, idx) => (
-              <p key={idx}>{t}</p>
+              <li key={idx}>{t}</li>
             ))}
-          </div>
+          </ul>
         </section>
       )}
 
@@ -479,7 +509,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
         <button
           type="button"
           onClick={() => scrollToSection("metin")}
-          className="inline-flex min-h-[36px] cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+          className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
         >
           <ChevronUp className="h-3.5 w-3.5" />
           <span>Başa Dön</span>
@@ -492,7 +522,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
               e.stopPropagation();
               onClose();
             }}
-            className="inline-flex min-h-[36px] cursor-pointer items-center gap-1 rounded-lg border border-slate-200 px-3 py-1 font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-lg border border-slate-200 px-3 py-1 font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             <X className="h-3.5 w-3.5" />
             <span>Okumayı Kapat</span>

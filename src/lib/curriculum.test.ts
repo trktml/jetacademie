@@ -47,8 +47,8 @@ describe("curriculum", () => {
     ]);
   });
 
-  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), 48 for hocaefendi-dinleme, and 2 for other categories", () => {
-    expect(curriculumEntries.length).toBe(435);
+  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), 48 for hocaefendi-dinleme, and 4 for konu", () => {
+    expect(curriculumEntries.length).toBe(437);
 
     expect(getCategoryEntries("ayet").length).toBe(55);
     expect(getCategoryEntries("hadis").length).toBe(55);
@@ -73,7 +73,7 @@ describe("curriculum", () => {
       )
         continue;
       const entries = getCategoryEntries(category.id);
-      expect(entries.length).toBe(2);
+      expect(entries.length).toBe(category.id === "konu" ? 4 : 2);
     }
   });
 
@@ -125,8 +125,10 @@ describe("curriculum", () => {
     const konuEntries = getCategoryEntries("konu");
     expect(konuEntries[0].week).toBe(1);
     expect(konuEntries[1].week).toBe(2);
-    expect(konuEntries[0].title).toContain("RİSALE-İ NUR");
-    expect(konuEntries[1].title).toContain("BEDİÜZZAMAN");
+    expect(konuEntries[2].week).toBe(3);
+    expect(konuEntries[3].week).toBe(4);
+    expect(konuEntries[0].title).toBe("Benim Büyük Sorularım");
+    expect(konuEntries[1].title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
   });
 
   describe("canUnmarkEntry", () => {
@@ -170,7 +172,7 @@ describe("curriculum", () => {
 
     it("ensures categories with <= 48 entries have ZERO extra entries even if flagged", () => {
       const konuEntries = getCategoryEntries("konu");
-      expect(konuEntries.length).toBe(2);
+      expect(konuEntries.length).toBe(4);
       expect(konuEntries.every((e) => !e.isExtra)).toBe(true);
 
       // Even if raw entries had isExtra: true before 48 weeks, they must resolve to false
@@ -188,7 +190,7 @@ describe("curriculum", () => {
         },
       ];
       const resolved = getCategoryEntries("konu", rawWithPrematureExtra);
-      expect(resolved.length).toBe(3);
+      expect(resolved.length).toBe(konuEntries.length + 1);
       expect(resolved.every((e) => !e.isExtra)).toBe(true);
     });
 

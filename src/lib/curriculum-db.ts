@@ -1,5 +1,5 @@
 import { ensureDatabaseSchema } from "@/lib/auth";
-import { execute, query, queryOne } from "@/lib/db";
+import { execute, isPostgres, query, queryOne } from "@/lib/db";
 import {
   curriculumCategories,
   resolveAllCurriculumEntries,
@@ -46,6 +46,12 @@ function isPdf(url?: string | null): url is string {
   return url.endsWith(".pdf") || url.includes(".pdf?") || url.includes(".pdf#");
 }
 
+function withGradeScopedId<T extends { id: string; grade?: number }>(entry: T): T {
+  const grade = entry.grade ?? 1;
+  if (grade !== 1 || entry.id.startsWith("g1-")) return entry;
+  return { ...entry, id: `g1-${entry.id}` };
+}
+
 function rowToEntry(row: CurriculumEntryRow): CurriculumEntry {
   return {
     id: row.id,
@@ -69,6 +75,99 @@ function rowToEntry(row: CurriculumEntryRow): CurriculumEntry {
 
 let tableEnsured = false;
 
+const CURRICULUM_SEED_GUARD_TRIGGER = "curriculum_entries_seed_exclusion_guard";
+
+async function ensurePostgresCurriculumSeedGuard(): Promise<void> {
+  await execute(`
+    CREATE OR REPLACE FUNCTION "guard_excluded_curriculum_entry"()
+    RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1
+        FROM "curriculum_seed_exclusions"
+        WHERE "categoryId" = NEW."categoryId"
+      ) THEN
+        RETURN NULL;
+      END IF;
+      RETURN NEW;
+    END;
+    $$
+  `);
+
+  const existingTrigger = await queryOne<{ exists: boolean }>(
+    `SELECT EXISTS (
+       SELECT 1
+       FROM pg_trigger
+       WHERE "tgname" = $1
+         AND "tgrelid" = '"curriculum_entries"'::regclass
+         AND NOT "tgisinternal"
+     ) AS "exists"`,
+    [CURRICULUM_SEED_GUARD_TRIGGER]
+  );
+
+  if (existingTrigger?.exists) return;
+
+  try {
+    await execute(`
+      CREATE TRIGGER "${CURRICULUM_SEED_GUARD_TRIGGER}"
+      BEFORE INSERT OR UPDATE OF "categoryId" ON "curriculum_entries"
+      FOR EACH ROW
+      EXECUTE FUNCTION "guard_excluded_curriculum_entry"()
+    `);
+  } catch (error) {
+    const triggerAfterRace = await queryOne<{ exists: boolean }>(
+      `SELECT EXISTS (
+         SELECT 1
+         FROM pg_trigger
+         WHERE "tgname" = $1
+           AND "tgrelid" = '"curriculum_entries"'::regclass
+           AND NOT "tgisinternal"
+       ) AS "exists"`,
+      [CURRICULUM_SEED_GUARD_TRIGGER]
+    );
+
+    if (!triggerAfterRace?.exists) throw error;
+  }
+}
+
+/** @internal Migrates legacy first-grade IDs and their saved progress. */
+export async function migrateLegacyGradeOneCurriculumEntryIds(): Promise<void> {
+  const legacyEntries = await query<{ id: string }>(
+    `SELECT "id" FROM "curriculum_entries"
+     WHERE "grade" = 1 AND "id" NOT LIKE 'g1-%'`
+  );
+
+  for (const { id } of legacyEntries) {
+    const gradeScopedId = `g1-${id}`;
+
+    // Preserve completed progress while safely handling an already-migrated duplicate.
+    await execute(
+      `INSERT INTO "curriculum_progress" ("userId", "entryId", "completedAt")
+       SELECT "userId", $1, "completedAt"
+       FROM "curriculum_progress"
+       WHERE "entryId" = $2
+       ON CONFLICT ("userId", "entryId") DO NOTHING`,
+      [gradeScopedId, id]
+    );
+    await execute(`DELETE FROM "curriculum_progress" WHERE "entryId" = $1`, [id]);
+
+    const existingGradeScopedEntry = await queryOne<{ id: string }>(
+      `SELECT "id" FROM "curriculum_entries" WHERE "id" = $1`,
+      [gradeScopedId]
+    );
+    if (existingGradeScopedEntry) {
+      await execute(`DELETE FROM "curriculum_entries" WHERE "id" = $1 AND "grade" = 1`, [id]);
+    } else {
+      await execute(`UPDATE "curriculum_entries" SET "id" = $1 WHERE "id" = $2 AND "grade" = 1`, [
+        gradeScopedId,
+        id,
+      ]);
+    }
+  }
+}
+
 /**
  * Ensures tables exist in PostgreSQL or SQLite.
  */
@@ -90,10 +189,68 @@ export async function ensureCurriculumEntriesTable(): Promise<void> {
       -- Clean up removed categories (risale, pirlanta) and their progress
       DELETE FROM "curriculum_entries" WHERE "categoryId" IN ('risale', 'pirlanta');
       DELETE FROM "curriculum_progress" WHERE "entryId" LIKE 'risale-%' OR "entryId" LIKE 'pirlanta-%' OR "entryId" LIKE '%-risale-%' OR "entryId" LIKE '%-pirlanta-%';
+
+      -- Persist intentional omissions so startup seeding does not recreate deleted categories
+      CREATE TABLE IF NOT EXISTS "curriculum_seed_exclusions" (
+        "categoryId" text not null primary key,
+        "createdAt" timestamp not null default current_timestamp
+      );
     `);
+    if (isPostgres) await ensurePostgresCurriculumSeedGuard();
+    await migrateLegacyGradeOneCurriculumEntryIds();
     tableEnsured = true;
   } catch (err) {
     console.error("Failed to execute curriculum entries table updates:", err);
+  }
+}
+
+async function getExcludedCurriculumSeedCategories(): Promise<Set<string>> {
+  const rows = await query<{ categoryId: string }>(
+    `SELECT "categoryId" FROM "curriculum_seed_exclusions"`
+  );
+  return new Set(rows.map((row) => row.categoryId));
+}
+
+/**
+ * Excludes categories from automatic seeding and removes their entries for grades 1–6.
+ * Call allowCurriculumCategoriesToSeed before intentionally regenerating these categories.
+ */
+export async function excludeAndDeleteCurriculumCategoriesFromSeed(
+  categoryIds: readonly CurriculumCategoryId[]
+): Promise<void> {
+  const uniqueCategoryIds = [...new Set(categoryIds)];
+  if (uniqueCategoryIds.length === 0) return;
+
+  await ensureCurriculumEntriesTable();
+  if (isPostgres) await ensurePostgresCurriculumSeedGuard();
+
+  const createdAt = new Date().toISOString();
+  for (const categoryId of uniqueCategoryIds) {
+    await execute(
+      `INSERT INTO "curriculum_seed_exclusions" ("categoryId", "createdAt")
+       VALUES ($1, $2)
+       ON CONFLICT ("categoryId") DO NOTHING`,
+      [categoryId, createdAt]
+    );
+  }
+
+  const placeholders = uniqueCategoryIds.map((_, index) => `$${index + 1}`).join(", ");
+  await execute(
+    `DELETE FROM "curriculum_entries"
+     WHERE "categoryId" IN (${placeholders}) AND "grade" BETWEEN 1 AND 6`,
+    uniqueCategoryIds
+  );
+}
+
+/**
+ * Removes seed exclusions so a later seedCurriculumDatabase(true) can regenerate the categories.
+ */
+export async function allowCurriculumCategoriesToSeed(
+  categoryIds: readonly CurriculumCategoryId[]
+): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  for (const categoryId of new Set(categoryIds)) {
+    await execute(`DELETE FROM "curriculum_seed_exclusions" WHERE "categoryId" = $1`, [categoryId]);
   }
 }
 
@@ -127,10 +284,11 @@ export async function setUserGenderInDb(userId: string, gender: Gender): Promise
 
 export async function bulkUpsertCurriculumEntries(rows: Array<CurriculumEntryRow>): Promise<void> {
   if (rows.length === 0) return;
+  const gradeScopedRows = rows.map(withGradeScopedId);
   const CHUNK_SIZE = 50;
 
-  for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
-    const chunk = rows.slice(i, i + CHUNK_SIZE);
+  for (let i = 0; i < gradeScopedRows.length; i += CHUNK_SIZE) {
+    const chunk = gradeScopedRows.slice(i, i + CHUNK_SIZE);
     const valuePlaceholders: string[] = [];
     const params: unknown[] = [];
     let pIdx = 1;
@@ -192,6 +350,12 @@ async function syncCategoryIfOutdated(
   generateRows: () => CurriculumEntryRow[]
 ): Promise<void> {
   try {
+    const exclusion = await queryOne<{ categoryId: string }>(
+      `SELECT "categoryId" FROM "curriculum_seed_exclusions" WHERE "categoryId" = $1`,
+      [categoryId]
+    );
+    if (exclusion) return;
+
     const row = await queryOne<{ c: number | string }>(
       `SELECT COUNT(*) as c FROM "curriculum_entries" WHERE "categoryId" = $1`,
       [categoryId]
@@ -493,7 +657,13 @@ export async function syncHocaefendiCurriculumIfOutdated(): Promise<void> {
 
 export async function syncKonuCurriculumIfOutdated(): Promise<void> {
   await ensureCurriculumEntriesTable();
-  await syncCategoryIfOutdated("konu", 12, () => {
+  try {
+    const exclusion = await queryOne<{ categoryId: string }>(
+      `SELECT "categoryId" FROM "curriculum_seed_exclusions" WHERE "categoryId" = $1`,
+      ["konu"]
+    );
+    if (exclusion) return;
+
     const now = new Date().toISOString();
     const batch: CurriculumEntryRow[] = [];
     for (let grade = 1; grade <= 6; grade++) {
@@ -519,8 +689,27 @@ export async function syncKonuCurriculumIfOutdated(): Promise<void> {
         });
       }
     }
-    return batch;
-  });
+    await bulkUpsertCurriculumEntries(batch);
+
+    // Replace the legacy grade-one M1 topic alias with its canonical curriculum ID.
+    // Carry any saved completion forward before removing the duplicate entry.
+    await execute(
+      `INSERT INTO "curriculum_progress" ("userId", "entryId", "completedAt")
+       SELECT "userId", $1, "completedAt"
+       FROM "curriculum_progress"
+       WHERE "entryId" = $2
+       ON CONFLICT ("userId", "entryId") DO NOTHING`,
+      ["g1-konu-eylul-1", "g1-m1-konu-eylul-1"]
+    );
+    await execute(`DELETE FROM "curriculum_progress" WHERE "entryId" = $1`, ["g1-m1-konu-eylul-1"]);
+    await execute(
+      `DELETE FROM "curriculum_entries"
+       WHERE "id" = $1 AND "grade" = 1 AND "categoryId" = $2`,
+      ["g1-m1-konu-eylul-1", "konu"]
+    );
+  } catch (err) {
+    console.error("Failed to sync category konu:", err);
+  }
 }
 
 let seedPromise: Promise<void> | null = null;
@@ -872,7 +1061,10 @@ async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
     });
   }
 
-  await bulkUpsertCurriculumEntries(seedBatch);
+  const excludedCategories = await getExcludedCurriculumSeedCategories();
+  await bulkUpsertCurriculumEntries(
+    seedBatch.filter((entry) => !excludedCategories.has(entry.categoryId))
+  );
 }
 
 export function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] {
@@ -913,13 +1105,13 @@ export function getFallbackEntries(grade?: number, gender?: Gender): CurriculumE
       ...sahabe,
       ...hocaefendi,
       ...ilmihal,
-    ]);
+    ]).map(withGradeScopedId);
   }
   const ilmihalG1 = gender
     ? getIlmihalEntriesForGrade(1, gender)
     : [...getIlmihalEntriesForGrade(1, "erkek"), ...getIlmihalEntriesForGrade(1, "bayan")];
   const othersG1 = curriculumEntries.filter((e) => e.categoryId !== "ilmihal");
-  return resolveAllCurriculumEntries([...othersG1, ...ilmihalG1]);
+  return resolveAllCurriculumEntries([...othersG1, ...ilmihalG1]).map(withGradeScopedId);
 }
 
 /**
@@ -966,15 +1158,32 @@ export async function getCurriculumEntryByIdFromDb(id: string): Promise<Curricul
   await seedCurriculumDatabase();
 
   try {
-    const row = await queryOne<CurriculumEntryRow>(
+    let row = await queryOne<CurriculumEntryRow>(
       `SELECT * FROM "curriculum_entries" WHERE "id" = $1`,
       [id]
     );
 
+    // Accept legacy unprefixed grade-one URLs while returning the canonical database ID.
+    if (!row && !/^g[1-6]-/.test(id)) {
+      row = await queryOne<CurriculumEntryRow>(
+        `SELECT * FROM "curriculum_entries" WHERE "id" = $1`,
+        [`g1-${id}`]
+      );
+    }
+
     if (!row) {
       for (let g = 1; g <= 6; g++) {
-        const match = getFallbackEntries(g).find((e) => e.id === id);
-        if (match) return match;
+        const match = getFallbackEntries(g).find(
+          (e) => e.id === id || (!/^g[1-6]-/.test(id) && e.id === `g1-${id}`)
+        );
+        if (match) {
+          const exclusion = await queryOne<{ categoryId: string }>(
+            `SELECT "categoryId" FROM "curriculum_seed_exclusions" WHERE "categoryId" = $1`,
+            [match.categoryId]
+          );
+          if (exclusion) return null;
+          return match;
+        }
       }
       return null;
     }
@@ -994,10 +1203,12 @@ export async function getCurriculumEntryByIdFromDb(id: string): Promise<Curricul
     }
 
     const resolvedCategoryEntries = resolveCategoryEntries(categoryRows.map(rowToEntry));
-    return resolvedCategoryEntries.find((e) => e.id === id) ?? rowToEntry(row);
+    return resolvedCategoryEntries.find((e) => e.id === row.id) ?? rowToEntry(row);
   } catch {
     for (let g = 1; g <= 6; g++) {
-      const match = getFallbackEntries(g).find((e) => e.id === id);
+      const match = getFallbackEntries(g).find(
+        (e) => e.id === id || (!/^g[1-6]-/.test(id) && e.id === `g1-${id}`)
+      );
       if (match) return match;
     }
     return null;
