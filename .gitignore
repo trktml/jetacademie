@@ -42,6 +42,9 @@ yarn-error.log*
 auth.sqlite*
 /data/
 
+# database backups contain private application data
+/backups/
+
 # vercel
 .vercel
 
