@@ -6,7 +6,6 @@ import type { PlanUnit, PlanWeek } from "@/lib/data/curriculum-plans";
 
 interface TargetUnitsAccordionProps {
   units: readonly PlanUnit[];
-  gradeCode: string;
 }
 
 export const SCHOOL_MONTHS: readonly string[] = [
@@ -89,7 +88,6 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
       const matchingWeeks = unit.weeks.filter(
         (w) =>
           w.topic.toLocaleLowerCase("tr").includes(normalizedQuery) ||
-          w.purpose.toLocaleLowerCase("tr").includes(normalizedQuery) ||
           w.mainQuestion.toLocaleLowerCase("tr").includes(normalizedQuery) ||
           w.primarySource.toLocaleLowerCase("tr").includes(normalizedQuery)
       );
@@ -111,7 +109,7 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
             36 Haftalık Müfredat Planı (Eylül – Mayıs)
           </h3>
           <p className="target-units-section__subtitle">
-            Haftalık ders konuları ve temel öğrenim maksatları.
+            Haftalık konular, ana sorular ve kaynaklar.
           </p>
         </div>
 
@@ -159,7 +157,7 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
             type="search"
             name="curriculum-search"
             className="target-units-search-input"
-            placeholder="Hafta, konu veya maksat ara..."
+            placeholder="Konu, soru veya kaynak ara..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Müfredatta ara"
@@ -300,12 +298,6 @@ function WeekCard({ week, month }: { week: PlanWeek; month: string }) {
 
       {/* Week Topic (Konu) */}
       <h5 className="target-week-card__topic">{week.topic}</h5>
-
-      {/* Maksat (Purpose) */}
-      <div className="target-week-card__purpose">
-        <span className="target-week-card__purpose-label">🎯 Maksat:</span>
-        <p className="target-week-card__purpose-text">{week.purpose}</p>
-      </div>
 
       {/* Guiding Question (Düşünce Sorusu) */}
       <p className="target-week-card__question">&ldquo;{week.mainQuestion}&rdquo;</p>

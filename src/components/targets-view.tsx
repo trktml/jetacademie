@@ -14,14 +14,14 @@ interface TargetsViewProps {
 
 export function TargetsView({ initialGrade = 1 }: TargetsViewProps) {
   const [selectedGrade, setSelectedGrade] = useState<number>(
-    initialGrade >= 1 && initialGrade <= 6 ? initialGrade : 1
+    Number.isInteger(initialGrade) && initialGrade >= 1 && initialGrade <= 6 ? initialGrade : 1
   );
 
   const plans = getAllGradePlans();
   const currentPlan = getGradePlan(selectedGrade) ?? plans[0];
 
   const handleSelectGrade = (grade: number) => {
-    if (grade >= 1 && grade <= 6) {
+    if (Number.isInteger(grade) && grade >= 1 && grade <= 6) {
       setSelectedGrade(grade);
       if (typeof window !== "undefined") {
         const url = new URL(window.location.href);
@@ -37,7 +37,7 @@ export function TargetsView({ initialGrade = 1 }: TargetsViewProps) {
       <header className="targets-view__hero">
         <h1 className="targets-view__hero-title">Hedefler ve Yıllık Planlar</h1>
         <p className="targets-view__hero-subtitle">
-          Öğrencinin sene sonunda elde edeceği temel kazanımlar ve haftalık yol haritası.
+          M1–M6 yıllık planlarından hedefler ve haftalık yol haritası.
         </p>
       </header>
 
@@ -59,7 +59,7 @@ export function TargetsView({ initialGrade = 1 }: TargetsViewProps) {
         <TargetOutcomeCard plan={currentPlan} />
 
         {/* 36 Haftalık Müfredat Akışı */}
-        <TargetUnitsAccordion units={currentPlan.units} gradeCode={currentPlan.code} />
+        <TargetUnitsAccordion units={currentPlan.units} />
 
         {/* Minimalist Curriculum Link Bridge */}
         <div className="targets-curriculum-bridge">

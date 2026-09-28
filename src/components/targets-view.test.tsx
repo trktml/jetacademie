@@ -27,41 +27,44 @@ describe("Targets UI Components (SSR & Rendering)", () => {
   });
 
   describe("TargetOutcomeCard", () => {
-    it("renders outcome showcase, motto, and core goals without method steps", () => {
+    it("renders outcome, student success statement, goals, and method", () => {
       const html = renderToString(<TargetOutcomeCard plan={planM1} />);
 
       expect(html).toContain("Sene Sonu Kazanımı");
       expect(html).toContain(planM1.yearEndOutcome);
       expect(html).toContain(planM1.motto);
       expect(html).toContain("Kazanılacak Yetkinlikler");
+      expect(html).toContain(planM1.outcomeStatement);
+      expect(html).toContain(planM1.methodSteps.join(" → "));
 
       // Core goals rendered
       for (const goal of planM1.coreGoals) {
         expect(html).toContain(goal);
       }
 
-      // Method steps should not be rendered
-      expect(html).not.toContain("Çalışma Usulü");
+      expect(html).not.toContain("M1 ön koşul değildir");
     });
   });
 
   describe("TargetUnitsAccordion", () => {
     it("renders all 9 units, months (Eylül to Mayıs), and first unit open by default", () => {
-      const html = renderToString(<TargetUnitsAccordion units={planM1.units} gradeCode="M1" />);
+      const html = renderToString(<TargetUnitsAccordion units={planM1.units} />);
 
       expect(html).toContain("36 Haftalık Müfredat Planı");
       expect(html).toContain("Eylül");
       expect(html).toContain("Ekim");
       expect(html).toContain("Mayıs");
       expect(html).toContain("1. Ünite");
-      expect(html).toContain("Tanışma, Merak ve Okuma Kültürü");
+      expect(html).toContain("Tanışma ve Merak");
       expect(html).toContain("2. Ünite");
-      expect(html).toContain("Besmele, Bakış Açısı ve İbadet");
+      expect(html).toContain("Besmele, İman ve Kulluk");
       expect(html).toContain("9. Ünite");
 
-      // First unit is expanded by default in SSR, with topic, purpose (Maksat) and month/week indicator
-      expect(html).toContain("Benim Büyük Sorularım");
-      expect(html).toContain("Maksat");
+      // First unit is expanded by default with the Word plan's topic, question, and source.
+      expect(html).toContain("Bu eser neden hâlâ okunuyor?");
+      expect(html).toContain(planM1.units[0].weeks[0].mainQuestion);
+      expect(html).toContain(planM1.units[0].weeks[0].primarySource);
+      expect(html).not.toContain("Maksat");
       expect(html).toContain("Eylül 1");
 
       // Search input should have attributes to prevent extension hydration mismatches

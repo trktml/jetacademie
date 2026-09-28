@@ -31,6 +31,9 @@ export function TargetOutcomeCard({ plan }: TargetOutcomeCardProps) {
         <p id={`outcome-heading-${plan.grade}`} className="target-outcome-card__outcome-text">
           {plan.yearEndOutcome}
         </p>
+        <p className="target-outcome-card__student-voice">
+          <strong>Yıl sonu öğrenci cümlesi:</strong> “{plan.outcomeStatement}”
+        </p>
       </div>
 
       {/* Temel Yetkinlikler */}
@@ -44,6 +47,12 @@ export function TargetOutcomeCard({ plan }: TargetOutcomeCardProps) {
             </li>
           ))}
         </ul>
+        {plan.entryNote && <p className="target-outcome-card__entry-note">{plan.entryNote}</p>}
+      </div>
+
+      <div className="target-outcome-card__method-section">
+        <h4 className="target-outcome-card__goals-title">Bu yılın çalışma yöntemi</h4>
+        <p className="target-outcome-card__method-steps">{plan.methodSteps.join(" → ")}</p>
       </div>
     </section>
   );

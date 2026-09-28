@@ -26,11 +26,11 @@ describe("curriculum-plans (M1–M6)", () => {
 
   it("contains valid stages, mottos, and outcomes for all grades", () => {
     const expectedStages = [
-      "Merak, Hayret ve Muhabbet",
-      "Okuma, Anlama ve Bağlantı Kurma",
-      "Kendini Tanıma, İrade ve Hayata Taşıma",
-      "İhtiyaç Hissetme, Soru Sorma ve Kaynağa Gitme",
-      "Tahkik, Delil ve Mukayese",
+      "Merak ve Muhabbet",
+      "Okuma ve Anlama",
+      "Hayata Taşıma",
+      "İhtiyaç Hissetme",
+      "Tahkik ve Mukayese",
       "Bütünlük, Şahsî Duruş ve Temsil",
     ];
 
@@ -46,23 +46,63 @@ describe("curriculum-plans (M1–M6)", () => {
       expect(plan?.methodSteps.length).toBeGreaterThanOrEqual(4);
       expect(plan?.familyRespectFocus.length).toBeGreaterThan(10);
 
-      // Verify that every week has a meaningful purpose (maksat)
+      // Word plans provide a topic, guiding question, and primary source for every week.
       for (const unit of plan?.units ?? []) {
         for (const week of unit.weeks) {
-          expect(week.purpose.length).toBeGreaterThan(10);
           expect(week.topic.length).toBeGreaterThan(3);
+          expect(week.mainQuestion.length).toBeGreaterThan(10);
+          expect(week.primarySource.length).toBeGreaterThan(3);
+          expect("purpose" in week).toBe(false);
         }
       }
     }
   });
 
-  it("identifies Anne-Baba ve Büyüklere Hürmet highlights correctly in relevant units", () => {
+  it("uses the updated Word plans for selected weekly topics and year-end outcomes", () => {
+    const expected = [
+      { grade: 1, week: 1, topic: "Bu eser neden hâlâ okunuyor?", outcome: "gönüllü" },
+      {
+        grade: 2,
+        week: 1,
+        topic: "İki Kilimlik Bir Dükkânda Başlayan Yolculuk",
+        outcome: "ana fikrini",
+      },
+      {
+        grade: 3,
+        week: 36,
+        topic: "Bir Hakikati Hayatıma Taşıyorum",
+        outcome: "hayatına nasıl taşıyacağını",
+      },
+      { grade: 4, week: 1, topic: "Bir Kitap Ne Zaman 'Kaynak' Olur?", outcome: "iki kaynağın" },
+      {
+        grade: 5,
+        week: 4,
+        topic: "İddia, Delil ve Yorum: Üçünü Nasıl Ayırırım?",
+        outcome: "tahkik dosyası",
+      },
+      {
+        grade: 6,
+        week: 36,
+        topic: "Müfredat Bitince Okuma Nasıl Devam Eder?",
+        outcome: "okuma planı",
+      },
+    ];
+
+    for (const sample of expected) {
+      const plan = getGradePlan(sample.grade)!;
+      expect(plan.units.flatMap((unit) => unit.weeks)[sample.week - 1].topic).toBe(sample.topic);
+      expect(plan.yearEndOutcome).toContain(sample.outcome);
+    }
+  });
+
+  it("highlights Anne-Baba ve Büyüklere Hürmet in the new plan weeks", () => {
+    const expectedWeeks = [[25], [25], [17], [28], [25, 26], [17, 19, 20]];
     for (let grade = 1; grade <= 6; grade++) {
-      const plan = getGradePlan(grade);
-      const highlightedWeeks = plan?.units.flatMap((u) =>
+      const plan = getGradePlan(grade)!;
+      const highlightedWeeks = plan.units.flatMap((u) =>
         u.weeks.filter((w) => w.isFamilyRespectHighlight)
       );
-      expect(highlightedWeeks?.length).toBeGreaterThanOrEqual(1);
+      expect(highlightedWeeks.map((week) => week.weekNumber)).toEqual(expectedWeeks[grade - 1]);
     }
   });
 

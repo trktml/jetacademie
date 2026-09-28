@@ -3566,6 +3566,33 @@ body:has(.landing-page),
   margin: 0;
 }
 
+.target-outcome-card__student-voice,
+.target-outcome-card__entry-note {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.target-outcome-card__student-voice strong {
+  color: var(--ink);
+}
+
+.target-outcome-card__method-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.target-outcome-card__method-steps {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
 .target-outcome-card__goals-section {
   display: flex;
   flex-direction: column;
@@ -4020,36 +4047,6 @@ body:has(.landing-page),
   min-height: 2.4rem;
 }
 
-/* Purpose (Maksat) Line */
-.target-week-card__purpose {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.45rem 0.6rem;
-  border-radius: 0.375rem;
-  background: color-mix(in srgb, var(--brand) 6%, var(--surface));
-  border-left: 2.5px solid var(--brand);
-}
-
-:root[data-theme="dark"] .target-week-card__purpose {
-  background: color-mix(in srgb, var(--brand) 12%, var(--surface));
-}
-
-.target-week-card__purpose-label {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: var(--brand);
-  letter-spacing: 0.02em;
-}
-
-.target-week-card__purpose-text {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--ink);
-  line-height: 1.4;
-  margin: 0;
-}
-
 .target-week-card__question {
   font-size: 0.75rem;
   font-style: italic;
@@ -4071,9 +4068,7 @@ body:has(.landing-page),
   font-size: 0.6875rem;
   color: var(--ink-faint);
   line-height: 1.35;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 
 /* --- Curriculum Bridge Banner --- */
