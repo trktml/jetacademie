@@ -903,4 +903,30 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("Dersi Oku");
     expect(html).toContain("dk");
   });
+
+  it("should mark the active category in capsule navigation when grade and category change", () => {
+    const html1 = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        initialCategoryId="esma"
+        initialGrade={1}
+      />
+    );
+    expect(html1).toContain(
+      'data-active="true" aria-current="true" aria-label="Esmâü&#x27;l-Hüsnâ"'
+    );
+
+    const html5 = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        initialCategoryId="hocaefendi-dinleme"
+        initialGrade={5}
+      />
+    );
+    expect(html5).toContain(
+      'data-active="true" aria-current="true" aria-label="Hocaefendi Sohbetleri"'
+    );
+  });
 });

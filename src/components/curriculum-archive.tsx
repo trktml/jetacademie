@@ -46,6 +46,7 @@ import { useGuestStore } from "@/store/use-guest-store";
 import { useReadingProgressStore } from "@/store/use-reading-progress-store";
 import { isValidGrade, useCurriculumStore } from "@/store/use-curriculum-store";
 import { GradeSelector } from "@/components/grade-selector";
+import { resolveActiveSectionId, type ActiveSectionEntry } from "@/hooks/use-active-section";
 
 const monthNames = [
   "Ocak",
@@ -705,6 +706,7 @@ export function CurriculumArchive({
   const categoryButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const isProgrammaticScrollRef = useRef(false);
   const programmaticScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tickingRef = useRef(false);
 
   const updateScrollIndicators = useCallback(() => {
     const container = capsuleNavRef.current;
@@ -824,27 +826,99 @@ export function CurriculumArchive({
     };
   }, []);
 
+  const updateActiveSection = useCallback(() => {
+    if (activeHistoryCategoryId || isProgrammaticScrollRef.current) return;
+    if (typeof window === "undefined") return;
+
+    const doc = document.documentElement;
+    const isAtBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 60;
+    const isAtTop = window.scrollY < 60;
+
+    if (isAtTop) {
+      setActiveCategoryId(curriculumCategories[0].id);
+      return;
+    }
+
+    const sectionIds = curriculumCategories.map((c) => c.id);
+    const readingOffsetPx = window.innerWidth <= 767 ? 180 : 140;
+
+    const entries: ActiveSectionEntry[] = sectionIds
+      .map((id) => {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const rect = el.getBoundingClientRect();
+        const isIntersecting = rect.bottom > 0 && rect.top < window.innerHeight;
+        return {
+          id,
+          top: rect.top,
+          isIntersecting,
+        };
+      })
+      .filter((e): e is NonNullable<typeof e> => e !== null);
+
+    const nextId = resolveActiveSectionId({
+      entries,
+      sectionIds,
+      readingOffsetPx,
+      isAtBottom,
+    });
+
+    if (nextId && curriculumCategories.some((c) => c.id === nextId)) {
+      setActiveCategoryId(nextId as CurriculumCategoryId);
+    }
+  }, [activeHistoryCategoryId]);
+
   useEffect(() => {
     if (activeHistoryCategoryId) return;
-    const sections = curriculumCategories
-      .map((category) => document.getElementById(category.id))
-      .filter((section): section is HTMLElement => section !== null);
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleSection = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-        if (visibleSection && !isProgrammaticScrollRef.current) {
-          setActiveCategoryId(visibleSection.target.id as CurriculumCategoryId);
-        }
-      },
-      { rootMargin: "-20% 0px -60% 0px", threshold: [0, 0.25, 0.5] }
-    );
+    const handleScroll = () => {
+      if (isProgrammaticScrollRef.current) return;
+      if (!tickingRef.current) {
+        tickingRef.current = true;
+        window.requestAnimationFrame(() => {
+          updateActiveSection();
+          tickingRef.current = false;
+        });
+      }
+    };
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, [activeHistoryCategoryId]);
+    const rafId = window.requestAnimationFrame(updateActiveSection);
+
+    const observer =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            () => {
+              if (!isProgrammaticScrollRef.current) {
+                updateActiveSection();
+              }
+            },
+            { threshold: [0, 0.25, 0.5, 0.75, 1] }
+          )
+        : null;
+
+    if (observer) {
+      curriculumCategories.forEach((cat) => {
+        const el = document.getElementById(cat.id);
+        if (el) observer.observe(el);
+      });
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      if (observer) observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [
+    activeHistoryCategoryId,
+    selectedGrade,
+    isGradeLoading,
+    currentGradeEntries,
+    updateActiveSection,
+  ]);
 
   function notifyLocked(entryId?: string) {
     if (entryId) {

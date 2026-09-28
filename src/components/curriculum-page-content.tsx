@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { CurriculumArchive } from "@/components/curriculum-archive";
 import { GradeSelector } from "@/components/grade-selector";
 import { GRADE_LABELS, type CurriculumEntry, type BelgiumGrade } from "@/lib/curriculum";
@@ -26,6 +26,7 @@ export function CurriculumPageContent({
   const query = useQuery({
     ...curriculumGradeQueryOptions(selectedGrade),
     initialData: selectedGrade === initialGrade ? [...allEntries] : undefined,
+    placeholderData: keepPreviousData,
   });
 
   return (
@@ -45,7 +46,7 @@ export function CurriculumPageContent({
         initialGrade={initialGrade}
         selectedGradeOverride={selectedGrade}
         onGradeChange={setSelectedGrade}
-        isGradeLoading={query.isPending}
+        isGradeLoading={query.isPending && !query.data}
         gradeLoadError={query.isError ? query.error.message : null}
         onRetryGrade={() => void query.refetch()}
       />
