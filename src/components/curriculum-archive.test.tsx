@@ -860,16 +860,18 @@ describe("CurriculumArchive Component", () => {
     );
 
     // Verify title
-    expect(html).toContain("Benim Büyük Sorularım");
+    expect(html).toContain("Bu Eser Neden Hâlâ Okunuyor?");
 
     // Verify subtitle hook quote
-    expect(html).toContain("Sorularımızı küçümsemeden, birlikte öğrenmeye başlamak");
+    expect(html).toContain(
+      "Bu kadar farklı insanın yıllardır okuduğu, çoğalttığı ve araştırdığı bir eserde ne var?"
+    );
 
     // Verify concept preview pills
     expect(html).toContain("Bu Haftanın Kavramları:");
+    expect(html).toContain("Bismillâh");
+    expect(html).toContain("Lisân-ı hâl");
     expect(html).toContain("Tefekkür");
-    expect(html).toContain("Gözlem");
-    expect(html).toContain("Kaynak");
 
     // Verify Dersi Oku button and reading time
     expect(html).toContain("Dersi Oku");

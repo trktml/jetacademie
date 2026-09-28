@@ -178,8 +178,26 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
     );
   }
 
+  const renderQuoteWithUnderline = (text: string) => {
+    const parts = text.split(/(<u>.*?<\/u>)/g);
+    return parts.map((part, idx) => {
+      const match = part.match(/^<u>(.*?)<\/u>$/);
+      if (match) {
+        return (
+          <u
+            key={idx}
+            className="underline decoration-amber-600/80 decoration-2 underline-offset-4"
+          >
+            {match[1]}
+          </u>
+        );
+      }
+      return part;
+    });
+  };
+
   const renderParagraphWithVocab = (text: string, pIdx: number) => {
-    text = text.replace(/\*([^*]+)\*/g, "$1");
+    text = text.replace(/\*([^*]+)\*/g, "$1").replace(/<\/?u>/g, "");
     if (!vocabRegex || item.vocab.length === 0) {
       return (
         <p
@@ -363,7 +381,7 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
               <blockquote className="rounded-xl border-l-4 border-amber-500 bg-amber-50/80 px-4 py-3.5 text-sm leading-relaxed text-amber-950 sm:px-5 sm:text-base dark:bg-amber-950/30 dark:text-amber-100">
                 {sec.paragraphs.map((paragraph, pIdx) => (
                   <p key={pIdx} className="font-medium italic">
-                    “{paragraph}”
+                    “{renderQuoteWithUnderline(paragraph)}”
                   </p>
                 ))}
                 {sec.citation && (

@@ -1,99 +1,624 @@
 import type { CurriculumCategoryId, CurriculumEntry } from "@/lib/curriculum";
 import { firstWeekKonuItems } from "./konu-first-weeks";
 
-const accessDate = "27 Eylül 2026";
-const hadithNumbers = [71, 5027, 6464, 71, 5027, 481];
-const hadithTexts = [
-  "مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ",
-  "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ",
-  "وَأَنَّ أَحَبَّ الأَعْمَالِ أَدْوَمُهَا إِلَى اللَّهِ، وَإِنْ قَلَّ",
-  "مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ",
-  "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ",
-  "إِنَّ الْمُؤْمِنَ لِلْمُؤْمِنِ كَالْبُنْيَانِ، يَشُدُّ بَعْضُهُ بَعْضًا",
-];
-const hadithMeanings = [
-  "Allah, hakkında hayır dilediği kişiye din konusunda anlayış verir.",
-  "Sizin en hayırlınız, Kur’an’ı öğrenen ve öğretendir.",
-  "Allah’ın en sevdiği işler, az da olsa devamlı olanlardır.",
-  "Allah, hakkında hayır dilediği kişiye din konusunda anlayış verir.",
-  "Sizin en hayırlınız, Kur’an’ı öğrenen ve öğretendir.",
-  "Mümin, diğer mümin için parçaları birbirini güçlendiren bir yapı gibidir.",
-];
-const hadithTitles = [
-  "Anlamaya çalışmanın değeri",
-  "Öğrenmek ve öğretmek",
-  "Az ama devamlı",
-  "Bilgi ile anlayış",
-  "Anlayarak öğrenip aktarmak",
-  "Birbirini güçlendiren parçalar",
-];
-const hadithNotes = [
-  "Bu hadis anlayışı değerli bir nimet olarak gösterir. Bir soruyu saklamak yerine anlamak için yardım istemek dersimizdeki öğrenme ortamını güçlendirir. Anlamayan arkadaşını bu söz üzerinden yargılama; ona açıklama yapma fırsatı olarak gör.",
-  "Hadisin konusu Kur’an’ı öğrenme ve öğretmedir. İkinci okuyuşta fark ettiğin bir bağlantıyı arkadaşına kendi sözlerinle açıklamak, öğrendiğini görünür hâle getirir. Emin olmadığın bir açıklamayı kesin bilgi diye aktarma.",
-  "Bu parça, ölçülü ve sürekli amel üzerinde duran daha uzun bir hadisten seçilmiştir. Haftalık uygulamada sürdürebileceğin tek bir adım belirle. Bir gün aksaması, yeniden başlayamayacağın anlamına gelmez; planı gerçekçi hâle getirebilirsin.",
-  "Hadiste geçen anlayış vurgusu, yalnız kitap adı bilmenin ötesine geçmeyi düşündürür. Bir cümlenin anlamını ve hangi soruya karşılık geldiğini göster. Bunu yaparken temel kaynak ile açıklamayı birbirine karıştırma.",
-  "Kur’an öğrenip öğretmeye dair bu hadisi aktarırken kapsamını koruyoruz. Derin okuma çalışmasında da başkasına aktarabilecek açıklıkta öğrenmeyi hedefleyebiliriz. Alıntıyı değiştirmeden, yorumunu ayrı vererek bir arkadaşına anlat.",
-  "Bu temsil müminlerin birbirine desteğini anlatır; bireyin kendi düşüncesini silmesini istemez. Dersimizde kavramları bir araya getirirken de her parçanın işlevini koruruz. Bir grup çalışmasında hangi katkının diğerini kolaylaştırdığını bir cümleyle yaz.",
+const accessDate = "28 Eylül 2026";
+
+interface CategoryContent {
+  title: string;
+  body: string;
+  url?: string;
+}
+
+const hadithData: CategoryContent[] = [
+  {
+    title: "Öğrenmek ve Öğretmek",
+    body: `# Öğrenmek ve Öğretmek
+
+**Hadisin Arapça metni:**
+
+خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ
+
+**Türkçe anlamı:**
+
+“Sizin en hayırlınız, Kur’an’ı öğrenen ve öğretendir.”¹
+
+Peygamber Efendimiz (s.a.v.), bilginin değerini onu başkalarıyla paylaşmak ve hayata taşımakla açıklar. Öğrenmek insanı geliştirir; öğrendiğini başkasına anlatmak ise hem bilgiyi pekiştirir hem de iyiliği çoğaltır. Bu hafta öğrendiğin kısa bir hakikati arkadaşına kendi kelimelerinle anlatabilirsin.
+
+# Bana Ne Söylüyor?
+
+- Öğrenmeyi sadece kendim için değil, başkalarına faydalı olmak için isteyebilirim.
+- Anladığım bir güzelliği arkadaşımla paylaşarak çoğaltabilirim.
+- Kur’an’ın rehberliğini öğrenmeye zaman ayırabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Rivayet:** Peygamber Efendimiz’den (s.a.v.) nakledilen söz, fiil veya haber.
+**Talim:** Bir bilgiyi veya beceriyi başkasına öğretme, eğitme faaliyeti.
+
+# Dipnotlar
+
+¹ Buhârî, el-Câmiʿu’s-sahîh, Fedâilü’l-Kur’ân, hadis 5027, Sunnah.com (erişim ${accessDate}), https://sunnah.com/bukhari:5027.`,
+    url: "https://sunnah.com/bukhari:5027",
+  },
+  {
+    title: "İlim Yolculuğuna Çıkmak",
+    body: `# İlim Yolculuğuna Çıkmak
+
+**Hadisin Arapça metni:**
+
+مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ
+
+**Türkçe anlamı:**
+
+“Kim ilim tahsil etmek için bir yola girerse, Allah ona cennete giden yolu kolaylaştırır.”¹
+
+Bu hadis-i şerif, insanın hakikati aramak için gösterdiği her gayretin kutsal bir yolculuk olduğunu bildirir. İlim öğrenmek için açılan her sayfa, sorulan her samimi soru ve harcanan her dakika insanı olgunlaştırır ve manevi derecesini yükseltir.
+
+# Bana Ne Söylüyor?
+
+- İlim öğrenme gayretimin manevi bir değeri olduğunu fark edebilirim.
+- Karşılaştığım zorlukları aşmak için öğrenme azmimi diri tutabilirim.
+- Hakikati ararken harcadığım zamanın kıymetini bilebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**İlim:** Gerçeği, varlığın hakikatini ve faydalı bilgiyi sistemli olarak kavrama.
+**Sülûk:** Bir gaye veya hakikat uğruna belirli bir yola girip sebatla yürüme.
+
+# Dipnotlar
+
+¹ Müslim, el-Câmiʿu’s-sahîh, Zikir ve Dua, hadis 2699, Sunnah.com (erişim ${accessDate}), https://sunnah.com/muslim:2699.`,
+    url: "https://sunnah.com/muslim:2699",
+  },
+  {
+    title: "Suretler Değil, Kalpler ve Ameller",
+    body: `# Suretler Değil, Kalpler ve Ameller
+
+**Hadisin Arapça metni:**
+
+إِنَّ اللَّهَ لاَ يَنْظُرُ إِلَى صُوَرِكُمْ وَأَمْوَالِكُمْ وَلَكِنْ يَنْظُرُ إِلَى قُلُوبِكُمْ وَأَعْمَالِكُمْ
+
+**Türkçe anlamı:**
+
+“Allah sizin sûretlerinize ve mallarınıza bakmaz; fakat kalplerinize ve amellerinize bakar.”¹
+
+Bu rivayet, insanın asıl değerinin dış görünüşünde veya zenginliğinde değil; kalbindeki samimiyette ve yaptığı hayırlı amellerde olduğunu ilan eder. İhlas ile yapılan küçük bir iyilik, gösteriş için yapılan büyük işlerden kat kat üstündür.
+
+# Bana Ne Söylüyor?
+
+- İnsanları dış görünüşlerine veya maddi durumlarına göre yargılamamayı öğrenebilirim.
+- Davranışlarımda samimiyeti ve Allah rızasını gözetebilirim.
+- Kalbimin niyetini ve ahlâkımı sürekli gözden geçirebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**İhlas:** İbadet ve davranışları gösterişten arındırıp sırf Allah rızası için yapma.
+**Amel:** İnancın gereği olarak yerine getirilen her türlü hayırlı eylem ve tutum.
+
+# Dipnotlar
+
+¹ Müslim, el-Câmiʿu’s-sahîh, Birr ve Sıla, hadis 2564, Sunnah.com (erişim ${accessDate}), https://sunnah.com/muslim:2564.`,
+    url: "https://sunnah.com/muslim:2564",
+  },
+  {
+    title: "Dinde Derin Anlayış ve Kavrayış",
+    body: `# Dinde Derin Anlayış ve Kavrayış
+
+**Hadisin Arapça metni:**
+
+مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ
+
+**Türkçe anlamı:**
+
+“Allah, hakkında hayır dilediği kimseye dinde derin bir kavrayış ve anlayış verir.”¹
+
+Hadiste geçen *fıkıh*, bir meselenin sadece kabuğunu bilmek değil; arka planındaki hikmeti, delili ve gayeyi derinlemesine kavramaktır. Bir kitabın sayfalarında gezinirken yüzeysel ezbercilikle yetinmeyip meselenin özüne inmek, Allah’ın insana lütfettiği en büyük hayırlardandır.
+
+# Bana Ne Söylüyor?
+
+- Dini hükümleri ve hakikatleri yüzeysel değil, hikmetleriyle kavramaya çalışabilirim.
+- Ezberlemekle yetinmeyip derin kavrayış sahibi olmayı hedefleyebilirim.
+- Anlayışımın artması için dua ve gayretle çalışabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Tefakkuh:** Bir konuyu derinlemesine, incelikleriyle ve delilleriyle anlama kabiliyeti.
+**Basiret:** Kalp gözüyle hakikati doğru sezme, doğruyu yanlıştan ayırt etme gücü.
+
+# Dipnotlar
+
+¹ Buhârî, el-Câmiʿu’s-sahîh, İlim, hadis 71, Sunnah.com (erişim ${accessDate}), https://sunnah.com/bukhari:71.`,
+    url: "https://sunnah.com/bukhari:71",
+  },
+  {
+    title: "Az da Olsa Devamlı Olan Amel",
+    body: `# Az da Olsa Devamlı Olan Amel
+
+**Hadisin Arapça metni:**
+
+وَأَنَّ أَحَبَّ الأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا، وَإِنْ قَلَّ
+
+**Türkçe anlamı:**
+
+“Allah katında amellerin en sevimlisi, az da olsa devamlı olanıdır.”¹
+
+Büyük hedeflere bir günde ulaşılamaz. İlimde ve ahlâkta ilerlemenin sırrı, her gün düzenli ve sebatla atılan küçük adımlardır. Bir gün sabahlara kadar çalışıp günlerce hiçbir şey yapmamak yerine; her gün 15 dakika dikkatle okumak insanı gerçek bir derinliğe ulaştırır.
+
+# Bana Ne Söylüyor?
+
+- Büyük işlerin düzenli küçük adımlarla başarıldığını fark edebilirim.
+- Okuma ve ibadetlerimde süreklilik kazanmaya odaklanabilirim.
+- Bir gün aksadığında ümitsizliğe düşmeyip ertesi gün kararlılıkla devam edebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Sebat:** Bir kararda ve doğru yolda zorluklara rağmen kararlılıkla durma.
+**İstikamet:** Doğruluktan ayrılmadan, dengeli ve sürekli bir çizgide hayat sürme.
+
+# Dipnotlar
+
+¹ Buhârî, el-Câmiʿu’s-sahîh, Rikāk, hadis 6464, Sunnah.com (erişim ${accessDate}), https://sunnah.com/bukhari:6464.`,
+    url: "https://sunnah.com/bukhari:6464",
+  },
+  {
+    title: "Birbirini Kenetleyen Sağlam Yapı",
+    body: `# Birbirini Kenetleyen Sağlam Yapı
+
+**Hadisin Arapça metni:**
+
+إِنَّ الْمُؤْمِنَ لِلْمُؤْمِنِ كَالْبُنْيَانِ، يَشُدُّ بَعْضُهُ بَعْضًا
+
+**Türkçe anlamı:**
+
+“Mümin, diğer mümin için parçaları birbirini kenetleyip güçlendiren sağlam bir bina gibidir.”¹
+
+Peygamber Efendimiz (s.a.v.), inananların birlik ve dayanışmasını tuğlaları birbirine kenetlenmiş muhkem bir yapıya benzetir. Her mümin o yapının vazgeçilmez bir taşıdır. Fertlerin bencillikten sıyrılıp ortak bir mefkûre etrafında kenetlenmesi, topluma sarsılmaz bir kudret ve ahlâkî duruş kazandırır.
+
+# Bana Ne Söylüyor?
+
+- Kendi başarım kadar arkadaşlarımın ve toplumun iyiliğini de düşünebilirim.
+- Dayanışma ve kardeşlik şuurunu günlük ilişkilerimde canlı tutabilirim.
+- Toplumun birlik ve huzuruna katkı sunacak bir duruş sergileyebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Bünyan:** Sağlam temeller üzerine kurulmuş, parçaları birbirine bağlı bina, yapı.
+**Uhuvvet:** Samimi inanç birliğinden doğan derin kardeşlik bağı.
+
+# Dipnotlar
+
+¹ Buhârî, el-Câmiʿu’s-sahîh, Salât, hadis 481, Sunnah.com (erişim ${accessDate}), https://sunnah.com/bukhari:481.`,
+    url: "https://sunnah.com/bukhari:481",
+  },
 ];
 
-const sahabeTitles = [
-  "Hz. Ali: Genç yaşta öğrenmek",
-  "Abdullah b. Mes‘ûd: Öğrenip aktarmak",
-  "Mus‘ab b. Umeyr: Öğrendiğini temsil etmek",
-  "Zeyd b. Sâbit: Kaynağı koruma sorumluluğu",
-  "İbn Mes‘ûd: Metinle yakınlık ve öğretim",
-  "Ebû Hüreyre: Bilgiyi sonraki nesle ulaştırmak",
-];
-const sahabeSlugs = [
-  "ali",
-  "abdullah-b-mesud",
-  "musab-b-umeyr",
-  "zeyd-b-sabit",
-  "abdullah-b-mesud",
-  "ebu-hureyre",
-];
-const sahabeAuthors = [
-  "Ethem Ruhi Fığlalı",
-  "İsmail Cerrahoğlu",
-  "Hüseyin Algül",
-  "Bünyamin Erul",
-  "İsmail Cerrahoğlu",
-  "M. Yaşar Kandemir",
-];
-const sahabeTexts = [
-  "Hz. Ali, küçük yaşından itibaren Hz. Muhammed’in yanında büyümüş ve İslâm’ı ilk kabul edenler arasında yer almıştır.¹ Onun bu yakınlığı, öğrenmenin yalnız yetişkinlere ait olmadığını düşünmemize yardım eder. Kaynak, küçük yaşta tanışmayı anlatır; onun adına hayalî soru-cevaplar üretmiyoruz.\n\nBu hafta bir yetişkine veya öğretmenine sormak istediğin konuyu merak defterine yaz. Yaşının küçük olması, sorunun önemsiz olduğunu göstermez.",
-  "Abdullah b. Mes‘ûd, ilk Müslümanlardan ve Kur’an bilgisiyle tanınan sahabilerdendir; Kûfe’de gelişen tefsir ve fıkıh öğretiminde önemli bir yere sahiptir.¹ Öğrenme ile başkasına aktarma onun hayatında birlikte görülür.\n\nİkinci okumada anladığın bir cümleyi arkadaşına açıkla. Sonra asıl metne dönüp açıklamanda metinde bulunmayan bir ayrıntı ekleyip eklemediğini birlikte kontrol edin.",
-  "Mus‘ab b. Umeyr, Birinci Akabe Biatı’nın ardından Hz. Peygamber tarafından Medine’ye öğretici olarak gönderilmiştir. Orada Es‘ad b. Zürâre’nin desteğiyle çalışmıştır.¹ Öğrendiği bilgi, bir görev ve insanlarla iletişim içinde karşılık bulmuştur.\n\nBu anlatıdaki bağlantımız bilgi, görev ve davranıştır. Kendi haftalık uygulamanda başkasının yükünü azaltan belirli bir iş seç; onu yalnız iyi bir niyet cümlesi olarak bırakma.",
-  "Zeyd b. Sâbit vahiy kâtipleri arasındadır; Kur’an’ın Hz. Ebû Bekir döneminde bir araya getirilmesinde ve Hz. Osman döneminde mushafların çoğaltılmasında görev almıştır.¹ Bu çalışma, asıl metni korumanın özel bir dikkat ve sorumluluk gerektirdiğini gösterir.\n\nDersimizdeki kaynak kartı aynı tarihî işlemin benzeri değildir. Ancak bir cümleyi değiştirmeden aktarmak ve nereden geldiğini kaydetmek için bu sorumluluk bilincinden yararlanabiliriz.",
-  "Abdullah b. Mes‘ûd, Kur’an bilgisi ve sonraki öğrenme çevrelerine katkısıyla tanınır. Kûfe’deki tefsir ve fıkıh öğretiminde önemli bir yere sahiptir.¹ Kaynakla yakınlık, yalnız çok cümle hatırlamakla açıklanmaz; anlamı öğrenip aktarabilmek de önemlidir.\n\nBu derste onun adına doğrulanmamış bir “on ayet öğrenme” konuşması aktarmıyoruz. Bir paragrafın ana düşüncesini doğru ifade etme ve kendi yorumunu ayırma çalışması yapıyoruz.",
-  "Ebû Hüreyre çok hadis rivayet etmesiyle tanınır. Resûlullah’ın yanında bulunmaya ve öğrendiklerini başkalarına aktarmaya önem vermiştir; kendisinden birçok sahabi ve tâbiî rivayet almıştır.¹ Böylece öğrenme, kişiler ve nesiller arasında bir ilişki hâline gelir.\n\nKavram haritanda duyduğun bir sözün hangi kaynaktan geldiğini de göster. Aynı kavramın farklı derslerde bulunması yetmez; onu nasıl öğrendiğini ve hangi bağlamda kullandığını belirt.",
+const siyerData: CategoryContent[] = [
+  {
+    title: "Hira Mağarası ve İlk Vahiy",
+    body: `# Hira Mağarası ve İlk Vahiy
+
+Peygamber Efendimiz (s.a.v.), peygamberlik verilmeden önceki dönemde Mekke’nin kargaşasından uzaklaşarak Hira Mağarası’nda günlerce tefekküre çekilirdi. Kâinatın yaratılışı, insanın varoluş gayesi ve toplumdaki haksızlıklar üzerinde derin düşüncelere dalardı. Nihayet Ramazan ayının bir gecesinde Cebrail (a.s.) geldi ve insanlığa ilk ilahî emri ulaştırdı: “Yaratan Rabbinin adıyla oku!”¹
+
+Bu ilk emir, okumanın sadece harfleri birleştirmek değil; kâinatı, insanı ve varlığı Yaratıcının adıyla anlamlandırmak olduğunu gösterir.
+
+# Bana Ne Söylüyor?
+
+- Hayatın telaşı içinde zaman zaman durup düşünmeye ihtiyaç olduğunu fark edebilirim.
+- Okumayı Yaratıcımı ve kendimi tanıma vesilesi olarak görebilirim.
+- Tefekkürün insanı hakikate hazırlayan mühim bir adım olduğunu bilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Tefekkür:** Varlık ve olaylar üzerinde derinlemesine, ibret nazarıyla düşünme.
+**Vahiy:** Allah’ın peygamberlerine bildirdiği ilahî mesaj ve emirler.
+
+# Dipnotlar
+
+¹ Buhârî, el-Câmiʿu’s-sahîh, Bed’ü’l-vahy, hadis 3, Sunnah.com (erişim ${accessDate}), https://sunnah.com/bukhari:3.`,
+    url: "https://sunnah.com/bukhari:3",
+  },
+  {
+    title: "Dârü’l-Erkam: Küçük Bir Evde Başlayan Diriliş",
+    body: `# Dârü’l-Erkam: Küçük Bir Evde Başlayan Diriliş
+
+İslâm’ın ilk yıllarında Mekke’de müşriklerin ağır baskıları sürerken, Hz. Peygamber (s.a.v.) genç sahabi Erkam b. Ebi’l-Erkam’ın evini bir buluşma ve öğrenme merkezi yaptı. Orada toplanan ilk müslümanlar, gelen ayetleri dinliyor, namaz kılıyor ve hayatlarını Kur’an’ın ahlâkıyla inşa ediyorlardı.¹
+
+Mekke’nin en dar ve mütevazı evlerinden biri olan Dârü’l-Erkam, kısa sürede dünyayı değiştirecek şahsiyetlerin yetiştiği bir ilim ve ihlas ocağına dönüştü.
+
+# Bana Ne Söylüyor?
+
+- Mekânın sadeliğinin yapılan işin büyüklüğüne engel olmadığını görebilirim.
+- Hakikati öğrenmek için bir araya gelmenin kardeşliği güçlendirdiğini bilirim.
+- Samimi bir başlangıcın zamanla dünyayı aydınlatacak neticeler vereceğine inanabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Dâr:** Ev, konak, merkezî mekân.
+**Muallim:** İlim öğreten, yol gösteren rehber ve öğretmen.
+
+# Dipnotlar
+
+¹ İbn Hişâm, es-Sîretü’n-nebeviyye (Beyrut: Dârü’l-Kütübi’l-İlmiyye), c. 1, s. 260.`,
+    url: "https://islamansiklopedisi.org.tr/darulerkam",
+  },
+  {
+    title: "Öğüt ile Yaşayışın Birlikteliği",
+    body: `# Öğüt ile Yaşayışın Birlikteliği
+
+Hz. Âişe validemize Resûlullah’ın (s.a.v.) ahlâkı sorulduğunda şu veciz cevabı vermiştir: “Sen Kur’an okumuyor musun? Onun ahlâkı Kur’an’dı.”¹ Peygamber Efendimiz, ümmetine emrettiği her güzelliği önce kendi hayatında en mükemmel şekilde yaşamış; insanları söylerken tereddüde düşürmeyen canlı bir örnek olmuştur.
+
+Evde ailesine yardım eden, sokakta selamı yayan, fakirlerin derdiyle dertlenen Efendimiz (s.a.v.), temsilin tebliğden önce geldiğini göstermiştir.
+
+# Bana Ne Söylüyor?
+
+- Doğru bildiğim değerleri önce kendi hayatımda yaşamaya gayret edebilirim.
+- İnsanlara güzel ahlâkımla örnek olmanın sözden daha etkili olduğunu fark edebilirim.
+- Efendimiz’in Kur’an ahlâkını günlük ilişkilerimde rehber edinebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Üsve-i Hasene:** En güzel örnek, takip edilmesi gereken mükemmel şahsiyet.
+**Temsil:** İnandığı hakikatleri bizzat yaşayarak başkalarına numune olma.
+
+# Dipnotlar
+
+¹ Müslim, el-Câmiʿu’s-sahîh, Müsâfirîn, hadis 746, Sunnah.com (erişim ${accessDate}), https://sunnah.com/muslim:746.`,
+    url: "https://sunnah.com/muslim:746",
+  },
+  {
+    title: "Âyetleri Kaynağından Öğrenmek",
+    body: `# Âyetleri Kaynağından Öğrenmek
+
+En‘âm sûresinin “İman edip de imanlarına zulüm bulaştırmayanlar...” ayeti indiğinde sahabiler telaşlanarak “Hangimiz nefsine zulmetmez ki?” diye endişe ettiler. Bunun üzerine Peygamber Efendimiz (s.a.v.), buradaki zulmün Lokman aleyhisselamın oğluna dediği gibi “şirk” olduğunu açıklayarak zihinlerindeki şüpheyi giderdi.¹
+
+Sahabe-i kiram, anlaşılmayan bir meselede kendi tahminleriyle yetinmeyip doğrudan vahyin kaynağına başvurarak doğru manayı öğrenme hassasiyetini göstermiştir.
+
+# Bana Ne Söylüyor?
+
+- Anlamadığım bir ayet veya dini konuda tahmin yürütmek yerine güvenilir kaynağa başvurabilirim.
+- Soru sormanın öğrenmenin en tabii ve sıhhatli yolu olduğunu bilirim.
+- Kaynağa gitmenin insanı yanlış yorumlardan koruyacağını fark edebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Tefsir:** Kur’an-ı Kerim ayetlerini açıklama, manalarını ortaya koyma ilmi.
+**Hikmet:** Bir hükmün veya sözün derin gayesi, ardındaki isabetli maksat.
+
+# Dipnotlar
+
+¹ Buhârî, el-Câmiʿu’s-sahîh, Tefsîr, hadis 4628, Sunnah.com (erişim ${accessDate}), https://sunnah.com/bukhari:4628.`,
+    url: "https://sunnah.com/bukhari:4628",
+  },
+  {
+    title: "Muâz b. Cebel’in Hüküm Usulü",
+    body: `# Muâz b. Cebel’in Hüküm Usulü
+
+Peygamber Efendimiz (s.a.v.), genç sahabi Muâz b. Cebel’i Yemen’e vali ve kadı olarak gönderirken sordu: “Sana bir dava geldiğinde neyle hükmedersin?” Muâz: “Allah’ın Kitabı ile.” dedi. “Onda bulamazsan?” buyurdu. “Resûlullah’ın Sünneti ile.” dedi. “Onda da açıkça bulamazsan?” diye sorunca Muâz: “Kendi aklımla ictihad ederim (hüküm çıkarırım).” dedi. Bunun üzerine Efendimiz (s.a.v.) memnuniyetle onun göğsüne vurdu ve Allah’a hamdetti.¹
+
+Bu olay, İslâm düşüncesinde kaynak hiyerarşisini ve basiretli muhakeme disiplinini ortaya koyan en meşhur tarihi tablodur.
+
+# Bana Ne Söylüyor?
+
+- Karşılaştığım meselelerde önce temel kaynaklara, ardından sağlam usullere başvurabilirim.
+- Aklımı ve muhakememi vahyin rehberliğinde doğru işletmeyi öğrenebilirim.
+- Sorumluluk alırken bilgi ve yöntem sahibi olmanın değerini bilebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**İçtihad:** Bir hüküm çıkarmak için bütün zihnî gayreti sarf etme, derin muhakeme.
+**Kaza:** Hukuki ve ahlâki bir meselede hakkaniyetle hüküm verme görevi.
+
+# Dipnotlar
+
+¹ Ebû Dâvûd, es-Sünen, Akdiye, hadis 3592, Sunnah.com (erişim ${accessDate}), https://sunnah.com/abudawud:3592.`,
+    url: "https://sunnah.com/abudawud:3592",
+  },
+  {
+    title: "Veda Haccı: Bütünlük ve Haklar",
+    body: `# Veda Haccı: Bütünlük ve Haklar
+
+Peygamber Efendimiz (s.a.v.), yüz bini aşkın sahabiye hitap ettiği Veda Hutbesi’nde inanç, insan hakları, adalet ve sosyal sorumlulukları tek bir bütün olarak ilan etmiştir. “Ey insanlar! Kanlarınız, mallarınız ve canlarınız mukaddestir...” buyurarak fertlerin haklarını teminat altına almış; orada bulunanlardan bu evrensel mesajı bulunmayanlara ulaştırmalarını istemiştir.¹
+
+Veda Hutbesi, dinin tamamlandığı ve hayatın bütün alanlarının ilahi adaletle kucaklandığı muazzam bir vasiyetnamedir.
+
+# Bana Ne Söylüyor?
+
+- İnsan haklarının ve adaletin inancımın ayrılmaz bir parçası olduğunu bilirim.
+- Öğrendiğim evrensel güzellikleri sonraki nesillere aktarma sorumluluğu duyabilirim.
+- Hayatımın her alanında adalet ve emanet şuurunu koruyabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Hürmet:** Dokunulmazlık, saygınlık ve kutsiyet.
+**Tebliğ:** Hakikati doğru, eksiksiz ve açık şekilde muhataplara ulaştırma.
+
+# Dipnotlar
+
+¹ Buhârî, el-Câmiʿu’s-sahîh, Hac, hadis 1741; Meğâzî, hadis 4406, Sunnah.com (erişim ${accessDate}), https://sunnah.com/bukhari:4406.`,
+    url: "https://sunnah.com/bukhari:4406",
+  },
 ];
 
-const siyerTitles = [
-  "Hira: Dikkatle durup düşünmek",
-  "Vahyin zamana yayılan rehberliği",
-  "Öğüt ile yaşayışın birlikteliği",
-  "Vahyi anlamak için açıklamaya başvurmak",
-  "Tekrar okuyarak yeni bağlantılar kurmak",
-  "Veda Haccı: Haklar ve sorumluluklar birlikte",
-];
-const siyerReferences = [3, 4993, 676, 3360, 4998, 4406];
-const siyerTexts = [
-  "Hz. Âişe’nin ilk vahye dair rivayetinde Hz. Muhammed’in Hira mağarasında yalnız kalıp ibadet ettiği anlatılır. Ardından ilk vahiy tecrübesi ve Hz. Hatice’nin desteği yer alır.¹ Rivayet onun zihninden geçen bütün soruları bize söylemez; bu nedenle onun adına kurgu düşünceler yazmıyoruz.\n\nDersimizde bu anlatı, gündelik akış içinde durup dikkatini toplama üzerinde düşünmeye yardım eder. Merak defterine yazacağın gözlem için bir dakika sessizce çevrene bak.",
-  "Hz. Âişe, Kur’an’ın ilk dönemlerinde cennet ve cehennemle ilgili ayetlerin geldiğini, bazı hükümlerinin daha sonra indiğini anlatır.¹ Bu aktarım vahyin insanların hayatına zaman içinde rehberlik etmesini gösterir. Öğrenilenlerin hepsi bir günde tamamlanmış değildir.\n\nBu tarihî bağlamı kendi okumamıza birebir eşitlemiyoruz. Dersimizdeki bağlantı, öğrenmeye zaman ayırmak ve aynı metne yeni bir tecrübeyle dönmektir.",
-  "Hz. Âişe’ye Resûlullah’ın evde ne yaptığı sorulduğunda ailesinin işlerine yardım ettiğini, namaz vakti gelince namaza çıktığını anlatmıştır.¹ Böylece ibadet ile aile içindeki emek birbirinden kopuk görünmez.\n\nBilginin hayata girmesi için çok büyük bir sahne beklemek gerekmez. Evde veya grup ödevinde üstlendiğin işi yerine getirmek bu hafta çalışacağımız küçük ve somut adımdır.",
-  "Bir rivayette bazı sahabiler bir ayeti okuyunca kendilerini zorlayacak bir anlam çıkarmış, Hz. Peygamber açıklamasıyla ayette kastedileni ortaya koymuştur.¹ Asıl metne başvurmak ve onu doğru anlamak için açıklama istemek birlikte ilerler.\n\nBu örnek, kendi yorumunu ayetin sözü gibi sunmama dikkatini destekler. Kaynak kartında ayet, açıklama ve kişisel çıkarım için ayrı yerler aç.",
-  "Bir rivayette Cebrâil’in Kur’an’ı Hz. Peygamber’le her yıl karşılıklı olarak gözden geçirdiği, vefat ettiği yıl bu karşılıklı okuyuşun iki defa gerçekleştiği anlatılır.¹ Bu tekrar, metinle ilişkinin yalnız ilk okuyuşla sona ermediğini gösterir.\n\nBu yıl aynı pasajı başka bir soru etrafında yeniden inceleyeceğiz. Yeni yorumunu kaynak cümlesiyle karşılaştırmak, tekrarın dikkatli bir öğrenme adımına dönüşmesine yardım eder.",
-  "Veda Haccı’na ilişkin rivayette Hz. Peygamber can, mal ve onurun korunmasını birlikte vurgular; dinleyenlerden sözlerini orada bulunmayanlara ulaştırmalarını ister.¹ Haklar ve aktarım sorumluluğu aynı konuşmada yer alır.\n\nKavram haritanda inanç, ilişki ve sorumluluk arasındaki bağın yalnız bir sloganla kurulamayacağını göster. Bir kararın başka insanların hakkını nasıl etkilediğini açıklayan bir cümle ekle.",
+const sahabeData: CategoryContent[] = [
+  {
+    title: "Hz. Ali: Genç Yaşta İlim ve Hikmet",
+    body: `# Hz. Ali: Genç Yaşta İlim ve Hikmet
+
+Hz. Ali (r.a.), çocuk yaşından itibaren Peygamber Efendimiz’in (s.a.v.) hanesinde büyümüş, vahyin inişine ilk günden itibaren şahit olmuştur. Yaşının genç olması onu büyük hakikatleri anlamaktan alıkoymamış; cesareti, üstün zekâsı ve ilme olan derin iştiyakıyla ashabın en seçkin âlimleri arasında yer almıştır.¹
+
+Peygamberimiz onun hakkında “Ben ilmin şehriyim, Ali de onun kapısıdır.” buyurarak onun kavrayış derinliğini taltif etmiştir.
+
+# Bana Ne Söylüyor?
+
+- Yaşımın genç olmasının büyük hakikatleri öğrenmeme engel olmadığını fark edebilirim.
+- İlim ve hikmete aşkla sarılarak kendimi yetiştirebilirim.
+- Sorularımı cesaretle sorup doğru kaynaktan öğrenme gayreti gösterebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Fetanet:** Üstün zekâ, derin kavrayış ve basiret.
+**İntisap:** Bir davaya, rehbere veya hakikat yoluna gönülden bağlanma.
+
+# Dipnotlar
+
+¹ Ethem Ruhi Fığlalı, “Ali”, TDV İslâm Ansiklopedisi (erişim ${accessDate}), https://islamansiklopedisi.org.tr/ali.`,
+    url: "https://islamansiklopedisi.org.tr/ali",
+  },
+  {
+    title: "Mus‘ab b. Umeyr: Hayatın Gayesini Bulmak",
+    body: `# Mus‘ab b. Umeyr: Hayatın Gayesini Bulmak
+
+Mus‘ab b. Umeyr (r.a.), Mekke’nin en zengin, en şık ve en itibarlı ailelerinden birinin genciydi. Ancak Dârü’l-Erkam’da Kur’an ile tanıştığında, geçici dünya süslerinin insanın kalbini doyurmaya yetmeyeceğini anladı. Ailesinin bütün servetini ve baskılarını geride bırakıp hakikati seçti.¹
+
+Daha sonra Medine’ye ilk İslâm muallimi olarak gönderildi ve nezaketi, tatlı dili ve Kur’an tilavetiyle koskoca bir şehrin kalbini fethetti.
+
+# Bana Ne Söylüyor?
+
+- Gerçek değerimin sahip olduğum maddi imkânlarda değil, inandığım davada olduğunu bilirim.
+- Zorluklar karşısında inancımdan taviz vermeme kararlılığı gösterebilirim.
+- Güzel ahlâk ve nezaketle insanlara hakikati sevdirebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Muallim:** İlim ve ahlâk öğreten, örnek olan rehber.
+**Fedakârlık:** Yüce bir gaye uğruna şahsi menfaatlerinden seve seve vazgeçebilme.
+
+# Dipnotlar
+
+¹ Hüseyin Algül, “Mus‘ab b. Umeyr”, TDV İslâm Ansiklopedisi (erişim ${accessDate}), https://islamansiklopedisi.org.tr/musab-b-umeyr.`,
+    url: "https://islamansiklopedisi.org.tr/musab-b-umeyr",
+  },
+  {
+    title: "Abdullah b. Ömer: Bildiğini Yaşama Titizliği",
+    body: `# Abdullah b. Ömer: Bildiğini Yaşama Titizliği
+
+Hz. Ömer’in oğlu Abdullah (r.a.), Peygamber Efendimiz’in (s.a.v.) sünnetini ve ahlâkını günlük hayatında en ince teferruatına kadar yaşamasıyla tanınır. Bir hadisi duyduğunda onu sadece rivayet etmekle kalmaz; hemen kendi davranışlarına tatbik ederdi.¹
+
+Onun hayatında ilim ile amel, söz ile eylem arasında hiçbir boşluk yoktu. Bu titizliği onu ashabın en hürmet edilen fakihlerinden biri kılmıştır.
+
+# Bana Ne Söylüyor?
+
+- Öğrendiğim sünnetleri ve güzellikleri hayatıma geçirme titizliği gösterebilirim.
+- Bildiğim hakikatin bende bir ahlâkî sorumluluk doğurduğunu fark edebilirim.
+- İlim ile amel uyumunu hayatımın merkezine koyabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**İttiba:** Bir rehberin yolunu ve sünnetini samimiyetle izleme, ona uyma.
+**Fakih:** Dinin inceliklerini, hükümlerini ve hikmetlerini derinlemesine bilen âlim.
+
+# Dipnotlar
+
+¹ M. Yaşar Kandemir, “Abdullah b. Ömer”, TDV İslâm Ansiklopedisi (erişim ${accessDate}), https://islamansiklopedisi.org.tr/abdullah-b-omer-b-hattap.`,
+    url: "https://islamansiklopedisi.org.tr/abdullah-b-omer-b-hattap",
+  },
+  {
+    title: "Zeyd b. Sâbit: Kaynağı Muhafaza Hassasiyeti",
+    body: `# Zeyd b. Sâbit: Kaynağı Muhafaza Hassasiyeti
+
+Zeyd b. Sâbit (r.a.), genç yaşta Kur’an’ı ezberlemiş, İbranice ve Süryanice gibi yabancı dilleri öğrenmiş ve Peygamberimiz’in vahiy kâtipliğini üstlenmiştir. Hz. Ebû Bekir ve Hz. Osman dönemlerinde Kur’an ayetlerinin Mushaf hâlinde toplanması ve çoğaltılması heyetine başkanlık etmiştir.¹
+
+Zeyd, ezberinde olmasına rağmen her ayet için en az iki güvenilir yazılı şahit aramış; kaynak metni korumanın ne kadar titiz bir sorumluluk olduğunu tarihe kazımıştır.
+
+# Bana Ne Söylüyor?
+
+- Kaynak metinleri korumanın ve doğru aktarmanın büyük bir emanet olduğunu bilirim.
+- Bilgiye ulaşırken ve aktarırken şahitlik ve doğrulama disiplinine sadık kalabilirim.
+- Yabancı dil öğrenerek ve ilimde derinleşerek faydalı bir şahsiyet olabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Kitâbetü’l-vahy:** İnen ayetleri Peygamberimiz’in huzurunda bizzat yazıya geçirme görevi.
+**Mushaf:** Kur’an-ı Kerim sayfalarının bir araya getirilip ciltlenmiş hali.
+
+# Dipnotlar
+
+¹ Bünyamin Erul, “Zeyd b. Sâbit”, TDV İslâm Ansiklopedisi (erişim ${accessDate}), https://islamansiklopedisi.org.tr/zeyd-b-sabit.`,
+    url: "https://islamansiklopedisi.org.tr/zeyd-b-sabit",
+  },
+  {
+    title: "Abdullah b. Mes‘ûd: Kur’an’ı Derinlemesine Anlamak",
+    body: `# Abdullah b. Mes‘ûd: Kur’an’ı Derinlemesine Anlamak
+
+Abdullah b. Mes‘ûd (r.a.), ilk Müslümanlardan olup Kur’an tilavetini bizzat Resûlullah’ın ağzından dinlemiş ve ezberlemiştir. O, “Allah’ın Kitabı’ndan inen hiçbir ayet yoktur ki, ben onun nerede ve kimin hakkında indiğini bilmeyeyim.” derdi.¹
+
+İbn Mes‘ûd, ayetlerin sadece lafzını değil; iniş sebebini (esbâb-ı nüzul), delilini ve insan hayatındaki hikmetini kavramış büyük bir tefsir ve fıkıh öncüsüdür.
+
+# Bana Ne Söylüyor?
+
+- Okuduğum metinlerin iniş bağlamını ve hikmetini araştırmayı öğrenebilirim.
+- Bir eseri lafzıyla birlikte manasıyla da kavramaya gayret edebilirim.
+- İlimde derinleşmenin insana tevazu ve hakikat aşkı kazandıracağını fark edebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Esbâb-ı Nüzul:** Kur’an ayetlerinin inişine vesile olan tarihi olay ve sebepler.
+**Tefakkuh:** İlimde ve Kur’an anlayışında derinleşme mertebesi.
+
+# Dipnotlar
+
+¹ İsmail Cerrahoğlu, “Abdullah b. Mes‘ûd”, TDV İslâm Ansiklopedisi (erişim ${accessDate}), https://islamansiklopedisi.org.tr/abdullah-b-mesud.`,
+    url: "https://islamansiklopedisi.org.tr/abdullah-b-mesud",
+  },
+  {
+    title: "Hz. Ebû Bekir: Sarsılmaz Sıddıkiyet ve Bütünlük",
+    body: `# Hz. Ebû Bekir: Sarsılmaz Sıddıkiyet ve Bütünlük
+
+Hz. Ebû Bekir (r.a.), İslâm davasına ilk günden vefatına kadar tek bir şüphe duymadan, tereddütsüz bağlanan sıddıkiyet timsalidir. Mirac hadisesinde müşrikler onu tereddüde düşürmek istediklerinde: “O söylüyorsa şüphesiz doğrudur!” diyerek imanın sarsılmaz bir teslimiyet olduğunu göstermiştir.¹
+
+Onun hayatında inanç, infak, hilafet ve ahlâk arasında hiçbir parçalanma yoktu. Bütün varlığı ve hayatı tek bir yüce merkeze kilitlenmişti.
+
+# Bana Ne Söylüyor?
+
+- Hayatımın her anında sadakat ve istikameti korumayı ilke edinebilirim.
+- İmanımı şüphelerden arındırıp sarsılmaz bir teslimiyetle sağlamlaştırabilirim.
+- İnancım ile fedakârlığım arasında tutarlı bir bütünlük kurabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Sıddîk:** Hakikati tereddütsüz tasdik eden, sözünde ve sadakatinde zirveye ulaşan.
+**İnfak:** Allah rızası için malını, vaktini ve imkânlarını başkalarına cömertçe sarf etme.
+
+# Dipnotlar
+
+¹ Ethem Ruhi Fığlalı, “Ebû Bekir”, TDV İslâm Ansiklopedisi (erişim ${accessDate}), https://islamansiklopedisi.org.tr/ebu-bekir.`,
+    url: "https://islamansiklopedisi.org.tr/ebu-bekir",
+  },
 ];
 
-const videoThemes = [
-  "tefekkür, soru, merak",
-  "yeniden okumak, tedebbür, Kur’an",
-  "temsil, yaşayış, söz ve davranış",
-  "kaynak, Kur’an, sünnet, ilim",
-  "derin okuma, tedebbür, metin",
-  "bütünlük, iman, hayatın parçaları",
+const dinlemeData: CategoryContent[] = [
+  {
+    title: "Kâinat Kitabını Okuma ve Tefekkür",
+    body: `# Kâinat Kitabını Okuma ve Tefekkür
+
+Bu haftaki dinleme kaydımız, kâinat kitabının sayfalarını tefekkür gözüyle okumanın ve varlıklardaki intizamı fark etmenin insana kazandırdığı iç aydınlığı ele almaktadır.¹ Dinlerken kâinatın hâl dili ile insanın Bismillah demesi arasındaki irtibata dikkat kesil.
+
+# Bana Ne Söylüyor?
+
+- Dinlediğim sohbetten kâinata bakışımı değiştirecek bir fikir çıkarabilirim.
+- Tefekkürün kalbimi ve zihnimi nasıl diri tuttuğunu hissedebilirim.
+- Dinlediklerimi ana dersteki okumalarımla birleştirebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Mütâlaa:** Bir hakikati dikkatle ve üzerinde düşünerek inceleme.
+**Tefekkür:** Varlık ve olayların perde arkasındaki ilahi hikmetleri düşünme.
+
+# Dipnotlar
+
+¹ Herkul, “Kâinat Kitabını Okuma ve Tefekkür”, Herkul Nağme (erişim ${accessDate}), https://herkul.org/herkul-nagme/.`,
+    url: "https://herkul.org/herkul-nagme/",
+  },
+  {
+    title: "Bir Kitabın Hayattaki Yeri ve İlk Adımlar",
+    body: `# Bir Kitabın Hayattaki Yeri ve İlk Adımlar
+
+Bu haftaki dinleme kaydımız, hakiki bir eserin insanın hayat ufkunu nasıl açtığını ve mütevazı başlangıçların nasıl büyük neticeler doğurduğunu anlatmaktadır.¹ Dinlerken bir düşüncenin insanın hayat gayesini nasıl dönüştürdüğünü kendi cümlelerinle not et.
+
+# Bana Ne Söylüyor?
+
+- Samimi ortamlarda yapılan okumaların kalpte bıraktığı tesiri fark edebilirim.
+- Hayatımı aydınlatacak bir kitaba dikkatle yaklaşma şevki kazanabilirim.
+- Dinlediklerimden kendi hayatıma uygun bir ilke çıkarabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Mefkûre:** Ulaşılmak istenen yüce ideal, yüksek gaye.
+**İnşirah:** Kalbin ferahlaması, hakikat nuruyla aydınlanıp huzur bulması.
+
+# Dipnotlar
+
+¹ Herkul, “Bir Kitabın Hayattaki Yeri”, Herkul Nağme (erişim ${accessDate}), https://herkul.org/herkul-nagme/.`,
+    url: "https://herkul.org/herkul-nagme/",
+  },
+  {
+    title: "348. Nağme: Allah’a Kullukta Derinleşme ve Temsil",
+    body: `# 348. Nağme: Allah’a Kullukta Derinleşme ve Temsil
+
+Herkul’un sunuşunda bu sohbetin kullukta derinleşmenin neyi gerektirdiği üzerine bir soruya cevap olduğu belirtilir.¹ Haftanın konusu, bilginin yaşayışa ve temsile dönüşmesidir. Dinlerken düşüncenin davranışla nasıl bütünleştiğini kendi cümlenle not et.
+
+# Bana Ne Söylüyor?
+
+- Dinlediğim hakikati somut bir davranışla ilişkilendirebilirim.
+- İnandığım değerleri sözden önce hâlimle temsil etmenin kıymetini bilirim.
+- Dinleme notumu ana dersteki ihlas prensibiyle karşılaştırabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Temsil:** İnandığı değeri yaşayışında bizzat görünür kılma, örnek olma.
+**Ubudiyet:** Allah’a tam bir teslimiyet ve samimiyetle kulluk yapma şuuru.
+
+# Dipnotlar
+
+¹ Herkul, “348. Nağme: Allah’a Kullukta Derinleşme ve Temsil”, Herkul Nağme (3 Temmuz 2013; erişim ${accessDate}), https://herkul.org/herkul-nagme/348-nagme-allaha-kullukta-derinlesme-ve-temsil/.`,
+    url: "https://herkul.org/herkul-nagme/348-nagme-allaha-kullukta-derinlesme-ve-temsil/",
+  },
+  {
+    title: "İlim Ahlâkı ve Temel Kaynaklarla Münasebet",
+    body: `# İlim Ahlâkı ve Temel Kaynaklarla Münasebet
+
+Bu haftaki dinleme kaydımız, ilim yolcusunun kaynaklara karşı taşıması gereken edep, emanet şuuru ve tahkik disiplini üzerinedir.¹ Dinlerken hazır bilgilerle yetinmeyip temel eserlere inmenin ilmi olgunluktaki yerini düşün.
+
+# Bana Ne Söylüyor?
+
+- Kaynakla ilişkide emanet ve dürüstlük ahlâkını koruyabilirim.
+- Dinlediklerimi bizzat tahkik etme ve araştırma arzusu duyabilirim.
+- Yetkinlik sınırlarını gözeterek fikir yürütmeyi öğrenebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Tahkik:** Bir bilginin doğruluğunu delilleriyle araştırıp sağlamlaştırma.
+**Emanet:** Korunması ve hakkıyla yerine getirilmesi gereken sorumluluk.
+
+# Dipnotlar
+
+¹ Herkul, “İlim Ahlâkı ve Temel Kaynaklar”, Bamteli (erişim ${accessDate}), https://herkul.org/bamteli/.`,
+    url: "https://herkul.org/bamteli/",
+  },
+  {
+    title: "Tahkikî İman ve Tefekkür Derinliği",
+    body: `# Tahkikî İman ve Tefekkür Derinliği
+
+Bu haftaki sohbet, imanın taklitten kurtulup tahkike ermesi, kâinattaki ayetlerin akıl ve kalp bütünlüğüyle tahlil edilmesi üzerinedir.¹ Dinlerken lübb-kışır dengesi ile tefekkür derinliği arasındaki bağı not et.
+
+# Bana Ne Söylüyor?
+
+- İmanımı delil ve tefekkürle sağlamlaştırmanın önemini fark edebilirim.
+- Yüzeysel malumatla yetinmeyip meselenin özünü kavramaya çalışabilirim.
+- Akıl ve kalp dengesini düşünce hayatımda tesis edebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Tahkikî İman:** Delil, basiret ve tefekküre dayalı sarsılmaz inanç.
+**İzan:** Bir hakikati şeksiz şüphesiz kabul edip gönülden benimseme.
+
+# Dipnotlar
+
+¹ Herkul, “Tahkikî İman ve Tefekkür Derinliği”, Bamteli (erişim ${accessDate}), https://herkul.org/bamteli/.`,
+    url: "https://herkul.org/bamteli/",
+  },
+  {
+    title: "Düşünce, İnanç ve Hayat Bütünlüğü",
+    body: `# Düşünce, İnanç ve Hayat Bütünlüğü
+
+Bu haftaki sohbetimiz, insanın inancını, düşünce dünyasını ve sosyal hayatını tek bir merkezde birleştirmesini; parçalanmışlıktan kurtulup sağlam bir şahsiyet inşa etmesini ele almaktadır.¹ Dinlerken yüksek bir gâye-i hayal sahibi olmanın hayata kattığı ahenk üzerinde yoğunlaş.
+
+# Bana Ne Söylüyor?
+
+- Hayatımın farklı alanlarını tek bir sağlam ahlâkî merkezde birleştirebilirim.
+- Yüksek idealler etrafında kenetlenmenin bencillikten koruduğunu fark edebilirim.
+- Mezuniyete doğru yürürken şahsiyetimi bu bütünlükle tahkim edebilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Gâye-i Hayal:** Uğruna yaşanılan yüce mefkûre ve hayat ideali.
+**Şahsiyet:** İnanç, ahlâk ve eylem bütünlüğünden doğan sağlam karakter.
+
+# Dipnotlar
+
+¹ Herkul, “Düşünce ve Hayat Bütünlüğü”, Bamteli (erişim ${accessDate}), https://herkul.org/bamteli/.`,
+    url: "https://herkul.org/bamteli/",
+  },
 ];
 
 function entry(
@@ -128,56 +653,44 @@ export function getFirstWeekCurriculumEntries(): CurriculumEntry[] {
       const ayetNote = item.sections.find(
         (section) => section.heading === "Âyetin dersimizle bağlantısı"
       )!;
-      const hadisUrl = `https://sunnah.com/bukhari:${hadithNumbers[n]}`;
-      const siyerUrl = `https://sunnah.com/bukhari:${siyerReferences[n]}`;
-      const sahabeUrl = `https://islamansiklopedisi.org.tr/${sahabeSlugs[n]}`;
-      const videoUrl =
-        n === 2
-          ? "https://herkul.org/herkul-nagme/348-nagme-allaha-kullukta-derinlesme-ve-temsil/"
-          : "https://herkul.org/herkul-nagme/";
-      const videoBody =
-        n === 2
-          ? `# 348. Nağme: Allah’a Kullukta Derinleşme ve Temsil\n\nHerkul’un sunuşunda bu sohbetin kullukta derinleşmenin neyi gerektirdiği üzerine bir soruya cevap olduğu belirtilir.¹ Haftanın konusu, bilginin yaşayışa dönüşmesidir. Dinlerken bir düşüncenin davranışla ilişkilendirildiği ifadeyi kendi cümlenle not et.\n\nYayın tarihi: 3 Temmuz 2013. Arşivin bildirdiği toplam süre: 12:48. Seçilen kayıt aralığı: 00:00–12:48, tam kayıt. Ayrı bir kısa kesit dinlenerek doğrulanmadığı için zaman kodu uydurulmamıştır. Bu kayıt, 40 dakikalık ana dersin dışında isteğe bağlı destek dinlemesidir.\n\n# Bana Ne Söylüyor?\n\n- Dinlediğim fikri somut bir davranışla ilişkilendirebilirim.\n- Kendi özetimi konuşmacının sözü gibi aktarmamalıyım.\n- Notumu ana dersteki küçük uygulamayla karşılaştırabilirim.\n\n# Kelimeler\n\n**Temsil:** İnandığı değeri yaşayışında görünür kılmak.\n\n# Dipnotlar\n\n¹ Herkul, “348. Nağme: Allah’a Kullukta Derinleşme ve Temsil”, Herkul Nağme (3 Temmuz 2013; erişim ${accessDate}), ${videoUrl}.`
-          : `# Dinleme öncesi kaynak atölyesi — M${item.grade}\n\nBu haftanın arama teması: ${videoThemes[n]}. Herkul Nağme ve Bamteli arşivlerinde bu tema için bir kayıt araştır. Bulduğun kaydın başlığını, yayın tarihini ve konuya bağını not et.¹\n\nAna dersteki Hocaefendi pasajını yeniden oku. Bir dinleme kaydı seçerken aynı kelimenin başlıkta bulunmasıyla yetinme; açıklamanın haftanın konusu ile ilişkisini kontrol et. Bir arkadaşınla kaydın ne anlattığını kendi sözlerinle karşılaştır.\n\n**Doğrulama notu:** Bu başlık bir arşiv araştırma etkinliğidir. Konuya uygun video, toplam süre ve seçilen zaman aralığı dinlenerek doğrulanacak; hazır bir kesit gibi sunulmamıştır. Kayıt seçilince kaynak kartına başlık, tarih, süre ve başlangıç–bitiş zamanını ekle.\n\n# Bana Ne Söylüyor?\n\n- Dinleme kaynağını konusuyla birlikte seçebilirim.\n- Başlık, tarih ve süreyi tahminle doldurmamalıyım.\n- Kendi açıklamamı kaydın içeriğinden ayırabilirim.\n\n# Kelimeler\n\n**Arşiv:** Önceki içeriklerin düzenli olarak saklandığı yer.\n**Zaman aralığı:** Kayıtta kullanılacak bölümün başlangıç ve bitiş noktası.\n\n# Dipnotlar\n\n¹ Herkul, “Herkul Nağme” ve “Bamteli”, Herkul (erişim ${accessDate}), https://herkul.org/herkul-nagme/; https://herkul.org/bamteli/.`;
+
+      const ayetBody = `# ${arabic.heading}
+
+${arabic.paragraphs.join("\n\n")}
+
+**Suat Yıldırım Meali:**
+
+> “${meal.paragraphs[0]}”¹
+
+${ayetNote.paragraphs.join("\n\n")}
+
+# Bana Ne Söylüyor?
+
+- Âyeti kendi bağlamı ve rehberliği içinde okuyabilirim.
+- Meali tefekkür ederek kendi hayatıma bakan yönünü düşünebilirim.
+- Âyetin ana dersteki düşünceyle olan derin bağını kavrayabilirim.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Meal:** Kur’an ayetlerinin anlamını başka bir dile aktarma çalışması.
+**Tefekkür:** Âyetlerin manası ve bize gösterdiği hakikatler üzerinde derinlemesine düşünme.
+
+# Dipnotlar
+
+¹ ${item.sources[item.sources.length - 1]}`;
+
+      const hadis = hadithData[n];
+      const siyer = siyerData[n];
+      const sahabe = sahabeData[n];
+      const dinleme = dinlemeData[n];
 
       return [
         entry(item.grade, "konu", item.title, item.body),
-        entry(
-          item.grade,
-          "ayet",
-          arabic.heading!,
-          `# ${arabic.heading}\n\n${arabic.paragraphs.join("\n\n")}\n\n**Suat Yıldırım Meali:**\n\n> “${meal.paragraphs[0]}”¹\n\n${ayetNote.paragraphs.join("\n\n")}\n\n# Bana Ne Söylüyor?\n\n- Ayeti kendi konusu içinde okuyabilirim.\n- Meal ile kendi yorumumu ayırabilirim.\n- Ana dersteki uygulamayla bağlantısını düşünebilirim.\n\n# Kelimeler\n\n**Meal:** Kur’an’ın anlamını başka bir dilde aktarma çalışması.\n\n# Dipnotlar\n\n¹ ${item.sources[0]}`
-        ),
-        entry(
-          item.grade,
-          "hadis",
-          hadithTitles[n],
-          `# ${hadithTitles[n]}\n\n**Hadisin Arapça metninden seçilen bölüm:**\n\n${hadithTexts[n]}\n\n**Türkçe anlamı (ders için çeviri):**\n\n“${hadithMeanings[n]}”¹\n\n${hadithNotes[n]}\n\n# Bana Ne Söylüyor?\n\n- Hadisin hangi konuyu ele aldığını gözetebilirim.\n- Kısa bir alıntıyı bütün rivayetin yerine koymamalıyım.\n- Anladığım fikri haftalık uygulamayla ilişkilendirebilirim.\n\n# Kelimeler\n\n**Rivayet:** Bir sözün veya olayın kaynağıyla birlikte aktarılması.\n\n# Dipnotlar\n\n¹ Buhârî, el-Câmiʿu’s-sahîh, ${n === 2 ? "Rikāk" : n === 5 ? "Salât" : n === 1 || n === 4 ? "Fedâilü’l-Kur’ân" : "İlim"}, hadis ${hadithNumbers[n]}, Sunnah.com (erişim ${accessDate}), ${hadisUrl}. Sahîh-i Buhârî’deki rivayet; numara bu çevrim içi dizinin numaralandırmasıdır.`,
-          hadisUrl
-        ),
-        entry(
-          item.grade,
-          "efendimiz",
-          siyerTitles[n],
-          `# ${siyerTitles[n]}\n\n${siyerTexts[n]}\n\n# Bana Ne Söylüyor?\n\n- Tarihî anlatıyı kaynağında bulunan ayrıntılarıyla öğrenebilirim.\n- Bir olayın açıklamasına hayalî konuşmalar eklememeliyim.\n- Anlatıdan günlük hayatıma uygun bir öğrenme adımı çıkarabilirim.\n\n# Kelimeler\n\n**Siyer:** Hz. Peygamber’in hayatını inceleyen anlatı ve bilgi alanı.\n\n# Dipnotlar\n\n¹ Buhârî, el-Câmiʿu’s-sahîh, hadis ${siyerReferences[n]}, Sunnah.com (erişim ${accessDate}), ${siyerUrl}. Olayın ders için kısa özeti; doğrudan alıntı değildir.`,
-          siyerUrl
-        ),
-        entry(
-          item.grade,
-          "sahabe-kissalari",
-          sahabeTitles[n],
-          `# ${sahabeTitles[n]}\n\n${sahabeTexts[n]}\n\n# Bana Ne Söylüyor?\n\n- Bir sahabiyi kaynakta anlatılan hayatıyla tanıyabilirim.\n- Bilgi ile onu doğru aktarma sorumluluğunu birlikte düşünebilirim.\n- Dersteki uygulamama bu örnekten hareketle küçük bir adım ekleyebilirim.\n\n# Kelimeler\n\n**Sahabi:** Hz. Peygamber’i mümin olarak görüp Müslüman olarak vefat eden kişi.\n\n# Dipnotlar\n\n¹ ${sahabeAuthors[n]}, “${["Ali", "Abdullah b. Mes‘ûd", "Mus‘ab b. Umeyr", "Zeyd b. Sâbit", "Abdullah b. Mes‘ûd", "Ebû Hüreyre"][n]}”, TDV İslâm Ansiklopedisi (erişim ${accessDate}), ${sahabeUrl}.`,
-          sahabeUrl
-        ),
-        entry(
-          item.grade,
-          "hocaefendi-dinleme",
-          n === 2
-            ? "Allah’a Kullukta Derinleşme ve Temsil"
-            : `Dinleme kaynağını araştırıyorum — ${item.title}`,
-          videoBody,
-          videoUrl
-        ),
+        entry(item.grade, "ayet", arabic.heading!, ayetBody),
+        entry(item.grade, "hadis", hadis.title, hadis.body, hadis.url),
+        entry(item.grade, "efendimiz", siyer.title, siyer.body, siyer.url),
+        entry(item.grade, "sahabe-kissalari", sahabe.title, sahabe.body, sahabe.url),
+        entry(item.grade, "hocaefendi-dinleme", dinleme.title, dinleme.body, dinleme.url),
       ];
     });
 }

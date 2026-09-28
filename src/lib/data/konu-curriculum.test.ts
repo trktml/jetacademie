@@ -26,14 +26,12 @@ describe("konu-curriculum data integrity", () => {
 
   it("correctly identifies entry IDs across grades", () => {
     expect(getKonuItem("g1-konu-eylul-1")).toBe(getKonuItem("konu-eylul-1"));
-    expect(getKonuItem("konu-eylul-1")?.title).toBe("Benim Büyük Sorularım");
+    expect(getKonuItem("konu-eylul-1")?.title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
     expect(getKonuItem("konu-eylul-2")?.title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
-    expect(getKonuItem("konu-eylul-3")?.title).toBe("Bediüzzaman Kimdir?");
-    expect(getKonuItem("konu-eylul-4")?.title).toBe(
-      "Bir Kitapla Nasıl Arkadaş Olunur? — Hocaefendi ve Risale Okuma Kültürü"
-    );
+    expect(getKonuItem("konu-eylul-3")?.title).toBe("Hocaefendi ve Risale-i Nur");
+    expect(getKonuItem("konu-eylul-4")?.title).toBe("Biz Bu Eserleri Nasıl Okuyacağız?");
     expect(getKonuItem("g2-konu-eylul-1")?.title).toBe(
-      "Geçen Yıldan Bugüne: Bir Metni İkinci Kez Okumak"
+      "İki Kilimlik Bir Dükkânda Başlayan Yolculuk"
     );
     expect(getKonuItem("g6-konu-eylul-2")?.title).toBe(
       "Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?"

@@ -13,9 +13,11 @@ describe("KonuLessonReader Component", () => {
     const html = renderToString(<KonuLessonReader entry={entry} />);
 
     expect(html).toContain("1. Sınıf · 1. Hafta");
-    expect(html).toContain("Benim Büyük Sorularım");
-    expect(html).toContain("Sorularımızı küçümsemeden, birlikte öğrenmeye başlamak");
-    expect(html).toContain("dk okuma");
+    expect(html).toContain("Bu Eser Neden Hâlâ Okunuyor?");
+    expect(html).toContain(
+      "Bu kadar farklı insanın yıllardır okuduğu, çoğalttığı ve araştırdığı bir eserde ne var?"
+    );
+    expect(html).toContain("7 dk okuma");
     expect(html).toContain("6 Kavram");
   });
 
@@ -30,18 +32,20 @@ describe("KonuLessonReader Component", () => {
     expect(html).toContain("Dipnot");
 
     // Vocabulary card words
+    expect(html).toContain("Bismillâh");
+    expect(html).toContain("Lisân-ı hâl");
     expect(html).toContain("Tefekkür");
-    expect(html).toContain("Kaynak");
-    expect(html).toContain("Gözlem");
   });
 
   it("renders in-text vocabulary buttons with tooltip titles", () => {
     const entry = g1Entries[0];
     const html = renderToString(<KonuLessonReader entry={entry} />);
 
-    expect(html).toContain('title="Tefekkür: Bir şey üzerinde dikkatle düşünüp anlamını aramak."');
     expect(html).toContain(
-      'title="Kaynak: Bir bilgi ya da düşünceyi öğrendiğimiz eser veya kişi."'
+      'title="Bismillâh: “Allah’ın adıyla” anlamına gelen, her hayırlı işe başlarken söylenen mübarek başlangıç sözü."'
+    );
+    expect(html).toContain(
+      'title="Tefekkür: Bir şeyin anlamı ve bize ne gösterdiği üzerinde dikkatlice düşünme."'
     );
   });
 
@@ -66,8 +70,8 @@ describe("KonuLessonReader Component", () => {
     const html = renderToString(<KonuLessonReader entry={entry} />);
 
     // In-text buttons should have aria-label and not render inline duplicate tooltips
+    expect(html).toContain('aria-label="Bismillâh kelimesinin anlamı"');
     expect(html).toContain('aria-label="Tefekkür kelimesinin anlamı"');
-    expect(html).toContain('aria-label="Kaynak kelimesinin anlamı"');
     // Does not render inline role=tooltip popovers that could clip
     expect(html).not.toContain('role="tooltip"');
   });

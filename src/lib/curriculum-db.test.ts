@@ -538,22 +538,22 @@ describe("Curriculum SQLite Database Module", () => {
   it("should retrieve Haftanın Konusu entries across grades with real titles and content", async () => {
     const g1w1 = await getCurriculumEntryByIdFromDb("konu-eylul-1");
     expect(g1w1).not.toBeNull();
-    expect(g1w1?.title).toBe("Benim Büyük Sorularım");
+    expect(g1w1?.title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
     expect(g1w1?.body).toContain("# Bana Ne Söylüyor?");
 
     const g2w1 = await getCurriculumEntryByIdFromDb("g2-konu-eylul-1");
     expect(g2w1).not.toBeNull();
-    expect(g2w1?.title).toBe("Geçen Yıldan Bugüne: Bir Metni İkinci Kez Okumak");
+    expect(g2w1?.title).toBe("İki Kilimlik Bir Dükkânda Başlayan Yolculuk");
 
     const g6w1 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-1");
     expect(g6w1).not.toBeNull();
     expect(g6w1?.title).toBe("Bu Yıl Parçaları Nasıl Bir Bütüne Dönüştüreceğiz?");
-    expect(g6w1?.body).toContain("# Kelimeler");
+    expect(g6w1?.body).toContain("# Bu Hafta Tanıştığımız Kelimeler");
 
     const g6w2 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-2");
     expect(g6w2).not.toBeNull();
     expect(g6w2?.title).toBe("Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?");
-    expect(g6w2?.body).toContain("# Kelimeler");
+    expect(g6w2?.body).toContain("# Bu Hafta Tanıştığımız Kelimeler");
   });
 
   it("should keep excluded categories empty across regular and forced seeding", async () => {

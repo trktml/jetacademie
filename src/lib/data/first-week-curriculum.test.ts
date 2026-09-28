@@ -25,8 +25,13 @@ describe("first-week import scope", () => {
       ).toBe(true);
       expect(gradeEntries.every((entry) => entry.id.startsWith(`g${grade}-`))).toBe(true);
       const body = gradeEntries.find((entry) => entry.categoryId === "konu")!.body!;
-      expect(body).toContain("40 Dakikalık Akış");
-      expect(body.indexOf("# Kelimeler")).toBeLessThan(body.indexOf("# Dipnotlar"));
+      expect(body).not.toContain("40 Dakikalık Akış");
+      expect(body.indexOf("# Bana Ne Söylüyor?")).toBeLessThan(
+        body.indexOf("# Bu Hafta Tanıştığımız Kelimeler")
+      );
+      expect(body.indexOf("# Bu Hafta Tanıştığımız Kelimeler")).toBeLessThan(
+        body.indexOf("# Dipnotlar")
+      );
       expect(body).not.toContain("# Kaynakça");
     }
   });

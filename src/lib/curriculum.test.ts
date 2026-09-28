@@ -127,7 +127,7 @@ describe("curriculum", () => {
     expect(konuEntries[1].week).toBe(2);
     expect(konuEntries[2].week).toBe(3);
     expect(konuEntries[3].week).toBe(4);
-    expect(konuEntries[0].title).toBe("Benim Büyük Sorularım");
+    expect(konuEntries[0].title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
     expect(konuEntries[1].title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
   });
 

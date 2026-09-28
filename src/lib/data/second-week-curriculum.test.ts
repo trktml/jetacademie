@@ -46,11 +46,13 @@ describe("second-week curriculum", () => {
       expect(item.discussionQuestions).toHaveLength(2);
       expect(item.sections.filter((section) => section.kind === "quote")).toHaveLength(3);
       expect(item.sections.some((section) => section.kind === "arabic")).toBe(true);
-      expect(item.body).toContain("40 Dakikalık Akış");
+      expect(item.body).not.toContain("40 Dakikalık Akış");
       expect(item.body.indexOf("# Bana Ne Söylüyor?")).toBeLessThan(
-        item.body.indexOf("# Kelimeler")
+        item.body.indexOf("# Bu Hafta Tanıştığımız Kelimeler")
       );
-      expect(item.body.indexOf("# Kelimeler")).toBeLessThan(item.body.indexOf("# Dipnotlar"));
+      expect(item.body.indexOf("# Bu Hafta Tanıştığımız Kelimeler")).toBeLessThan(
+        item.body.indexOf("# Dipnotlar")
+      );
       expect(item.takeaway.length).toBeGreaterThanOrEqual(3);
       expect(item.sources.length).toBeGreaterThanOrEqual(3);
       expect(item.body.split(/\s+/).length).toBeGreaterThan(700);
