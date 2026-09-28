@@ -34,6 +34,10 @@
 .curriculum-markdown li + li {
   margin-top: 0.4em;
 }
+.curriculum-markdown li p {
+  margin: 0;
+  display: inline;
+}
 .curriculum-markdown blockquote {
   border-inline-start: 3px solid #72a98f;
   padding: 0.6em 1em;

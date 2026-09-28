@@ -7,7 +7,7 @@ import { BELGIUM_GRADES, GRADE_LABELS, type BelgiumGrade } from "@/lib/curriculu
 import { getRememberedCurriculumGrade, useCurriculumStore } from "@/store/use-curriculum-store";
 
 const subscribeToHydration = (onStoreChange: () => void) =>
-  useCurriculumStore.persist?.onFinishHydration(onStoreChange) ?? (() => { });
+  useCurriculumStore.persist?.onFinishHydration(onStoreChange) ?? (() => {});
 const getHydrationSnapshot = () => useCurriculumStore.persist?.hasHydrated() ?? true;
 const getServerHydrationSnapshot = () => false;
 

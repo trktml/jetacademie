@@ -30,4 +30,43 @@ describe("Safe shared Markdown rendering", () => {
     expect(html).toContain('rel="noopener noreferrer"');
     expect(html).toContain('href="https://example.com"');
   });
+
+  it("normalizes unicode bullet characters into proper Markdown lists", () => {
+    const html = renderToStaticMarkup(
+      <MarkdownContent>
+        {
+          "• Sohbet yerini düzenlemek; konuşmacı için sehpa ve su hazırlamak.\n• Sohbetten önce zihnen ve manen hazırlanmak.\n• Esneme, hapşırma veya zorunlu konuşmayı edep içinde yapmak; sohbetin havasını bozmamak.\n• Düzgün ve saygılı oturmak."
+        }
+      </MarkdownContent>
+    );
+    expect(html).toContain("<ul>");
+    expect(html).toContain(
+      "<li>Sohbet yerini düzenlemek; konuşmacı için sehpa ve su hazırlamak.</li>"
+    );
+    expect(html).toContain("<li>Sohbetten önce zihnen ve manen hazırlanmak.</li>");
+    expect(html).toContain(
+      "<li>Esneme, hapşırma veya zorunlu konuşmayı edep içinde yapmak; sohbetin havasını bozmamak.</li>"
+    );
+    expect(html).toContain("<li>Düzgün ve saygılı oturmak.</li>");
+    // Verify it is NOT collapsed into a single paragraph with dots
+    expect(html).not.toContain('<p dir="auto">•');
+  });
+
+  it("handles introductory text before bullet list correctly", () => {
+    const html = renderToStaticMarkup(
+      <MarkdownContent>{"Adab Kuralları:\n• Birinci kural\n• İkinci kural"}</MarkdownContent>
+    );
+    expect(html).toContain('<p dir="auto">Adab Kuralları:</p>');
+    expect(html).toContain("<ul>");
+    expect(html).toContain("<li>Birinci kural</li>");
+    expect(html).toContain("<li>İkinci kural</li>");
+  });
+
+  it("handles null or undefined gracefully without crashing", () => {
+    const htmlNull = renderToStaticMarkup(<MarkdownContent>{null}</MarkdownContent>);
+    expect(htmlNull).toBe('<div class="curriculum-markdown" dir="auto"></div>');
+
+    const htmlUndefined = renderToStaticMarkup(<MarkdownContent>{undefined}</MarkdownContent>);
+    expect(htmlUndefined).toBe('<div class="curriculum-markdown" dir="auto"></div>');
+  });
 });

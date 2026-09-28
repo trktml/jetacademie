@@ -35,6 +35,32 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("<strong>Editörün metni</strong>");
     expect(html).not.toContain("Benim Büyük Sorularım");
   });
+  it("renders Adab-ı Muaşeret bullet points as a structured Markdown list", () => {
+    const html = renderToString(
+      <EntryContentRenderer
+        entry={{
+          id: "adab-i-muaseret-eylul-1",
+          grade: 1,
+          categoryId: "adab-i-muaseret",
+          month: 9,
+          week: 1,
+          year: 2026,
+          title: "Sohbet Âdâbı — Sohbete Yer ve Gönül Hazırlığı",
+          body: "• Sohbet yerini düzenlemek; konuşmacı için sehpa ve su hazırlamak.\n• Sohbetten önce zihnen ve manen hazırlanmak.\n• Esneme, hapşırma veya zorunlu konuşmayı edep içinde yapmak; sohbetin havasını bozmamak.\n• Düzgün ve saygılı oturmak.",
+        }}
+      />
+    );
+    expect(html).toContain("<ul>");
+    expect(html).toContain(
+      "<li>Sohbet yerini düzenlemek; konuşmacı için sehpa ve su hazırlamak.</li>"
+    );
+    expect(html).toContain("<li>Sohbetten önce zihnen ve manen hazırlanmak.</li>");
+    expect(html).toContain(
+      "<li>Esneme, hapşırma veya zorunlu konuşmayı edep içinde yapmak; sohbetin havasını bozmamak.</li>"
+    );
+    expect(html).toContain("<li>Düzgün ve saygılı oturmak.</li>");
+    expect(html).not.toContain('<p dir="auto">•');
+  });
   it("should render fixed capsule navigation with 9 category items", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
