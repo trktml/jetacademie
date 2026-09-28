@@ -31,7 +31,7 @@ export async function markEntryAsRead(entryId: string) {
   const gradeEntries = await getCurriculumEntriesFromDb(entry.grade ?? 1);
   const categoryEntries = getCategoryEntries(entry.categoryId, gradeEntries);
   if (!canCompleteEntry(entry.id, categoryEntries, completedEntryIds)) {
-    throw new Error("Önce sıradaki dosyayı tamamlayın.");
+    throw new Error("Önce mevcut dersi tamamlayın.");
   }
 
   await saveCompletedEntry(session.user.id, entry.id);

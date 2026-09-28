@@ -852,7 +852,7 @@ export function CurriculumArchive({
       setTimeout(() => setShakingEntryId(null), 500);
     }
     showToast(
-      "Önce sıradaki içeriği okumalısınız. Müfredat dosyaları sırayla açılmaktadır.",
+      "Önce mevcut dersi okumalısınız. Müfredat dosyaları sırayla açılmaktadır.",
       "warning",
       3500
     );
@@ -1350,11 +1350,10 @@ export function CurriculumArchive({
                 <FileClock className="text-ink-faint h-8 w-8" aria-hidden="true" />
                 <h4>Henüz tamamlanan dosya bulunmuyor</h4>
                 <p>
-                  Sıradaki içeriği okuyup tamamladığınızda tamamlanan dosyalarınız burada
-                  listelenir.
+                  Mevcut dersi okuyup tamamladığınızda tamamlanan dosyalarınız burada listelenir.
                 </p>
                 <button type="button" className="primary-button mt-2" onClick={closeHistoryView}>
-                  Sıradaki Dosyaya Git
+                  Mevcut Dosyaya Dön
                 </button>
               </div>
             )}
@@ -1700,12 +1699,6 @@ export function CurriculumArchive({
                                         ? `Ekstra ${currentEntry.extraOrder ?? 1}`
                                         : `${currentTiming} · ${currentEntry.week}.H`}
                                     </span>
-                                  </span>
-                                </div>
-
-                                <div className="archive-entry-card__top">
-                                  <span className="read-status read-status--current">
-                                    <FileClock aria-hidden="true" /> Sıradaki
                                   </span>
                                 </div>
 

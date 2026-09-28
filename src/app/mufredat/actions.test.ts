@@ -62,9 +62,7 @@ describe("mufredat server actions", () => {
 
     it("fails when trying to complete out of order", async () => {
       // Trying to complete week 2 before week 1
-      expect(markEntryAsRead("g1-hadis-eylul-2")).rejects.toThrow(
-        "Önce sıradaki dosyayı tamamlayın."
-      );
+      expect(markEntryAsRead("g1-hadis-eylul-2")).rejects.toThrow("Önce mevcut dersi tamamlayın.");
     });
 
     it("successfully marks the first entry as read", async () => {

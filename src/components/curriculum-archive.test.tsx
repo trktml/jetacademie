@@ -189,7 +189,7 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should track completion independently per category", () => {
-    // Complete hadis-eylul-1: Ayet should still be 0/55 completed with first entry as Sıradaki
+    // Complete hadis-eylul-1: Ayet should still be 0/55 completed with first entry active
     const ayetHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={["hadis-eylul-1"]}
@@ -198,7 +198,7 @@ describe("CurriculumArchive Component", () => {
       />
     );
     expect(ayetHtml).toContain("0 / 55 tamamlandı");
-    expect(ayetHtml).toContain("Sıradaki");
+    expect(ayetHtml).toContain("archive-folder-card--active");
 
     // Hadis category should show 1/55 completed
     const hadisHtml = renderToString(
@@ -225,8 +225,8 @@ describe("CurriculumArchive Component", () => {
     // Past shelf is omitted in favor of clean header button
     expect(html).not.toContain("archive-past-shelf");
     expect(html).toContain("Geçmiş (1)");
-    // Second entry is now active (Sıradaki)
-    expect(html).toContain("Sıradaki");
+    // Second entry is now active
+    expect(html).toContain("archive-folder-card--active");
   });
 
   it("should omit the decorative outer archive casing", () => {
