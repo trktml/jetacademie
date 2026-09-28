@@ -1,8 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 import { createPortal } from "react-dom";
-import { Check, GraduationCap } from "lucide-react";
+import { Check, ChevronDown, GraduationCap } from "lucide-react";
 import { BELGIUM_GRADES, GRADE_LABELS, type BelgiumGrade } from "@/lib/curriculum";
 import { isValidGrade, useCurriculumStore } from "@/store/use-curriculum-store";
 
@@ -13,6 +20,7 @@ interface GradeSelectorProps {
   onGradeChange?: (grade: BelgiumGrade) => void;
   className?: string;
   compact?: boolean;
+  labeled?: boolean;
 }
 
 export function GradeSelector({
@@ -20,6 +28,7 @@ export function GradeSelector({
   onGradeChange,
   className = "",
   compact = false,
+  labeled = false,
 }: GradeSelectorProps) {
   const storeGrade = useCurriculumStore((state) => state.selectedGrade);
   const selectedGrade = value ?? storeGrade;
@@ -45,9 +54,9 @@ export function GradeSelector({
     const dropdownWidth = 195;
     const dropdownHeight = 280;
 
-    if (isMobile) {
-      // In mobile, capsule is a sticky horizontal bar at top; dropdown opens below the button
-      const top = rect.bottom + 8;
+    if (isMobile || labeled) {
+      // Labeled controls and the mobile capsule open below the button.
+      const top = Math.min(rect.bottom + 8, Math.max(8, window.innerHeight - dropdownHeight - 8));
       const maxLeft = Math.max(8, window.innerWidth - dropdownWidth - 12);
       const left = Math.min(Math.max(8, rect.left), maxLeft);
       setCoords({ top, left });
@@ -58,7 +67,7 @@ export function GradeSelector({
       const top = Math.min(Math.max(16, rect.top), maxTop);
       setCoords({ top, left });
     }
-  }, []);
+  }, [labeled]);
 
   // Sync with URL query parameter on mount and popstate
   useEffect(() => {
@@ -139,6 +148,30 @@ export function GradeSelector({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    dropdownRef.current?.querySelector<HTMLButtonElement>('[aria-selected="true"]')?.focus();
+  }, [isOpen]);
+
+  function handleOptionKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+    const options = Array.from(
+      dropdownRef.current?.querySelectorAll<HTMLButtonElement>("button") ?? []
+    );
+    if (options.length === 0) return;
+    event.preventDefault();
+    const currentIndex = options.indexOf(document.activeElement as HTMLButtonElement);
+    const nextIndex =
+      event.key === "Home"
+        ? 0
+        : event.key === "End"
+          ? options.length - 1
+          : event.key === "ArrowDown"
+            ? (currentIndex + 1) % options.length
+            : (currentIndex - 1 + options.length) % options.length;
+    options[nextIndex]?.focus();
+  }
+
   function handleToggle() {
     if (!isOpen) {
       updatePosition();
@@ -151,6 +184,7 @@ export function GradeSelector({
   function handleSelectGrade(grade: BelgiumGrade) {
     setStoreGrade(grade);
     setIsOpen(false);
+    buttonRef.current?.focus();
 
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
@@ -169,6 +203,7 @@ export function GradeSelector({
             role="listbox"
             aria-label="Belçika Sınıf Seçimi"
             className="grade-selector-dropdown"
+            onKeyDown={handleOptionKeyDown}
             style={{
               position: "fixed",
               top: `${coords.top}px`,
@@ -215,7 +250,11 @@ export function GradeSelector({
       <button
         ref={buttonRef}
         type="button"
-        className="grade-selector-trigger"
+        className={
+          labeled
+            ? "grade-selector-trigger grade-selector-trigger--labeled"
+            : "grade-selector-trigger"
+        }
         onClick={handleToggle}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -225,7 +264,15 @@ export function GradeSelector({
         <span className="grade-selector-trigger__icon" aria-hidden="true">
           <GraduationCap className="h-4 w-4" />
         </span>
-        <span className="grade-selector-trigger__num">{selectedGrade}</span>
+        {!labeled && <span className="grade-selector-trigger__num">{selectedGrade}</span>}
+        {labeled && (
+          <>
+            <span className="grade-selector-trigger__label">
+              {GRADE_LABELS[selectedGrade]} · Sınıfı değiştir
+            </span>
+            <ChevronDown className="grade-selector-trigger__chevron" aria-hidden="true" />
+          </>
+        )}
       </button>
 
       {dropdownElement}

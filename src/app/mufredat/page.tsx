@@ -5,6 +5,8 @@ import { getCompletedEntryIds } from "@/lib/curriculum-progress";
 import { getCurriculumEntriesFromDb, getUserGenderFromDb } from "@/lib/curriculum-db";
 import { CurriculumPageContent } from "@/components/curriculum-page-content";
 import { ProgressStatusNote } from "@/components/progress-status-note";
+import { CurriculumGradeEntry } from "@/components/curriculum-grade-entry";
+import { parseCurriculumGrade } from "@/lib/curriculum";
 
 export const metadata: Metadata = {
   title: "Müfredat",
@@ -12,14 +14,20 @@ export const metadata: Metadata = {
 };
 
 interface CurriculumPageProps {
-  searchParams?: Promise<{ sinif?: string }>;
+  searchParams?: Promise<{ sinif?: string | string[] }>;
 }
 
 export default async function CurriculumPage(props: CurriculumPageProps) {
   const searchParams = props.searchParams ? await props.searchParams : undefined;
-  const gradeParam = Number(searchParams?.sinif);
-  const initialGrade =
-    Number.isInteger(gradeParam) && gradeParam >= 1 && gradeParam <= 6 ? gradeParam : 1;
+  const initialGrade = parseCurriculumGrade(searchParams?.sinif);
+
+  if (initialGrade === null) {
+    return (
+      <main className="curriculum-page page-shell archive-page-shell">
+        <CurriculumGradeEntry />
+      </main>
+    );
+  }
 
   const entriesPromise = getCurriculumEntriesFromDb(initialGrade);
   const session = await auth.api.getSession({ headers: await headers() });

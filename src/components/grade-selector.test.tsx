@@ -33,4 +33,12 @@ describe("GradeSelector Component", () => {
     expect(html).toContain('class="grade-selector-trigger__num">5</span>');
     expect(html).toContain('aria-label="Sınıf seçimi: 5. Sınıf"');
   });
+
+  it("shows the selected grade and a visible change action in labeled mode", () => {
+    const html = renderToString(<GradeSelector labeled value={4} />);
+
+    expect(html).toContain("4. Sınıf<!-- --> · Sınıfı değiştir");
+    expect(html).toContain("grade-selector-trigger--labeled");
+    expect(html).toContain('aria-label="Sınıf seçimi: 4. Sınıf"');
+  });
 });

@@ -6,6 +6,7 @@ import {
   getCategoryEntries as getCategoryEntriesWithData,
   getUnlockedEntryIndex,
   makeEntryId,
+  parseCurriculumGrade,
 } from "./curriculum";
 import { curriculumEntries } from "./curriculum-data";
 
@@ -19,6 +20,15 @@ function getCategoryEntries(
 }
 
 describe("curriculum", () => {
+  it("accepts only canonical grade links and leaves other entries for the selector", () => {
+    for (const grade of [1, 2, 3, 4, 5, 6] as const) {
+      expect(parseCurriculumGrade(String(grade))).toBe(grade);
+    }
+    for (const value of [undefined, "", "0", "7", "2.5", "01", "abc", ["1", "2"]]) {
+      expect(parseCurriculumGrade(value)).toBeNull();
+    }
+  });
+
   it("contains all nine real curriculum categories", () => {
     expect(curriculumCategories.map((category) => category.label)).toEqual([
       "Esmâü'l-Hüsnâ",

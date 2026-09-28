@@ -107,6 +107,11 @@ export const GRADE_LABELS: Record<BelgiumGrade, string> = {
   6: "6. Sınıf",
 };
 
+export function parseCurriculumGrade(value: unknown): BelgiumGrade | null {
+  if (typeof value !== "string" || !/^[1-6]$/.test(value)) return null;
+  return Number(value) as BelgiumGrade;
+}
+
 export const TOTAL_CURRICULUM_MONTHS = 12;
 export const WEEKS_PER_MONTH = 4;
 export const TOTAL_CURRICULUM_WEEKS = TOTAL_CURRICULUM_MONTHS * WEEKS_PER_MONTH; // 48 weeks
