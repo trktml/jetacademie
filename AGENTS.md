@@ -18,16 +18,17 @@ This guide provides authoritative rules and conventions for AI coding agents wor
 
 ## ⚡ Non-Negotiable Core Rules
 
-1. **Bun Runtime Only**: Always run commands using `bun` (e.g. `bun install`, `bun dev`, `bun test`, `bun run build`). Never execute `npm`, `yarn`, or `pnpm`.
+1. **Bun Runtime Only**: Use Bun for JavaScript/TypeScript commands (e.g. `bun install`, `bun dev`, `bun run test`, `bun run build`). Never execute `npm`, `yarn`, or `pnpm`.
 2. **Preserve Next.js Auto-Block**: The `<!-- BEGIN:nextjs-agent-rules -->` block above must NEVER be deleted or modified.
 3. **Quality Verification Loop**: Before declaring any coding task complete, execute and verify:
-   - `bun test` (All unit tests must pass)
+   - `bun run test` (runs the package script with `DATABASE_URL=:memory:`; all unit tests must pass)
    - `bun run lint` (Zero ESLint errors or warnings)
    - `bun run format:check` (Prettier compliance; run `bun run format` to auto-fix)
    - `bun run build` (Next.js type-checking and standalone build must succeed)
 4. **Git Commit Format**: Suggest or use Conventional Commits:
    - Format: `type(scope): description`
    - Examples: `feat(query): add tanstack query provider and demo`, `fix(auth): handle invalid credentials error`
+5. **Curriculum Writing**: Before creating or revising a student-facing **Konu** lesson, read `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` and the relevant grade's annual plan. Apply its source and editorial checks to each lesson; passing code tests alone does not establish content quality. Other curriculum categories need their own source and editorial checks. The `mufredat-kaynak-arama` skill helps find passages, but search snippets must be checked against the original source. For code-backed imports, make edits in the source module, then review generated Markdown with `--export-only` before writing database records; export overwrites its generated Markdown files.
 
 ---
 
@@ -35,14 +36,13 @@ This guide provides authoritative rules and conventions for AI coding agents wor
 
 ### 1. Client State vs. Server State Separation
 
-- **Client/UI State (Zustand)**:
-  - Use Zustand stores (`src/store/*.ts`) exclusively for transient client-side UI state (e.g., modals, active sidebar, theme toggles, local step trackers).
-  - Define stores with TypeScript interfaces and export custom hooks (`useCounterStore`, etc.).
-- **Server State (TanStack Query v5)**:
-  - Use TanStack Query (`@tanstack/react-query`) for all remote server data fetching, mutations, caching, and cache invalidation.
-  - Wrap components inside `<QueryProvider>` (already configured at `src/app/layout.tsx`).
-  - Access the QueryClient using `getQueryClient()` from `@/lib/query-client`.
-  - For query definitions, prefer `queryOptions({ queryKey: [...], queryFn: ... })` (see `src/lib/queries/health.ts`).
+- **Local client state (Zustand)**:
+  - Use `src/store/*.ts` for UI state and locally persisted preferences or guest progress, as in `use-ui-store.ts`, `use-curriculum-store.ts`, and `use-guest-store.ts`.
+  - Do not copy authenticated server data into a Zustand store as a second cache.
+- **Remote data (TanStack Query v5 and Server Components)**:
+  - Fetch initial server data in Server Components where appropriate. Use TanStack Query for client fetching and caching, as in `src/lib/queries/curriculum.ts` and `src/components/curriculum-page-content.tsx`.
+  - Existing mutations such as curriculum progress use server actions in `src/app/mufredat/actions.ts`; preserve that flow when extending it.
+  - `<QueryProvider>` is configured in `src/app/layout.tsx`. Access the QueryClient with `getQueryClient()` from `@/lib/query-client` and prefer `queryOptions(...)` for reusable queries.
 
 ### 2. TanStack Query SSR Singleton Pattern
 
@@ -73,7 +73,7 @@ In Next.js App Router, QueryClient instances must be managed cleanly:
     );
   }
   ```
-- **Isomorphic Fetching**: Server-side queries must resolve absolute URLs. Use `getBaseUrl()` from `@/lib/queries/health` (or configure `NEXT_PUBLIC_APP_URL`) so fetches do not fail with relative URL errors during SSR.
+- **Isomorphic Fetching**: A server-side `fetch` needs an absolute URL; `src/lib/queries/health.ts` shows a `getBaseUrl()` example. Server Components may instead call server data functions directly, as `src/app/mufredat/page.tsx` does.
 
 ### 3. Validation (Zod v4)
 
@@ -92,7 +92,7 @@ In Next.js App Router, QueryClient instances must be managed cleanly:
 - Route handler: `src/app/api/auth/[...all]/route.ts`.
 - Production DB: PostgreSQL 16 Alpine via `docker-compose.yml` (`db` service with `pgdata` volume).
 - Remote Deployment: Tailscale deploy script (`scripts/deploy.sh`) and Tailscale Serve HTTPS (`docs/tailscale.md`).
-- Test DB: In-memory `:memory:` (automatically resolved in `NODE_ENV === "test"` to protect developer data and allow fast CI/CD).
+- Test DB: In-memory SQLite via `bun:sqlite`; the `bun run test` script sets `DATABASE_URL=:memory:` and test mode resolves to it. Use the package script for the full test suite.
 
 ### 5. Next.js 16 & React 19 Specifics
 
@@ -106,70 +106,28 @@ In Next.js App Router, QueryClient instances must be managed cleanly:
 - **Safe Area Insets**: Use Tailwind v4 custom utilities (`pt-safe`, `pb-safe`, `pl-safe`, `pr-safe`, `px-safe`) for fixed headers, bottom sheets, and navigation bars.
 - **Touch Target Minimum**: Every button, tab, and clickable control must satisfy the 44x44px target size (`min-h-[44px]` or `min-w-[44px]`).
 - **iOS Zoom Prevention**: Keep input font size at or above 16px on mobile screens (< 768px).
-- **Vaul Bottom Sheet & Desktop Dialog**: Use `vaul` (`Drawer.Root`, `Drawer.Portal`, etc.) for sheets. Optimize layout on mobile (bottom sheet, drag handle) and desktop (floating modal container).
-- **Zustand UI Store & Active Section**: Orchestrate UI modals, sheets, and active navigation tabs using `src/store/use-ui-store.ts` and `src/hooks/use-active-section.ts`.
+- **Vaul Sheets**: `src/components/account-sheet.tsx` uses `vaul`; follow its responsive and accessible patterns when extending sheets.
+- **Shared UI State**: `src/store/use-ui-store.ts` manages the account sheet. Use a shared store only when state must be coordinated across components.
 
 ---
 
 ## 📂 Project Map
 
-```text
-jetacademie/
-├── .cursorrules                  # Cursor & IDE agent rules referencing AGENTS.md
-├── AGENTS.md                     # Agent & LLM directives (preserve Next.js header!)
-├── CLAUDE.md                     # Anthropic/Claude agent link pointing to AGENTS.md
-├── Dockerfile                    # Multi-stage Bun production build
-├── docker-compose.yml            # Dokploy / local Docker composition with healthcheck
-├── docker-entrypoint.sh          # Auto-chown volume mount permissions & drop privileges to nextjs
-├── package.json                  # Scripts & dependencies
-├── README.md                     # Project documentation
-├── tsconfig.json                 # Strict TypeScript configuration
-├── public/                       # PWA icons & static assets
-│   ├── icon-192.png              # PWA 192x192 icon
-│   ├── icon-512.png              # PWA 512x512 icon
-│   ├── icon-maskable-512.png     # PWA maskable 512x512 icon
-│   ├── apple-touch-icon.png      # iOS home screen icon (180x180)
-│   └── icon.svg                  # Vector brand icon
-├── src/
-│   ├── app/                      # Next.js App Router
-│   │   ├── api/
-│   │   │   ├── auth/[...all]/    # Better-Auth catch-all handler
-│   │   │   └── health/           # Health check endpoint (/api/health)
-│   │   ├── globals.css           # Tailwind CSS v4 directives, theme & safe-area utilities
-│   │   ├── layout.tsx            # Root layout with Viewport, PWA metadata & QueryProvider
-│   │   ├── manifest.ts           # Dynamic PWA Web App Manifest
-│   │   ├── manifest.test.ts      # PWA Manifest unit tests
-│   │   └── page.tsx              # Starter showcase page (responsive mobile & desktop)
-│   ├── components/               # UI components
-│   │   ├── app-header.tsx        # Responsive desktop & mobile header
-│   │   ├── quick-actions-drawer.tsx # Vaul bottom sheet drawer & desktop modal
-│   │   ├── auth-zod-demo.tsx     # Zod + Better-Auth auth demo (min-h-[44px] targets)
-│   │   ├── counter-demo.tsx      # Zustand state management demo (min-h-[44px] buttons)
-│   │   └── query-demo.tsx        # TanStack Query useQuery/mutation demo
-│   ├── hooks/                    # Custom React hooks
-│   │   ├── use-active-section.ts # IntersectionObserver active section hook
-│   │   └── use-active-section.test.ts # Active section hook tests
-│   ├── lib/                      # Core utilities & configurations
-│   │   ├── auth.ts               # Better-Auth server configuration
-│   │   ├── auth.test.ts          # Better-Auth unit tests
-│   │   ├── auth-client.ts        # Better-Auth client library
-│   │   ├── query-client.ts       # TanStack QueryClient factory & SSR singleton
-│   │   ├── query-client.test.ts  # TanStack QueryClient unit tests
-│   │   ├── queries/              # Query definitions and fetchers (e.g. health.ts)
-│   │   │   ├── health.ts         # Health query fetcher & queryOptions
-│   │   │   └── health.test.ts    # Health query unit tests
-│   │   └── validations/          # Zod schemas (e.g. auth.ts)
-│   │       ├── auth.ts           # Auth validation schemas
-│   │       └── auth.test.ts      # Auth schema validation tests
-│   ├── providers/                # React Context providers
-│   │   ├── query-provider.tsx    # TanStack QueryClientProvider & DevTools
-│   │   └── query-provider.test.tsx # QueryProvider unit tests
-│   └── store/                    # Zustand stores
-│       ├── use-counter-store.ts      # Counter Zustand store
-│       ├── use-counter-store.test.ts # Counter store unit tests
-│       ├── use-ui-store.ts           # UI / Drawer state Zustand store
-│       └── use-ui-store.test.ts      # UI store unit tests
-```
+Use this short map to find the current code; inspect the directory for the exact files before editing.
+
+| Area                                | Current location                                                                                                            |
+| :---------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| App Router pages and APIs           | `src/app/` (`mufredat`, `hedefler`, `duzenle`, `api/auth`, `api/curriculum`, `api/editor`)                                  |
+| Shared interface                    | `src/components/` (`curriculum-archive.tsx`, `curriculum-page-content.tsx`, `account-sheet.tsx`, `konu-lesson-reader.tsx`)  |
+| Authentication and database         | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/lib/db.ts`, `src/lib/curriculum-db.ts`, `src/lib/editor/`                 |
+| Curriculum and annual plans in code | `src/lib/data/`, especially `curriculum-plans.ts` and the first/second week curriculum modules                              |
+| Client state and remote queries     | `src/store/`, `src/lib/queries/`, `src/lib/query-client.ts`, `src/providers/query-provider.tsx`                             |
+| Source plans and writing guidance   | `mufredat-docs/planlar/M1_Yillik_Plan.docx` through `M6_Yillik_Plan.docx`, `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` |
+| Source research                     | `.agents/skills/mufredat-kaynak-arama/SKILL.md`, `scripts/search-sources.ts`, `scripts/index-sources.py`, local `sources/`  |
+| Content export/import               | `scripts/import-first-week-curriculum.ts`, `scripts/import-second-week-curriculum.ts`                                       |
+| Deployment                          | `Dockerfile`, `docker-compose.yml`, `scripts/deploy.sh`, `docs/tailscale.md`                                                |
+
+The yearly Word plans are authoritative for the lesson topic, question, outcomes, and primary source. `src/lib/data/curriculum-plans.ts` is their application representation; compare it with the relevant Word plan before changing curriculum content. Source PDFs and generated exports can be local or ignored, so check their presence instead of assuming they are committed.
 
 ---
 
@@ -178,7 +136,7 @@ jetacademie/
 | Task                   | Command                                 |
 | :--------------------- | :-------------------------------------- |
 | Start Dev Server       | `bun dev`                               |
-| Run Test Suite         | `bun test`                              |
+| Run Test Suite         | `bun run test`                          |
 | Run Specific Test      | `bun test src/lib/query-client.test.ts` |
 | Lint Code              | `bun run lint`                          |
 | Check Code Formatting  | `bun run format:check`                  |

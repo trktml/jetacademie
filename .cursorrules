@@ -3,8 +3,10 @@
 @AGENTS.md
 
 Please follow all conventions specified in AGENTS.md:
-- Use `bun` exclusively as the JavaScript/TypeScript runtime (`bun install`, `bun test`, `bun dev`, `bun run build`). Never use `npm`, `yarn`, or `pnpm`.
+
+- Use `bun` exclusively as the JavaScript/TypeScript runtime (`bun install`, `bun run test`, `bun dev`, `bun run build`). Never use `npm`, `yarn`, or `pnpm`.
 - Preserve the auto-generated Next.js header block in `AGENTS.md`.
-- Maintain the separation of concerns: Zustand for client UI state (`src/store/`), TanStack Query for server state (`src/lib/queries/`, `src/lib/query-client.ts`, `src/providers/query-provider.tsx`).
-- Always run the quality verification loop before declaring completion: `bun test`, `bun run lint`, `bun run format:check`, and `bun run build`.
+- Maintain the separation of concerns: Zustand for local client state (`src/store/`), TanStack Query for client fetching and caching (`src/lib/queries/`, `src/lib/query-client.ts`, `src/providers/query-provider.tsx`), and the existing server actions for mutations.
+- Always run the quality verification loop before declaring coding work complete: `bun run test`, `bun run lint`, `bun run format:check`, and `bun run build`.
+- For student-facing Konu lessons, read `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` and the relevant annual plan before writing.
 - Use conventional commits format: `type(scope): description`.
