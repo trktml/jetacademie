@@ -72,7 +72,7 @@ export function foldTurkish(str: string): string {
     .replace(/[^a-z0-9]/g, "");
 }
 
-function resolveBookTitle(db: Database, inputTitle: string): string | null {
+export function resolveBookTitle(db: Database, inputTitle: string): string | null {
   const foldedInput = foldTurkish(inputTitle);
   if (!foldedInput) return null;
 
@@ -164,7 +164,7 @@ function getTurkishStems(word: string): string[] {
   return Array.from(stems);
 }
 
-function sanitizeFtsQuery(rawQuery: string, operator: "AND" | "OR" = "AND"): string {
+export function sanitizeFtsQuery(rawQuery: string, operator: "AND" | "OR" = "AND"): string {
   const trimmed = rawQuery.trim();
   if (!trimmed) return "";
 
@@ -571,4 +571,6 @@ function main() {
   db.close();
 }
 
-main();
+if (import.meta.main) {
+  main();
+}
