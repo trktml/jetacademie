@@ -7,7 +7,7 @@ import { BELGIUM_GRADES, GRADE_LABELS, type BelgiumGrade } from "@/lib/curriculu
 import { getRememberedCurriculumGrade, useCurriculumStore } from "@/store/use-curriculum-store";
 
 const subscribeToHydration = (onStoreChange: () => void) =>
-  useCurriculumStore.persist?.onFinishHydration(onStoreChange) ?? (() => {});
+  useCurriculumStore.persist?.onFinishHydration(onStoreChange) ?? (() => { });
 const getHydrationSnapshot = () => useCurriculumStore.persist?.hasHydrated() ?? true;
 const getServerHydrationSnapshot = () => false;
 
@@ -23,7 +23,6 @@ export function CurriculumGradeChoices({
           <GraduationCap />
         </span>
         <h1 id="curriculum-grade-entry-title">Önce sınıfını seç</h1>
-        <p>Sınıfını seçerek sana uygun müfredat içeriklerine geç.</p>
       </div>
 
       <div className="curriculum-grade-entry__grid" aria-label="Sınıflar">
