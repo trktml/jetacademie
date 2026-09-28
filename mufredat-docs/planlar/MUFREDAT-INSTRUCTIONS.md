@@ -1,5 +1,7 @@
 # KONU İÇERİĞİNİN ÜRETİLMESİ
 
+Bu belge **Konu** dersinin hazırlığını ve öğrenciye gösterilen metnini yönetir. Âyet, hadis, siyer, sahabe ve dinleme kartları ayrı içeriklerdir; Konu dersinin cümlelerini ve kapanış maddelerini sınıflar arasında şablon olarak çoğaltma.
+
 ## 1. YILLIK PLAN ESASTIR
 
 Konu üretirken öncelikle sistemde bulunan yıllık planı esas al.
@@ -20,6 +22,18 @@ Görevin, yıllık planda belirlenen konuyu öğrencinin yaş seviyesine uygun �
 
 **Öğretmen notu kullanılmayacaktır.**  
 İçeriği oluştururken öğretmen notu adı altında ayrıca veri isteme veya çıktı üretme.
+
+### Yazmadan önce yapılacak hazırlık
+
+Her sınıf ve hafta için ayrı çalış. Önce yıllık planın **başlığını, ana sorusunu, hedefini ve temel kaynağını** çıkar. Konuyu tek cümleyle ifade et: “Bu dersin sonunda öğrenci ... anlayacak.” Ardından şu üç soruya kendi çalışma notunda cevap ver:
+
+1. Öğrencinin konuyla ilgili karşılaşabileceği gerçek durum veya güçlük nedir?
+2. Temel Risale pasajı bu güçlüğü anlamak için hangi yeni fikri getirir?
+3. Hocaefendi pasajı gerekliyse ilk pasajın açıklamadığı hangi yönü açar?
+
+Kaynakları doğrulayıp bu düşünce hattını kurmadan ana metne başlama. Bu hazırlık notlarını dersin içine koyma. Altı sınıfı aynı kalıbın kelimelerini değiştirerek topluca yazma; her dersin açılışını, örneğini ve gelişimini kendi ana sorusundan çıkar.
+
+Yıllık planın başlığı veya verdiği tarihî ayrıntı kaynakla çelişiyorsa çelişkiyi öğrenciye açıklayan bir giriş yazma. Durumu ders metninden ayrı bildir ve plan düzeltilinceye kadar metni yayıma hazır sayma. Kaynakta olmayan bir sahne veya konuşma kurarak boşluğu doldurma.
 
 ---
 
@@ -219,37 +233,9 @@ Bunun yerine Hocaefendi’den seçilecek metin, dersin düşünce akışında ge
 
 Kaynakları mekanik başlıklarla ayırma.
 
-Örneğin zorunlu olarak:
+“RİSALE-İ NUR’DAN”, “HOCAEFENDİ’DEN”, “BU PASAJI AÇIKLAYALIM” ve “İKİ METNİ BAĞLAYALIM” gibi zorunlu ara başlıklar kullanma. “Bediüzzaman bu noktayı çarpıcı biçimde anlatır” gibi her konuya takılabilecek geçiş cümlelerini de hazır kalıp olarak kullanma.
 
-**RİSALE-İ NUR’DAN**
-
-**HOCAEFENDİ’DEN**
-
-**BU PASAJI AÇIKLAYALIM**
-
-**İKİ METNİ BAĞLAYALIM**
-
-gibi başlıklar kullanma.
-
-Bunun yerine konu doğal biçimde ilerlesin.
-
-Örnek:
-
-“Bediüzzaman bu noktayı oldukça çarpıcı bir ifadeyle anlatır:”
-
-> **“…”**¹
-
-Ardından konuyu açıklamaya devam et.
-
-Bir süre sonra konu doğal olarak başka bir yönüne geldiğinde:
-
-“Hocaefendi de aynı meselenin insanın günlük hayatına bakan tarafına şöyle dikkat çeker:”
-
-> **“…”**²
-
-Ardından dersin akışı devam etsin.
-
-Kaynaklar metnin içine sonradan yapıştırılmış görünmemelidir.
+Her pasajdan önce metnin cevap aradığı **belirli soruyu** kur. Pasajdan sonra önce o pasajın fikrini ve bağlamını açıkla, sonra anlatıyı bir adım ileri götür. Hocaefendi’ye geçiş, aynı fikrin yeniden söylenmesi için değil, gerçekten yeni bir yönün gerektiği yerde gerçekleşsin. Bir alıntı çıkarıldığında düşünce akışı hiçbir şey kaybetmiyorsa alıntıyı veya kurduğun akışı yeniden seç.
 
 ---
 
@@ -281,6 +267,10 @@ gibi kalıp ifadelerle başlamamalıdır.
 Çarpıcılık, süslü cümleden değil **iyi seçilmiş fikirden** gelmelidir.
 
 Metin yapay zekâ metni gibi değil, gençlerin dünyasını bilen iyi bir eğitim yazarı tarafından yazılmış gibi okunmalıdır.
+
+**Öğrenciye konuş; üretim sürecini anlatma.** “Yıllık planımız bu haftaya ... adını veriyor”, “M2’ye başlayan biri ...”, “bu kaynak aslında bunu söylemiyor”, “hayalî konuşma eklemiyoruz” gibi planlama, sınıflandırma ve doğrulama cümleleri ders anlatısına girmez. Gerekli tarihî sınırları veya yorum ayrımlarını konunun doğal akışında kısa ve somut biçimde açıkla. İç denetimde kullandığın her ihtiyat cümlesini öğrenciye taşıma.
+
+Soyut öğüt yerine belirli bir durum, seçim veya gözlem göster. Öğrencinin hiç yaşamadığı bir duygu veya tepkiyi onun adına varsayma. Her paragraf ana soruya yeni bir bilgi, gerekçe, örnek veya karşı soru katmalı; yalnız önceki paragrafı başka kelimelerle tekrarlamamalıdır. Metni sesli okuduğunda duyuru, reklam, sunum veya denetim raporu gibi duran cümleleri yeniden yaz.
 
 ---
 
@@ -341,6 +331,8 @@ Kaynaklar, örnekler ve açıklamalar ana fikri ilerletmeli.
 Ders sonunda birbirinden bağımsız beş farklı bilgi kalmamalı.
 
 Öğrencinin zihninde **tek ve güçlü bir düşünce örgüsü** oluşmalıdır.
+
+Yazmadan önce anlatının üç hareketini çalışma notunda belirle: öğrencinin karşılaştığı mesele, kaynakların açtığı fikir ve bu fikrin hayatta sınanacağı durum. Bunları metinde zorunlu üç başlık hâline getirme. Ana anlatı, alıntıların çevresine yazılmış kısa açıklamalardan ibaret kalmamalı; pasajların bağlamını ve aralarındaki düşünce bağını öğrencinin takip edebileceği kadar geliştirmelidir.
 
 ---
 
@@ -452,13 +444,7 @@ ver.
 
 Ancak doğrulayamadığın sayfa numarasını kesinlikle uydurma.
 
-Doğrudan alıntının özgün kaynağından emin değilsen alıntı yapma.
-
-Gerekirse:
-
-**[Kaynak künyesi doğrulanacak.]**
-
-şeklinde belirt.
+Doğrudan alıntının özgün kaynağından emin değilsen alıntı yapma. Eksik künyeyi veya doğrulanmamış sayfayı öğrenci metnine yer tutucu olarak koyma; araştırmayı tamamla veya doğrulanmış başka bir pasaj seç. Temel kaynağın doğrulanamaması dersi etkiliyorsa bunu ders metninden ayrı bir sorun olarak bildir ve metni yayıma hazır sayma.
 
 ---
 
@@ -506,6 +492,8 @@ Doğrulanmış daha kısa bir pasaj, doğrulanmamış çarpıcı bir pasajdan he
 
 **Dipnotlar**
 
+Bu sıra bir içerik şablonu değildir. Her derste aynı sayıda ara başlık, alıntı, soru veya uygulama bulunması gerekmez. Bölümleri ana düşüncenin ihtiyaç duyduğu ölçüde kullan; “Bana Ne Söylüyor?”, “Bu Hafta Tanıştığımız Kelimeler” ve “Dipnotlar” sırasını koru. 40 dakikalık dersin ana anlatısını birkaç yüz kelimelik alıntı açıklamasına indirgeme; öğrencinin soruyu, metnin gerekçesini ve hayattaki karşılığını takip edebileceği kadar işle.
+
 Çıktıda:
 
 - öğretmen notu verme,
@@ -517,30 +505,28 @@ Doğrulanmış daha kısa bir pasaj, doğrulanmamış çarpıcı bir pasajdan he
 
 # 18. SON KONTROL
 
-Konu metnini teslim etmeden önce kendi içinde kontrol et:
+Metni **iki ayrı geçişte** denetle. Kontrol notlarını öğrenciye gösterme.
 
-1. Yıllık plandaki konuya sadık kaldım mı?
-2. Yıllık plandaki temel Risale bölümünü kullandım mı?
-3. Ek Risale pasajı gerçekten gerekli mi?
-4. Risale pasajının uzunluğu öğrencinin yılına uygun mu?
-5. Hocaefendi’den konuya gerçekten uygun bir metin buldum mu?
-6. İki kaynak aynı şeyi gereksiz yere tekrar ediyor mu?
-7. Kaynaklar metnin içine doğal biçimde yerleşiyor mu?
-8. Ders baştan sona aynı düşünce hattını taşıyor mu?
-9. Metin öğrencinin dikkatini çekiyor mu?
-10. Çarpıcılık yapmacık mı, doğal mı?
-11. Özgün alıntıları aynen korudum mu?
-12. Açıklanacak zor kelimelerin altını çizdim mi?
-13. Altı çizilen bütün kelimeler “Kelimeler” bölümünde var mı?
-14. İSNAD dipnotlarını doğru kullandım mı?
-15. Ayrı bir Kaynakça oluşturmadım mı?
-16. Öğretmen notu eklemedim mi?
-17. Metin öğrencinin yaşına göre yeterince doyurucu mu?
-18. Öğrenci büyüdükçe özgün kaynakla temas seviyesini artırdım mı?
+### 1. Kaynak ve plan geçişi — yayımlama şartı
 
-Bu kontrol listesini kullanıcıya gösterme.
+- Başlık, ana soru, hedef ve temel Risale bölümü yıllık planla uyuşuyor mu?
+- Her doğrudan alıntı kullanılan baskının asıl sayfasıyla kelime kelime karşılaştırıldı mı? Alıntıya sadeleştirme, açıklama veya kaynaktaki dipnot metni karıştı mı?
+- Hocaefendi pasajının özgün yeri doğrulandı mı ve Risale pasajına yeni bir katkısı var mı?
+- Dipnotlar, sayfalar ve alıntı işaretleri doğru mu? Altı çizilen her kelime aşağıda açıklanıyor mu?
+- Plan ile doğrulanmış kaynak arasında çözülmemiş çelişki var mı?
 
-Son metni bu kontrolden geçirerek teslim et.
+Bu sorulardan biri olumsuzsa metni tamamlanmış kabul etme. Teknik testlerin geçmesi veya dipnot bulunması kaynak doğrulamasının yerine geçmez.
+
+### 2. Öğrenci ve anlatı geçişi — editoryal şart
+
+- Ana sorunun cevabı ders boyunca derinleşiyor mu, yoksa ders okuma yöntemi hakkında genel öğütlere mi dönüşüyor?
+- Her alıntı metinde gerekli mi? İki kaynak birbirinin düşüncesini ilerletiyor mu?
+- Açılışta gerçek bir merak veya güçlük var mı? Örnekler bu sınıfın hayatına ve düşünme düzeyine uyuyor mu?
+- Sınıf kodları, yıllık plan, kaynak arama, alıntı doğrulama ve yazarın kendi tedbirleri öğrenci metnine sızmış mı?
+- Sesli okumada tekrar, yapmacık geçiş veya savunmacı açıklama duyuluyor mu? “Bana Ne Söylüyor?” maddeleri yalnız genel okuma tavsiyelerini mi yineliyor?
+- Bir üst sınıfta özgün pasajla temas ve düşünce derinliği gerçekten artıyor mu?
+
+Bu geçişte sorun bulursan yalnız kelimeleri cilalama; gerekirse örneği, pasajı ve anlatının sırasını yeniden kur. Yayıma geçmeden önce en az bir dersi diğer sınıflara ölçü olacak şekilde editoryal olarak oku; sonra her sınıfı ayrıca değerlendir. Bu yönergenin değiştirilmesi, daha önce üretilmiş dersleri kendiliğinden düzeltmez.
 
 ---
 
