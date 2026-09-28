@@ -12,6 +12,7 @@
     "test": "DATABASE_URL=\":memory:\" bun test",
     "icons:generate": "bun scripts/generate-icons.ts",
     "db:migrate": "bun scripts/migrate-db.ts",
+    "db:clean-curriculum": "bun scripts/clean-curriculum-db.ts",
     "sources:index": "python3 scripts/index-sources.py",
     "sources:search": "bun scripts/search-sources.ts",
     "editor:setup": "bun scripts/setup-curriculum-editor.ts"

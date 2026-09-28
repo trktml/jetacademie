@@ -69,7 +69,7 @@ Ek pasaj mutlaka ana düşünceyi:
 - açıklamalı,
 - derinleştirmeli,
 - farklı bir yönünü göstermeli
-veya
+  veya
 - öğrencinin anlamasını kolaylaştırmalıdır.
 
 ---
@@ -180,7 +180,7 @@ Seçim yaparken şu sırayı izle:
    - tamamlayan,
    - derinleştiren,
    - çağdaş hayata yaklaştıran
-   bir metin ara.
+     bir metin ara.
 4. Pasajı özgün kaynağından doğrula.
 5. Ancak doğruladıktan sonra kullan.
 
@@ -299,21 +299,27 @@ Aynı zamanda şunlar da gelişmelidir:
 - metin çözümleme becerisi.
 
 ### 1. yıl
+
 Daha somut ve merak merkezli.
 
 ### 2. yıl
+
 Sebep-sonuç bağlantıları güçlenir.
 
 ### 3. yıl
+
 Kimlik, irade ve değerler daha görünür olur.
 
 ### 4. yıl
+
 Bağlam, kaynak ve yorum farkı işlenebilir.
 
 ### 5. yıl
+
 Muhakeme ve kavramsal bağlantılar artar.
 
 ### 6. yıl
+
 Genç yetişkin seviyesinde fikrî ve analitik derinlik oluşturulur.
 
 **Metin öğrenciyle birlikte büyümelidir.**

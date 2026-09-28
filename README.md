@@ -124,6 +124,11 @@ bun run build
   ./scripts/backup-db.sh
   ./scripts/restore-db.sh ./backups/jetacademie_backup_YYYYMMDD_HHMMSS.sql
   ```
+- **Müfredat Temizliği**:
+  Adab, İlmihal ve Esmâ dışındaki tüm kategorileri PostgreSQL'den güvenle temizlemek ve otomatik tohumlamayı engellemek için:
+  ```bash
+  bun run db:clean-curriculum
+  ```
 
 ## Remote Deployment (Tailscale & Docker)
 
