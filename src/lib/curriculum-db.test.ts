@@ -552,8 +552,8 @@ describe("Curriculum SQLite Database Module", () => {
 
     const g6w2 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-2");
     expect(g6w2).not.toBeNull();
-    expect(g6w2?.title).toBe("BİR ÖMRÜN MERKEZİNDE NE VARDI?");
-    expect(g6w2?.body).toContain("📚 **Kelimeler ve Anlamları**:");
+    expect(g6w2?.title).toBe("Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?");
+    expect(g6w2?.body).toContain("# Kelimeler");
   });
 
   it("should keep excluded categories empty across regular and forced seeding", async () => {

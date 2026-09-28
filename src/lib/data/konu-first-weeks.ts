@@ -4,7 +4,7 @@ function toSuperscript(value: string): string {
   return value.replace(/\d/g, (digit) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(digit)]);
 }
 
-type LessonDraft = Omit<KonuCurriculumItem, "body">;
+export type LessonDraft = Omit<KonuCurriculumItem, "body">;
 
 function buildBody(lesson: LessonDraft): string {
   const sections = lesson.sections.map((section) => {
@@ -49,7 +49,7 @@ function buildBody(lesson: LessonDraft): string {
     ...sections,
     questions.length ? `### Düşünelim ve Konuşalım\n\n${questions.join("\n\n")}` : "",
     application,
-    lesson.weekNumber === 1
+    lesson.weekNumber <= 2
       ? "### Öğretmen İçin 40 Dakikalık Akış\n\nGiriş ve kısa bireysel not: 5 dakika. Kaynaklarla tanışma ve âyet: 6 dakika. İki özgün pasajı yavaş okuyup kelimeleri açıklama: 10 dakika. İki düşünme sorusu üzerinde gönüllü paylaşım: 8 dakika. Uygulama kartını hazırlayıp bir arkadaşla karşılaştırma: 8 dakika. Bana Ne Söylüyor bölümünden kişisel bir kazanım seçerek kapanış: 3 dakika. Kısa destek içerikleri gerektiğinde kullanılabilir; uzun dinleme kaydı ders dışında kalır. Değerlendirmede metni anlama, kaynakla yorumu ayırma ve uygulamayı açıklama gözlenir; öğrencinin kişisel inancı puanlanmaz."
       : "",
     takeaway,
@@ -60,7 +60,7 @@ function buildBody(lesson: LessonDraft): string {
     .join("\n\n");
 }
 
-function createLesson(lesson: LessonDraft): KonuCurriculumItem {
+export function createLesson(lesson: LessonDraft): KonuCurriculumItem {
   return { ...lesson, body: buildBody(lesson) };
 }
 

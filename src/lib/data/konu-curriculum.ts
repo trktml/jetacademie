@@ -1,5 +1,6 @@
 import type { CurriculumEntry } from "@/lib/curriculum";
 import { firstWeekKonuItems } from "./konu-first-weeks";
+import { secondWeekKonuItems } from "./konu-second-weeks";
 
 export interface KonuVocabItem {
   readonly word: string;
@@ -2346,11 +2347,16 @@ const existingKonuCurriculumItems: readonly KonuCurriculumItem[] = [
   },
 ];
 
-const firstWeekReplacementIds = new Set(firstWeekKonuItems.map((item) => item.id));
+const secondWeekReplacementIds = new Set(secondWeekKonuItems.map((item) => item.id));
+const openingWeekItems = [
+  ...firstWeekKonuItems.filter((item) => !secondWeekReplacementIds.has(item.id)),
+  ...secondWeekKonuItems,
+];
+const openingWeekReplacementIds = new Set(openingWeekItems.map((item) => item.id));
 
 export const konuCurriculumItems: readonly KonuCurriculumItem[] = [
-  ...existingKonuCurriculumItems.filter((item) => !firstWeekReplacementIds.has(item.id)),
-  ...firstWeekKonuItems,
+  ...existingKonuCurriculumItems.filter((item) => !openingWeekReplacementIds.has(item.id)),
+  ...openingWeekItems,
 ].sort((a, b) => a.grade - b.grade || a.weekNumber - b.weekNumber);
 
 export const konuCurriculumMap: ReadonlyMap<string, KonuCurriculumItem> = new Map(

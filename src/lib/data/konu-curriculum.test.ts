@@ -35,7 +35,9 @@ describe("konu-curriculum data integrity", () => {
     expect(getKonuItem("g2-konu-eylul-1")?.title).toBe(
       "Geçen Yıldan Bugüne: Bir Metni İkinci Kez Okumak"
     );
-    expect(getKonuItem("g6-konu-eylul-2")?.title).toBe("BİR ÖMRÜN MERKEZİNDE NE VARDI?");
+    expect(getKonuItem("g6-konu-eylul-2")?.title).toBe(
+      "Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?"
+    );
   });
 
   it("includes vocabulary and structured sections for M6-01", () => {

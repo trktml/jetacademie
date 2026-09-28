@@ -84,6 +84,20 @@ bun scripts/import-first-week-curriculum.ts
 
 İçe aktarma tek işlem içinde doğrulanır, mevcut tamamlanma kayıtlarını korur ve sonraki haftaların otomatik oluşmasını engelleyen kategori ayarlarını sürdürür. M3 dinleme kaydının başlığı, tarihi ve arşivde bildirilen süresi doğrulanmıştır. Diğer beş dinleme başlığı arşiv araştırma etkinliğidir; doğrulanmamış video ve zaman kodları hazır kesit olarak sunulmaz.
 
+### M1–M6 İkinci Hafta İçerikleri
+
+İkinci haftalar için aynı altı kategoride 36 kayıt hazırlanmıştır. Ana dersler yıllık plandaki başlıkları izler; yeniden okuma, biyografi ve bağlam, bilginin sorumluluğu, muhatabın sorusu, delil ve temsil, amaç ve yöntem ilişkisi yaşa göre işlenir. Kaynaklı metinler, iki düşünme sorusu, uygulama ve 40 dakikalık öğretmen akışı `mufredat-docs/icerikler/ikinci-hafta/M1-02.md`–`M6-02.md` dosyalarındadır.
+
+```bash
+# Yalnız Markdown dosyalarını üret:
+bun scripts/import-second-week-curriculum.ts --export-only
+
+# PostgreSQL'e yalnız ikinci haftanın 36 kaydını ekle/güncelle:
+bun scripts/import-second-week-curriculum.ts
+```
+
+Aktarım, ikinci hafta dışındaki kayıtların, tamamlanma bilgilerinin ve otomatik eklemeyi engelleyen kategori ayarlarının değişmediğini içerik özetleriyle doğrular; bir uyuşmazlıkta işlemi geri alır. İlk haftalar korunur. İkinci haftaların dinleme kayıtları, plandaki anahtar kelimelerle arşiv araştırma etkinlikleridir; belirli video ve zaman kodları henüz doğrulanmamıştır. M2 başlığındaki “iki kilimlik dükkân” ayrıntısı Bediüzzaman’ın hayatına ait doğrulanmış bir olay olarak sunulmaz; kaynak doğrulama notuyla ayrılır. En’âm 6/162’nin Suat Yıldırım mealinde 163 ile birlikte çevrilmesi nedeniyle M6'da iki âyet birlikte verilmiştir.
+
 ## Verification
 
 ```bash
