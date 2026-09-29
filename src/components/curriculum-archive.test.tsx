@@ -35,6 +35,31 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("<strong>Editörün metni</strong>");
     expect(html).not.toContain("Benim Büyük Sorularım");
   });
+
+  it("does not render duplicate title when entry.body starts with # entry.title", () => {
+    const html = renderToString(
+      <EntryContentRenderer
+        entry={{
+          id: "g1-sahabe-kissalari-eylul-2",
+          grade: 1,
+          categoryId: "sahabe-kissalari",
+          month: 9,
+          week: 2,
+          year: 2026,
+          title: "Abdullah b. Abbas: İlimde Derinleşen Genç Sahabi",
+          contentFormat: "markdown",
+          body: `# Abdullah b. Abbas: İlimde Derinleşen Genç Sahabi\n\nAbdullah b. Abbas (r.a.), genç yaşta Peygamber Efendimiz'in hususi duasına mazhar olmuş bir ilim öncüsüdür.\n\n# Bana Ne Söylüyor?\n\n- Genç yaşta ilim`,
+        }}
+      />
+    );
+    // Should NOT contain duplicated title as an h1 in the rendered markdown
+    expect(html).not.toContain("<h1>Abdullah b. Abbas: İlimde Derinleşen Genç Sahabi</h1>");
+    // Should contain the body paragraph
+    expect(html).toContain("Abdullah b. Abbas (r.a.), genç yaşta");
+    // Should keep legitimate section headers
+    expect(html).toContain("<h1>Bana Ne Söylüyor?</h1>");
+  });
+
   it("renders Adab-ı Muaşeret bullet points as a structured Markdown list", () => {
     const html = renderToString(
       <EntryContentRenderer

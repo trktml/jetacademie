@@ -299,7 +299,7 @@ export function EntryContentRenderer({
   return (
     <div className="archive-entry-rendered-content flex flex-col gap-3">
       {summary && (
-        <MarkdownContent>
+        <MarkdownContent stripTitle={entry.title}>
           {entry.contentFormat === "markdown" ? (entry.body ?? "") : summary}
         </MarkdownContent>
       )}
@@ -1327,7 +1327,11 @@ export function CurriculumArchive({
                         <span className="hidden sm:inline">{`${timing} · Tamamlandı`}</span>
                       </div>
 
-                      <h3 className="archive-entry-title">{entry.title}</h3>
+                      {!(
+                        expandedReadingEntryId === entry.id &&
+                        entry.categoryId === "konu" &&
+                        entry.contentFormat !== "markdown"
+                      ) && <h3 className="archive-entry-title">{entry.title}</h3>}
                       <EntryContentRenderer
                         entry={entry}
                         isExpanded={expandedReadingEntryId === entry.id}
@@ -1641,7 +1645,12 @@ export function CurriculumArchive({
                                     </span>
                                   </div>
 
-                                  <h3 className="archive-entry-title">{entry.title}</h3>
+                                  {!(
+                                    isFront &&
+                                    expandedReadingEntryId === entry.id &&
+                                    entry.categoryId === "konu" &&
+                                    entry.contentFormat !== "markdown"
+                                  ) && <h3 className="archive-entry-title">{entry.title}</h3>}
                                   <EntryContentRenderer
                                     entry={entry}
                                     renderMedia={isFront}
@@ -1776,7 +1785,11 @@ export function CurriculumArchive({
                                   </span>
                                 </div>
 
-                                <h3 className="archive-entry-title">{currentEntry.title}</h3>
+                                {!(
+                                  expandedReadingEntryId === currentEntry.id &&
+                                  currentEntry.categoryId === "konu" &&
+                                  currentEntry.contentFormat !== "markdown"
+                                ) && <h3 className="archive-entry-title">{currentEntry.title}</h3>}
                                 <EntryContentRenderer
                                   entry={currentEntry}
                                   renderMedia={true}

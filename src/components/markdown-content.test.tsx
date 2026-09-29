@@ -69,4 +69,33 @@ describe("Safe shared Markdown rendering", () => {
     const htmlUndefined = renderToStaticMarkup(<MarkdownContent>{undefined}</MarkdownContent>);
     expect(htmlUndefined).toBe('<div class="curriculum-markdown" dir="auto"></div>');
   });
+
+  it("strips redundant leading title matching stripTitle to avoid duplicate card headers", () => {
+    const markdown = `# Abdullah b. Abbas: İlimde Derinleşen Genç Sahabi\n\nAbdullah b. Abbas (r.a.), genç yaşta Peygamber Efendimiz'in hususi duasına mazhar olmuştur.\n\n# Bana Ne Söylüyor?\n\n- Genç yaşta ilim`;
+    const title = "Abdullah b. Abbas: İlimde Derinleşen Genç Sahabi";
+
+    const html = renderToStaticMarkup(
+      <MarkdownContent stripTitle={title}>{markdown}</MarkdownContent>
+    );
+
+    // Should NOT contain the duplicated main title in h1
+    expect(html).not.toContain("<h1>Abdullah b. Abbas");
+    // Should start directly with the lesson paragraph
+    expect(html).toContain("Abdullah b. Abbas (r.a.), genç yaşta");
+    // Should preserve subsequent section headings like "Bana Ne Söylüyor?"
+    expect(html).toContain("<h1>Bana Ne Söylüyor?</h1>");
+    expect(html).toContain("<li>Genç yaşta ilim</li>");
+  });
+
+  it("does not strip leading heading when stripTitle does not match", () => {
+    const markdown = `# Önemli Giriş\n\nBu bir giriş yazısıdır.`;
+    const title = "Farklı Bir Başlık";
+
+    const html = renderToStaticMarkup(
+      <MarkdownContent stripTitle={title}>{markdown}</MarkdownContent>
+    );
+
+    expect(html).toContain("<h1>Önemli Giriş</h1>");
+    expect(html).toContain("Bu bir giriş yazısıdır.");
+  });
 });
