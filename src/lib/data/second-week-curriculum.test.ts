@@ -13,6 +13,7 @@ const categories: CurriculumCategoryId[] = [
   "sahabe-kissalari",
   "hocaefendi-dinleme",
 ];
+
 describe("second-week curriculum", () => {
   it("exports exactly six categories per grade with unique canonical week-two IDs", () => {
     const entries = getSecondWeekCurriculumEntries();
@@ -28,6 +29,7 @@ describe("second-week curriculum", () => {
       }
     }
   });
+
   it("uses the new structured lesson in the reader without duplicate or changed week-one entries", () => {
     expect(new Set(konuCurriculumItems.map((item) => item.id)).size).toBe(
       konuCurriculumItems.length
@@ -41,6 +43,7 @@ describe("second-week curriculum", () => {
       expect(getKonuItem(entry.id)?.body).toBe(entry.body);
     }
   });
+
   it("has source-separated lessons and complete forty-minute teaching materials", () => {
     for (const item of secondWeekKonuItems) {
       expect(item.discussionQuestions).toHaveLength(2);
@@ -58,13 +61,16 @@ describe("second-week curriculum", () => {
       expect(item.body.split(/\s+/).length).toBeGreaterThan(700);
     }
   });
-  it("keeps unverified archive searches and the kilim anecdote explicitly labelled", () => {
-    for (const entry of getSecondWeekCurriculumEntries().filter(
-      (entry) => entry.categoryId === "hocaefendi-dinleme"
-    )) {
-      expect(entry.body).toContain("Kaynak doğrulaması gerekli");
-      expect(entry.body).toContain("henüz doğrulanmamıştır");
+
+  it("ensures all entries have verified sources and structured sections without placeholder warnings", () => {
+    const entries = getSecondWeekCurriculumEntries();
+    for (const entry of entries) {
+      expect(entry.body).not.toContain("Kaynak doğrulaması gerekli");
+      expect(entry.body).not.toContain("henüz doğrulanmamıştır");
+      expect(entry.body).not.toContain("# Kaynakça");
+      expect(entry.body).toContain("# Dipnotlar");
+      expect(entry.body).toContain("# Bana Ne Söylüyor?");
+      expect(entry.body).toContain("# Bu Hafta Tanıştığımız Kelimeler");
     }
-    expect(getKonuItem("g2-konu-eylul-2")?.body).toContain("Kaynak doğrulaması gerekli");
   });
 });
