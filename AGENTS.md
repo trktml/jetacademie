@@ -28,7 +28,7 @@ This guide provides authoritative rules and conventions for AI coding agents wor
 4. **Git Commit Format**: Suggest or use Conventional Commits:
    - Format: `type(scope): description`
    - Examples: `feat(query): add tanstack query provider and demo`, `fix(auth): handle invalid credentials error`
-5. **Curriculum Writing**: Before creating or revising a student-facing **Konu** lesson, read `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` and the relevant grade's annual plan. Apply its source and editorial checks to each lesson; passing code tests alone does not establish content quality. Other curriculum categories need their own source and editorial checks. The `mufredat-kaynak-arama` skill helps find passages, but search snippets must be checked against the original source. For code-backed imports, make edits in the source module, then review generated Markdown with `--export-only` before writing database records; export overwrites its generated Markdown files.
+5. **Curriculum Writing**: Before creating or revising a student-facing **Konu** lesson, read `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` and the relevant grade's annual plan. Apply its source and editorial checks to each lesson; passing code tests alone does not establish content quality. Other curriculum categories need their own source and editorial checks. The `mufredat-kaynak-arama` skill helps find passages, but search snippets must be checked against the original source. For 36-week curriculum packages, the database is the single source of truth (`isDraft: 1` for review/draft, `isDraft: 0` for live). Do not generate static code modules or commit markdown files into git. Validate and stage batches via `bun run curriculum save --week N --file <path>`, publish with `bun run curriculum publish --week N`, and export on demand with `bun run curriculum export --week N`. Preserved categories (`adab-i-muaseret`, `ilmihal`, `esma`) are never touched or deleted.
 
 ---
 
@@ -120,11 +120,11 @@ Use this short map to find the current code; inspect the directory for the exact
 | App Router pages and APIs           | `src/app/` (`mufredat`, `hedefler`, `duzenle`, `api/auth`, `api/curriculum`, `api/editor`)                                  |
 | Shared interface                    | `src/components/` (`curriculum-archive.tsx`, `curriculum-page-content.tsx`, `account-sheet.tsx`, `konu-lesson-reader.tsx`)  |
 | Authentication and database         | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/lib/db.ts`, `src/lib/curriculum-db.ts`, `src/lib/editor/`                 |
-| Curriculum and annual plans in code | `src/lib/data/`, especially `curriculum-plans.ts` and the first/second week curriculum modules                              |
+| Curriculum and annual plans in code | `src/lib/data/`, especially `curriculum-plans.ts` and `konu-curriculum.ts`                                                  |
 | Client state and remote queries     | `src/store/`, `src/lib/queries/`, `src/lib/query-client.ts`, `src/providers/query-provider.tsx`                             |
 | Source plans and writing guidance   | `mufredat-docs/planlar/M1_Yillik_Plan.docx` through `M6_Yillik_Plan.docx`, `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` |
 | Source research                     | `.agents/skills/mufredat-kaynak-arama/SKILL.md`, `scripts/search-sources.ts`, `scripts/index-sources.py`, local `sources/`  |
-| Content export/import               | `scripts/import-first-week-curriculum.ts`, `scripts/import-second-week-curriculum.ts`                                       |
+| Content export/import               | `scripts/` (import/export scripts when curriculum batches are prepared)                                                     |
 | Deployment                          | `Dockerfile`, `docker-compose.yml`, `scripts/deploy.sh`, `docs/tailscale.md`                                                |
 
 The yearly Word plans are authoritative for the lesson topic, question, outcomes, and primary source. `src/lib/data/curriculum-plans.ts` is their application representation; compare it with the relevant Word plan before changing curriculum content. Source PDFs and generated exports can be local or ignored, so check their presence instead of assuming they are committed.
@@ -133,17 +133,21 @@ The yearly Word plans are authoritative for the lesson topic, question, outcomes
 
 ## 🛠️ Essential Command Reference
 
-| Task                   | Command                                 |
-| :--------------------- | :-------------------------------------- |
-| Start Dev Server       | `bun dev`                               |
-| Run Test Suite         | `bun run test`                          |
-| Run Specific Test      | `bun test src/lib/query-client.test.ts` |
-| Lint Code              | `bun run lint`                          |
-| Check Code Formatting  | `bun run format:check`                  |
-| Auto-fix Formatting    | `bun run format`                        |
-| Production Build       | `bun run build`                         |
-| Start Production Build | `bun start`                             |
-| Better-Auth Migration  | `bun run db:migrate`                    |
+| Task                   | Command                                  |
+| :--------------------- | :--------------------------------------- |
+| Start Dev Server       | `bun dev`                                |
+| Run Test Suite         | `bun run test`                           |
+| Run Specific Test      | `bun test src/lib/query-client.test.ts`  |
+| Lint Code              | `bun run lint`                           |
+| Check Code Formatting  | `bun run format:check`                   |
+| Auto-fix Formatting    | `bun run format`                         |
+| Production Build       | `bun run build`                          |
+| Better-Auth Migration  | `bun run db:migrate`                     |
+| Curriculum Status      | `bun run curriculum list`                |
+| Curriculum Save Batch  | `bun run curriculum save --week N -f ..` |
+| Curriculum Publish     | `bun run curriculum publish --week N`    |
+| Curriculum Export      | `bun run curriculum export --week N`     |
+| Curriculum Delete Week | `bun run curriculum delete --week N`     |
 
 ---
 

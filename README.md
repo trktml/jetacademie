@@ -68,35 +68,31 @@ bun run sources:search -- -q "ihlas" -n 5
 bun run sources:search -- --read "Lemalar" --page 160
 ```
 
+### 36 Haftalık Müfredat Yönetim Aracı (`curriculum` CLI)
+
+Haftalık müfredat içerikleri (6 kategori: `konu`, `ayet`, `hadis`, `efendimiz`, `sahabe-kissalari`, `hocaefendi-dinleme` × 6 sınıf = 36 kayıt) kod tabanında yüzlerce statik TypeScript veya Markdown dosyası oluşturmadan doğrudan veritabanında yönetilir. `adab-i-muaseret`, `ilmihal` ve `esma` kategorileri korunur.
+
+```bash
+# 36 haftanın durum raporunu listele (boş, taslak, yayında):
+bun run curriculum list
+
+# AI tarafından üretilen haftalık paketi doğrula ve taslak olarak veritabanına kaydet:
+bun run curriculum save --week 3 --file hafta-3.json
+
+# Taslak yerine doğrudan yayına alarak kaydet:
+bun run curriculum save --week 3 --file hafta-3.json --publish
+
+# Taslak durumundaki haftayı yayına al (öğrencilere aç):
+bun run curriculum publish --week 3
+
+# İhtiyaç halinde haftalık kayıtları gözden geçirmek için Markdown dosyalarına aktar:
+bun run curriculum export --week 3
+
+# Bir haftanın 6 içerik kategorisini sil (adab, ilmihal ve esma asla silinmez):
+bun run curriculum delete --week 3
+```
+
 The application runs by default at `http://localhost:3000`. Refer to `.env.example` for environment variables.
-
-### M1–M6 İlk Hafta İçerikleri
-
-Altı sınıfın yalnız birinci haftası için konu, ayet, hadis, siyer, sahabe ve dinleme başlıklarında 36 kayıt hazırlanmıştır. Konu dersleri yaşa göre farklılaşır; 40 dakikalık öğretmen akışı, özgün kaynak pasajları, iki düşünme sorusu, uygulama, kelimeler ve İSNAD dipnotları içerir. İncelenebilir dosyalar `mufredat-docs/icerikler/ilk-hafta/M1-01.md`–`M6-01.md` altında bulunur.
-
-```bash
-# İçerikleri Markdown dosyalarına aktar; veritabanını değiştirme:
-bun scripts/import-first-week-curriculum.ts --export-only
-
-# .env ile yapılandırılmış PostgreSQL veritabanına yalnız 36 ilk hafta kaydını ekle/güncelle:
-bun scripts/import-first-week-curriculum.ts
-```
-
-İçe aktarma tek işlem içinde doğrulanır, mevcut tamamlanma kayıtlarını korur ve sonraki haftaların otomatik oluşmasını engelleyen kategori ayarlarını sürdürür. M3 dinleme kaydının başlığı, tarihi ve arşivde bildirilen süresi doğrulanmıştır. Diğer beş dinleme başlığı arşiv araştırma etkinliğidir; doğrulanmamış video ve zaman kodları hazır kesit olarak sunulmaz.
-
-### M1–M6 İkinci Hafta İçerikleri
-
-İkinci haftalar için aynı altı kategoride 36 kayıt hazırlanmıştır. Ana dersler yıllık plandaki başlıkları izler; yeniden okuma, biyografi ve bağlam, bilginin sorumluluğu, muhatabın sorusu, delil ve temsil, amaç ve yöntem ilişkisi yaşa göre işlenir. Kaynaklı metinler, iki düşünme sorusu, uygulama ve 40 dakikalık öğretmen akışı `mufredat-docs/icerikler/ikinci-hafta/M1-02.md`–`M6-02.md` dosyalarındadır.
-
-```bash
-# Yalnız Markdown dosyalarını üret:
-bun scripts/import-second-week-curriculum.ts --export-only
-
-# PostgreSQL'e yalnız ikinci haftanın 36 kaydını ekle/güncelle:
-bun scripts/import-second-week-curriculum.ts
-```
-
-Aktarım, ikinci hafta dışındaki kayıtların, tamamlanma bilgilerinin ve otomatik eklemeyi engelleyen kategori ayarlarının değişmediğini içerik özetleriyle doğrular; bir uyuşmazlıkta işlemi geri alır. İlk haftalar korunur. İkinci haftaların dinleme kayıtları, plandaki anahtar kelimelerle arşiv araştırma etkinlikleridir; belirli video ve zaman kodları henüz doğrulanmamıştır. M2 başlığındaki “iki kilimlik dükkân” ayrıntısı Bediüzzaman’ın hayatına ait doğrulanmış bir olay olarak sunulmaz; kaynak doğrulama notuyla ayrılır. En’âm 6/162’nin Suat Yıldırım mealinde 163 ile birlikte çevrilmesi nedeniyle M6'da iki âyet birlikte verilmiştir.
 
 ## Verification
 

@@ -10,6 +10,10 @@ import {
   getUserGenderFromDb,
   seedCurriculumDatabase,
   setUserGenderInDb,
+  bulkUpsertCurriculumEntries,
+  publishCurriculumWeek,
+  deleteCurriculumWeek,
+  getCurriculumWeekSummaries,
 } from "./curriculum-db";
 import { BELGIUM_GRADES } from "./curriculum";
 import { db } from "./auth";
@@ -124,8 +128,8 @@ describe("Curriculum SQLite Database Module", () => {
     const standardKonu = konuEntries.filter((e) => !e.isExtra);
     const extraKonu = konuEntries.filter((e) => e.isExtra);
 
-    expect(standardKonu.length).toBe(4);
-    expect(extraKonu.length).toBe(0); // 4 < 48: absolutely no extras before 48 weeks
+    expect(standardKonu.length).toBe(0);
+    expect(extraKonu.length).toBe(0); // 0 < 48: absolutely no extras before 48 weeks
   });
 
   it("should retrieve a specific entry by its deterministic ID", async () => {
@@ -520,44 +524,17 @@ describe("Curriculum SQLite Database Module", () => {
     expect(g6Entry?.resourceUrl).toStartWith("https://www.youtube.com/");
   });
 
-  it("should have four opening Haftanın Konusu entries in grade 1 and two in grades 2–6", async () => {
+  it("should have zero Haftanın Konusu entries before new lessons are created", async () => {
     for (let grade = 1; grade <= 6; grade++) {
       const entries = (await getCurriculumEntriesFromDb(grade)).filter(
         (e) => e.categoryId === "konu"
       );
-      const expectedCount = grade === 1 ? 4 : 2;
-      expect(entries.length).toBe(expectedCount);
-      expect(entries.map((entry) => entry.week)).toEqual(
-        Array.from({ length: expectedCount }, (_, index) => index + 1)
-      );
-      expect(entries.every((entry) => entry.month === 9)).toBe(true);
-      expect(entries.every((e) => !e.isExtra)).toBe(true);
+      expect(entries.length).toBe(0);
     }
   });
 
-  it("should retrieve Haftanın Konusu entries across grades with real titles and content", async () => {
-    const g1w1 = await getCurriculumEntryByIdFromDb("konu-eylul-1");
-    expect(g1w1).not.toBeNull();
-    expect(g1w1?.title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
-    expect(g1w1?.body).toContain("# Bana Ne Söylüyor?");
-
-    const g2w1 = await getCurriculumEntryByIdFromDb("g2-konu-eylul-1");
-    expect(g2w1).not.toBeNull();
-    expect(g2w1?.title).toBe("İki Kilimlik Bir Dükkânda Başlayan Yolculuk");
-
-    const g6w1 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-1");
-    expect(g6w1).not.toBeNull();
-    expect(g6w1?.title).toBe("Bu Yıl Parçaları Nasıl Bir Bütüne Dönüştüreceğiz?");
-    expect(g6w1?.body).toContain("# Bu Hafta Tanıştığımız Kelimeler");
-
-    const g6w2 = await getCurriculumEntryByIdFromDb("g6-konu-eylul-2");
-    expect(g6w2).not.toBeNull();
-    expect(g6w2?.title).toBe("Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?");
-    expect(g6w2?.body).toContain("# Bu Hafta Tanıştığımız Kelimeler");
-  });
-
   it("should keep excluded categories empty across regular and forced seeding", async () => {
-    const categoryId = "konu" as const;
+    const categoryId = "ayet" as const;
     await excludeAndDeleteCurriculumCategoriesFromSeed([categoryId]);
 
     try {
@@ -569,7 +546,7 @@ describe("Curriculum SQLite Database Module", () => {
         [categoryId]
       );
       expect(Number(row?.count ?? 0)).toBe(0);
-      expect(await getCurriculumEntryByIdFromDb("konu-eylul-1")).toBeNull();
+      expect(await getCurriculumEntryByIdFromDb("ayet-eylul-1")).toBeNull();
     } finally {
       await allowCurriculumCategoriesToSeed([categoryId]);
       await seedCurriculumDatabase(true);
@@ -587,5 +564,108 @@ describe("Curriculum editor week locations", () => {
       expect(standard.length).toBe(48);
       expect(new Set(standard.map((entry) => `${entry.month}:${entry.week}`)).size).toBe(48);
     }
+  });
+});
+
+describe("Curriculum week management and draft lifecycle", () => {
+  it("supports saving drafts, listing summaries, publishing, and deleting weekly content", async () => {
+    await ensureCurriculumEntriesTable();
+
+    // Clean up week 35 (mayis-3) first to start from known state
+    await deleteCurriculumWeek(35);
+
+    const testEntries = [
+      {
+        id: "g1-konu-mayis-3",
+        grade: 1 as const,
+        categoryId: "konu" as const,
+        month: 5,
+        week: 3,
+        year: 2027,
+        title: "Test Konu Week 35",
+        body: "Test Body Week 35",
+        isDraft: true,
+      },
+      {
+        id: "g1-ayet-mayis-3",
+        grade: 1 as const,
+        categoryId: "ayet" as const,
+        month: 5,
+        week: 3,
+        year: 2027,
+        title: "Test Ayet Week 35",
+        body: "Test Ayet Body",
+        isDraft: true,
+      },
+    ];
+
+    try {
+      // 1. Bulk upsert as draft
+      await bulkUpsertCurriculumEntries(testEntries);
+
+      // 2. Draft filtering: default excludes drafts, includeDrafts=true includes them
+      const publishedGrade1 = await getCurriculumEntriesFromDb(1, undefined, false);
+      expect(publishedGrade1.some((e) => e.id === "g1-konu-mayis-3")).toBe(false);
+
+      const allGrade1 = await getCurriculumEntriesFromDb(1, undefined, true);
+      expect(allGrade1.some((e) => e.id === "g1-konu-mayis-3")).toBe(true);
+
+      // 3. Week summaries
+      const summaries = await getCurriculumWeekSummaries();
+      expect(summaries.length).toBe(36);
+      const week35 = summaries.find((s) => s.weekNumber === 35);
+      expect(week35).toBeDefined();
+      expect(week35?.totalEntries).toBe(2);
+      expect(week35?.draftEntries).toBe(2);
+      expect(week35?.publishedEntries).toBe(0);
+      expect(week35?.status).toBe("draft");
+
+      // 4. Publish week 35
+      const pubResult = await publishCurriculumWeek(35);
+      expect(pubResult.publishedCount).toBe(2);
+
+      const summariesAfterPub = await getCurriculumWeekSummaries();
+      const week35AfterPub = summariesAfterPub.find((s) => s.weekNumber === 35);
+      expect(week35AfterPub?.totalEntries).toBe(2);
+      expect(week35AfterPub?.draftEntries).toBe(0);
+      expect(week35AfterPub?.publishedEntries).toBe(2);
+      expect(week35AfterPub?.status).toBe("published");
+
+      // Default getCurriculumEntriesFromDb now includes them
+      const publishedNow = await getCurriculumEntriesFromDb(1, undefined, false);
+      expect(publishedNow.some((e) => e.id === "g1-konu-mayis-3")).toBe(true);
+
+      // 5. Delete week 35
+      const delResult = await deleteCurriculumWeek(35);
+      expect(delResult.deletedCount).toBe(2);
+
+      const summariesAfterDel = await getCurriculumWeekSummaries();
+      const week35AfterDel = summariesAfterDel.find((s) => s.weekNumber === 35);
+      expect(week35AfterDel?.totalEntries).toBe(0);
+      expect(week35AfterDel?.status).toBe("empty");
+    } finally {
+      await deleteCurriculumWeek(35);
+      await seedCurriculumDatabase(true);
+    }
+  });
+
+  it("never deletes preserved categories (adab-i-muaseret, ilmihal, esma) when deleting a week", async () => {
+    await ensureCurriculumEntriesTable();
+
+    // Verify deleteCurriculumWeek does not affect preserved categories even if month/week match
+    const initialEntries = await getCurriculumEntriesFromDb(1);
+    const initialPreserved = initialEntries.filter((e) =>
+      ["adab-i-muaseret", "ilmihal", "esma"].includes(e.categoryId)
+    );
+
+    // Call deleteCurriculumWeek for week 35
+    await deleteCurriculumWeek(35);
+
+    const remainingEntries = await getCurriculumEntriesFromDb(1);
+    const remainingPreserved = remainingEntries.filter((e) =>
+      ["adab-i-muaseret", "ilmihal", "esma"].includes(e.categoryId)
+    );
+
+    expect(remainingPreserved.length).toBe(initialPreserved.length);
   });
 });

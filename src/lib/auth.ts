@@ -96,6 +96,7 @@ export const SCHEMA_SQL = `
     "year" integer default 2026,
     "isExtra" integer not null default 0,
     "extraOrder" integer,
+    "isDraft" integer not null default 0,
     "title" text not null,
     "body" text,
     "resourceUrl" text,
@@ -109,6 +110,8 @@ export const SCHEMA_SQL = `
     on "curriculum_entries" ("grade", "categoryId", "isExtra", "month", "week");
   CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_gender_idx"
     on "curriculum_entries" ("grade", "categoryId", "gender", "isExtra", "month", "week");
+  CREATE INDEX IF NOT EXISTS "curriculum_entries_draft_idx"
+    on "curriculum_entries" ("isDraft");
 `;
 
 // In-memory test environment initialization

@@ -126,6 +126,7 @@ export interface CurriculumEntry {
   year: number;
   isExtra?: boolean;
   extraOrder?: number;
+  isDraft?: boolean;
   title: string;
   body?: string;
   contentFormat?: "markdown";

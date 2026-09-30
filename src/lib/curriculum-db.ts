@@ -1,7 +1,6 @@
 import { ensureDatabaseSchema } from "@/lib/auth";
 import { execute, isPostgres, query, queryOne } from "@/lib/db";
 import {
-  curriculumCategories,
   resolveAllCurriculumEntries,
   resolveCategoryEntries,
   type CurriculumCategoryId,
@@ -22,6 +21,7 @@ import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
 import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
 import { getEditorOverrideById, mergeEditorContent } from "@/lib/editor/content";
+import { weekNumberToSlot } from "@/lib/validations/curriculum-entry";
 
 export interface CurriculumEntryRow {
   id: string;
@@ -33,6 +33,7 @@ export interface CurriculumEntryRow {
   year: number;
   isExtra: number | boolean;
   extraOrder: number | null;
+  isDraft?: number | boolean;
   title: string;
   body: string | null;
   resourceUrl: string | null;
@@ -64,6 +65,7 @@ function rowToEntry(row: CurriculumEntryRow): CurriculumEntry {
     year: row.year,
     isExtra: Boolean(row.isExtra),
     extraOrder: row.extraOrder ?? undefined,
+    isDraft: Boolean(row.isDraft),
     title: row.title,
     body: row.body ?? undefined,
     resourceUrl: row.resourceUrl ?? undefined,
@@ -283,8 +285,13 @@ export async function setUserGenderInDb(userId: string, gender: Gender): Promise
   }
 }
 
-export async function bulkUpsertCurriculumEntries(rows: Array<CurriculumEntryRow>): Promise<void> {
+export async function bulkUpsertCurriculumEntries(
+  rows: Array<
+    Partial<CurriculumEntryRow> & Pick<CurriculumEntryRow, "id" | "grade" | "categoryId" | "title">
+  >
+): Promise<void> {
   if (rows.length === 0) return;
+  const now = new Date().toISOString();
   const gradeScopedRows = rows.map(withGradeScopedId);
   const CHUNK_SIZE = 50;
 
@@ -296,7 +303,7 @@ export async function bulkUpsertCurriculumEntries(rows: Array<CurriculumEntryRow
 
     for (const r of chunk) {
       valuePlaceholders.push(
-        `($${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++})`
+        `($${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++}, $${pIdx++})`
       );
       params.push(
         r.id,
@@ -308,20 +315,21 @@ export async function bulkUpsertCurriculumEntries(rows: Array<CurriculumEntryRow
         r.year ?? 2026,
         r.isExtra ? 1 : 0,
         r.extraOrder ?? null,
+        r.isDraft ? 1 : 0,
         r.title,
         r.body ?? null,
         r.resourceUrl ?? null,
         r.pdfUrl ?? null,
         r.pageCount ?? null,
-        r.createdAt,
-        r.updatedAt
+        r.createdAt ?? now,
+        r.updatedAt ?? now
       );
     }
 
     const sql = `
       INSERT INTO "curriculum_entries" (
         "id", "grade", "categoryId", "gender", "month", "week", "year",
-        "isExtra", "extraOrder", "title", "body", "resourceUrl", "pdfUrl",
+        "isExtra", "extraOrder", "isDraft", "title", "body", "resourceUrl", "pdfUrl",
         "pageCount", "createdAt", "updatedAt"
       ) VALUES ${valuePlaceholders.join(", ")}
       ON CONFLICT ("id") DO UPDATE SET
@@ -333,6 +341,7 @@ export async function bulkUpsertCurriculumEntries(rows: Array<CurriculumEntryRow
         "year" = EXCLUDED."year",
         "isExtra" = EXCLUDED."isExtra",
         "extraOrder" = EXCLUDED."extraOrder",
+        "isDraft" = EXCLUDED."isDraft",
         "title" = EXCLUDED."title",
         "body" = EXCLUDED."body",
         "resourceUrl" = EXCLUDED."resourceUrl",
@@ -779,61 +788,7 @@ async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
     });
   }
 
-  // 2. Seed template standard entries for Grades 2 through 6
   for (let grade = 2; grade <= 6; grade++) {
-    for (const cat of curriculumCategories) {
-      if (
-        cat.id === "adab-i-muaseret" ||
-        cat.id === "ilmihal" ||
-        cat.id === "ayet" ||
-        cat.id === "hadis" ||
-        cat.id === "esma" ||
-        cat.id === "efendimiz" ||
-        cat.id === "sahabe-kissalari" ||
-        cat.id === "hocaefendi-dinleme" ||
-        cat.id === "konu"
-      ) {
-        continue;
-      }
-      seedBatch.push({
-        id: `g${grade}-${cat.id}-eylul-1`,
-        grade,
-        categoryId: cat.id,
-        gender: null,
-        month: 9,
-        week: 1,
-        year: 2026,
-        isExtra: 0,
-        extraOrder: null,
-        title: `${grade}. Sınıf ${cat.label} — 1. Hafta Başlangıç`,
-        body: `Belçika ${grade}. Sınıf müfredatına uygun ${cat.label} ilk hafta ders notları ve temel hedefler.`,
-        resourceUrl: null,
-        pdfUrl: null,
-        pageCount: 2,
-        createdAt: now,
-        updatedAt: now,
-      });
-
-      seedBatch.push({
-        id: `g${grade}-${cat.id}-eylul-2`,
-        grade,
-        categoryId: cat.id,
-        gender: null,
-        month: 9,
-        week: 2,
-        year: 2026,
-        isExtra: 0,
-        extraOrder: null,
-        title: `${grade}. Sınıf ${cat.label} — 2. Hafta Konusu`,
-        body: `Belçika ${grade}. Sınıf ${cat.label} dersi 2. hafta kapsamlı tahlil ve etkinlik rehberi.`,
-        resourceUrl: null,
-        pdfUrl: null,
-        pageCount: 2,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
-
     const gradeAdabEntries = getAdabEntriesForGrade(grade);
     for (const entry of gradeAdabEntries) {
       seedBatch.push({
@@ -1120,7 +1075,8 @@ export function getFallbackEntries(grade?: number, gender?: Gender): CurriculumE
  */
 export async function getCurriculumEntriesFromDb(
   grade?: number,
-  gender?: Gender
+  gender?: Gender,
+  includeDrafts = false
 ): Promise<CurriculumEntry[]> {
   await seedCurriculumDatabase();
 
@@ -1141,15 +1097,160 @@ export async function getCurriculumEntriesFromDb(
       return mergeEditorContent(getFallbackEntries(grade, gender), grade, gender);
     }
 
-    const filteredRows = gender
+    let filteredRows = gender
       ? rows.filter((r) => r.categoryId !== "ilmihal" || !r.gender || r.gender === gender)
       : rows;
+
+    if (!includeDrafts) {
+      filteredRows = filteredRows.filter((r) => !r.isDraft);
+    }
 
     const entries = filteredRows.map(rowToEntry);
     return mergeEditorContent(resolveAllCurriculumEntries(entries), grade, gender);
   } catch {
     return mergeEditorContent(getFallbackEntries(grade, gender), grade, gender);
   }
+}
+
+export interface WeekSummary {
+  weekNumber: number;
+  month: number;
+  week: number;
+  year: number;
+  monthSlug: string;
+  totalEntries: number;
+  draftEntries: number;
+  publishedEntries: number;
+  status: "empty" | "draft" | "published" | "mixed";
+}
+
+/**
+ * Publishes draft entries for a given week number (1-36) or month and week.
+ */
+export async function publishCurriculumWeek(
+  weekNumberOrMonth: number,
+  weekArg?: number
+): Promise<{ updatedCount: number; publishedCount: number }> {
+  await ensureCurriculumEntriesTable();
+  let month: number;
+  let week: number;
+  if (typeof weekArg === "number") {
+    month = weekNumberOrMonth;
+    week = weekArg;
+  } else {
+    const slot = weekNumberToSlot(weekNumberOrMonth);
+    month = slot.month;
+    week = slot.week;
+  }
+
+  const res = await query<{ id: string }>(
+    `UPDATE "curriculum_entries"
+     SET "isDraft" = 0, "updatedAt" = CURRENT_TIMESTAMP
+     WHERE "month" = $1 AND "week" = $2 AND "isDraft" = 1
+     RETURNING "id"`,
+    [month, week]
+  );
+  return { updatedCount: res.length, publishedCount: res.length };
+}
+
+/**
+ * Deletes entries for a given week number (1-36) or month and week for the 6 weekly content categories.
+ * Strictly preserves adab-i-muaseret, ilmihal, and esma categories.
+ */
+export async function deleteCurriculumWeek(
+  weekNumberOrMonth: number,
+  weekArg?: number
+): Promise<{ deletedCount: number }> {
+  await ensureCurriculumEntriesTable();
+  let month: number;
+  let week: number;
+  if (typeof weekArg === "number") {
+    month = weekNumberOrMonth;
+    week = weekArg;
+  } else {
+    const slot = weekNumberToSlot(weekNumberOrMonth);
+    month = slot.month;
+    week = slot.week;
+  }
+
+  const allowedCategories = [
+    "konu",
+    "ayet",
+    "hadis",
+    "efendimiz",
+    "sahabe-kissalari",
+    "hocaefendi-dinleme",
+  ];
+  const placeholders = allowedCategories.map((_, i) => `$${i + 3}`).join(", ");
+  const res = await query<{ id: string }>(
+    `DELETE FROM "curriculum_entries"
+     WHERE "month" = $1 AND "week" = $2 AND "categoryId" IN (${placeholders})
+     RETURNING "id"`,
+    [month, week, ...allowedCategories]
+  );
+  return { deletedCount: res.length };
+}
+
+/**
+ * Returns a high-level summary of all 36 curriculum weeks and their draft/published status.
+ */
+export async function getCurriculumWeekSummaries(): Promise<WeekSummary[]> {
+  await ensureCurriculumEntriesTable();
+  const rows = await query<{
+    month: number;
+    week: number;
+    total: number | string;
+    drafts: number | string;
+    published: number | string;
+  }>(
+    `SELECT "month", "week",
+            COUNT(*) as total,
+            COUNT(CASE WHEN "isDraft" = 1 THEN 1 END) as drafts,
+            COUNT(CASE WHEN "isDraft" = 0 THEN 1 END) as published
+     FROM "curriculum_entries"
+     WHERE "categoryId" IN ('konu', 'ayet', 'hadis', 'efendimiz', 'sahabe-kissalari', 'hocaefendi-dinleme')
+       AND "month" IS NOT NULL AND "week" IS NOT NULL
+     GROUP BY "month", "week"`
+  );
+
+  const slotMap = new Map<string, { total: number; drafts: number; published: number }>();
+  for (const r of rows) {
+    slotMap.set(`${r.month}-${r.week}`, {
+      total: Number(r.total),
+      drafts: Number(r.drafts),
+      published: Number(r.published),
+    });
+  }
+
+  const summaries: WeekSummary[] = [];
+  for (let w = 1; w <= 36; w++) {
+    const slot = weekNumberToSlot(w);
+    const counts = slotMap.get(`${slot.month}-${slot.week}`) ?? {
+      total: 0,
+      drafts: 0,
+      published: 0,
+    };
+    let status: WeekSummary["status"] = "empty";
+    if (counts.total > 0) {
+      if (counts.drafts === counts.total) status = "draft";
+      else if (counts.published === counts.total) status = "published";
+      else status = "mixed";
+    }
+
+    summaries.push({
+      weekNumber: w,
+      month: slot.month,
+      week: slot.week,
+      year: slot.year,
+      monthSlug: slot.monthSlug,
+      totalEntries: counts.total,
+      draftEntries: counts.drafts,
+      publishedEntries: counts.published,
+      status,
+    });
+  }
+
+  return summaries;
 }
 
 /**

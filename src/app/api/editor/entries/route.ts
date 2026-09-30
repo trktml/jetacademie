@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const grade = Number(new URL(request.url).searchParams.get("sinif"));
     if (!Number.isInteger(grade) || grade < 1 || grade > 6)
       return editorResponse({ error: "Geçersiz sınıf." }, 400);
-    const entries = await getCurriculumEntriesFromDb(grade);
+    const entries = await getCurriculumEntriesFromDb(grade, undefined, true);
     const overrides = await getEditorOverrides(grade);
     const revisions = new Map(overrides.map((record) => [contentSlot(record.entry), record]));
     return editorResponse(
@@ -37,7 +37,7 @@ export async function PUT(request: Request) {
     const input = editorEntrySchema.safeParse(await readEditorJson(request, 450000));
     if (!input.success)
       return editorResponse({ error: input.error.issues[0]?.message ?? "İçerik geçersiz." }, 400);
-    const entries = await getCurriculumEntriesFromDb(input.data.grade);
+    const entries = await getCurriculumEntriesFromDb(input.data.grade, undefined, true);
     if (input.data.extraOrder) {
       const standard = entries.filter(
         (entry) =>
