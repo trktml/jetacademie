@@ -98,4 +98,19 @@ describe("Safe shared Markdown rendering", () => {
     expect(html).toContain("<h1>Önemli Giriş</h1>");
     expect(html).toContain("Bu bir giriş yazısıdır.");
   });
+
+  it("makes marked words accessible without enabling raw HTML", () => {
+    const html = renderToStaticMarkup(
+      <MarkdownContent vocabulary={[{ word: "fakrı", definition: "İhtiyaçlarını." }]}>
+        {"> **İnsanın <u>fakrı</u>.**\n\n<u>Tanımsız</u>\n\n<script>alert(1)</script>"}
+      </MarkdownContent>
+    );
+    expect(html).toContain("<strong>İnsanın <span");
+    expect(html).toContain('type="button"');
+    expect(html).toContain('aria-label="fakrı kelimesinin anlamı"');
+    expect(html).toContain('title="fakrı: İhtiyaçlarını."');
+    expect(html).toContain("Tanımsız");
+    expect(html).not.toContain("<script");
+    expect(html).not.toContain("&lt;u&gt;");
+  });
 });

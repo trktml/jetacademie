@@ -1,8 +1,52 @@
-import { useMemo } from "react";
+"use client";
+
+import { useId, useMemo, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import "./markdown-content.css";
+
+interface VocabularyItem {
+  readonly word: string;
+  readonly definition: string;
+}
+
+function VocabularyTerm({ word, definition }: VocabularyItem) {
+  const [open, setOpen] = useState(false);
+  const tooltipId = useId();
+
+  return (
+    <span className="relative inline-block">
+      <button
+        type="button"
+        className="inline-flex min-h-[44px] cursor-pointer items-center rounded px-1 text-inherit underline decoration-teal-500/50 underline-offset-4"
+        aria-label={`${word} kelimesinin anlamı`}
+        aria-expanded={open}
+        aria-describedby={open ? tooltipId : undefined}
+        title={`${word}: ${definition}`}
+        onClick={() => setOpen(true)}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setOpen(false);
+        }}
+      >
+        {word}
+      </button>
+      {open && (
+        <span
+          id={tooltipId}
+          role="tooltip"
+          className="absolute bottom-full left-0 z-20 w-52 max-w-[70vw] rounded-lg border border-teal-200 bg-white p-3 text-sm font-normal text-slate-900 shadow-lg dark:border-teal-800 dark:bg-slate-900 dark:text-slate-100"
+        >
+          {definition}
+        </span>
+      )}
+    </span>
+  );
+}
 
 /**
  * Normalizes input text for CommonMark rendering:
@@ -59,14 +103,23 @@ export function stripLeadingTitle(body?: string | null, title?: string | null): 
 export function MarkdownContent({
   children,
   stripTitle,
+  vocabulary = [],
 }: {
   children?: string | null;
   stripTitle?: string;
+  vocabulary?: readonly VocabularyItem[];
 }) {
   const content = useMemo(() => {
     const withoutTitle = stripTitle ? stripLeadingTitle(children, stripTitle) : children;
-    return normalizeMarkdown(withoutTitle);
-  }, [children, stripTitle]);
+    return normalizeMarkdown(withoutTitle).replace(/<u>([^<\n]+)<\/u>/g, (_, word: string) => {
+      const index = vocabulary.findIndex(
+        (item) => item.word.toLocaleLowerCase("tr-TR") === word.toLocaleLowerCase("tr-TR")
+      );
+      if (index === -1) return word;
+      const escaped = word.replace(/([\\`*_[\]<>])/g, "\\$1");
+      return `[${escaped}](#curriculum-vocabulary-${index})`;
+    });
+  }, [children, stripTitle, vocabulary]);
 
   return (
     <div className="curriculum-markdown" dir="auto">
@@ -76,11 +129,18 @@ export function MarkdownContent({
         rehypePlugins={[rehypeSanitize]}
         disallowedElements={["img"]}
         components={{
-          a: ({ children, href }) => (
-            <a href={href} target="_blank" rel="noopener noreferrer">
-              {children}
-            </a>
-          ),
+          a: ({ children, href }) => {
+            const match = href?.match(/^#curriculum-vocabulary-(\d+)$/);
+            const item = match ? vocabulary[Number(match[1])] : undefined;
+            if (item) {
+              return <VocabularyTerm word={String(children)} definition={item.definition} />;
+            }
+            return (
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                {children}
+              </a>
+            );
+          },
           p: ({ children }) => <p dir="auto">{children}</p>,
           blockquote: ({ children }) => <blockquote dir="auto">{children}</blockquote>,
         }}

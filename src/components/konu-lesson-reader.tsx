@@ -19,6 +19,7 @@ import {
   type KonuVocabItem,
 } from "@/lib/data/konu-curriculum";
 import type { CurriculumEntry } from "@/lib/curriculum";
+import { MarkdownContent } from "@/components/markdown-content";
 
 export interface KonuLessonReaderProps {
   entry: CurriculumEntry;
@@ -157,6 +158,33 @@ export function KonuLessonReader({ entry, item: explicitItem, onClose }: KonuLes
     return (
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-400">
         Ders içeriği henüz hazır değil.
+      </div>
+    );
+  }
+
+  // Database lessons retain their authored Markdown, including the opening verse,
+  // quotes and footnotes. Structured lessons still use the reader below.
+  if (!explicitItem && !getKonuItem(entry.id)) {
+    return (
+      <div className="konu-lesson-reader rounded-2xl border border-teal-200/80 bg-white/95 p-4 sm:p-6 dark:border-teal-900/40 dark:bg-[#121c24]">
+        <div className="mb-4 flex items-center justify-between gap-3 text-sm">
+          <span>{`${item.grade}. Sınıf · ${item.week}. Hafta · ${item.readingMinutes} dk okuma`}</span>
+          {onClose && (
+            <button
+              type="button"
+              className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-3"
+              onClick={(event) => {
+                event.stopPropagation();
+                onClose();
+              }}
+              aria-label="Okuyucuyu Kapat"
+            >
+              <X className="h-4 w-4" />
+              Kapat
+            </button>
+          )}
+        </div>
+        <MarkdownContent vocabulary={item.vocab}>{item.body}</MarkdownContent>
       </div>
     );
   }

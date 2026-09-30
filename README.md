@@ -72,6 +72,8 @@ bun run sources:search -- --read "Lemalar" --page 160
 
 Haftalık müfredat içerikleri (6 kategori: `konu`, `ayet`, `hadis`, `efendimiz`, `sahabe-kissalari`, `hocaefendi-dinleme` × 6 sınıf = 36 kayıt) kod tabanında yüzlerce statik TypeScript veya Markdown dosyası oluşturmadan doğrudan veritabanında yönetilir. `adab-i-muaseret`, `ilmihal` ve `esma` kategorileri korunur.
 
+Veritabanındaki Konu dersleri öğrenci okuyucusunda Markdown düzeni korunarak gösterilir: âyet–meal sırası, koyu alıntılar, bölüm başlıkları ve dipnotlar metindeki yerinde kalır. `**Kelime** — açıklama` biçimindeki “Bu Hafta Tanıştığımız Kelimeler” listesiyle eşleşen `<u>Kelime</u>` işaretleri, tıklama/dokunma, klavye odağı ve fareyle üzerine gelme ile anlamı açılan düğmelere dönüşür. Kaynakta kullanılan çekimli biçimi listede aynı yazımla tanımlayın. Diğer ham HTML etiketleri çalıştırılmaz.
+
 ```bash
 # 36 haftanın durum raporunu listele (boş, taslak, yayında):
 bun run curriculum list

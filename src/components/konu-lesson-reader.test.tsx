@@ -150,4 +150,24 @@ describe("KonuLessonReader Component", () => {
     // Does not render inline role=tooltip popovers that could clip
     expect(html).not.toContain('role="tooltip"');
   });
+
+  it("renders database lessons as Markdown in authored order without duplicating sections", () => {
+    const entry = {
+      ...g1Entry,
+      body: "# Veritabanı dersi\n\n**اقْرَأْ**\n\nOku.¹\n\n### Bir soru\n\n> **<u>Tefekkür</u> etmek.**²\n\n# Bana Ne Söylüyor?\n\n- Düşünebilirim.\n\n# Bu Hafta Tanıştığımız Kelimeler\n\n**Tefekkür** — Dikkatle düşünme.\n\n# Dipnotlar\n\n¹ Meal kaynağı.\n\n² Pasaj kaynağı.",
+    };
+    const html = renderToString(<KonuLessonReader entry={entry} />);
+
+    expect(html).toContain("<h1>Veritabanı dersi</h1>");
+    expect(html).toContain("<strong>اقْرَأْ</strong>");
+    expect(html).toContain("<h3>Bir soru</h3>");
+    expect(html).toContain('<blockquote dir="auto">');
+    expect(html).toContain('aria-label="Tefekkür kelimesinin anlamı"');
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain("&lt;u&gt;");
+    expect(html.indexOf("اقْرَأْ")).toBeLessThan(html.indexOf("Oku.¹"));
+    expect(html.indexOf("Oku.¹")).toBeLessThan(html.indexOf("<h3>Bir soru"));
+    expect(html.match(/<h1>Bana Ne Söylüyor\?<\/h1>/g)).toHaveLength(1);
+    expect(html.match(/<h1>Dipnotlar<\/h1>/g)).toHaveLength(1);
+  });
 });
