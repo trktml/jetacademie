@@ -64,7 +64,7 @@ describe("curriculum-plans (M1–M6)", () => {
       {
         grade: 2,
         week: 1,
-        topic: "İki Kilimlik Bir Dükkânda Başlayan Yolculuk",
+        topic: "Küçük Bir Terzi Dükkânında Başlayan Yolculuk",
         outcome: "ana fikrini",
       },
       {

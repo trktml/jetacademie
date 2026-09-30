@@ -378,7 +378,7 @@ export const curriculumPlans: readonly GradePlan[] = [
         weeks: [
           {
             weekNumber: 1,
-            topic: "İki Kilimlik Bir Dükkânda Başlayan Yolculuk",
+            topic: "Küçük Bir Terzi Dükkânında Başlayan Yolculuk",
             mainQuestion: "Bir kitap insanın hayatında nasıl sıradan bir kitap olmaktan çıkar?",
             primarySource: "Hocaefendi’nin Risale-i Nur’la tanışma hatırası; Tarihçe-i Hayat",
           },
