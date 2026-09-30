@@ -3,6 +3,17 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MarkdownContent } from "./markdown-content";
 
 describe("Safe shared Markdown rendering", () => {
+  it("opens vocabulary definitions from a non-Konu card's own glossary", () => {
+    const html = renderToStaticMarkup(
+      <MarkdownContent>
+        {
+          "<u>emanet</u> korunur.\n\n## Kelime Açıklaması\n\n**emanet** — Koruman için sana bırakılan şey."
+        }
+      </MarkdownContent>
+    );
+    expect(html).toContain('aria-label="emanet kelimesinin anlamı"');
+    expect(html).toContain('title="emanet: Koruman için sana bırakılan şey."');
+  });
   it("renders headings, lists, tables, Arabic and strong text", () => {
     const html = renderToStaticMarkup(
       <MarkdownContent>

@@ -166,6 +166,8 @@ Açıklama yalnız sadeleştirme yapmamalı; metnin düşünce yapısını da ç
 
 Altı yıl boyunca hep aynı uzunlukta ve aynı kolaylıkta Risale pasajı kullanma.
 
+Bu artış her haftada daha uzun alıntı kullanma zorunluluğu değildir. Özellikle ilk dört haftada, üst sınıfta da kaynak diline yeni başlayan bir öğrenci bulunabileceğini hesaba kat. Zorluğu sınıf koduna göre değil, pasajın anlaşılabilirliği ve sağlanan anlam desteğiyle birlikte değerlendir. Bir pasajın açıklaması çok sayıda yeni kelime ve kavram gerektiriyorsa önce daha kısa, anlam bütünlüğü olan bir pasaj seç; alıntıyı bozarak kolaylaştırma.
+
 ---
 
 # 5. RİSALE METNİNİ DEĞİŞTİRME
@@ -330,6 +332,23 @@ Genç yetişkin seviyesinde fikrî ve analitik derinlik oluşturulur.
 
 **Metin öğrenciyle birlikte büyümelidir.**
 
+### Başlangıç profili ve somut dil ölçüsü
+
+Yaş ile Türkçe okuma seviyesi aynı şey değildir. Belçika'daki öğrencilerin Türkçe okuma alışkanlığı, evde kullandığı dil ve dinî kavramlara aşinalığı farklı olabilir. Yaşından dolayı kaynak dilini veya soyut Türkçe ifadeleri bildiğini varsayma; günlük konuşma becerisini akademik okuma becerisi sayma.
+
+Her dersin hazırlığında sınıfı, programdaki ayı, yıllık planın başlangıç şartını ve gerekli ön bilgileri belirle. M2–M6 yıllık planları önceki seviyelerin tamamlanmasını şart koşmaz; ilk dört haftayı ilgili yaşa uygun bir tanışma olarak kur. Yıl sonu becerisini ilk hafta öğrencinin zaten sahip olduğu bir beceri gibi kullanma. Ön bilgi doğrulanamıyorsa ders için gereken kavramı kısa ve somut biçimde tanıt.
+
+İlk ayda M1 için bir somut durum ve tek ana fikir üzerinde ilerle. M2'de olayın sebebi ve sonucu; M3'te belirli bir seçim ve sonucu; M4'te belirli bir soru ve kaynağın cevabı; M5'te kısa bir iddia ve dayanağı; M6'da iki sorumluluğun birlikte değerlendirilmesi öne çıkabilir. Bu farklar yıllık planın konusuna göre kurulur; daha yüksek sınıf, açıklamayı daha ağır yazma izni değildir.
+
+Sade dil yalnız kısa cümle veya güncel kelime demek değildir. Fiili ve davrananı görünür kıl; soyut isimleri art arda yığma. Örneğin “Okuma ve dinleme, iki kişinin aynı metne birlikte dikkat vermesine imkân sağlar” yerine “Bildiğin bir metni arkadaşından dinlerken yeni bir şey fark edebilirsin” denebilir. “Bilginin davranışa ulaşması” anlatılırken önce öğrencinin neyi, hangi anda yapacağını göster. Bu örnekleri hazır ders cümlesi olarak çoğaltma.
+
+Yazımı iki ayrı dil taramasıyla denetle:
+
+1. **Özgün metin yükü:** Alıntıda öğrencinin takılabileceği bütün kelime ve ifadeleri bul; yalnız önceden seçtiğin kelime listesini kontrol etmekle yetinme. Ana fikri anlaması için gerekli anlam desteğini ver. Destek yükü çok artıyorsa pasajı yeniden seç.
+2. **Yazarın Türkçesi:** Açıklama, soru ve kapanışta gereksiz zor kelimeleri ve soyut cümleleri sadeleştir. Öğrenci “Burada kim ne yapıyor?” ve “Bu cümle ne söylüyor?” sorularını cevaplayabilmeli. Kaynak doğrulama ve yorum sınırıyla ilgili çalışma notlarını öğrenciye taşıma; gerekli ayrımı konunun içinde kısa biçimde göster.
+
+Bir M1 başlangıç dersini dil ve anlatım için somut örnek olarak hazırlayıp denetle; diğer sınıfları onunla karşılaştırarak beklenen düşünme farkını ayrıca göster. Yalnız kelime sayısı, cümle uzunluğu veya teknik test sonucu yaşa uygunluğun kanıtı değildir. Gerçek öğrenciyle deneme yapılmadıysa yapılmış gibi bildirme.
+
 ### Aynı yıl içinde aydan aya dil gelişimi
 
 Yaş ve sınıf düzeyinin yanında öğrencinin programda hangi ayda olduğunu da dikkate al.
@@ -346,7 +365,7 @@ Yaş ve sınıf düzeyinin yanında öğrencinin programda hangi ayda olduğunu 
 
 Metni yazmadan önce kendi içinde şu soruyu cevapla:
 
-**“Bu öğrenci 40 dakikanın sonunda bu konu hakkında en temelde ne anlamış olmalı?”**
+**“Bu öğrenci metni okuduğunda bu konu hakkında en temelde ne anlamış olmalı?”**
 
 Sonra bütün metni bu düşünce etrafında kur.
 
@@ -359,6 +378,8 @@ Ders sonunda birbirinden bağımsız beş farklı bilgi kalmamalı.
 Öğrencinin zihninde **tek ve güçlü bir düşünce örgüsü** oluşmalıdır.
 
 Yazmadan önce anlatının üç hareketini çalışma notunda belirle: öğrencinin karşılaştığı mesele, kaynakların açtığı fikir ve bu fikrin hayatta sınanacağı durum. Bunları metinde zorunlu üç başlık hâline getirme. Ana anlatı, alıntıların çevresine yazılmış kısa açıklamalardan ibaret kalmamalı; pasajların bağlamını ve aralarındaki düşünce bağını öğrencinin takip edebileceği kadar geliştirmelidir.
+
+**Süre veya kelime kotası doldurmak için yazma.** Ders süresi, öğrencinin okuyacağı metnin uzunluğunu belirlemez; konuşma, düşünme ve uygulama da öğrenmenin parçasıdır. Ana soru anlaşılmışsa yeni paragraf, ikinci örnek, ihtiyat açıklaması veya alıntı ekleyerek metni uzatma. Her paragraf için “Bu çıkarılırsa öğrenci hangi gerekli fikri kaybeder?” diye sor; yeni bir katkı yoksa çıkar. Kısa fakat yeterli bir metin, tekrarla uzatılmış metinden daha uygundur.
 
 ---
 
@@ -388,7 +409,7 @@ Altı çizilen her kelimenin açıklaması aşağıdaki **Kelimeler** bölümün
 
 Aşağıda açıklanmayacak kelimenin altını çizme.
 
-Metindeki çekimli biçim ile kelime listesindeki madde başı farklıysa eşleşmeyi açıkça kur; örneğin metindeki “fakrı” ile listedeki “fakr” aynı açıklamayı açmalıdır. İşaretli kelimenin görünür yazımını eşleştirme uğruna değiştirme. Yalnız alt çizgi eklemek tıklanabilir anlam şartını karşılamaz; sunum kontrolünde anlamın gerçekten açıldığını doğrula.
+Kelime listesinin madde başında metindeki işaretli biçimi aynen kullan; örneğin metinde “fakrı” geçiyorsa listede de “fakrı” yaz, kök biçimi olan “fakr”ı açıklamanın içinde belirt. İşaretli kelimenin görünür yazımını eşleştirme uğruna değiştirme. Yalnız alt çizgi eklemek tıklanabilir anlam şartını karşılamaz; sunum kontrolünde anlamın gerçekten açıldığını doğrula.
 
 ---
 
@@ -422,6 +443,10 @@ Sözlük maddesi gibi kuru yazma.
 Ancak gereksiz uzun açıklamalar da yapma.
 
 ### Kelime seçiminin sınırı
+
+**Bu bölümün amacı öğrencinin Türkçesini geliştirmektir; Arapça kelime öğretimi değildir.** Âyet veya hadisin Arapça metninden kelime seçme; Arapça yazımlı veya Latin harfleriyle çevrilmiş bir maddeyi Türkçe anlamıyla listeye koyma. Arapça kaynaklı bir kelime Türkçede gerçekten kullanılıyor ve öğrencinin okuduğu Türkçe/Osmanlı Türkçesi metinde yer alıyorsa, yalnız o Türkçe kullanımı ve bağlamdaki anlamı üzerinden açıklanabilir. Örneğin Türkçe tercümede “öğrenen” yazıyorsa Arapça metindeki “taallame” listeye alınmaz; Türkçe anlatımda “niyet” geçiyorsa Türkçede kullanılan “niyet” açıklanabilir.
+
+Kelime seçimini Arapça paragrafı, dipnotları ve kelime listesini dışarıda bırakarak yap. Türkçe metinde açıklanması gereken kelimeleri belirle; gereksiz zor kelimeyi yazarın anlatımından çıkar, gerekli kelimeyi işaretleyip açıkla. Öğrencinin seviyesinde yaygın olan “öğretmek” ve “iyilik” gibi kelimeleri sırf listeyi doldurmak için seçme. Açıklama metni kelimenin kendisinden daha ağır olmamalıdır. Bu sınır âyet, hadis, siyer, sahabe, Konu ve dinleme içeriklerinin tamamında geçerlidir.
 
 Listeye yalnız öğrencinin dersin **Türkçe/Osmanlı Türkçesi metninde gerçekten karşılaştığı** kelimeleri al. Dipnotta veya kelime listesinin kendi açıklamasında geçmesi yeterli değildir. Arapça kökenli olup Türkçe metinde kullanılan bir kelime seçilebilir; ölçüt kelimenin kökeni değil, öğrencinin okuduğu metinde bulunmasıdır.
 
@@ -559,7 +584,7 @@ Arama sonucu, özet, yapay zekâ cevabı veya önceki ders metni tek başına do
 
 **Dipnotlar**
 
-**Başlık–âyetin Arapça metni–meal ve dipnot işareti–giriş sırası sabittir.** Ana anlatıdaki unsurların yukarıda ayrı satırlarda gösterilmesi, bunları ayrı kaynak bölümleri olarak yazma talimatı değildir. Ana anlatı esnektir: Her derste aynı sayıda ara başlık, alıntı, soru veya uygulama bulunması gerekmez. Bölümleri ana düşüncenin ihtiyaç duyduğu ölçüde kullan; “Bana Ne Söylüyor?”, “Bu Hafta Tanıştığımız Kelimeler” ve “Dipnotlar” kapanış sırasını koru. 40 dakikalık dersin ana anlatısını birkaç yüz kelimelik alıntı açıklamasına indirgeme; öğrencinin soruyu, metnin gerekçesini ve hayattaki karşılığını takip edebileceği kadar işle.
+**Başlık–âyetin Arapça metni–meal ve dipnot işareti–giriş sırası sabittir.** Ana anlatıdaki unsurların yukarıda ayrı satırlarda gösterilmesi, bunları ayrı kaynak bölümleri olarak yazma talimatı değildir. Ana anlatı esnektir: Her derste aynı sayıda ara başlık, alıntı, soru veya uygulama bulunması gerekmez. Bölümleri ana düşüncenin ihtiyaç duyduğu ölçüde kullan; “Bana Ne Söylüyor?”, “Bu Hafta Tanıştığımız Kelimeler” ve “Dipnotlar” kapanış sırasını koru. Uzunluğu süreyle değil, öğrencinin soruyu, metnin gerekçesini ve hayattaki karşılığını anlayabilmesiyle belirle; eksik açıklamayı tamamla, gereksiz uzatmayı çıkar.
 
 Çıktıda:
 
@@ -600,6 +625,11 @@ Bu denetimde bir eksik, hata veya çözülmemiş çelişki varsa metni tamamlanm
 - Sesli okumada tekrar, yapmacık geçiş veya savunmacı açıklama duyuluyor mu? “Bana Ne Söylüyor?” maddeleri yalnız genel okuma tavsiyelerini mi yineliyor?
 - Bir üst sınıfta özgün pasajla temas ve düşünce derinliği gerçekten artıyor mu?
 - İlk ayın açıklamaları olabildiğince sade mi? Sonraki aylarda dil, önceki derslerde tanıtılan kelimelere dayanarak küçük adımlarla mı gelişiyor?
+- Yaşın yanında Türkçe okuma başlangıcı dikkate alınmış mı; önceki sınıfların veya yıl sonu becerilerinin zaten edinildiği varsayılmış mı?
+- Özgün alıntıdaki bütün zor ifadeler taranmış mı; gereğinden ağır pasaj yalnız birkaç kelime açıklanarak bırakılmış mı?
+- Kelime listesi yalnız Türkçe okuma becerisini destekliyor mu; Arapça metinden veya onun Latin harfli aktarımından seçilmiş madde var mı?
+- Öğrenci olayda ne olduğunu, alıntının ana fikrini ve yapabileceği davranışı kendi cümlesiyle anlatabilecek kadar desteklenmiş mi?
+- Bir süreyi doldurmak için tekrar, gereksiz örnek veya açıklama eklenmiş mi; her paragraf gerekli bir katkı sağlıyor mu?
 
 Bu geçişte sorun bulursan yalnız kelimeleri cilalama; gerekirse örneği, pasajı ve anlatının sırasını yeniden kur. Yayıma geçmeden önce en az bir dersi diğer sınıflara ölçü olacak şekilde editoryal olarak oku; sonra her sınıfı ayrıca değerlendir. Bu yönergenin değiştirilmesi, daha önce üretilmiş dersleri kendiliğinden düzeltmez.
 

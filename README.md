@@ -72,7 +72,9 @@ bun run sources:search -- --read "Lemalar" --page 160
 
 Haftalık müfredat içerikleri (6 kategori: `konu`, `ayet`, `hadis`, `efendimiz`, `sahabe-kissalari`, `hocaefendi-dinleme` × 6 sınıf = 36 kayıt) kod tabanında yüzlerce statik TypeScript veya Markdown dosyası oluşturmadan doğrudan veritabanında yönetilir. `adab-i-muaseret`, `ilmihal` ve `esma` kategorileri korunur.
 
-Veritabanındaki Konu dersleri öğrenci okuyucusunda Markdown düzeni korunarak gösterilir: âyet–meal sırası, koyu alıntılar, bölüm başlıkları ve dipnotlar metindeki yerinde kalır. `**Kelime** — açıklama` biçimindeki “Bu Hafta Tanıştığımız Kelimeler” listesiyle eşleşen `<u>Kelime</u>` işaretleri, tıklama/dokunma, klavye odağı ve fareyle üzerine gelme ile anlamı açılan düğmelere dönüşür. Kaynakta kullanılan çekimli biçimi listede aynı yazımla tanımlayın. Diğer ham HTML etiketleri çalıştırılmaz.
+Veritabanındaki dersler öğrenci okuyucusunda Markdown düzeni korunarak gösterilir: âyet–meal sırası, koyu alıntılar, bölüm başlıkları ve dipnotlar metindeki yerinde kalır. Altı içerik kategorisinde `**Kelime** — açıklama` biçimindeki “Bu Hafta Tanıştığımız Kelimeler” veya “Kelime Açıklaması” listesiyle eşleşen `<u>Kelime</u>` işaretleri, tıklama/dokunma, klavye odağı ve fareyle üzerine gelme ile anlamı açılan düğmelere dönüşür. Kaynakta kullanılan çekimli biçimi listede aynı yazımla tanımlayın. Diğer ham HTML etiketleri çalıştırılmaz.
+
+Kelime listeleri Türkçe okuma becerisini destekler. Arapça metindeki kelimeler ve yalnız orada geçen Latin harfli okunuşlar listeye alınmaz; Türkçe metinde kullanılan “niyet” gibi Arapça kökenli Türkçe kelimeler alınabilir. Paket kaydı, editör kaydı ve haftayı yayımlama işlemi, işaretli Türkçe kelimelerle açıklamaların eşleşmesini denetler; dipnotlar eşleşmeye dahil edilmez. Bu teknik denetim, yaş ve Türkçe yeterliğine göre dil incelemesinin veya asıl kaynak kontrolünün yerini tutmaz. Yazım yönergelerinde 40 dakika metin uzunluğu hedefi değildir; ilk dört haftada ön bilgi varsayılmadan, özgün alıntılar korunarak sade açıklamalar kullanılır.
 
 ```bash
 # 36 haftanın durum raporunu listele (boş, taslak, yayında):

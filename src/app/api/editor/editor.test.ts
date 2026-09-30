@@ -179,6 +179,15 @@ describe("Independent curriculum editor security", () => {
     expect(editorEntrySchema.safeParse({ ...input, categoryId: "ilmihal" }).success).toBe(false);
     expect(editorEntrySchema.safeParse({ ...input, gender: "erkek" }).success).toBe(false);
   });
+  it("rejects Arabic-only vocabulary before saving editor content", async () => {
+    const auth = { token, csrf: editorCsrf(token) };
+    const body =
+      "**تَعَلَّمَ**\n\nTürkçesi: Öğrendi.\n\n## Kelime Açıklaması\n\n**taallame** — Öğrendi.";
+    expect((await saveEntry(request("entries", "PUT", { ...input, body }, auth))).status).toBe(400);
+    expect(
+      editorEntrySchema.safeParse({ ...input, categoryId: "adab-i-muaseret", body }).success
+    ).toBe(true);
+  });
   it("saves Markdown into public curriculum, keeps IDs and rejects stale writes", async () => {
     const auth = { token, csrf: editorCsrf(token) };
     const before = (await getCurriculumEntriesFromDb(6)).find(

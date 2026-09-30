@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { curriculumVocabularyIssues } from "@/lib/curriculum-vocabulary";
 
 export const WEEKLY_CONTENT_CATEGORIES = [
   "konu",
@@ -99,6 +100,9 @@ export const weeklyPackageSchema = z
     }
 
     for (const entry of val.entries) {
+      for (const message of curriculumVocabularyIssues(entry.body)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${entry.id}: ${message}` });
+      }
       if (seenIds.has(entry.id)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

@@ -4,6 +4,7 @@ import { useId, useMemo, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
+import { readCurriculumVocabulary } from "@/lib/curriculum-vocabulary";
 import "./markdown-content.css";
 
 interface VocabularyItem {
@@ -103,23 +104,27 @@ export function stripLeadingTitle(body?: string | null, title?: string | null): 
 export function MarkdownContent({
   children,
   stripTitle,
-  vocabulary = [],
+  vocabulary,
 }: {
   children?: string | null;
   stripTitle?: string;
   vocabulary?: readonly VocabularyItem[];
 }) {
+  const effectiveVocabulary = useMemo(
+    () => vocabulary ?? readCurriculumVocabulary(children ?? "").items,
+    [children, vocabulary]
+  );
   const content = useMemo(() => {
     const withoutTitle = stripTitle ? stripLeadingTitle(children, stripTitle) : children;
     return normalizeMarkdown(withoutTitle).replace(/<u>([^<\n]+)<\/u>/g, (_, word: string) => {
-      const index = vocabulary.findIndex(
+      const index = effectiveVocabulary.findIndex(
         (item) => item.word.toLocaleLowerCase("tr-TR") === word.toLocaleLowerCase("tr-TR")
       );
       if (index === -1) return word;
       const escaped = word.replace(/([\\`*_[\]<>])/g, "\\$1");
       return `[${escaped}](#curriculum-vocabulary-${index})`;
     });
-  }, [children, stripTitle, vocabulary]);
+  }, [children, stripTitle, effectiveVocabulary]);
 
   return (
     <div className="curriculum-markdown" dir="auto">
@@ -131,7 +136,7 @@ export function MarkdownContent({
         components={{
           a: ({ children, href }) => {
             const match = href?.match(/^#curriculum-vocabulary-(\d+)$/);
-            const item = match ? vocabulary[Number(match[1])] : undefined;
+            const item = match ? effectiveVocabulary[Number(match[1])] : undefined;
             if (item) {
               return <VocabularyTerm word={String(children)} definition={item.definition} />;
             }

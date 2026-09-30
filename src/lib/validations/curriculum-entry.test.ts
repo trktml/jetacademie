@@ -65,7 +65,7 @@ describe("curriculum-entry validations and slot mapping", () => {
           title: `${grade}. Sınıf ${cat} dersi`,
           body:
             cat === "konu"
-              ? `# Başlık\n\n> **Arapça**\n> **Meal**\n\nMetin.\n\n# Bana Ne Söylüyor?\n\n- Çıkarım.\n\n# Bu Hafta Tanıştığımız Kelimeler\n\n**Kelime** — Tanım.`
+              ? `# Başlık\n\n> **Arapça**\n> **Meal**\n\n<u>Kelime</u> metinde.\n\n# Bana Ne Söylüyor?\n\n- Çıkarım.\n\n# Bu Hafta Tanıştığımız Kelimeler\n\n**Kelime** — Tanım.`
               : `# Başlık\n\nİçerik metni burada yer alıyor en az yirmi karakter.`,
           isDraft: true,
         });
@@ -78,6 +78,17 @@ describe("curriculum-entry validations and slot mapping", () => {
     });
 
     expect(res.success).toBe(true);
+
+    const hadith = entries.find((entry) => entry.categoryId === "hadis")!;
+    hadith.body =
+      "**تَعَلَّمَ**\n\nTürkçesi: Öğrendi.\n\n## Kelime Açıklaması\n\n**taallame** — Öğrendi.";
+    const invalid = weeklyPackageSchema.safeParse({ weekNumber: 3, entries });
+    expect(invalid.success).toBe(false);
+    if (!invalid.success) {
+      expect(
+        invalid.error.issues.some((issue) => issue.message.includes("'taallame' Türkçe metinde"))
+      ).toBe(true);
+    }
   });
 
   it("rejects packages with missing categories or mismatched IDs", () => {

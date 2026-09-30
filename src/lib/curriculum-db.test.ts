@@ -17,7 +17,7 @@ import {
 } from "./curriculum-db";
 import { BELGIUM_GRADES } from "./curriculum";
 import { db } from "./auth";
-import { queryOne } from "./db";
+import { execute, query, queryOne } from "./db";
 
 describe("Curriculum SQLite Database Module", () => {
   it("should ensure table exists and seed data without errors", async () => {
@@ -568,6 +568,60 @@ describe("Curriculum editor week locations", () => {
 });
 
 describe("Curriculum week management and draft lifecycle", () => {
+  it("validates the entire draft batch before publishing and preserves other categories", async () => {
+    await ensureCurriculumEntriesTable();
+    const ids = [
+      "g1-vocabulary-publish-valid",
+      "g1-vocabulary-publish-invalid",
+      "g1-vocabulary-publish-preserved",
+    ];
+    const base = {
+      grade: 1 as const,
+      month: 5,
+      week: 3,
+      year: 2027,
+      title: "Vocabulary test",
+      isDraft: true,
+    };
+    try {
+      await bulkUpsertCurriculumEntries([
+        {
+          ...base,
+          id: ids[0],
+          categoryId: "ayet",
+          body: "<u>niyet</u> önemlidir.\n\n## Kelime Açıklaması\n\n**niyet** — Amaç.",
+        },
+        {
+          ...base,
+          id: ids[1],
+          categoryId: "hadis",
+          body: "**تَعَلَّمَ**\n\nÖğrendi.\n\n## Kelime Açıklaması\n\n**taallame** — Öğrendi.",
+        },
+        { ...base, id: ids[2], categoryId: "adab-i-muaseret", body: "Korunan içerik." },
+      ]);
+      await expect(publishCurriculumWeek(35)).rejects.toThrow("'taallame' Türkçe metinde");
+      const before = await query<{ id: string; isDraft: number }>(
+        'SELECT "id", "isDraft" FROM "curriculum_entries" WHERE "id" IN ($1, $2, $3)',
+        ids
+      );
+      expect(before).toHaveLength(3);
+      expect(before.every((row) => row.isDraft === 1)).toBe(true);
+      await execute('UPDATE "curriculum_entries" SET "body" = $1 WHERE "id" = $2', [
+        "Türkçe içerik.",
+        ids[1],
+      ]);
+      await publishCurriculumWeek(35);
+      const after = await query<{ id: string; isDraft: number }>(
+        'SELECT "id", "isDraft" FROM "curriculum_entries" WHERE "id" IN ($1, $2, $3)',
+        ids
+      );
+      expect(after.find((row) => row.id === ids[0])?.isDraft).toBe(0);
+      expect(after.find((row) => row.id === ids[1])?.isDraft).toBe(0);
+      expect(after.find((row) => row.id === ids[2])?.isDraft).toBe(1);
+    } finally {
+      await execute('DELETE FROM "curriculum_entries" WHERE "id" IN ($1, $2, $3)', ids);
+    }
+  });
   it("supports saving drafts, listing summaries, publishing, and deleting weekly content", async () => {
     await ensureCurriculumEntriesTable();
 

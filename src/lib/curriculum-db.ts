@@ -1,5 +1,5 @@
 import { ensureDatabaseSchema } from "@/lib/auth";
-import { execute, isPostgres, query, queryOne } from "@/lib/db";
+import { execute, getPool, getSqlite, isPostgres, query, queryOne } from "@/lib/db";
 import {
   resolveAllCurriculumEntries,
   resolveCategoryEntries,
@@ -21,7 +21,8 @@ import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
 import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
 import { getEditorOverrideById, mergeEditorContent } from "@/lib/editor/content";
-import { weekNumberToSlot } from "@/lib/validations/curriculum-entry";
+import { WEEKLY_CONTENT_CATEGORIES, weekNumberToSlot } from "@/lib/validations/curriculum-entry";
+import { curriculumVocabularyIssues } from "@/lib/curriculum-vocabulary";
 
 export interface CurriculumEntryRow {
   id: string;
@@ -1143,14 +1144,58 @@ export async function publishCurriculumWeek(
     week = slot.week;
   }
 
-  const res = await query<{ id: string }>(
-    `UPDATE "curriculum_entries"
+  const placeholders = WEEKLY_CONTENT_CATEGORIES.map((_, i) => `$${i + 3}`).join(", ");
+  const params = [month, week, ...WEEKLY_CONTENT_CATEGORIES];
+  const selection = `"month" = $1 AND "week" = $2 AND "isDraft" = 1 AND "categoryId" IN (${placeholders})`;
+  const selectSql = `SELECT "id", "body" FROM "curriculum_entries" WHERE ${selection}`;
+  const updateSql = `UPDATE "curriculum_entries"
      SET "isDraft" = 0, "updatedAt" = CURRENT_TIMESTAMP
-     WHERE "month" = $1 AND "week" = $2 AND "isDraft" = 1
-     RETURNING "id"`,
-    [month, week]
-  );
-  return { updatedCount: res.length, publishedCount: res.length };
+     WHERE ${selection} RETURNING "id"`;
+  const validate = (rows: { id: string; body: string }[]) => {
+    const issues = rows.flatMap((row) =>
+      curriculumVocabularyIssues(row.body).map((message) => `${row.id}: ${message}`)
+    );
+    if (issues.length)
+      throw new Error(`Kelime listesi doğrulaması başarısız:\n${issues.join("\n")}`);
+  };
+
+  const pool = getPool();
+  if (isPostgres && pool) {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const rows = await client.query<{ id: string; body: string }>(
+        `${selectSql} FOR UPDATE`,
+        params
+      );
+      validate(rows.rows);
+      const res = await client.query<{ id: string }>(
+        updateSql.replace(" RETURNING", ` AND "id" = ANY($${params.length + 1}::text[]) RETURNING`),
+        [...params, rows.rows.map((row) => row.id)]
+      );
+      await client.query("COMMIT");
+      return { updatedCount: res.rowCount ?? 0, publishedCount: res.rowCount ?? 0 };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  const sqlite = getSqlite();
+  if (!sqlite) throw new Error("No database client initialized");
+  return sqlite.transaction(() => {
+    const sqliteParams = params.map(String);
+    validate(
+      sqlite.query(selectSql.replace(/\$\d+/g, "?")).all(...sqliteParams) as {
+        id: string;
+        body: string;
+      }[]
+    );
+    const res = sqlite.query(updateSql.replace(/\$\d+/g, "?")).all(...sqliteParams);
+    return { updatedCount: res.length, publishedCount: res.length };
+  })();
 }
 
 /**

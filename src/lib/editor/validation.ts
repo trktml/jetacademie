@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { curriculumCategoryIds } from "@/lib/curriculum";
+import { curriculumVocabularyIssues } from "@/lib/curriculum-vocabulary";
+import { WEEKLY_CONTENT_CATEGORIES } from "@/lib/validations/curriculum-entry";
 
 export const editorLoginSchema = z
   .object({ username: z.string().min(1).max(80), password: z.string().min(1).max(128) })
@@ -32,6 +34,11 @@ export const editorEntrySchema = z
   })
   .strict()
   .superRefine((value, ctx) => {
+    if (WEEKLY_CONTENT_CATEGORIES.some((category) => category === value.categoryId)) {
+      for (const message of curriculumVocabularyIssues(value.body)) {
+        ctx.addIssue({ code: "custom", path: ["body"], message });
+      }
+    }
     if ((value.categoryId === "ilmihal") !== !!value.gender)
       ctx.addIssue({
         code: "custom",
