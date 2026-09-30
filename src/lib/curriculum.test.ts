@@ -57,8 +57,8 @@ describe("curriculum", () => {
     ]);
   });
 
-  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), 48 for hocaefendi-dinleme, and 4 for konu", () => {
-    expect(curriculumEntries.length).toBe(437);
+  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), 48 for hocaefendi-dinleme, and 0 for konu", () => {
+    expect(curriculumEntries.length).toBe(433);
 
     expect(getCategoryEntries("ayet").length).toBe(55);
     expect(getCategoryEntries("hadis").length).toBe(55);
@@ -83,7 +83,7 @@ describe("curriculum", () => {
       )
         continue;
       const entries = getCategoryEntries(category.id);
-      expect(entries.length).toBe(category.id === "konu" ? 4 : 2);
+      expect(entries.length).toBe(0);
     }
   });
 
@@ -132,13 +132,13 @@ describe("curriculum", () => {
   });
 
   it("returns entries sorted by year/month/week within a category", () => {
-    const konuEntries = getCategoryEntries("konu");
-    expect(konuEntries[0].week).toBe(1);
-    expect(konuEntries[1].week).toBe(2);
-    expect(konuEntries[2].week).toBe(3);
-    expect(konuEntries[3].week).toBe(4);
-    expect(konuEntries[0].title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
-    expect(konuEntries[1].title).toBe("Bediüzzaman kimdir?");
+    const ayetEntries = getCategoryEntries("ayet");
+    expect(ayetEntries[0].week).toBe(1);
+    expect(ayetEntries[1].week).toBe(2);
+    expect(ayetEntries[2].week).toBe(3);
+    expect(ayetEntries[3].week).toBe(4);
+    expect(ayetEntries[0].id).toBe("ayet-eylul-1");
+    expect(ayetEntries[1].id).toBe("ayet-eylul-2");
   });
 
   describe("canUnmarkEntry", () => {
@@ -182,7 +182,7 @@ describe("curriculum", () => {
 
     it("ensures categories with <= 48 entries have ZERO extra entries even if flagged", () => {
       const konuEntries = getCategoryEntries("konu");
-      expect(konuEntries.length).toBe(4);
+      expect(konuEntries.length).toBe(0);
       expect(konuEntries.every((e) => !e.isExtra)).toBe(true);
 
       // Even if raw entries had isExtra: true before 48 weeks, they must resolve to false

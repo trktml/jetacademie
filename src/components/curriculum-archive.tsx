@@ -39,7 +39,7 @@ import { GenderSelector } from "@/components/gender-selector";
 import { InlinePdfViewer } from "@/components/inline-pdf-viewer";
 import { KonuLessonReader } from "@/components/konu-lesson-reader";
 import { MarkdownContent } from "@/components/markdown-content";
-import { getKonuItem } from "@/lib/data/konu-curriculum";
+import { getKonuItem, parseKonuItemFromBody } from "@/lib/data/konu-curriculum";
 
 import { useUiStore } from "@/store/use-ui-store";
 import { useGuestStore } from "@/store/use-guest-store";
@@ -218,7 +218,10 @@ export function EntryContentRenderer({
   onToggleExpand?: () => void;
 }) {
   const isKonu = entry.categoryId === "konu" && entry.contentFormat !== "markdown";
-  const konuItem = useMemo(() => (isKonu ? getKonuItem(entry.id) : null), [isKonu, entry.id]);
+  const konuItem = useMemo(
+    () => (isKonu ? (getKonuItem(entry.id) ?? parseKonuItemFromBody(entry)) : null),
+    [isKonu, entry]
+  );
 
   const { summary, vocabList } = useMemo(
     () =>

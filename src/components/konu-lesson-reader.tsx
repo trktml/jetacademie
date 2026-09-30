@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import {
   getKonuItem,
+  parseKonuItemFromBody,
   type KonuCurriculumItem,
   type KonuVocabItem,
 } from "@/lib/data/konu-curriculum";
@@ -21,6 +22,7 @@ import type { CurriculumEntry } from "@/lib/curriculum";
 
 export interface KonuLessonReaderProps {
   entry: CurriculumEntry;
+  item?: KonuCurriculumItem;
   onClose?: () => void;
 }
 
@@ -42,30 +44,11 @@ interface ActiveInlineTooltip {
 function getOrParseKonuItem(entry: CurriculumEntry): KonuCurriculumItem | null {
   const existing = getKonuItem(entry.id);
   if (existing) return existing;
-
-  if (!entry.body) return null;
-
-  return {
-    id: entry.id,
-    grade: entry.grade ?? 1,
-    weekNumber: entry.week,
-    month: entry.month,
-    week: entry.week,
-    year: entry.year,
-    title: entry.title,
-    subtitle: "",
-    readingMinutes: 5,
-    sections: [{ heading: null, paragraphs: [entry.body] }],
-    discussionQuestions: [],
-    takeaway: [],
-    sources: [],
-    vocab: [],
-    body: entry.body,
-  };
+  return parseKonuItemFromBody(entry);
 }
 
-export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
-  const item = useMemo(() => getOrParseKonuItem(entry), [entry]);
+export function KonuLessonReader({ entry, item: explicitItem, onClose }: KonuLessonReaderProps) {
+  const item = useMemo(() => explicitItem ?? getOrParseKonuItem(entry), [entry, explicitItem]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeTooltip, setActiveTooltip] = useState<ActiveInlineTooltip | null>(null);
   const readerId = useId();
@@ -349,6 +332,25 @@ export function KonuLessonReader({ entry, onClose }: KonuLessonReaderProps) {
       <h3 className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg dark:text-slate-100">
         {item.title}
       </h3>
+
+      {/* Opening Verse: Mandatory sequence per MUFREDAT-INSTRUCTIONS.md (Title -> Verse -> Meal -> Hook Question) */}
+      {item.verse && (
+        <div className="flex flex-col gap-3 rounded-2xl border border-teal-200/80 bg-teal-50/40 p-4 sm:p-5 dark:border-teal-900/50 dark:bg-teal-950/20">
+          <div
+            dir="rtl"
+            lang="ar"
+            className="text-right font-serif text-2xl leading-[2.1] font-bold text-slate-900 sm:text-3xl dark:text-teal-100"
+          >
+            {item.verse.arabic}
+          </div>
+          <blockquote className="border-l-4 border-teal-500 pl-3.5 text-sm font-semibold text-slate-700 italic sm:text-base dark:text-slate-300">
+            “{item.verse.meal}”
+            <span className="ml-1 text-xs font-bold text-teal-800 not-italic dark:text-teal-300">
+              ¹
+            </span>
+          </blockquote>
+        </div>
+      )}
 
       {/* Subtitle / Hook Question Box */}
       {item.subtitle && (

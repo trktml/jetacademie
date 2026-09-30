@@ -2,76 +2,151 @@ import { describe, expect, it } from "bun:test";
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { KonuLessonReader } from "./konu-lesson-reader";
-import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
+import { createLesson, type LessonDraft } from "@/lib/data/konu-curriculum";
+import type { CurriculumEntry } from "@/lib/curriculum";
 
 describe("KonuLessonReader Component", () => {
-  const g1Entries = getKonuEntriesForGrade(1);
-  const g6Entries = getKonuEntriesForGrade(6);
+  const g1Draft: LessonDraft = {
+    id: "g1-konu-eylul-1",
+    grade: 1,
+    weekNumber: 2,
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Bediüzzaman kimdir?",
+    subtitle: "Bu eserlerin arkasında nasıl bir hayat ve ilim yolculuğu var?",
+    readingMinutes: 8,
+    sections: [
+      {
+        heading: "Bir hayat hikâyesinin kapısını aralamak",
+        paragraphs: [
+          "Molla Abdullah’ın gittikçe <u>tekâmül</u> ederek köydeki okumamış arkadaşlarından okumakla tezahür eden meziyetini düşünüp hayran kaldı. Bunun üzerine ciddî bir <u>şevk</u> ile <u>tahsil</u>i gözüne aldı.",
+        ],
+      },
+      {
+        heading: "Âyet — Tâhâ 20/114",
+        paragraphs: ["فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ"],
+        kind: "arabic",
+      },
+    ],
+    discussionQuestions: ["İlim öğrenmek insanı nasıl olgunlaştırır?"],
+    takeaway: ["İlim öğrenmenin bir emanet olduğunu fark edebilirim."],
+    vocab: [
+      { word: "Tekâmül", definition: "Adım adım olgunlaşma, gelişme ve kemale erme." },
+      { word: "Meziyet", definition: "Bir şeyi benzerlerinden üstün kılan özellik." },
+      { word: "Şevk", definition: "İstek, heves ve coşku." },
+      { word: "Tahsil", definition: "İlim öğrenme, bilgi edinme faaliyeti." },
+      { word: "İzzet-i İlmiye", definition: "İlmin vakar ve haysiyeti." },
+      { word: "Derceylemek", definition: "İçine yerleştirmek." },
+    ],
+    sources: ["Tarihçe-i Hayat, s. 25."],
+  };
 
-  it("renders 1. Sınıf 1. Hafta lesson title, subtitle, and meta information", () => {
-    const entry = g1Entries[0];
-    const html = renderToString(<KonuLessonReader entry={entry} />);
+  const g1Lesson = createLesson(g1Draft);
+  const g1Entry: CurriculumEntry = {
+    id: g1Lesson.id,
+    grade: g1Lesson.grade,
+    categoryId: "konu",
+    month: g1Lesson.month,
+    week: g1Lesson.week,
+    year: g1Lesson.year,
+    title: g1Lesson.title,
+    body: g1Lesson.body,
+    pageCount: 2,
+  };
 
-    expect(html).toContain("1. Sınıf · 1. Hafta");
-    expect(html).toContain("Bu Eser Neden Hâlâ Okunuyor?");
-    expect(html).toContain(
-      "Bu kadar farklı insanın yıllardır okuduğu, çoğalttığı ve araştırdığı bir eserde ne var?"
-    );
-    expect(html).toContain("7 dk okuma");
+  const g6Draft: LessonDraft = {
+    id: "g6-konu-eylul-1",
+    grade: 6,
+    weekNumber: 2,
+    month: 9,
+    week: 2,
+    year: 2026,
+    title: "Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?",
+    subtitle: "Mefkûre insanının hedef birliği ve gaye şuuru",
+    readingMinutes: 10,
+    sections: [
+      {
+        heading: "Gaye-i Hayat",
+        paragraphs: ["Bediüzzaman’ın hayatındaki temel rota iman ve Kur'an hizmetidir."],
+      },
+    ],
+    discussionQuestions: ["İnsanın hayatında temel bir gayesi olması ne kazandırır?"],
+    takeaway: ["Tevhid-i kıble şuuruyla hareket edebilirim."],
+    vocab: [
+      { word: "Mefkûre", definition: "Ulaşılmak istenen yüce ülkü." },
+      { word: "Tevhid-i kıble", definition: "Hedef birliği." },
+    ],
+    sources: ["Tarihçe-i Hayat, s. 582."],
+  };
+
+  const g6Lesson = createLesson(g6Draft);
+  const g6Entry: CurriculumEntry = {
+    id: g6Lesson.id,
+    grade: g6Lesson.grade,
+    categoryId: "konu",
+    month: g6Lesson.month,
+    week: g6Lesson.week,
+    year: g6Lesson.year,
+    title: g6Lesson.title,
+    body: g6Lesson.body,
+    pageCount: 2,
+  };
+
+  it("renders 1. Sınıf 2. Hafta lesson title, subtitle, and meta information", () => {
+    const html = renderToString(<KonuLessonReader entry={g1Entry} item={g1Lesson} />);
+
+    expect(html).toContain("1. Sınıf · 2. Hafta");
+    expect(html).toContain("Bediüzzaman kimdir?");
+    expect(html).toContain("Bu eserlerin arkasında nasıl bir hayat ve ilim yolculuğu var?");
+    expect(html).toContain("8 dk okuma");
     expect(html).toContain("6 Kavram");
   });
 
-  it("renders discussion questions, takeaway, and vocabulary cards for Grade 1 Week 1", () => {
-    const entry = g1Entries[0];
-    const html = renderToString(<KonuLessonReader entry={entry} />);
+  it("renders discussion questions, takeaway, and vocabulary cards for Grade 1 Week 2", () => {
+    const html = renderToString(<KonuLessonReader entry={g1Entry} item={g1Lesson} />);
 
     expect(html).toContain("Düşünelim ve Konuşalım");
     expect(html).toContain("Bana ne söylüyor?");
     expect(html).toContain("Bu Hafta Tanıştığımız Kelimeler");
     expect(html).toContain('dir="rtl" lang="ar"');
-    expect(html).toContain("Dipnot");
+    expect(html).toContain("Dipnotlar");
 
     // Vocabulary card words
-    expect(html).toContain("Bismillâh");
-    expect(html).toContain("Lisân-ı hâl");
-    expect(html).toContain("Tefekkür");
+    expect(html).toContain("Tekâmül");
+    expect(html).toContain("Meziyet");
+    expect(html).toContain("Şevk");
   });
 
   it("renders in-text vocabulary buttons with tooltip titles", () => {
-    const entry = g1Entries[0];
-    const html = renderToString(<KonuLessonReader entry={entry} />);
+    const html = renderToString(<KonuLessonReader entry={g1Entry} item={g1Lesson} />);
 
-    expect(html).toContain(
-      'title="Bismillâh: “Allah’ın adıyla” anlamına gelen, her hayırlı işe başlarken söylenen mübarek başlangıç sözü."'
-    );
-    expect(html).toContain(
-      'title="Tefekkür: Bir şeyin anlamı ve bize ne gösterdiği üzerinde dikkatlice düşünme."'
-    );
+    expect(html).toContain('title="Tekâmül: Adım adım olgunlaşma, gelişme ve kemale erme."');
+    expect(html).toContain('title="Tahsil: İlim öğrenme, bilgi edinme faaliyeti."');
   });
 
-  it("renders the M6-01 vocabulary cards and takeaway", () => {
-    const entry = g6Entries[0];
-    const html = renderToString(<KonuLessonReader entry={entry} />);
+  it("renders the M6-02 vocabulary cards and takeaway", () => {
+    const html = renderToString(<KonuLessonReader entry={g6Entry} item={g6Lesson} />);
 
-    expect(html).toContain("Bu Yıl Parçaları Nasıl Bir Bütüne Dönüştüreceğiz?");
+    expect(html).toContain("Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?");
     expect(html).toContain("Bana ne söylüyor?");
     expect(html).toContain("Bu Hafta Tanıştığımız Kelimeler");
   });
 
   it("renders close button when onClose prop is provided", () => {
-    const entry = g1Entries[0];
-    const html = renderToString(<KonuLessonReader entry={entry} onClose={() => {}} />);
+    const html = renderToString(
+      <KonuLessonReader entry={g1Entry} item={g1Lesson} onClose={() => {}} />
+    );
 
     expect(html).toContain("Okumayı Kapat");
   });
 
   it("renders in-text vocabulary buttons with proper aria-labels and clean tags", () => {
-    const entry = g1Entries[0];
-    const html = renderToString(<KonuLessonReader entry={entry} />);
+    const html = renderToString(<KonuLessonReader entry={g1Entry} item={g1Lesson} />);
 
     // In-text buttons should have aria-label and not render inline duplicate tooltips
-    expect(html).toContain('aria-label="Bismillâh kelimesinin anlamı"');
-    expect(html).toContain('aria-label="Tefekkür kelimesinin anlamı"');
+    expect(html).toContain('aria-label="Tekâmül kelimesinin anlamı"');
+    expect(html).toContain('aria-label="Tahsil kelimesinin anlamı"');
     // Does not render inline role=tooltip popovers that could clip
     expect(html).not.toContain('role="tooltip"');
   });

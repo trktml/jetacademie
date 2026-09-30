@@ -4,68 +4,90 @@ import {
   getKonuItem,
   getKonuEntriesForGrade,
   getAllKonuEntries,
+  toSuperscript,
+  createLesson,
+  type LessonDraft,
 } from "./konu-curriculum";
 
-describe("konu-curriculum data integrity", () => {
-  it("contains the first four weeks for grade 1 and first two entries for other grades", () => {
-    expect(konuCurriculumItems.length).toBe(14);
-  });
-
-  it("has four opening entries for grade 1 and two entries for grades 2–6", () => {
+describe("konu-curriculum data and builder integrity", () => {
+  it("initializes with empty entries when no static lessons are registered", () => {
+    expect(konuCurriculumItems).toHaveLength(0);
+    expect(getAllKonuEntries()).toHaveLength(0);
     for (let grade = 1; grade <= 6; grade++) {
-      const entries = getKonuEntriesForGrade(grade);
-      const expectedCount = grade === 1 ? 4 : 2;
-      expect(entries.length).toBe(expectedCount);
-      expect(entries.map((entry) => entry.week)).toEqual(
-        Array.from({ length: expectedCount }, (_, index) => index + 1)
-      );
-      expect(entries.every((entry) => entry.month === 9)).toBe(true);
-      expect(entries.every((entry) => entry.categoryId === "konu")).toBe(true);
+      expect(getKonuEntriesForGrade(grade)).toHaveLength(0);
     }
   });
 
-  it("correctly identifies entry IDs across grades", () => {
-    expect(getKonuItem("g1-konu-eylul-1")).toBe(getKonuItem("konu-eylul-1"));
-    expect(getKonuItem("konu-eylul-1")?.title).toBe("Bu Eser Neden Hâlâ Okunuyor?");
-    expect(getKonuItem("konu-eylul-2")?.title).toBe("Bediüzzaman kimdir?");
-    expect(getKonuItem("konu-eylul-3")?.title).toBe("Hocaefendi ve Risale-i Nur");
-    expect(getKonuItem("konu-eylul-4")?.title).toBe("Biz Bu Eserleri Nasıl Okuyacağız?");
-    expect(getKonuItem("g2-konu-eylul-1")?.title).toBe(
-      "İki Kilimlik Bir Dükkânda Başlayan Yolculuk"
+  it("returns undefined for unknown item IDs", () => {
+    expect(getKonuItem("unknown-id")).toBeUndefined();
+    expect(getKonuItem("g1-konu-eylul-2")).toBeUndefined();
+  });
+
+  it("converts numbers to superscript correctly", () => {
+    expect(toSuperscript("123")).toBe("¹²³");
+    expect(toSuperscript("4567890")).toBe("⁴⁵⁶⁷⁸⁹⁰");
+  });
+
+  it("creates a lesson and builds formatted markdown body with opening verse and structure", () => {
+    const draft: LessonDraft = {
+      id: "g1-konu-ornek-1",
+      grade: 1,
+      weekNumber: 1,
+      month: 9,
+      week: 1,
+      year: 2026,
+      title: "Örnek Ders Başlığı",
+      subtitle: "Giriş ve arka plan sorusu",
+      readingMinutes: 5,
+      verse: {
+        surah: "Bakara 2/255",
+        arabic: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+        meal: "Allah O’dur ki O’ndan başka ilah yoktur; Hayy’dır, Kayyûm’dur.",
+        connection: "Âyetin ana temayla bağlantısı.",
+        source: "Suat Yıldırım Meali, s. 42.",
+      },
+      sections: [
+        {
+          heading: "Birinci Bölüm",
+          paragraphs: ["Bu ilk paragraftır.", "Bu da ikinci paragraftır."],
+        },
+        {
+          heading: "Alıntı Pasajı",
+          paragraphs: ["Önemli bir iktibas metni."],
+          kind: "quote",
+          citation: "2",
+        },
+      ],
+      discussionQuestions: ["Birinci soru?", "İkinci soru?"],
+      application: {
+        title: "Uygulama Adımları",
+        items: ["Günde bir sayfa oku.", "Haftada bir tefekkür et."],
+      },
+      takeaway: ["İlk çıkarım.", "İkinci çıkarım."],
+      vocab: [
+        { word: "Tefekkür", definition: "Derinlemesine düşünme." },
+        { word: "İhlas", definition: "Samimiyet." },
+      ],
+      sources: ["Bediüzzaman Said Nursî, Sözler, s. 10."],
+    };
+
+    const lesson = createLesson(draft);
+    expect(lesson.body).toContain("# Örnek Ders Başlığı");
+    expect(lesson.body).toContain("> **اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ**");
+    expect(lesson.body).toContain(
+      "> **“Allah O’dur ki O’ndan başka ilah yoktur; Hayy’dır, Kayyûm’dur.”**¹"
     );
-    expect(getKonuItem("g6-konu-eylul-2")?.title).toBe(
-      "Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?"
-    );
-  });
-
-  it("includes vocabulary and structured sections for M6-01", () => {
-    const m6w1 = getKonuItem("g6-konu-eylul-1");
-    expect(m6w1).toBeDefined();
-    expect(m6w1?.vocab.length).toBeGreaterThanOrEqual(5);
-    expect(m6w1?.sections.length).toBeGreaterThan(0);
-  });
-
-  it("has non-empty vocabulary lists for all lessons", () => {
-    for (const item of konuCurriculumItems) {
-      expect(item.vocab.length).toBeGreaterThanOrEqual(item.grade === 1 ? 3 : 5);
-      for (const v of item.vocab) {
-        expect(v.word.trim().length).toBeGreaterThan(0);
-        expect(v.definition.trim().length).toBeGreaterThan(0);
-      }
-    }
-  });
-
-  it("has positive reading minutes and discussion questions for all appropriate lessons", () => {
-    for (const item of konuCurriculumItems) {
-      expect(item.readingMinutes).toBeGreaterThanOrEqual(2);
-      expect(item.sections.length).toBeGreaterThan(0);
-      expect(item.discussionQuestions.length).toBeGreaterThan(0);
-    }
-  });
-
-  it("getAllKonuEntries returns all 14 entries with category konu", () => {
-    const all = getAllKonuEntries();
-    expect(all.length).toBe(14);
-    expect(all.every((e) => e.categoryId === "konu")).toBe(true);
+    expect(lesson.body).toContain("Giriş ve arka plan sorusu");
+    expect(lesson.body).toContain("### Birinci Bölüm");
+    expect(lesson.body).toContain("### Düşünelim ve Konuşalım");
+    expect(lesson.body).toContain("1. Birinci soru?");
+    expect(lesson.body).toContain("2. İkinci soru?");
+    expect(lesson.body).toContain("### Uygulama Adımları");
+    expect(lesson.body).toContain("# Bana Ne Söylüyor?");
+    expect(lesson.body).toContain("# Bu Hafta Tanıştığımız Kelimeler");
+    expect(lesson.body).toContain("**Tefekkür** — Derinlemesine düşünme.");
+    expect(lesson.body).toContain("# Dipnotlar");
+    expect(lesson.body).toContain("¹ Suat Yıldırım Meali, s. 42.");
+    expect(lesson.body).toContain("² Bediüzzaman Said Nursî, Sözler, s. 10.");
   });
 });

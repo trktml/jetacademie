@@ -184,15 +184,19 @@ describe("CurriculumArchive Component", () => {
 
   it("should render sample entries with Eylül-N timing format", () => {
     const html = renderToString(
-      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
+      <CurriculumArchive
+        initialCompletedEntryIds={[]}
+        isSignedIn={false}
+        initialCategoryId="ayet"
+      />
     );
 
     // Verify timing format: "Eylül-1", "Eylül-2"
     expect(html).toContain("Eylül-1");
     expect(html).toContain("Eylül-2");
 
-    // The opening grade-one topic track contains four entries.
-    expect(html).toContain("0 / 4 tamamlandı");
+    // Standard 48-week curriculum tracking
+    expect(html).toContain("0 / 48 tamamlandı");
   });
 
   it("should render real sample entries with correct titles for active category", () => {
@@ -329,9 +333,22 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should render all-completed celebratory state when all entries in a drawer are completed", () => {
+    const customEntries = [
+      {
+        id: "g1-konu-eylul-1",
+        grade: 1,
+        categoryId: "konu" as const,
+        month: 9,
+        week: 1,
+        year: 2026,
+        title: "Konu Dersi",
+        body: "Ders içeriği",
+      },
+    ];
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["konu-eylul-1", "konu-eylul-2", "konu-eylul-3", "konu-eylul-4"]}
+        customEntries={customEntries}
+        initialCompletedEntryIds={["g1-konu-eylul-1"]}
         isSignedIn={true}
         initialCategoryId="konu"
       />
@@ -341,7 +358,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("Tüm Haftanın Konusu Dosyaları Tamamlandı!");
     expect(html).not.toContain("archive-all-completed__desc");
     expect(html).not.toContain("Bu çekmecedeki tüm haftalık okumaları başarıyla tamamladınız.");
-    expect(html).toContain("Geçmiş (4)");
+    expect(html).toContain("Geçmiş (1)");
     // No duplicate read-status badge inside completed cards
     expect(html).not.toContain("read-status--complete");
   });
@@ -517,9 +534,48 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should assign relative depth 1 to behind card in all-completed view and preserve completed tab styling", () => {
+    const customEntries = [
+      {
+        id: "g1-konu-1",
+        grade: 1,
+        categoryId: "konu" as const,
+        month: 9,
+        week: 1,
+        year: 2026,
+        title: "K1",
+      },
+      {
+        id: "g1-konu-2",
+        grade: 1,
+        categoryId: "konu" as const,
+        month: 9,
+        week: 2,
+        year: 2026,
+        title: "K2",
+      },
+      {
+        id: "g1-konu-3",
+        grade: 1,
+        categoryId: "konu" as const,
+        month: 9,
+        week: 3,
+        year: 2026,
+        title: "K3",
+      },
+      {
+        id: "g1-konu-4",
+        grade: 1,
+        categoryId: "konu" as const,
+        month: 9,
+        week: 4,
+        year: 2026,
+        title: "K4",
+      },
+    ];
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["konu-eylul-1", "konu-eylul-2", "konu-eylul-3", "konu-eylul-4"]}
+        customEntries={customEntries}
+        initialCompletedEntryIds={["g1-konu-1", "g1-konu-2", "g1-konu-3", "g1-konu-4"]}
         isSignedIn={true}
         initialCategoryId="konu"
       />
@@ -902,8 +958,32 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should render Haftanın Konusu card with subtitle, concept pills, and Dersi Oku action", () => {
+    const customKonuEntry = {
+      id: "g1-konu-eylul-1",
+      grade: 1,
+      categoryId: "konu" as const,
+      month: 9,
+      week: 1,
+      year: 2026,
+      title: "Bediüzzaman kimdir?",
+      body: `# Bediüzzaman kimdir?
+
+Bu eserlerin arkasında nasıl bir hayat ve ilim yolculuğu var?
+
+### Birinci Bölüm
+
+Ders metni.
+
+# Bu Hafta Tanıştığımız Kelimeler
+
+**Tekâmül** — Adım adım olgunlaşma.
+**Meziyet** — Üstünlük.
+**Şevk** — İstek.
+`,
+    };
     const html = renderToString(
       <CurriculumArchive
+        customEntries={[customKonuEntry]}
         initialCompletedEntryIds={[]}
         isSignedIn={false}
         initialCategoryId="konu"
@@ -911,18 +991,16 @@ describe("CurriculumArchive Component", () => {
     );
 
     // Verify title
-    expect(html).toContain("Bu Eser Neden Hâlâ Okunuyor?");
+    expect(html).toContain("Bediüzzaman kimdir?");
 
     // Verify subtitle hook quote
-    expect(html).toContain(
-      "Bu kadar farklı insanın yıllardır okuduğu, çoğalttığı ve araştırdığı bir eserde ne var?"
-    );
+    expect(html).toContain("Bu eserlerin arkasında nasıl bir hayat ve ilim yolculuğu var?");
 
     // Verify concept preview pills
     expect(html).toContain("Bu Haftanın Kavramları:");
-    expect(html).toContain("Bismillâh");
-    expect(html).toContain("Lisân-ı hâl");
-    expect(html).toContain("Tefekkür");
+    expect(html).toContain("Tekâmül");
+    expect(html).toContain("Meziyet");
+    expect(html).toContain("Şevk");
 
     // Verify Dersi Oku button and reading time
     expect(html).toContain("Dersi Oku");
