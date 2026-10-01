@@ -569,7 +569,7 @@ Doğrulanmış daha kısa bir pasaj, doğrulanmamış çarpıcı bir pasajdan he
 Doğrulama yalnız Risale-i Nur ve Pırlanta alıntılarıyla sınırlı değildir. **Âyet, meal, hadis, tercüme, siyer, sahabe hayatı ve diğer tarihî örneklerdeki bütün kaynak bilgileri ve olaya ilişkin iddialar** kontrol edilmelidir. Bu şart hem ayrı içerik kartları hem Konu anlatısının içine alınan kısa örnekler için geçerlidir.
 
 - **Âyet ve meal:** Arapça metni, sûre ve âyet numarasını ve mealin aynı âyete ait olduğunu doğrula. Meal sahibinin açıklamasını veya ders yazarının yorumunu âyetin tercümesine karıştırma.
-- **Hadis:** Arapça lafzı, Türkçe tercümenin bu lafızla uyumunu ve hadis kaynağındaki yerini doğrula. Farklı rivayetlerin ifadelerini tek hadis gibi birleştirme. Sıhhat değerlendirmesini güvenilir hadis kaynaklarından kontrol et; doğrulanmamış bir sözü hadis, kaydı gereği ihtiyatla aktarılması gereken bir rivayeti kesin sahih bilgi gibi sunma.
+- **Hadis:** Ayrı hadis kartlarında ve diğer beş kategorideki hadis alıntıları ile hadis kaynaklı olay/rivayetlerde **yalnız sahih olduğu doğrulanmış rivayetleri kullan**. Arapça lafzı, Türkçe tercümenin bu lafızla uyumunu ve hadis kaynağındaki yerini doğrula. Farklı rivayetlerin ifadelerini tek hadis gibi birleştirme. Kullanılan rivayetin sahih değerlendirmesini güvenilir hadis kaynaklarından doğrula; yalnız bir kitapta geçmesi, meşhur olması veya konuya uygunluğu yeterli değildir. Yalnız hasen olarak değerlendirilen, zayıf, uydurma ya da sahihliği doğrulanamayan rivayetleri kullanma. Çözülmemiş sıhhat ihtilafı varsa başka bir sahih rivayet seç; ihtiyat ifadesi eklemek bu şartı kaldırmaz. Bu kural Risale/Pırlanta eserlerinde veya dinleme kaydında nakledilen hadisler için de geçerlidir.
 - **Siyer, sahabe ve tarihî olaylar:** Şahıs adlarını, olayda kimin ne yaptığını, yeri, mesleği, zamanı, olay sırasını ve aktarılan sözleri asıl kaynaktaki anlatımla karşılaştır. Kaynakta belirtilmeyen ayrıntıları hafızadan veya tahminle tamamlama.
 - **Risale-i Nur ve Pırlanta:** Pasajın kelimelerini, bağlamını ve künyesini özgün kaynaktan kontrol et. Bir eserde nakledilen hadis veya tarihî olay için yalnız o eserde bulunmasını yeterli sayma; naklin dayandığı kaynağı da doğrula.
 
@@ -632,7 +632,7 @@ Her içeriği **iki ayrı geçişte** denetle: önce plan ve kaynak doğruluğu,
 - Her doğrudan alıntı kullanılan baskının asıl sayfasıyla kelime kelime karşılaştırıldı mı? Alıntıya sadeleştirme, açıklama veya kaynaktaki dipnot metni karıştı mı?
 - Hocaefendi pasajının özgün yeri doğrulandı mı ve Risale pasajına yeni bir katkısı var mı?
 - Âyetin Arapça metni, sûre/âyet numarası ve Suat Yıldırım meali birbiriyle ve kaynakla uyuşuyor mu?
-- Hadisin Arapça lafzı, Türkçe tercümesi, kaynak yeri ve sıhhat bilgisi kontrol edildi mi?
+- Hadisin Arapça lafzı, Türkçe tercümesi ve kaynak yeri kontrol edildi mi; kullanılan rivayetin **sahih** olduğu ve bu değerlendirmenin dayanağı kaydedildi mi? Diğer kategorilerdeki hadis kaynaklı olay/rivayetler de aynı şartı karşılıyor mu?
 - Siyer, sahabe ve diğer tarihî örneklerde şahıs, yer, meslek, zaman, olay sırası ve sözler kaynakla aynı mı? Farklı rivayetler birleştirilmiş veya kaynaksız ayrıntı eklenmiş mi?
 - Dipnotlar, sayfalar ve alıntı işaretleri doğru mu?
 - Listedeki her kelime, yalnız Arapça metinde değil öğrencinin okuduğu Türkçe/Osmanlı Türkçesi metinde gerçekten bulunuyor mu? Metindeki işaretli biçim, listedeki madde ve açıklaması doğru eşleşiyor mu?
@@ -761,7 +761,9 @@ Yardımlaşma, paylaşma, emaneti koruma, sözünü tutma, özür dileme veya is
 
 Haftanın konusu ve kazanımıyla doğrudan veya güçlü biçimde ilişkili **bir hadis-i şerif** seç. Öğrenci seviyesine uygun, mümkün olduğunca kısa ve günlük hayata aktarılabilir bir mesaj taşımalıdır.
 
-Hadisin sahih veya güvenilir kabul edildiğini, Arapça lafzını ve kaynak yerini doğrula. Yalnız tematik uygunluk yeterli değildir. Hafızadan yaklaşık hadis üretme, farklı rivayetlerin lafızlarını birleştirme, hadis numarasını tahmin etme veya zayıf/tartışmalı bir rivayeti sahihmiş gibi sunma.
+**Yalnız sahih olduğu doğrulanmış hadis seç.** “Güvenilir kabul ediliyor” gibi genel bir ifade sahih değerlendirmesinin yerine geçmez; yalnız hasen, zayıf, uydurma veya sahihliği doğrulanamayan rivayetleri kullanma. Kullanılan rivayetin Arapça lafzını, kaynak yerini ve sahih değerlendirmesini doğrula; bu değerlendirmeyi yapan kaynak/muhaddisi ve ilgili yerini bölüm 18'deki özel kontrol kaydının kaynak doğrulama alanına işle. Çözülmemiş sıhhat ihtilafını sahih kabul ederek geçme.
+
+Yalnız tematik uygunluk yeterli değildir. Hafızadan yaklaşık hadis üretme, farklı rivayetlerin lafızlarını birleştirme veya hadis numarasını tahmin etme. Haftanın kazanımına uygun sahih bir hadis doğrulanamıyorsa başka bir sahih hadis araştır; bulunamazsa eksikliği kontrol kaydında belirt ve kartı yayıma hazır sayma. Aynı şart, diğer kategorilerdeki hadis alıntıları ve hadis kaynaklı olay/rivayetler için de geçerlidir (bölüm 16).
 
 Sunum sırası **Arapça → Türkçesi → Bana ne söylüyor? → gerekiyorsa Kelime Açıklaması → dipnot** olmalıdır. Özgün Arapça metni koyu yaz.
 
@@ -789,7 +791,7 @@ Doğrulayamadığın bibliyografik ayrıntıyı tahmin etme veya yer tutucu olar
 
 Yeni içerik hazırlamadan önce erişilebilen aynı sınıfın önceki içeriklerini, özellikle yakın haftaları kontrol et. Aynı siyer olayını, aynı sahabiyi ve olayı, aynı hadisi, aynı “Bana ne söylüyor?” mesajını ve aynı örnek davranışı gereksiz yere tekrarlama.
 
-Önceki içeriklere erişilemiyorsa tekrar kontrolü yapılmış gibi davranma; bu sınırlılığı hazırlık notunda belirt. Sırf tekrar olmasın diye haftanın konusundan uzaklaşma veya daha zayıf bir rivayeti seçme.
+Önceki içeriklere erişilemiyorsa tekrar kontrolü yapılmış gibi davranma; bu sınırlılığı hazırlık notunda belirt. Sırf tekrar olmasın diye haftanın konusundan uzaklaşma veya sahihlik şartını karşılamayan bir rivayet seçme.
 
 Karar önceliği: **kaynak doğruluğu → yıllık plana uygunluk → öğrencinin anlayabilmesi → davranışa dönüştürülebilirlik → tekrardan kaçınma → anlatım güzelliği**.
 
@@ -812,7 +814,7 @@ Birlikte sunulan metinde dipnot numaraları birbirini izlemeli; ayrı kartlarda 
 - Şahıslar, sözler, davranışlar ve ayrıntılar asıl kaynakla uyuşuyor mu; kaynaksız duygu, niyet, diyalog veya birleştirilmiş rivayet var mı?
 - Öğrenci metni kendi başına anlayabiliyor mu; gereksiz tarihî ayrıntı veya ağır terminoloji var mı?
 - Her “Bana ne söylüyor?” bölümü en fazla 1–2 kısa cümle mi; somut, metne özgü ve haftanın kazanımıyla ilişkili bir davranış gösteriyor mu?
-- Hadisin Arapça lafzı, tercümesi, kaynak yeri ve sıhhat bilgisi doğrulanmış mı; açıklama tercümeye karışmış mı?
+- Hadisin Arapça lafzı, tercümesi ve kaynak yeri doğrulanmış mı; kullanılan rivayetin **sahih** değerlendirmesi ve dayanağı kontrol kaydında var mı? Hadis kaynaklı siyer/sahabe rivayetleri de bu şartı karşılıyor mu; açıklama tercümeye karışmış mı?
 - Kelime açıklaması gerçekten gerekli mi; her madde Türkçe metinde bulunuyor ve işaretli kullanımdan doğru anlam açılıyor mu?
 - Dipnot ilgili bölümün altında mı; doğrulanmamış künye, tahminî numara veya gereksiz kaynakça var mı?
 - Hadis kaynaklı dipnotlar eser, bölüm ve doğrulanmış numarayla bağlantısız verilmiş mi; öğrenci metninde veya `resourceUrl` alanında hadis doğrulama sitesi bağlantısı kalmış mı?

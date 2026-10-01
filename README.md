@@ -4,11 +4,13 @@
 
 JetAcademie is a mobile-first Progressive Web Application (PWA) designed for students to sequentially follow and track their monthly and weekly development curriculum.
 
+Documentation is maintained in English. The website interface and student-facing curriculum retain their existing languages.
+
 ## Product Structure
 
 - `/`: Landing page leading directly to Curriculum, Targets, Curriculum Books, and Campaigns sections.
 - `/mufredat`: First-time visitors choose one of six grades from a dedicated selection screen. The choice is remembered in that browser, while `?sinif=1..6` links open a grade directly. The archive shows the current grade and a visible change control above its 9-category capsule navigation (sticky on mobile, fixed on the left on desktop with an integrated quick selector). Categories are listed sequentially with minimalist gradient dividers and comfortable vertical breathing room. Files employ a physical folder metaphor with staggered Manila tabs. Locked files cannot be accessed until preceding entries in that category are completed. Beyond the standard 48-week curriculum (12 months × 4 weeks), extra content continues directly as consecutive folder tabs in the same stack (`Extra 1 · Add-on`, `Extra 2`, etc.), unlocking progressively without separate isolated sections. When marking any file as read, the view smoothly scrolls to the top of that category to bring the next unlocked content into focus, and an immediate 7-second countdown undo action ('Undo') appears synchronously both on the active card and in the bottom snackbar toast, enabling rapid one-tap reversals without navigating away. Furthermore, the header bar includes a counter-enabled 'History' button that transitions to a focused, dedicated history space isolated from other categories. Inside, a quick jump selector with a 'Go' button, period shortcut chips ('Newest', 'Oldest', Month pills, 'Extra'), and spotlight card animations enable seamless travel across past completed readings, with support for reverting accidentally completed entries on the latest file.
-- `/hedefler`: M1–M6 yıllık Word planlarına dayanan sınıf hedefleri, yıl sonu kazanımları ve öğrenci başarı cümleleri. Her sınıf için çalışma yöntemi ile 9 ünite / 36 haftalık konu, ana soru ve kaynak akışı gösterilir. Eylül–Mayıs etiketleri mevcut dörder haftalık arayüz eşlemesidir; kaynak planlarda ay belirtilmez. Sınıf ve ay filtreleri, arama ve anne-baba hakkı vurguları korunur.
+- `/hedefler`: Grade goals, year-end outcomes, and student achievement statements based on the M1–M6 annual Markdown plans. Each grade includes its study method and a 9-unit, 36-week sequence of topics, main questions, and sources. September–May labels follow the existing four-weeks-per-month interface mapping; the source plans do not specify months. Grade and month filters, search, and highlights for respecting parents are preserved.
 - `/mufredat-kitaplari` (and `/kitaplar`): Curriculum Books and Reference Works library. Contains core textbooks, fiqh manuals (ilmihal), hadith and sirah compendiums, Risale-i Nur collections, and prayer books studied across the 6-year educational curriculum. Features level filtering (Middle School M1–M3, High School M4–M6, Grades 1–6), category tabs, live search, and a detailed book view modal.
 - `/kampanyalar`: Seasonal Campaigns and Mobilization Announcements section. Displays official campaign posters (Risale-i Nur Works Reading Campaign, etc.), reading tiers (Groups A, B, C), book lists, and incentive rewards in a visual gallery format; supports full-screen poster inspection and high-resolution downloads.
 - Account: Privacy-first anonymous authentication. No personal data (name, email) is collected; users only choose a password, and sequential usernames (`user1`, `user2`, etc.) are assigned automatically with gap-filling on account deletion. Password changes and account deletion require the current password.
@@ -16,19 +18,19 @@ JetAcademie is a mobile-first Progressive Web Application (PWA) designed for stu
 
 Curriculum entries are stored in PostgreSQL (`curriculum_entries` table, seeded across all 6 Belgium grades) with grade-scoped IDs (`g1-` through `g6-`); existing first-grade IDs and their progress are migrated automatically. The curriculum page loads only the selected grade; switching grades fetches that grade through `/api/curriculum?sinif=1..6` and caches it in the browser. The database seed and category freshness checks run once per server process, rather than on every page visit.
 
-- **Haftanın Konusu**: Pedagogically structured deep-dive and contemplation lessons for all 6 Belgium grades (Grade 1 – Grade 6). Folder cards feature an eye-catching subtitle/question quote, concept badges, estimated reading duration, and a 'Read Lesson' button. Clicking smoothly expands an in-card custom lesson reader (`KonuLessonReader`) offering a rich text narrative with subheadings, interactive in-text concept tooltips, 'Let's Reflect & Discuss' contemplation prompts, a weekly practical application guide, a gold-accented 'Key Takeaways for This Week' summary box, and a teal-themed concept glossary.
-- **Hocaefendi Sohbetleri**: Comprehensive 48-week video curriculum for each of the 6 Belgium grades (total 288 video records) featuring embedded YouTube talks of Fethullah Gülen Hocaefendi, pedagogical Turkish summaries, responsive 16:9 player, and a dedicated Belgium student vocabulary guide (`Vocabulary`) providing simple Turkish definitions along with Dutch (`NL:`) and French (`FR:`) translations.
-- **Efendimiz**: Comprehensive 55-week life and exemplary morals curriculum of the Prophet Muhammad (pbuh): Grades 1–3 follow the Middle School program, while Grades 4–6 follow the High School program (48 standard weeks + 7 progressive extra tabs) featuring concrete incidents and weekly practical action targets (_This week_ / _Put into practice_).
-- **Sahabe**: Comprehensive 55-week curriculum with vivid historical incidents, ethical takeaways, and practical weekly actions: Grades 1–3 follow the Middle School program (55 weeks from _Sevgili Peygamberimizin Arkadaşları_), while Grades 4–6 follow the High School program (55 weeks from _Hayâtü’s-Sahâbe_ and historical records) (48 standard weeks + 7 progressive extra tabs).
-- **Ayet**: Comprehensive 55-week Quranic verses curriculum with Arabic text, Turkish translation (Suat Yıldırım), and level-adapted explanations: Grades 1–3 follow the Middle School program, while Grades 4–6 follow the High School program (48 standard weeks + 7 progressive extra tabs).
-- **Hadis**: Comprehensive 55-week core hadith curriculum with full Arabic matn, simplified Turkish meaning, and verified authentic sources (Sahîh-i Buhârî & Sahîh-i Müslim): Grades 1–3 follow the Middle School program, while Grades 4–6 follow the High School program (48 standard weeks + 7 progressive extra tabs). Current curriculum writing rules require source footnotes with the work, section, and verified hadith number, without external verification links.
-- **İlmihal**: Comprehensive gender-specific curriculum with Male and Female tracks:
+- **Weekly Topic**: Pedagogically structured deep-dive and contemplation lessons for all 6 Belgium grades (Grade 1 – Grade 6). Folder cards feature an eye-catching subtitle/question quote, concept badges, estimated reading duration, and a 'Read Lesson' button. Clicking smoothly expands an in-card custom lesson reader (`KonuLessonReader`) offering a rich text narrative with subheadings, interactive in-text concept tooltips, 'Let's Reflect & Discuss' contemplation prompts, a weekly practical application guide, a gold-accented 'Key Takeaways for This Week' summary box, and a teal-themed concept glossary.
+- **Hocaefendi Talks**: Comprehensive 48-week video curriculum for each of the 6 Belgium grades (total 288 video records) featuring embedded YouTube talks of Fethullah Gülen Hocaefendi, pedagogical Turkish summaries, responsive 16:9 player, and a dedicated Belgium student vocabulary guide (`Vocabulary`) providing simple Turkish definitions along with Dutch (`NL:`) and French (`FR:`) translations.
+- **The Prophet’s Life**: Comprehensive 55-week life and exemplary morals curriculum of the Prophet Muhammad (pbuh): Grades 1–3 follow the Middle School program, while Grades 4–6 follow the High School program (48 standard weeks + 7 progressive extra tabs) featuring concrete incidents and weekly practical action targets (_This week_ / _Put into practice_).
+- **Companions**: Comprehensive 55-week curriculum with vivid historical incidents, ethical takeaways, and practical weekly actions: Grades 1–3 follow the Middle School program (55 weeks from _Sevgili Peygamberimizin Arkadaşları_), while Grades 4–6 follow the High School program (55 weeks from _Hayâtü’s-Sahâbe_ and historical records) (48 standard weeks + 7 progressive extra tabs).
+- **Quranic Verses**: Comprehensive 55-week Quranic verses curriculum with Arabic text, Turkish translation (Suat Yıldırım), and level-adapted explanations: Grades 1–3 follow the Middle School program, while Grades 4–6 follow the High School program (48 standard weeks + 7 progressive extra tabs).
+- **Hadith**: Comprehensive 55-week core hadith curriculum with full Arabic matn, simplified Turkish meaning, and verified authentic sources (Sahîh-i Buhârî & Sahîh-i Müslim): Grades 1–3 follow the Middle School program, while Grades 4–6 follow the High School program (48 standard weeks + 7 progressive extra tabs). Current curriculum writing rules require source footnotes with the work, section, and verified hadith number, without external verification links.
+- **Islamic Practice (İlmihal)**: Comprehensive gender-specific curriculum with Male and Female tracks:
   - Grades 1–3 (Middle School): 28 weeks for both Male and Female.
   - Grades 4–6 (High School): 104 weeks for Female (48 standard weeks + 56 progressive extra tabs) and 98 weeks for Male (48 standard weeks + 50 progressive extra tabs).
   - Users select their preferred track using the segmented toggle in the İlmihal category. Preferences are stored persistently in the `user_preferences` database table for authenticated users. Anonymous non-guest visitors are prompted with an auth modal to choose between 1-click Guest mode or Account login/registration, and guest preferences migrate automatically to their account upon sign-in.
   - **Weekly Split PDFs & PDF Reader**: Master textbooks are systematically split into individual weekly PDF files (`/public/curriculum/ilmihal/{level}/{gender}/hafta-XX.pdf`). An in-app minimalist PDF Reader modal (`PdfReaderModal`) allows page-by-page reading with canvas rendering, keyboard navigation, mobile touch swipe gestures, and zoom controls. The user's current reading page is remembered locally across sessions so resuming a lesson returns immediately to where they left off (`p. X`).
-- **Adab-ı Muaşeret**: Comprehensive 54-week etiquette and manners curriculum: Grades 1–3 follow the Middle School program, while Grades 4–6 follow the High School program (48 standard weeks + 6 progressive extra tabs).
-- **Esmâü'l-Hüsnâ**: Comprehensive 55-week divine names and attributes curriculum with pedagogical reflections and moral applications: Grades 1–3 follow the Middle School program with relatable life examples, while Grades 4–6 follow the High School program focusing on marifetullah (knowledge of God), contemplation, and character development (48 standard weeks + 7 progressive extra tabs).
+- **Etiquette and Manners**: Comprehensive 54-week etiquette and manners curriculum: Grades 1–3 follow the Middle School program, while Grades 4–6 follow the High School program (48 standard weeks + 6 progressive extra tabs).
+- **Divine Names (Esmâü’l-Hüsnâ)**: Comprehensive 55-week divine names and attributes curriculum with pedagogical reflections and moral applications: Grades 1–3 follow the Middle School program with relatable life examples, while Grades 4–6 follow the High School program focusing on marifetullah (knowledge of God), contemplation, and character development (48 standard weeks + 7 progressive extra tabs).
 
 ## Progress & Curriculum Model
 
@@ -55,56 +57,56 @@ bun install
 bun dev
 ```
 
-### Müfredat Kaynak Araştırma Motoru (Local AI & Developer Tool)
+### Curriculum Source Search Engine (Local AI & Developer Tool)
 
-Müfredat içerikleri üretilirken Risale-i Nur, Pırlanta ve `sources/` altındaki kaynaklarda ilgili pasajları bulmak için yerel SQLite FTS5 motoru kullanılır. Yalnız ilgili metni getirerek bağlam yükünü azaltır; arama sonucu ve `--read` çıktısı özgün kaynak doğrulamasının yerine geçmez. Alıntı, bağlam ve kullanılan baskının sayfa bilgisi asıl kaynakta karşılaştırılmalıdır:
+When preparing curriculum content, use the local SQLite FTS5 engine to find relevant passages in Risale-i Nur, Pırlanta, and the sources under `sources/`. Retrieving only relevant text reduces context usage; search results and `--read` output do not replace verification against the original source. Compare the quotation, context, and edition-specific page reference with the original:
 
 ```bash
-# Yeni kaynaklar sources/ klasörüne eklendiğinde indeksleme:
+# Index new sources added to sources/:
 bun run sources:index
 
-# Hızlı terminal arama komutu:
+# Search from the terminal:
 bun run sources:search -- -q "ihlas" -n 5
 bun run sources:search -- --read "Lemalar" --page 160
 ```
 
-### Müfredat Yazım ve Kalite Yönergesi
+### Curriculum Writing and Quality Guidance
 
-[MUFREDAT-INSTRUCTIONS.md](mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md), Konu dersinin ayrıntılı üretim akışını ve altı kategorinin ortak dil/kaynak denetimini tanımlar. Yıllık Word planları konu, ana soru, kazanım ve temel kaynak için; yazım yönergesi öğrenci metninin dili, anlatısı ve sunumu için yetkilidir. Eski planlardaki süre ve dosya düzeni önerileri metni uzatma veya ayrı kaynakça oluşturma zorunluluğu değildir.
+[MUFREDAT-INSTRUCTIONS.md](mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md) defines the detailed production workflow for Topic lessons and the shared language and source reviews for all six categories. The [annual Markdown plans](mufredat-docs/planlar/README.md) govern topics, main questions, outcomes, and primary sources; the writing guide governs student-facing language, narrative, and presentation. DOCX copies have been removed; current plans are edited in Markdown. Timing and file-layout suggestions retained from older plans do not require longer texts or a separate bibliography.
 
-Metinler hem bağımsız okumaya hem abi/abla eşliğinde konuşmaya uygundur. M1–M6 boyunca açıklamalar sade kalırken düşünme beklentisi derinleşir. Konu dersinde kısa giriş âyetten önce gelebilir; âyet anlatının erken kısmında bulunur ve Arapça–meal–dipnot sırası korunur. Her Konu dersinde en az bir anlamlı düşünme fırsatı bulunur. Aynı haftanın kategorileri ve yakın haftalar tekrar açısından birlikte denetlenir. Kaynak ve editoryal denetim, gerçek öğrenci denemesinden ayrı raporlanır; yönerge değişikliği mevcut derslerin düzeltildiği anlamına gelmez.
+Texts should support both independent reading and discussion with a mentor. Explanations remain simple across M1–M6 while the expected thinking becomes deeper. A Topic lesson may have a short introduction before the verse; the verse appears early in the narrative, preserving the Arabic text → translation → footnote order. Every Topic lesson provides at least one meaningful opportunity to think. Review categories within the same week and nearby weeks together for repetition. Report source and editorial reviews separately from actual student trials; changing guidance does not mean existing lessons have been revised.
 
-Her üretim yönergenin başındaki tek akışı izler: **plan ve öğrenci profili → kaynak doğrulama → örnek ders → yazım → bağımsız kaynak ve dil kontrolleri → düzeltme → yayın değerlendirmesi**. Bölüm 9 merak ve tonu, bölüm 10 sınıf/ay/dil ölçüsünü, bölüm 11 düşünce hattını, bölüm 18 içerik başına kontrol kaydı ve kabulü tanımlar. M1–M6 boyunca açıklamalar sade kalır; yaş, Türkçe okuma becerisinin veya uzun alıntı ihtiyacının kanıtı değildir. Her sınıf ve kategori ayrıca denetlenir; dinleme kaydının kendi dili de değerlendirilir.
+Every production task follows the single workflow at the start of the guide: **plan and learner profile → source verification → representative lesson → writing → independent source and language reviews → corrections → publication assessment**. Section 9 governs curiosity and tone; section 10 governs grade, month, and language expectations; section 11 governs the line of thought; section 18 governs per-entry evidence records and acceptance. Explanations remain simple across M1–M6; age does not establish Turkish reading ability or justify longer quotations. Review each grade and category separately, including the language of the listening recording itself.
 
-Kontrol kaydında metinden kanıtlar, yapılan düzeltmeler ve **uygun / düzeltme gerekli / değerlendirme eksik** sonucu bulunur. Bilinen sorun veya gerekli değerlendirme eksikliği çözülmeden içerik yayıma hazır sayılmaz. Öğrenci denemesi yapılmamış olması ayrıca raporlanır; tek başına editoryal kabulü engellemez. Kayıtlar öğrenciye gösterilmez ve git tarafından dışlanan hazırlık dizininde tutulur. Veritabanındaki M1 ilk hafta revizyonu başvuru örneğidir; kopyalanacak bir şablon veya öğrenciyle doğrulanmış standart değildir. CLI doğrulaması editoryal kabulü otomatik yapmaz.
+Each review record includes evidence from the text, corrections, and one of the guide’s acceptance outcomes: **suitable (`uygun`) / revision required (`düzeltme gerekli`) / review incomplete (`değerlendirme eksik`)**. Content is not ready for publication until known issues and missing required reviews are resolved. Report the absence of student trials separately; it does not by itself prevent editorial acceptance. Records are not shown to students and are kept in the Git-ignored preparation directory. The revised M1 week-one lesson in the database is a reference example, not a template to copy or a standard validated with students. CLI validation does not perform editorial acceptance automatically.
 
-### 36 Haftalık Müfredat Yönetim Aracı (`curriculum` CLI)
+### 36-Week Curriculum Management Tool (`curriculum` CLI)
 
-Haftalık müfredat içerikleri (6 kategori: `konu`, `ayet`, `hadis`, `efendimiz`, `sahabe-kissalari`, `hocaefendi-dinleme` × 6 sınıf = 36 kayıt) kod tabanında yüzlerce statik TypeScript veya Markdown dosyası oluşturmadan doğrudan veritabanında yönetilir. `adab-i-muaseret`, `ilmihal` ve `esma` kategorileri korunur.
+Weekly curriculum content is managed directly in the database rather than hundreds of static TypeScript or Markdown files: six categories (`konu`, `ayet`, `hadis`, `efendimiz`, `sahabe-kissalari`, `hocaefendi-dinleme`) × six grades = 36 entries per weekly package. The `adab-i-muaseret`, `ilmihal`, and `esma` categories are preserved.
 
-Veritabanındaki dersler öğrenci okuyucusunda Markdown düzeni korunarak gösterilir: âyet–meal sırası, koyu alıntılar, bölüm başlıkları ve dipnotlar metindeki yerinde kalır. Altı içerik kategorisinde `**Kelime** — açıklama` biçimindeki “Bu Hafta Tanıştığımız Kelimeler” veya “Kelime Açıklaması” listesiyle eşleşen `<u>Kelime</u>` işaretleri, tıklama/dokunma, klavye odağı ve fareyle üzerine gelme ile anlamı açılan düğmelere dönüşür. Kaynakta kullanılan çekimli biçimi listede aynı yazımla tanımlayın. Diğer ham HTML etiketleri çalıştırılmaz.
+The student reader preserves authored Markdown structure, including verse–translation order, bold quotations, headings, and footnotes. Across all six categories, `<u>Kelime</u>` markers matched to `**Kelime** — definition` entries in the existing Turkish glossary sections (`Bu Hafta Tanıştığımız Kelimeler` or `Kelime Açıklaması`) become buttons that reveal meanings on click/tap, keyboard focus, and hover. Define inflected words using the same spelling as in the source. Other raw HTML tags are not executed. These Turkish section names and examples describe the student-content format; keep their original spelling.
 
-Hadis kaynakları, hadis kartlarında ve diğer kategorilerin hadis kaynaklı rivayetlerinde güvenilir eserin adı, kitap/bölümü ve doğrulanmış hadis numarasıyla dipnotta verilir. Öğrenci metnine veya `resourceUrl` alanına Sunnah.com ya da başka bir hadis doğrulama sitesinin bağlantısı eklenmez. Araştırma bağlantıları yalnız hazırlık kaydında tutulabilir; kaynak doğrulama şartları için yazım yönergesinin 19.8. bölümünü izleyin.
+Use only hadith verified as sahih, including hadith quotations and hadith-based reports in all six curriculum categories. Reports graded only hasan, weak or fabricated reports, and reports whose sahih status cannot be verified are excluded. Record the grading source and its location in the private review record; unresolved grading disputes or missing verification prevent publication readiness. For hadith cards and hadith-based reports in other categories, cite the reliable work, book/section, and verified hadith number in a footnote. Do not add Sunnah.com or another hadith verification website to the student text or `resourceUrl`. Research links may be kept only in preparation records; follow section 19.8 of the writing guide for source verification requirements.
 
-Kelime listeleri Türkçe okuma becerisini destekler. Arapça metindeki kelimeler ve yalnız orada geçen Latin harfli okunuşlar listeye alınmaz; Türkçe metinde kullanılan “niyet” gibi Arapça kökenli Türkçe kelimeler alınabilir. Paket kaydı, editör kaydı ve haftayı yayımlama işlemi, işaretli Türkçe kelimelerle açıklamaların eşleşmesini denetler; dipnotlar eşleşmeye dahil edilmez. Bu teknik denetim, yaş ve Türkçe yeterliğine göre dil incelemesinin veya asıl kaynak kontrolünün yerini tutmaz. Yazım yönergelerinde 40 dakika metin uzunluğu hedefi değildir; ilk dört haftada ön bilgi varsayılmadan, özgün alıntılar korunarak sade açıklamalar kullanılır.
+Glossaries support Turkish reading skills. Do not include words found only in the Arabic text or their Latin transliterations; Turkish words of Arabic origin, such as `niyet`, may be included when they appear in the Turkish text. Package saves, editor saves, and weekly publication validate the pairing of marked Turkish words and definitions; footnotes are excluded from this matching. These technical checks do not replace a language review based on age and Turkish proficiency or verification against the original source. The writing guide does not treat 40 minutes as a text-length target; during the first four weeks, use simple explanations without assuming prior knowledge and preserve original quotations.
 
 ```bash
-# 36 haftanın durum raporunu listele (boş, taslak, yayında):
+# List status for all 36 weeks (empty, draft, published):
 bun run curriculum list
 
-# AI tarafından üretilen haftalık paketi doğrula ve taslak olarak veritabanına kaydet:
+# Validate an AI-generated weekly package and save it as a database draft:
 bun run curriculum save --week 3 --file hafta-3.json
 
-# Taslak yerine doğrudan yayına alarak kaydet:
+# Save and publish directly instead of creating a draft:
 bun run curriculum save --week 3 --file hafta-3.json --publish
 
-# Taslak durumundaki haftayı yayına al (öğrencilere aç):
+# Publish a draft week and make it available to students:
 bun run curriculum publish --week 3
 
-# İhtiyaç halinde haftalık kayıtları gözden geçirmek için Markdown dosyalarına aktar:
+# Export weekly records to Markdown for review when needed:
 bun run curriculum export --week 3
 
-# Bir haftanın 6 içerik kategorisini sil (adab, ilmihal ve esma asla silinmez):
+# Delete a week's six content categories (adab, ilmihal, and esma are never deleted):
 bun run curriculum delete --week 3
 ```
 
@@ -136,8 +138,8 @@ bun run build
   ./scripts/backup-db.sh
   ./scripts/restore-db.sh ./backups/jetacademie_backup_YYYYMMDD_HHMMSS.sql
   ```
-- **Müfredat Temizliği**:
-  Adab, İlmihal ve Esmâ dışındaki tüm kategorileri PostgreSQL'den güvenle temizlemek ve otomatik tohumlamayı engellemek için:
+- **Curriculum Cleanup**:
+  To remove all categories except Adab, İlmihal, and Esmâ from PostgreSQL and prevent automatic reseeding:
   ```bash
   bun run db:clean-curriculum
   ```
@@ -193,22 +195,22 @@ Your application will be live at `https://<server-name>.<tailnet-name>.ts.net`.
 - The web port binds to loopback by default. If a remote reverse proxy needs a different bind address, set `HOST_BIND_IP` explicitly and restrict access at the network boundary.
 - Authentication and account responses are marked `no-store`. Baseline browser security headers restrict framing, object embeds, base URL changes, and form submissions.
 
-## Özel Müfredat Düzenleme Ekranı
+## Private Curriculum Editor
 
-`/duzenle` adresi yalnız elle açılır; uygulama menüsünde bağlantısı yoktur. Bu ekranın hesabı, oturum çerezi ve tabloları Better Auth kullanıcılarından ayrıdır. Tek yetkisi müfredat içeriğini eklemek ve düzenlemektir.
+Open `/duzenle` manually; it is not linked from the application menu. Its account, session cookie, and tables are separate from Better Auth users. Its only permission is to add and edit curriculum content.
 
 ```bash
-# Tek hesabı oluşturur; rastgele şifreyi bir kez terminalde gösterir.
+# Create the single account; show the random password once in the terminal.
 bun run editor:setup
 
-# Gerektiğinde şifreyi ve oturum anahtarını yeniler; eski oturumları geçersiz kılar.
+# Rotate the password and session secret when needed, invalidating old sessions.
 bun run editor:setup -- --rotate
 ```
 
-Üretilen kullanıcı adı, scrypt şifre özeti ve ayrı oturum anahtarı Git tarafından dışlanan `.env` dosyasına yazılır. Şifrenin kendisi `.env` içinde tutulmaz. Geliştirme sunucusunu yeni ayarlardan sonra yeniden başlatın. `CURRICULUM_ADMIN_USERNAME`, `CURRICULUM_ADMIN_PASSWORD_HASH` ve `CURRICULUM_ADMIN_SECRET` değerlerini üretim ortamına güvenli biçimde aktarın; `CURRICULUM_ADMIN_ORIGIN` değerini dışarıdan kullanılan HTTPS origin olarak belirleyin (örneğin `https://jetacademie.be`, sonunda `/` olmadan). Docker Compose bu değişkenleri web servisine aktarır. Eksik veya geçersiz ayarlarda admin erişimi kapalıdır. Deploy betiği yerel `.env` dosyasını uzak sunucuya kopyalamaz; bu ayarlar uzak ortamda ayrıca tanımlanmalıdır.
+The generated username, scrypt password hash, and separate session secret are written to the Git-ignored `.env` file. The password itself is not stored there. Restart the development server after changing these settings. Transfer `CURRICULUM_ADMIN_USERNAME`, `CURRICULUM_ADMIN_PASSWORD_HASH`, and `CURRICULUM_ADMIN_SECRET` securely to production; set `CURRICULUM_ADMIN_ORIGIN` to the external HTTPS origin (for example, `https://jetacademie.be`, without a trailing slash). Docker Compose passes these variables to the web service. Missing or invalid configuration disables admin access. The deployment script does not copy the local `.env` file to the remote server; configure these settings separately on that server.
 
-Sınıf, ay, hafta ve kategori seçimleriyle boş/dolu içerikler görünür. İlmihal içerikleri erkek/bayan hattına göre ayrılır. Mevcut haftalar düzenlenebilir, boş haftalara metin eklenebilir; 48 normal hafta tamamlandıktan sonra ek haftalar açılır. UIW Markdown editörü biçimlendirme araçları sunar; önizleme ve öğrenci ekranı aynı `react-markdown`, `remark-gfm` ve `rehype-sanitize` bileşenini kullanır. Ham HTML, görseller ve çalıştırılabilir bağlantılar render edilmez. Dipnot numaraları ve geri dönüş bağlantıları aynı kart içindeki benzersiz hedeflere gider; dış kaynak bağlantıları yeni sekmede açılır. Arapça paragrafların yazı yönü otomatik belirlenir. Kaydetme içeriği doğrudan yayınlar; kaydedilmemiş değişikliklerde gezinme uyarısı vardır.
+Grade, month, week, and category selectors show empty and populated entries. İlmihal content is split into male and female tracks. Existing weeks can be edited and empty weeks can be populated; extra weeks become available after all 48 standard weeks are filled. The UIW Markdown editor provides formatting tools; its preview and the student screen share the same `react-markdown`, `remark-gfm`, and `rehype-sanitize` component. Raw HTML, images, and executable links are not rendered. Footnote numbers and return links point to unique targets within the same card; external source links open in a new tab. Arabic paragraphs determine their text direction automatically. Saving publishes the content immediately; navigation warns about unsaved changes.
 
-Düzenlemeler `curriculum_editor_content` tablosunda sürüm numarasıyla saklanır ve temel müfredata uygulanır. Bu yöntem seed işlemlerinin editör değişikliklerini ezmesini engeller, mevcut kayıt kimliklerini ve öğrenci ilerlemelerini korur. Aynı içeriğin eski sürümüyle kayıt yapılırsa 409 yanıtı döner; güncel içerik yüklenmelidir. Yedekler editör içerik tablosunu da kapsamalıdır.
+Edits are versioned in the `curriculum_editor_content` table and applied to the base curriculum. This prevents seed operations from overwriting editor changes while preserving existing entry IDs and student progress. Saving an outdated version returns a 409 response; load the current content before retrying. Backups must include the editor content table.
 
-Güvenlik: 8 saatlik rastgele oturum anahtarının yalnız SHA-256 özeti veritabanında tutulur. Üretimde çerez `__Host-` öneki, `HttpOnly`, `Secure` ve `SameSite=Strict` kullanır. Tüm yazma işlemleri ayrı admin oturumu, sabit origin ve oturuma bağlı CSRF anahtarıyla doğrulanır. Girişler, farklı kullanıcı adları dâhil, tüm uygulama örnekleri için toplam 10 deneme / 15 dakika ile sınırlandırılır. JSON boyutu akış okunurken denetlenir; sorgular parametrelidir. Admin sayfası/API önbelleğe alınmaz ve indekslemeye kapalıdır. URL gizliliği bir güvenlik sınırı değildir; yetki kontrolü her API isteğinde uygulanır.
+Security: only the SHA-256 hash of the random eight-hour session token is stored in the database. In production, the cookie uses the `__Host-` prefix, `HttpOnly`, `Secure`, and `SameSite=Strict`. Every write requires a separate admin session, a fixed origin, and a session-bound CSRF token. Login attempts, including attempts across different usernames, are limited to 10 per 15 minutes across all application instances. JSON size is checked while streaming the request; queries are parameterized. The admin page and API are not cached and are excluded from indexing. A hidden URL is not a security boundary; every API request enforces authorization.

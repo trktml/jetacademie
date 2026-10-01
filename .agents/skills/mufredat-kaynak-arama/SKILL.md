@@ -1,83 +1,84 @@
 ---
 name: mufredat-kaynak-arama
 description: >-
-  JetAcademie müfredatı, haftalık ders planları ve pedagojik içerikler hazırlanırken
-  Risale-i Nur ve Pırlanta külliyatından veya sources/ altındaki kaynaklardan araştırma
-  yapmak, ilgili kavram ve konular için nokta atışı pasaj bulmak, sayfa numarası ve İsnad
-  dipnotu tespit etmek için kullanılır. Yerel SQLite FTS5 indeksinde ilgili pasajları bulur;
-  alıntılar ve kaynak bilgileri asıl sayfa veya bölümden ayrıca doğrulanır.
+  Research Risale-i Nur, Pırlanta, and sources/ when preparing JetAcademie curricula,
+  weekly lesson plans, and educational content. Find relevant passages, page references,
+  and ISNAD footnote details through the local SQLite FTS5 index; verify quotations
+  and source information separately against the original page or section.
 ---
 
-# Müfredat Kaynak Araştırma Motoru (Context-Korumalı Arama)
+# Curriculum Source Research Engine (Context-Efficient Search)
 
-JetAcademie müfredat hazırlığında kullanılan yerel SQLite FTS5 araştırma aracıdır. Kitabın tamamı yerine ilgili pasajları getirerek bağlam yükünü azaltır; dönen metin yine model bağlamına girer. Arama hızı indeksin ve sorgunun durumuna bağlıdır.
+This local SQLite FTS5 research tool supports JetAcademie curriculum preparation. It reduces context usage by retrieving relevant passages rather than entire books; returned text still enters the model's context. Search speed depends on the index and query.
 
 > [!IMPORTANT]
-> **Context Şişirmeme Kuralı**:
-> Asla yüzlerce sayfalık PDF dosyalarını veya tüm kitapları doğrudan context'e yüklemeyin / okumayın!
-> Bunun yerine terminalden arama komutunu (`bun scripts/search-sources.ts`) çalıştırıp yalnızca aradığınız konuyla ilgili küçük pasajları veya ilgili tek bir sayfayı çekin.
+> **Avoid Overloading Context**:
+> Never load or read hundreds of PDF pages or entire books directly into context.
+> Instead, run the terminal search command (`bun scripts/search-sources.ts`) and retrieve only short passages relevant to the topic or a single relevant page.
 
 ---
 
-## ⚡ Temel Kullanım Komutları
+## ⚡ Basic Commands
 
-### 1. Konu veya Kavram Arama (Top 5 Pasaj)
+### 1. Search by Topic or Concept (Top 5 Passages)
 
-Konuyla ilgili en uygun pasajları ve sayfa numaralarını listelemek için:
+List the most relevant passages and page references for a topic:
 
 ```bash
 bun scripts/search-sources.ts -q "ihlas hakikati" -n 5
 ```
 
-### 2. Kategoriye Göre Filtreleme
+### 2. Filter by Category
 
-Yalnızca Risale-i Nur veya Pırlanta kaynaklarında arama yapmak için:
+Search only Risale-i Nur or Pırlanta sources:
 
 ```bash
-# Sadece Risalelerde ara
+# Search only Risale-i Nur sources
 bun scripts/search-sources.ts -q "namaz" -c risale -n 5
 
-# Sadece Pırlantalarda ara
+# Search only Pırlanta sources
 bun scripts/search-sources.ts -q "marifetullah" -c pirlanta -n 5
 ```
 
-### 3. Belirli Bir Kitapta Arama
+### 3. Search a Specific Book
 
-Doğrudan belirli bir eserde (örn: _Sözler_, _Lemalar_, _İrşad Ekseni_) arama:
+Search a particular work, such as _Sözler_, _Lemalar_, or _İrşad Ekseni_:
 
 ```bash
 bun scripts/search-sources.ts -q "bismillah" -b "Sözler" -n 3
 ```
 
-### 4. İndeksteki İlgili Sayfayı Okuma
+### 4. Read a Relevant Indexed Page
 
-Arama sonucundaki pasajın indekslenmiş sayfa metnini görmek için:
+Inspect the indexed page text containing a search result:
 
 ```bash
 bun scripts/search-sources.ts --read "Lemalar" --page 160
 ```
 
-Bu işlem ilgili sayfanın indeks metnini getirir; metin miktarı sayfaya bağlıdır. Asıl kaynakla karşılaştırmanın yerine geçmez. Bağlam sayfa sınırını aşıyorsa komşu sayfa veya ilgili bölüm de okunmalıdır.
+This retrieves the page's indexed text; the amount of text depends on the page. It does not replace comparison with the original source. If the context extends beyond the page, also read the neighboring page or relevant section.
 
-### 5. Yeni Kaynakları İndeksleme
+### 5. Index New Sources
 
-Kullanıcı `sources/` klasörüne yeni PDF, metin veya klasör eklediğinde:
+When the user adds new PDFs, text files, or folders under `sources/`:
 
 ```bash
 bun run sources:index
 ```
 
+Search examples and book titles retain their original Turkish wording to match the source material. The English instructions do not change the language of student-facing curriculum content.
+
 ---
 
-## 📋 Müfredat Hazırlama Akışı (Adım Adım)
+## 📋 Curriculum Preparation Workflow
 
-Önce [MUFREDAT-INSTRUCTIONS.md](../../../mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md) ve ilgili sınıfın yıllık planını oku. Konu, ana soru, kazanım ve temel kaynak yıllık plandan; öğrenci metninin dili, anlatısı ve sunumu yazım yönergesinden alınır. Bu beceri kaynak bulmayı destekler, kategoriye özel çıktı düzeninin yerine geçmez.
+First read [MUFREDAT-INSTRUCTIONS.md](../../../mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md) and the relevant grade's annual Markdown plan (`M1_Yillik_Plan.md`–`M6_Yillik_Plan.md`). The [plans README](../../../mufredat-docs/planlar/README.md) explains document precedence; DOCX copies were removed after the verified Markdown migration. Use the annual plan for the topic, main question, outcomes, and primary source, and the writing guide for student-facing language, narrative, and presentation. This skill supports source discovery; it does not replace category-specific output rules.
 
-1. **Arama:** Planda belirtilen konu ve temel kaynakla arama yap; aşağıdaki sorgu yalnız komut örneğidir, herhangi bir sınıfın haftalık konusu değildir:
+1. **Search:** Search for the topic and primary source specified in the plan. The query below is only a command example, not the weekly topic for any grade:
    ```bash
    bun scripts/search-sources.ts -q "ihlas" -n 3
    ```
-2. **Pasaj seçimi:** Hedef yaşın yanında öğrencinin Türkçe okuma düzeyini, ön bilgisini ve programdaki ayını dikkate al. Ana soruya katkı sunan, gerekli anlam desteğiyle anlaşılabilecek bir pasaj seç.
-3. **Zorunlu özgün kaynak doğrulaması:** `--read` ile indeks metnini incele; ardından sonucun kaynak dosyasındaki asıl sayfa veya bölümünü aç. Alıntıyı kelime kelime karşılaştır; bağlamı ve künyeyi doğrula. PDF'den çıkarılan metindeki eksik karakterleri, satır birleşmelerini veya kaynağın dipnotlarının alıntıya karışmasını kontrol et. İndeksin PDF sayfa sırasını basılı sayfa numarası sanma; dipnotta kullanılan baskının doğrulanmış sayfasını veya bölümünü belirt. Nakledilen hadis ve tarihî olaylarda dayanak kaynağı da doğrula. Kaynağa erişilemiyorsa arama sonucunu doğrulanmış alıntı gibi kullanma; ana içeriği etkileyen eksikliği ayrı bildir ve dersi yayıma hazır sayma.
-4. **Alıntı ve sunum:** Özgün pasajı değiştirmeden, koyu yazılmış alıntı olarak ve kendi dipnotuyla sun. Yaşa uygun açıklamayı alıntının dışında ver. Kapanış, kelime açıklaması ve dipnotların yerini ilgili kategorinin yönergesinden al; Konu'nun 3–6 maddelik kapanışını kısa kartlara taşıma.
-5. **Doğrulama kaydı:** Kullanılan kaynak dosyasını/baskısını, ilgili sayfa veya bölümü ve karşılaştırılan pasajı öğrenciye gösterilmeyen hazırlık notunda belirt. Arama sonucu, özet veya önceki ders metni tek başına doğrulama değildir.
+2. **Select a passage:** Consider the student's Turkish reading level, prior knowledge, and month in the program alongside the target age. Choose a passage that contributes to the main question and can be understood with the necessary explanation.
+3. **Verify against the original source:** Inspect the indexed text with `--read`, then open the original page or section in the source file. Compare the quotation word for word; verify its context and bibliographic details. Check extracted PDF text for missing characters, merged lines, or source footnotes accidentally included in the quotation. Do not confuse PDF page order in the index with printed page numbers; cite the verified page or section in the edition used. For quoted hadith and historical events, also verify the underlying source. Across all six curriculum categories, use only hadith and hadith-based reports verified as sahih; reports graded only hasan, weak or fabricated reports, and reports with unverified sahih status are excluded. Record the grading source and its location in the private review record. If a grading dispute remains unresolved, choose another verified sahih report; thematic relevance or inclusion in a Risale/Pırlanta work does not replace this verification. If the original source is inaccessible, do not treat a search result as a verified quotation. Report any gap affecting the main content separately and do not consider the lesson ready for publication.
+4. **Quote and present:** Preserve the original passage, present it in bold, and attach its own footnote. Place age-appropriate explanations outside the quotation. Follow the relevant category's rules for the closing message, vocabulary definitions, and footnote placement; do not apply the Topic lesson's 3–6 closing points to short cards.
+5. **Record verification:** In preparation notes that are not shown to students, identify the source file or edition, the relevant page or section, and the passage compared. A search result, summary, or previous lesson text is not sufficient verification on its own.
