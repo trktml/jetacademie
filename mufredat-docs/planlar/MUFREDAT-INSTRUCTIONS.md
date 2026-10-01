@@ -781,6 +781,8 @@ Her olayın veya hadisin dipnot işaretini ilgili metne bağla; kaynak bilgisini
 
 İSNAD Dipnotlu Sistem esaslarını koru. Doğrulanabildiği ölçüde müellif, eser, kitap/bölüm, kullanılan baskıya göre cilt/sayfa ve hadis/rivayet numarası ver. Hadislerde bölüm ve hadis numarasını, siyer ve tabakât eserlerinde cilt/sayfayı mümkün olduğunca belirt.
 
+**Hadis kaynaklarını bağlantısız ver:** Öğrenciye gösterilen dipnotta güvenilir hadis eserinin müellifi, adı, kitap/bölümü ve doğrulanmış hadis numarası yeterlidir; bilinen baskı/cilt/sayfa bilgisi de eklenebilir. Örneğin: Buhârî, _el-Câmiʿu’s-sahîh_, “Fezâilü’l-Kur’ân”, 5027. Hadis kaynağı için Sunnah.com veya başka bir siteye bağlantı, çıplak URL ya da ayrı kaynak düğmesi ekleme; kaydın `resourceUrl` alanını bu amaçla doldurma. Bu kural, Konu, siyer ve sahabe anlatılarındaki hadis kaynaklı rivayetlere de uygulanır. Araştırmada kullanılan doğrulama URL’leri öğrenciye gösterilmeyen hazırlık kaydında tutulabilir; özgün kaynak ve sıhhat kontrolü yine zorunludur.
+
 Doğrulayamadığın bibliyografik ayrıntıyı tahmin etme veya yer tutucu olarak bırakma. Kaynağın kendisi ve anlatılan olay/hadis doğrulanmışsa yalnız doğruladığın künye bilgilerini yaz; eksik sayfa veya numara, doğrulanmamış içeriği kullanma izni değildir.
 
 ## 19.9. Önceki haftalara göre tekrar kontrolü
@@ -813,6 +815,7 @@ Birlikte sunulan metinde dipnot numaraları birbirini izlemeli; ayrı kartlarda 
 - Hadisin Arapça lafzı, tercümesi, kaynak yeri ve sıhhat bilgisi doğrulanmış mı; açıklama tercümeye karışmış mı?
 - Kelime açıklaması gerçekten gerekli mi; her madde Türkçe metinde bulunuyor ve işaretli kullanımdan doğru anlam açılıyor mu?
 - Dipnot ilgili bölümün altında mı; doğrulanmamış künye, tahminî numara veya gereksiz kaynakça var mı?
+- Hadis kaynaklı dipnotlar eser, bölüm ve doğrulanmış numarayla bağlantısız verilmiş mi; öğrenci metninde veya `resourceUrl` alanında hadis doğrulama sitesi bağlantısı kalmış mı?
 - Önceki haftalarla olay, sahabi, hadis ve mesaj tekrarları kontrol edilmiş mi?
 - Saygılı hitap ve kategoriye özel çıktı sırası korunmuş mu?
 
