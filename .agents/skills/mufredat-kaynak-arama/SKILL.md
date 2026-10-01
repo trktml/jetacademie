@@ -4,13 +4,13 @@ description: >-
   JetAcademie müfredatı, haftalık ders planları ve pedagojik içerikler hazırlanırken
   Risale-i Nur ve Pırlanta külliyatından veya sources/ altındaki kaynaklardan araştırma
   yapmak, ilgili kavram ve konular için nokta atışı pasaj bulmak, sayfa numarası ve İsnad
-  dipnotu tespit etmek için kullanılır. AI context'ini şişirmeden 0 token ile yerel
-  SQLite FTS5 motorunu çalıştırır.
+  dipnotu tespit etmek için kullanılır. Yerel SQLite FTS5 indeksinde ilgili pasajları bulur;
+  alıntılar ve kaynak bilgileri asıl sayfa veya bölümden ayrıca doğrulanır.
 ---
 
 # Müfredat Kaynak Araştırma Motoru (Context-Korumalı Arama)
 
-JetAcademie projesinde müfredat hazırlayan yapay zeka ajanları (Antigravity, subagentlar) için geliştirilmiş yerel, token tüketmeyen, ultra hızlı (2–5ms) FTS5 araştırma aracıdır.
+JetAcademie müfredat hazırlığında kullanılan yerel SQLite FTS5 araştırma aracıdır. Kitabın tamamı yerine ilgili pasajları getirerek bağlam yükünü azaltır; dönen metin yine model bağlamına girer. Arama hızı indeksin ve sorgunun durumuna bağlıdır.
 
 > [!IMPORTANT]
 > **Context Şişirmeme Kuralı**:
@@ -49,15 +49,15 @@ Doğrudan belirli bir eserde (örn: _Sözler_, _Lemalar_, _İrşad Ekseni_) aram
 bun scripts/search-sources.ts -q "bismillah" -b "Sözler" -n 3
 ```
 
-### 4. Nokta Atışı Tek Bir Sayfayı Okuma (~300 Kelime)
+### 4. İndeksteki İlgili Sayfayı Okuma
 
-Arama sonucunda bulunan bir pasajın tüm bağlamını görmek için sadece o sayfayı okuyun:
+Arama sonucundaki pasajın indekslenmiş sayfa metnini görmek için:
 
 ```bash
 bun scripts/search-sources.ts --read "Lemalar" --page 160
 ```
 
-_Bu işlem sadece o sayfayı getirir (~400 token). Koca bir kitabı yüklemez._
+Bu işlem ilgili sayfanın indeks metnini getirir; metin miktarı sayfaya bağlıdır. Asıl kaynakla karşılaştırmanın yerine geçmez. Bağlam sayfa sınırını aşıyorsa komşu sayfa veya ilgili bölüm de okunmalıdır.
 
 ### 5. Yeni Kaynakları İndeksleme
 
@@ -71,13 +71,13 @@ bun run sources:index
 
 ## 📋 Müfredat Hazırlama Akışı (Adım Adım)
 
-1. **Arama**: İlgili haftanın konusu için (örn. M1 1. Hafta "Bismillah", M2 "Gıybet", M3 "İhlas") arama yapın:
+Önce [MUFREDAT-INSTRUCTIONS.md](../../../mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md) ve ilgili sınıfın yıllık planını oku. Konu, ana soru, kazanım ve temel kaynak yıllık plandan; öğrenci metninin dili, anlatısı ve sunumu yazım yönergesinden alınır. Bu beceri kaynak bulmayı destekler, kategoriye özel çıktı düzeninin yerine geçmez.
+
+1. **Arama:** Planda belirtilen konu ve temel kaynakla arama yap; aşağıdaki sorgu yalnız komut örneğidir, herhangi bir sınıfın haftalık konusu değildir:
    ```bash
    bun scripts/search-sources.ts -q "ihlas" -n 3
    ```
-2. **Pasaj Seçimi**: Gelen sonuçlar arasından hedef yaş grubunun (M1–M3 Ortaokul, M4–M6 Lise) seviyesine uygun, çarpıcı bir pasaj ve sayfa numarası seçin.
-3. **Gerekirse Sayfayı Oku**: Pasajın öncesini ve sonrasını kontrol etmek gerekirse `--read` komutunu kullanın.
-4. **İsnad Dipnotu ve Alıntı**:
-   - `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` kurallarına göre alıntıyı orijinal metin olarak bir quote bloğu içine yerleştirin.
-   - Kitap adı ve sayfa numarasını İsnad dipnot formatında ekleyin.
-   - Çocukların anlayacağı dilde açıklamasını ve "Bana ne söylüyor?" maddelerini yazın.
+2. **Pasaj seçimi:** Hedef yaşın yanında öğrencinin Türkçe okuma düzeyini, ön bilgisini ve programdaki ayını dikkate al. Ana soruya katkı sunan, gerekli anlam desteğiyle anlaşılabilecek bir pasaj seç.
+3. **Zorunlu özgün kaynak doğrulaması:** `--read` ile indeks metnini incele; ardından sonucun kaynak dosyasındaki asıl sayfa veya bölümünü aç. Alıntıyı kelime kelime karşılaştır; bağlamı ve künyeyi doğrula. PDF'den çıkarılan metindeki eksik karakterleri, satır birleşmelerini veya kaynağın dipnotlarının alıntıya karışmasını kontrol et. İndeksin PDF sayfa sırasını basılı sayfa numarası sanma; dipnotta kullanılan baskının doğrulanmış sayfasını veya bölümünü belirt. Nakledilen hadis ve tarihî olaylarda dayanak kaynağı da doğrula. Kaynağa erişilemiyorsa arama sonucunu doğrulanmış alıntı gibi kullanma; ana içeriği etkileyen eksikliği ayrı bildir ve dersi yayıma hazır sayma.
+4. **Alıntı ve sunum:** Özgün pasajı değiştirmeden, koyu yazılmış alıntı olarak ve kendi dipnotuyla sun. Yaşa uygun açıklamayı alıntının dışında ver. Kapanış, kelime açıklaması ve dipnotların yerini ilgili kategorinin yönergesinden al; Konu'nun 3–6 maddelik kapanışını kısa kartlara taşıma.
+5. **Doğrulama kaydı:** Kullanılan kaynak dosyasını/baskısını, ilgili sayfa veya bölümü ve karşılaştırılan pasajı öğrenciye gösterilmeyen hazırlık notunda belirt. Arama sonucu, özet veya önceki ders metni tek başına doğrulama değildir.

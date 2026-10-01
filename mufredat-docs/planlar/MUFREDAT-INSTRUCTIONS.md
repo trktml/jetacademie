@@ -2,7 +2,7 @@
 
 Bu belge **Konu** dersinin hazırlığını ve öğrenciye gösterilen metnini yönetir; ayrıca **19. bölümde siyer, sahabe ve hadis içeriklerine özel üretim kurallarını** belirler. Âyet, hadis, siyer, sahabe ve dinleme kartları ayrı içeriklerdir; Konu dersinin cümlelerini ve kapanış maddelerini sınıflar arasında şablon olarak çoğaltma.
 
-**Ortak editoryal kurallar:** Bu belgedeki kaynak doğrulama, tarihî olaylara sadakat, özgün alıntıları koruma ve koyu yazma, yaşa ve aya göre sade dil kullanma ve kelimeleri öğrencinin okuduğu Türkçe metinden seçme kuralları ayrı âyet, hadis, siyer ve sahabe içerikleri için de geçerlidir. Âyet sunulurken Arapça metin–meal–dipnot işareti sırası korunur. Bu ortak kurallar, ayrı içerikleri Konu dersinin bölüm düzenine dönüştürmez.
+**Ortak editoryal kurallar:** Bu belgedeki kaynak doğrulama, tarihî olaylara sadakat, özgün alıntıları koruma ve koyu yazma, yaşa ve aya göre sade dil kullanma ve kelimeleri öğrencinin okuduğu Türkçe metinden seçme kuralları Konu, âyet, hadis, siyer, sahabe ve dinleme olmak üzere altı üretim kategorisine uygulanır. Dinleme içeriklerinin öğrenciye gösterilen açıklama ve soruları da ortak dil kurallarına tabidir; kategorilerin kendi sunum düzeni korunur. Âyet sunulurken Arapça metin–meal–dipnot işareti sırası korunur. Bu ortak kurallar, ayrı içerikleri Konu dersinin bölüm düzenine dönüştürmez.
 
 **Kategoriye özel düzen:** Konu dersindeki 3–6 maddelik kapanış, “Bu Hafta Tanıştığımız Kelimeler” ve metin sonundaki “Dipnotlar” düzeni Konu içindir. Ayrı siyer, sahabe ve hadis içeriklerinde 19. bölümdeki kısa davranış mesajı, gerektiğinde kelime açıklaması ve bölüm altı dipnot düzenini uygula. Kelimelerin tıklanabilir anlamları, özgün metinlerin koyu yazılması ve kaynak doğrulama şartları bu içeriklerde de korunur.
 
@@ -24,6 +24,14 @@ Bunları değiştirme ve yıllık planda bulunmayan yeni bir ana konu üretme.
 
 Görevin, yıllık planda belirlenen konuyu öğrencinin yaş seviyesine uygun şekilde **zengin, bütünlüklü, dikkat çekici ve kaynaklara dayalı bir ders içeriğine dönüştürmektir.**
 
+### Belge yetkisi ve kullanım amacı
+
+- **Yıllık plan**, haftanın konusu, ana sorusu, kazanımı/hedefi ve temel kaynağı için yetkilidir. İlgili Word planını esas al; uygulamadaki plan verisini onunla karşılaştır.
+- **Bu yazım yönergesi**, öğrenciye gösterilecek metnin dili, anlatısı, kaynak sunumu ve denetimi için yetkilidir. Yıllık planlardaki eski dosya düzeni, ayrı kaynak başlıkları, tam kaynakça ve 15–20 dakikalık anlatım önerileri bu düzenin yerine geçmez. Süre önerisi öğrenci metnini uzatma zorunluluğu oluşturmaz.
+- Konu ve kaynak hakkındaki çözülmemiş çelişkilerde aşağıdaki doğrulama kuralını uygula; biçim farklılığını gidermek için yıllık konuyu veya kazanımı değiştirme.
+
+İçerik öğrenci tarafından **tek başına okunup anlaşılabilmeli**, aynı metin abi/abla eşliğinde birlikte okumaya ve konuşmaya da uygun olmalıdır. Gerekli anlam desteğini yetişkinin açıklamasına bırakma; soruları hem kendi başına düşünmeye hem sözlü müzakereye uygun kur.
+
 **Öğretmen notu kullanılmayacaktır.**  
 İçeriği oluştururken öğretmen notu adı altında ayrıca veri isteme veya çıktı üretme.
 
@@ -34,6 +42,10 @@ Her sınıf ve hafta için ayrı çalış. Önce yıllık planın **başlığın
 1. Öğrencinin konuyla ilgili karşılaşabileceği gerçek durum veya güçlük nedir?
 2. Temel Risale pasajı bu güçlüğü anlamak için hangi yeni fikri getirir?
 3. Hocaefendi pasajı gerekliyse ilk pasajın açıklamadığı hangi yönü açar?
+
+Ayrıca öğrencinin bu fikri başka bir durumda kullanacağı bir soru veya küçük uygulama belirle. 11. bölümde tanımlanan üç anlatı hareketini kontrol et.
+
+Üretim akışı: **planı oku → öğrenci profilini belirle → kaynakları doğrula → anlatıyı kur → öğrenci açısından denetle → düzelt**.
 
 Kaynakları doğrulayıp bu düşünce hattını kurmadan ana metne başlama. Bu hazırlık notlarını dersin içine koyma. Altı sınıfı aynı kalıbın kelimelerini değiştirerek topluca yazma; her dersin açılışını, örneğini ve gelişimini kendi ana sorusundan çıkar.
 
@@ -56,7 +68,7 @@ Bunun yerine ders baştan sona **tek bir düşünce hattı** üzerinde ilerlemel
 
 Risale-i Nur pasajı, Hocaefendi’nin eserlerinden seçilen pasaj, günlük hayat örnekleri ve açıklamalar aynı konunun doğal parçaları olmalıdır.
 
-Konuyla doğrudan ilgili âyet, dersin başında konunun yönünü açar; ardından Risale-i Nur ve Hocaefendi pasajları aynı anlatının içinde yer alır. Âyeti iki pasajdan sonra eklenen bir destek metni gibi sona bırakma. Kaynakları art arda sıralayıp “Bu iki metni birleştirdiğimizde şu anlam çıkar.”, “Risale ve Hocaefendi bize birlikte şunu söylüyor.” gibi ayrı bir sentez paragrafıyla bağlamaya çalışma. Düşünce bağı, öğrencinin takip ettiği konu anlatısının içinde kurulmalıdır.
+Konuyla doğrudan ilgili âyet, anlatının erken kısmında konunun yönünü açar; öncesinde kısa bir durum, ikilem veya soru bulunabilir. Âyet ve meal öğrencinin karşılaştığı meseleyle anlamlı biçimde ilişkilendirilir; ardından Risale-i Nur ve Hocaefendi pasajları aynı anlatının içinde yer alır. Âyeti iki pasajdan sonra eklenen bir destek metni gibi sona bırakma. Kaynakları art arda sıralayıp “Bu iki metni birleştirdiğimizde şu anlam çıkar.”, “Risale ve Hocaefendi bize birlikte şunu söylüyor.” gibi ayrı bir sentez paragrafıyla bağlamaya çalışma. Düşünce bağı, öğrencinin takip ettiği konu anlatısının içinde kurulmalıdır.
 
 Bütüncül anlatım, farklı kaynakların cümlelerini tek bir alıntıymış gibi birleştirmek değildir. Her özgün pasajın sınırı ve dipnotu ayrı ve açık kalmalı; aralarındaki açıklamalar ders yazarının anlatımı olarak anlaşılmalıdır.
 
@@ -290,6 +302,29 @@ Metin yapay zekâ metni gibi değil, gençlerin dünyasını bilen iyi bir eğit
 
 Soyut öğüt yerine belirli bir durum, seçim veya gözlem göster. Öğrencinin hiç yaşamadığı bir duygu veya tepkiyi onun adına varsayma. Her paragraf ana soruya yeni bir bilgi, gerekçe, örnek veya karşı soru katmalı; yalnız önceki paragrafı başka kelimelerle tekrarlamamalıdır. Metni sesli okuduğunda duyuru, reklam, sunum veya denetim raporu gibi duran cümleleri yeniden yaz.
 
+### Merakı ders boyunca sürdür
+
+Açılışta sorulan soruya anlatı boyunca geri dön. Kaynak, ilk durumu anlamak için yeni bir fikir getirmeli; kapanışta öğrenci bu fikirle neyi daha iyi değerlendirebildiğini görebilmelidir. Cevabı saklayarak yapay gerilim oluşturma. Her paragrafta yeni bir şaşırtıcı bilgi arama; merak, anlamın adım adım açılmasıyla da sürer.
+
+Örnekleri öğrencinin çevresinden seç: arkadaşlık, okul, aile, grup mesajları, oyun, spor, tabiat veya sorumluluklar konuya uygunsa kullanılabilir. Her öğrencinin aynı uygulamayı kullandığını, aynı aile hayatına veya ilgi alanına sahip olduğunu varsayma. Her haftayı sosyal medya örneğine dönüştürme.
+
+**Günlük örnek ile tarihî anlatıyı ayır:** Günlük bir durum kurmaca olabilir; “Bir arkadaş grubunda şöyle bir durum düşün” gibi ifadelerle varsayımsal olduğu anlaşılmalıdır. Gerçek bir öğrencinin yaşantısı veya tarihî olay gibi sunma. Tarihî kişilere kaynaksız diyalog, duygu, niyet veya sahne ekleme. “Şaşırtıcı bilgi” olarak sunulan gerçeklik iddiaları da doğrulanmalıdır.
+
+### Sade ve saygılı üslup
+
+Yazarın açıklamalarında açık özne, somut fiil ve gündelik Türkçe kullan. Gerekli kavramı açıkla, gereksiz zor kelimeyi çıkar. Yaş büyüdükçe düşünce derinleşsin; açıklamalar gereksiz yere ağırlaşmasın. Bu kurallar özgün alıntıyı değiştirme izni vermez.
+
+Bebeksi sesleniş, zoraki gençlik argosu, reklam dili ve sürekli emir veren nasihat kullanma. Öğrencinin duygu veya inancını onun adına kesinleştirme. Anlamamak veya soru sormak kusur gibi gösterilmemeli; samimi bir soru küçümsenmeden, gerekçesi açıklanarak ele alınmalıdır. Öğrenciyi kişisel yaşantısını, aile durumunu veya inancını grup önünde açıklamaya zorlayan sorular kurma; varsayımsal bir durum üzerinden düşünmeye alan bırak.
+
+Aşağıdaki örnekler yalnız **yazarın anlatımına ilişkin editoryal karşılaştırmalardır**; kaynak alıntısı, öğrenci dersi veya tekrar kullanılacak hazır cümle değildir:
+
+| Zayıf anlatım                                                                   | Daha açık anlatım                                                                                   | Ne değişti?                                                      |
+| :------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------- |
+| Bireyin sosyal kabul ihtiyacı, ahlâkî tercihlerinin istikametini etkileyebilir. | Arkadaşların seni gruba alsın diye doğru bulmadığın bir şeye katılır mısın?                         | Soyut isimler belirli bir seçime dönüştü.                        |
+| Sabırlı olmalı ve öfkeni kontrol etmelisin.                                     | Bir arkadaşın sözünü kestiğinde hemen karşılık vermekle biraz beklemek arasında ne fark olabilir?   | Emir yerine davranış ve gerekçe üzerinde düşünme alanı açıldı.   |
+| Hepimiz dışlandığımızda kendimizi değersiz hissederiz.                          | Bir gruba alınmamak, bir insanın değersiz olduğunu gösterir mi?                                     | Öğrencinin duygusu varsayılmadan mesele tartışmaya açıldı.       |
+| Harika bir yolculuğa hazır mısın?                                               | Grup mesajında bir arkadaşınla alay ediliyor. Bir şey yazmasan da bu konuşmaya katılmış olur musun? | Reklam dili yerine üzerinde düşünülecek somut bir durum kuruldu. |
+
 ---
 
 # 10. YAŞ SEVİYESİ YALNIZ KELİME SEÇİMİ DEĞİLDİR
@@ -306,31 +341,27 @@ Aynı zamanda şunlar da gelişmelidir:
 - günlük hayattan daha karmaşık durumlar,
 - metin çözümleme becerisi.
 
-### 1. yıl
+### Yaşa göre düşünme ve katılım
 
-Daha somut ve merak merkezli.
+| Sınıf / yaklaşık yaş | Anlatımın odağı                           | Öğrenciden beklenen düşünme                                  |
+| :------------------- | :---------------------------------------- | :----------------------------------------------------------- |
+| M1 / 12–13           | Somut olay, tek ana fikir                 | Ne olduğunu kendi cümlesiyle anlatma, hayatından örnek bulma |
+| M2 / 13–14           | Sebep ve sonuç                            | Bir davranışın sonucunu açıklama                             |
+| M3 / 14–15           | Arkadaşlık, aidiyet, seçim                | İki seçeneği gerekçeleriyle karşılaştırma                    |
+| M4 / 15–16           | İddia, kaynak, yorum                      | Metnin söylediğiyle kendi yorumunu ayırma                    |
+| M5 / 16–17           | Birden fazla gerekçe                      | Alternatif bir açıklamayı değerlendirme                      |
+| M6 / 17–18           | Sorumluluk, belirsizlik, bağımsız düşünme | Kaynağa dayanarak kendi görüşünü ve sınırlarını ifade etme   |
 
-### 2. yıl
+Bu tablo her derse yeni bir tema ekleme talimatı veya yaşa göre katı bir beceri varsayımı değildir. Yıllık planın konusuna, öğrencinin Türkçesine ve ön bilgisine göre kullan. **Metin öğrenciyle birlikte büyümelidir; sade açıklama bütün sınıflarda korunur.**
 
-Sebep-sonuç bağlantıları güçlenir.
+### M1–M6 arasında düşünme farkı örneği
 
-### 3. yıl
+Aşağıdaki kısa sorular yalnız editoryal ölçü örneğidir; herhangi bir haftanın planı veya kaynakla doğrulanmış dersi değildir. Ortak durum, grup mesajında bir arkadaşla alay edilmesidir:
 
-Kimlik, irade ve değerler daha görünür olur.
+- **M1:** “Bu konuşmada hangi davranış arkadaşını incitebilir? Onun yerine ne yapılabilir?” Somut davranışı fark etmesi ve bir örnek vermesi beklenir.
+- **M6:** “Konuşmaya katılmamakla itiraz etmek aynı sorumluluğu karşılar mı? Okuduğun kaynak hangi seçeneğe dayanak olabilir; kaynağın açıkça söylemediği hangi sonuca sen ulaşıyorsun?” Gerekçeleri karşılaştırması, kaynak ile yorumunu ayırması ve çıkarımının sınırını ifade etmesi beklenir.
 
-### 4. yıl
-
-Bağlam, kaynak ve yorum farkı işlenebilir.
-
-### 5. yıl
-
-Muhakeme ve kavramsal bağlantılar artar.
-
-### 6. yıl
-
-Genç yetişkin seviyesinde fikrî ve analitik derinlik oluşturulur.
-
-**Metin öğrenciyle birlikte büyümelidir.**
+M6 sorusunun dili de gündelik kalır; fark, daha ağır kelimeler değil beklenen düşünmedir. M2–M5 sorularını tablodaki düşünme beklentileriyle ayrıca denetle; M1 sorusuna zor kelimeler ekleyerek üst sınıf sorusu üretme.
 
 ### Başlangıç profili ve somut dil ölçüsü
 
@@ -377,9 +408,19 @@ Ders sonunda birbirinden bağımsız beş farklı bilgi kalmamalı.
 
 Öğrencinin zihninde **tek ve güçlü bir düşünce örgüsü** oluşmalıdır.
 
-Yazmadan önce anlatının üç hareketini çalışma notunda belirle: öğrencinin karşılaştığı mesele, kaynakların açtığı fikir ve bu fikrin hayatta sınanacağı durum. Bunları metinde zorunlu üç başlık hâline getirme. Ana anlatı, alıntıların çevresine yazılmış kısa açıklamalardan ibaret kalmamalı; pasajların bağlamını ve aralarındaki düşünce bağını öğrencinin takip edebileceği kadar geliştirmelidir.
+Yazmadan önce anlatının üç hareketini çalışma notunda belirle: öğrencinin karşılaştığı mesele, kaynakların açtığı yeni fikir ve öğrencinin bu fikri başka bir durumda kullanacağı soru veya küçük uygulama. Bunları metinde zorunlu üç başlık hâline getirme. Ana anlatı, alıntıların çevresine yazılmış kısa açıklamalardan ibaret kalmamalı; pasajların bağlamını ve aralarındaki düşünce bağını öğrencinin takip edebileceği kadar geliştirmelidir.
 
 **Süre veya kelime kotası doldurmak için yazma.** Ders süresi, öğrencinin okuyacağı metnin uzunluğunu belirlemez; konuşma, düşünme ve uygulama da öğrenmenin parçasıdır. Ana soru anlaşılmışsa yeni paragraf, ikinci örnek, ihtiyat açıklaması veya alıntı ekleyerek metni uzatma. Her paragraf için “Bu çıkarılırsa öğrenci hangi gerekli fikri kaybeder?” diye sor; yeni bir katkı yoksa çıkar. Kısa fakat yeterli bir metin, tekrarla uzatılmış metinden daha uygundur.
+
+### Her Konu dersinde anlamlı düşünme fırsatı
+
+Her Konu dersinde **en az bir anlamlı düşünme fırsatı** bulunmalıdır. Öğrenciden kendi örneğini bulmasını, gerekçe söylemesini, seçenekleri karşılaştırmasını veya fikri yeni bir duruma uygulamasını iste. Cevabı hemen önceki cümleden kopyalamak veya yalnız “evet/hayır” demek yeterli değildir; gerektiğinde “Neden?” veya “Bir örnek verir misin?” ile düşünmeyi aç.
+
+Bu fırsat anlatının içinde bulunabilir; ayrı “Düşünelim ve Konuşalım” başlığı zorunlu değildir. Soru, öğrencinin yetişkin yardımı olmadan ne istendiğini anlayabileceği açıklıkta olmalı; birlikte okumada da konuşmayı açmalıdır. Soruyu sorduktan hemen sonra tek hazır cevabı vererek öğrencinin düşünme alanını kapatma. Yorum alanı bırakmak, kaynak anlamını belirsizleştirmek veya doğrulanmış bilgiyi oylamaya açmak değildir.
+
+Konuya uygunsa küçük, gerçekçi bir uygulamada öğrenme hedefiyle ilişkili seçim hakkı ver; örneğin aynı fikri bir okul veya grup mesajı durumu üzerinden değerlendirebilmesi. Sırf seçenek olsun diye görevi çoğaltma. Uygulama veya kişisel paylaşım zorunluluğu kurma; öğrenci varsayımsal bir durum üzerinden de düşüncesini gösterebilir.
+
+Kelime desteği yalnız sözlük açmaktan ibaret kalmasın. Konuya uygunsa gerekli kelimeyi yeni bir örnekte kullanma veya anlamını kendi sözüyle açıklama fırsatı ver; her kelime için ayrı alıştırma ekleme.
 
 ---
 
@@ -470,6 +511,8 @@ Bunlar metnin basit özeti olmamalıdır.
 
 **“Bu öğrendiklerimin benim düşünceme ve hayatıma bakan tarafı nedir?”**
 
+Maddeleri konuya özgü kur; sürekli emir veya öğrencinin adına verilmiş kişisel sözler gibi yazma. Kapanış ana fikri görünür kılsın, fakat 11. bölümdeki düşünme fırsatının yerine geçmesin ve öğrencinin verebileceği bütün cevapları önceden tüketmesin.
+
 ---
 
 # 15. KAYNAKLANDIRMA: İSNAD DİPNOTLU SİSTEM
@@ -509,7 +552,7 @@ Doğrudan alıntının özgün kaynağından emin değilsen alıntı yapma. Eksi
 
 ### Âyetin yeri, meal ve dipnot düzeni
 
-Konu başlığının hemen altında, girişten ve Risale/Hocaefendi pasajlarından önce **konuyla doğrudan ilgili âyet** yer almalıdır. Sunum sırası şöyledir:
+Konu dersinde **konuyla doğrudan ilgili âyet**, anlatının erken kısmında ve Risale/Hocaefendi pasajlarından önce yer almalıdır. Başlıktan sonra kısa bir giriş âyetten önce gelebilir; âyetle de başlanabilir. Sunum sırası şöyledir:
 
 1. Âyetin doğrulanmış **özgün Arapça metni, koyu puntoyla**.
 2. Hemen altında Suat Yıldırım mealinden doğrulanmış Türkçe meal.
@@ -517,7 +560,7 @@ Konu başlığının hemen altında, girişten ve Risale/Hocaefendi pasajlarınd
 
 Öğrenciye gösterilen mealin üstüne **“Suat Yıldırım Meali” başlığı veya etiketi koyma.** Suat Yıldırım adı ve kullanılan mealin künyesi, sûre adı ve âyet numarasıyla birlikte metnin sonundaki **Dipnotlar** bölümünde verilir. Böylece mealin kaynağı görünür kalır, başlıkta tekrarlanmaz.
 
-Âyet ve mealden sonra kısa ana soru veya girişle konuyu aç; ardından Risale ve Hocaefendi pasajlarını anlatının ihtiyaç duyduğu yerde işle. Âyeti anlatıyla ilgisiz bir süs gibi bırakma ve sonraki açıklamaları âyetin anlamını aşan bir iddia olarak ona yükleme.
+Kısa ana soru veya giriş âyetten önce geldiyse mealden sonra onu tekrarlama; âyetin açtığı fikirle anlatıyı ilerlet. Âyetle başladıysan mealden sonra meseleyi kısa bir girişle aç. Ardından Risale ve Hocaefendi pasajlarını anlatının ihtiyaç duyduğu yerde işle. Âyeti anlatıyla ilgisiz bir süs gibi bırakma ve sonraki açıklamaları âyetin anlamını aşan bir iddia olarak ona yükleme.
 
 ---
 
@@ -560,11 +603,11 @@ Arama sonucu, özet, yapay zekâ cevabı veya önceki ders metni tek başına do
 
 **Konu başlığı**
 
-**Konuyla doğrudan ilgili âyetin koyu yazılmış Arapça metni**
+**Merak uyandıran kısa alt soru veya giriş; âyetten önce gelebilir**
+
+**Anlatının erken kısmında konuyla doğrudan ilgili âyetin koyu yazılmış Arapça metni**
 
 **Hemen altında başlıksız Suat Yıldırım meali ve mealin bitiminde dipnot işareti**
-
-**Merak uyandıran kısa alt soru veya giriş**
 
 **Konunun kendi içinden doğan doğal ara başlıklarla ana anlatı**
 
@@ -576,7 +619,7 @@ Arama sonucu, özet, yapay zekâ cevabı veya önceki ders metni tek başına do
 
 **Öğrencinin dünyasından doğal örnekler**
 
-**Gerekirse Düşünelim ve Konuşalım bölümü**
+**En az bir anlamlı düşünme fırsatı; anlatının içinde veya Düşünelim ve Konuşalım bölümünde**
 
 **Bana Ne Söylüyor?**
 
@@ -584,7 +627,7 @@ Arama sonucu, özet, yapay zekâ cevabı veya önceki ders metni tek başına do
 
 **Dipnotlar**
 
-**Başlık–âyetin Arapça metni–meal ve dipnot işareti–giriş sırası sabittir.** Ana anlatıdaki unsurların yukarıda ayrı satırlarda gösterilmesi, bunları ayrı kaynak bölümleri olarak yazma talimatı değildir. Ana anlatı esnektir: Her derste aynı sayıda ara başlık, alıntı, soru veya uygulama bulunması gerekmez. Bölümleri ana düşüncenin ihtiyaç duyduğu ölçüde kullan; “Bana Ne Söylüyor?”, “Bu Hafta Tanıştığımız Kelimeler” ve “Dipnotlar” kapanış sırasını koru. Uzunluğu süreyle değil, öğrencinin soruyu, metnin gerekçesini ve hayattaki karşılığını anlayabilmesiyle belirle; eksik açıklamayı tamamla, gereksiz uzatmayı çıkar.
+**Başlık ilk sıradadır. Açılış, başlık → kısa giriş → âyet ve meal veya başlık → âyet ve meal → kısa giriş biçiminde kurulabilir. Âyetin Arapça metni → hemen altında meal → mealin bitiminde dipnot işareti sırası korunur.** Ana anlatıdaki unsurların yukarıda ayrı satırlarda gösterilmesi, bunları ayrı kaynak bölümleri olarak yazma talimatı değildir. Ana anlatı esnektir: Her derste aynı sayıda ara başlık, alıntı, soru veya uygulama bulunması gerekmez. Bölümleri ana düşüncenin ihtiyaç duyduğu ölçüde kullan; “Bana Ne Söylüyor?”, “Bu Hafta Tanıştığımız Kelimeler” ve “Dipnotlar” kapanış sırasını koru. Uzunluğu süreyle değil, öğrencinin soruyu, metnin gerekçesini ve hayattaki karşılığını anlayabilmesiyle belirle; eksik açıklamayı tamamla, gereksiz uzatmayı çıkar.
 
 Çıktıda:
 
@@ -617,7 +660,7 @@ Bu denetimde bir eksik, hata veya çözülmemiş çelişki varsa metni tamamlanm
 
 - Ana sorunun cevabı ders boyunca derinleşiyor mu, yoksa ders okuma yöntemi hakkında genel öğütlere mi dönüşüyor?
 - Her alıntı metinde gerekli mi? İki kaynak birbirinin düşüncesini ilerletiyor mu?
-- Âyet başta mı; altında başlıksız meal ve dipnot işareti var mı? Suat Yıldırım adı ve meal künyesi Dipnotlar bölümünde mi?
+- Âyet anlatının erken kısmında ve Risale/Hocaefendi pasajlarından önce mi; varsa önceki kısa girişle anlamlı bağ kurulmuş mu? Altında başlıksız meal ve dipnot işareti var mı? Suat Yıldırım adı ve meal künyesi Dipnotlar bölümünde mi?
 - Risale ve Hocaefendi pasajları konunun doğal akışında mı, yoksa ayrı bloklar ve sonradan eklenmiş yapay bir “iki metni birleştirelim” açıklaması gibi mi duruyor?
 - Özgün metinler koyu puntoyla belirgin mi? Bilinmeyen kelimelerin alt çizgisi hafif mi; tıklama/dokunma ve klavye kullanımında doğru anlam açılıyor mu?
 - Açılışta gerçek bir merak veya güçlük var mı? Örnekler bu sınıfın hayatına ve düşünme düzeyine uyuyor mu?
@@ -630,8 +673,39 @@ Bu denetimde bir eksik, hata veya çözülmemiş çelişki varsa metni tamamlanm
 - Kelime listesi yalnız Türkçe okuma becerisini destekliyor mu; Arapça metinden veya onun Latin harfli aktarımından seçilmiş madde var mı?
 - Öğrenci olayda ne olduğunu, alıntının ana fikrini ve yapabileceği davranışı kendi cümlesiyle anlatabilecek kadar desteklenmiş mi?
 - Bir süreyi doldurmak için tekrar, gereksiz örnek veya açıklama eklenmiş mi; her paragraf gerekli bir katkı sağlıyor mu?
+- En az bir anlamlı düşünme fırsatı var mı; öğrenciden kopyalama yerine örnek, gerekçe veya yeni duruma uygulama isteniyor mu?
+- Kapanış sorunun bütün cevaplarını önceden tüketiyor mu? Sorular bağımsız düşünmeye ve abi/abla eşliğinde konuşmaya uygun mu?
+- Bebeksi sesleniş, zoraki argo, sürekli emir, varsayılan duygu/inanç veya kişisel paylaşım baskısı var mı?
 
 Bu geçişte sorun bulursan yalnız kelimeleri cilalama; gerekirse örneği, pasajı ve anlatının sırasını yeniden kur. Yayıma geçmeden önce en az bir dersi diğer sınıflara ölçü olacak şekilde editoryal olarak oku; sonra her sınıfı ayrıca değerlendir. Bu yönergenin değiştirilmesi, daha önce üretilmiş dersleri kendiliğinden düzeltmez.
+
+### Haftalık bütünlük ve yakın haftalara göre tekrar
+
+Aynı sınıf ve haftanın **Konu, âyet, hadis, siyer, sahabe ve dinleme** içeriklerini birlikte değerlendir. Ortak kazanımla bağlarını, kullanılan örnekleri, soruları ve davranış mesajlarını hazırlık notunda karşılaştır. Kategoriler aynı kazanımı desteklerken farklı bir örnek, kaynak katkısı veya bakış sunmalıdır. Aynı paragrafı, günlük örneği ya da kapanışı kategori değiştirerek çoğaltma; kısa kartları Konu bölüm düzenine dönüştürme.
+
+Aynı sınıfın erişilebilen önceki içeriklerini, özellikle yakın haftalardaki açılış, olay, örnek, soru ve kapanışları kontrol et. **Pekiştiren tekrar**, öğrenilen bir kavramı yeni bağlamda kullanmak, hatırlamak veya düşünceyi derinleştirmektir; aynı metni yeniden sunmak değildir. Bilinçli tekrarın katkısını hazırlık notunda belirt. Çeşitlilik için kaynak doğruluğundan veya plana uygunluktan vazgeçme. Diğer kategorilere veya önceki haftalara erişilemiyorsa kontrol yapılmış gibi bildirme; denetimin kapsamını kaydet.
+
+### Kabul ölçütleri ve öğrenci geri bildirimi
+
+Konu metninin editoryal kabulünde şu beş soruyu ayrı ayrı değerlendir; sorun bulunan kısmı ve yapılacak düzeltmeyi öğrenciye gösterilmeyen çalışma notunda belirt:
+
+1. Öğrenci ana fikri kendi cümlesiyle anlatabilecek anlam desteğine sahip mi?
+2. Örneğin kaynakla ilişkisini açıklayabilecek mi?
+3. Düşünceyi yeni bir durumda kullanma fırsatı var mı?
+4. Anlamayı engelleyen kelime ve ifadeler yeterince desteklenmiş mi?
+5. Açılışta kurulan soru ders boyunca ilerleyip karşılık buluyor mu?
+
+Bu soruları yalnız “evet” diye işaretlemekle yetinme; metindeki dayanağı göster. Eksik açıklama, kopuk kaynak ilişkisi, anlamsız soru veya karşılıksız açılış varsa ilgili kısmı düzeltip yeniden değerlendir. Kısa kartlarda bu ölçütlerin ilgili olanlarını uygula; her karta ek soru veya uygulama bölümü dayatma.
+
+Yönergeyle ilk üretim veya kapsamlı revizyonda M1 ve M6 örneklerini karşılaştır: her ikisinde dil açık mı, M6'da beklenen düşünme gerçekten derinleşmiş mi? Ardından M2–M5'i kendi planı ve öğrenci profiliyle ayrıca değerlendir. 9 ve 10. bölümlerdeki kısa karşılaştırmalar editoryal ölçüdür; gerçek ders veya öğrenci denemesi değildir.
+
+Öğrenci denemesi yapılabiliyorsa hedef gruptaki öğrenciye önce metni kendi başına okut; ana fikri kendi sözüyle anlatmasını, örnek–kaynak bağını açıklamasını ve yeni duruma ilişkin soruya cevap vermesini iste. Ardından “Nerede takıldın?”, “Hangi kısmı merak ettin?” ve “Bu ders sana ne düşündürdü?” sorularını sor. Birlikte kullanımı değerlendirirken ayrıca hangi sorunun konuşmayı açtığını ve nerede yetişkin açıklaması gerektiğini kaydet. Yardımla verilen cevapları bağımsız anlama kanıtı sayma; tek öğrencinin sonucunu bütün yaş grubuna genelleme.
+
+Geri bildirim notunda sınıfı, öğrencinin Türkçe/ön bilgi profilini kişisel kimlik bilgisi toplamadan, denenen kısmı, bağımsız veya destekli kullanım biçimini, takılma noktalarını ve düzeltmeleri belirt. Sorun çıkan açıklama veya soruyu yeniden yaz; mümkünse düzeltilen kısmı tekrar dene. İlgi çekiciliği yalnız editörün beğenisi veya okunmuş işaretinin verilmesiyle doğrulanmış sayma.
+
+**Değerlendirme durumunu doğru bildir:** Öğrenci denemesi yoksa yalnız “kaynak ve editoryal denetim yapıldı; öğrenci denemesi yapılmadı” denebilir. Deneme varsa katılımcı kapsamını ve gözlemleri belirt; öğrencilerin tümünün anlayacağı veya ilgisini çekeceği garantisi verme. Öğrenci denemesinin bulunmaması tek başına editoryal kabulü engellemez; bilinen anlama sorunları ise düzeltilmeden metni yayıma hazır sayma.
+
+Pedagojik dayanak: Öğrenme hedefiyle ilişkili seçimler için [CAST — Optimize choice and autonomy](https://udlguidelines.cast.org/engagement/interests-identities/choice-autonomy/); okuma, konuşma ve kelime desteğini birlikte ele almak için [EEF — Improving Literacy in Secondary Schools](https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/literacy-ks3-ks4). Bu rehberler editoryal tasarıma destek olur; belirli bir JetAcademie dersinin öğrenciyle doğrulandığı anlamına gelmez.
 
 ---
 
