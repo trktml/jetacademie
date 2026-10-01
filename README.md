@@ -57,7 +57,7 @@ bun dev
 
 ### Müfredat Kaynak Araştırma Motoru (Local AI & Developer Tool)
 
-Müfredat içerikleri üretilirken Risale-i Nur, Pırlanta ve `sources/` altındaki kaynaklarda AI context'ini şişirmeden 0 token ile araştırma yapmak için yerel SQLite FTS5 motoru kullanılır:
+Müfredat içerikleri üretilirken Risale-i Nur, Pırlanta ve `sources/` altındaki kaynaklarda ilgili pasajları bulmak için yerel SQLite FTS5 motoru kullanılır. Yalnız ilgili metni getirerek bağlam yükünü azaltır; arama sonucu ve `--read` çıktısı özgün kaynak doğrulamasının yerine geçmez. Alıntı, bağlam ve kullanılan baskının sayfa bilgisi asıl kaynakta karşılaştırılmalıdır:
 
 ```bash
 # Yeni kaynaklar sources/ klasörüne eklendiğinde indeksleme:
@@ -67,6 +67,16 @@ bun run sources:index
 bun run sources:search -- -q "ihlas" -n 5
 bun run sources:search -- --read "Lemalar" --page 160
 ```
+
+### Müfredat Yazım ve Kalite Yönergesi
+
+[MUFREDAT-INSTRUCTIONS.md](mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md), Konu dersinin ayrıntılı üretim akışını ve altı kategorinin ortak dil/kaynak denetimini tanımlar. Yıllık Word planları konu, ana soru, kazanım ve temel kaynak için; yazım yönergesi öğrenci metninin dili, anlatısı ve sunumu için yetkilidir. Eski planlardaki süre ve dosya düzeni önerileri metni uzatma veya ayrı kaynakça oluşturma zorunluluğu değildir.
+
+Metinler hem bağımsız okumaya hem abi/abla eşliğinde konuşmaya uygundur. M1–M6 boyunca açıklamalar sade kalırken düşünme beklentisi derinleşir. Konu dersinde kısa giriş âyetten önce gelebilir; âyet anlatının erken kısmında bulunur ve Arapça–meal–dipnot sırası korunur. Her Konu dersinde en az bir anlamlı düşünme fırsatı bulunur. Aynı haftanın kategorileri ve yakın haftalar tekrar açısından birlikte denetlenir. Kaynak ve editoryal denetim, gerçek öğrenci denemesinden ayrı raporlanır; yönerge değişikliği mevcut derslerin düzeltildiği anlamına gelmez.
+
+Her üretim yönergenin başındaki tek akışı izler: **plan ve öğrenci profili → kaynak doğrulama → örnek ders → yazım → bağımsız kaynak ve dil kontrolleri → düzeltme → yayın değerlendirmesi**. Bölüm 9 merak ve tonu, bölüm 10 sınıf/ay/dil ölçüsünü, bölüm 11 düşünce hattını, bölüm 18 içerik başına kontrol kaydı ve kabulü tanımlar. M1–M6 boyunca açıklamalar sade kalır; yaş, Türkçe okuma becerisinin veya uzun alıntı ihtiyacının kanıtı değildir. Her sınıf ve kategori ayrıca denetlenir; dinleme kaydının kendi dili de değerlendirilir.
+
+Kontrol kaydında metinden kanıtlar, yapılan düzeltmeler ve **uygun / düzeltme gerekli / değerlendirme eksik** sonucu bulunur. Bilinen sorun veya gerekli değerlendirme eksikliği çözülmeden içerik yayıma hazır sayılmaz. Öğrenci denemesi yapılmamış olması ayrıca raporlanır; tek başına editoryal kabulü engellemez. Kayıtlar öğrenciye gösterilmez ve git tarafından dışlanan hazırlık dizininde tutulur. Veritabanındaki M1 ilk hafta revizyonu başvuru örneğidir; kopyalanacak bir şablon veya öğrenciyle doğrulanmış standart değildir. CLI doğrulaması editoryal kabulü otomatik yapmaz.
 
 ### 36 Haftalık Müfredat Yönetim Aracı (`curriculum` CLI)
 
