@@ -1,10 +1,10 @@
 # KONU İÇERİĞİ ÜRETİM YÖNERGESİ
 
-Bu belge **Konu** dersinin hazırlığını ve öğrenciye gösterilen metnini yönetir; ayrıca **19. bölümde siyer, sahabe ve hadis içeriklerine özel üretim kurallarını** belirler. Âyet, hadis, siyer, sahabe ve dinleme kartları ayrı içeriklerdir; Konu dersinin cümlelerini ve kapanış maddelerini sınıflar arasında şablon olarak çoğaltma.
+Bu belge **Konu** dersinin hazırlığını ve öğrenciye gösterilen metnini yönetir. **Siyer, Sahabe, Âyet ve Hadis ayrı üretim veya uygulama kategorileri değildir.** Bu kaynak ve örnekler yalnız gerektiğinde, haftanın konusunu ve kazanımını gerçekten destekliyorsa **Konu'nun tek anlatı akışı içinde** kullanılır. Her derste dört unsurun tamamını bulundurma, ayrı kartlara bölme veya sabit kaynak başlıklarıyla sıralama zorunluluğu yoktur. Konu dersinin cümlelerini ve kapanış maddelerini sınıflar arasında şablon olarak çoğaltma.
 
-**Ortak editoryal kurallar:** Bu belgedeki kaynak doğrulama, tarihî olaylara sadakat, özgün alıntıları koruma ve koyu yazma, yaşa ve aya göre sade dil kullanma ve kelimeleri öğrencinin okuduğu Türkçe metinden seçme kuralları Konu, âyet, hadis, siyer, sahabe ve dinleme olmak üzere altı üretim kategorisine uygulanır. Dinleme içeriklerinin öğrenciye gösterilen açıklama ve soruları da ortak dil kurallarına tabidir; kategorilerin kendi sunum düzeni korunur. Âyet sunulurken Arapça metin–meal–dipnot işareti sırası korunur. Bu ortak kurallar, ayrı içerikleri Konu dersinin bölüm düzenine dönüştürmez.
+**Ortak editoryal kurallar:** Kaynak doğrulama, tarihî olaylara sadakat, özgün alıntıları koruma ve koyu yazma, yaşa ve aya göre sade dil kullanma ve kelimeleri öğrencinin okuduğu Türkçe metinden seçme kuralları Konu ve ayrı kalan **Hocaefendi Sohbetleri / dinleme** içeriklerine uygulanır. Dinleme açıklama ve soruları da ortak dil kurallarına tabidir. Âyet kullanılırsa Arapça metin → meal → dipnot işareti sırası korunur. `adab-i-muaseret`, `ilmihal` ve `esma` mevcut ayrı kategoriler olarak korunur; bu değişiklikte içerikleri düzenlenmez.
 
-**Kategoriye özel düzen:** Konu dersindeki anlatıya uygun esnek kapanış, “Bu Hafta Tanıştığımız Kelimeler” ve metin sonundaki “Dipnotlar” düzeni Konu içindir. Ayrı siyer, sahabe ve hadis içeriklerinde 19. bölümdeki kısa anlam veya davranış mesajı, gerektiğinde kelime açıklaması ve bölüm altı dipnot düzenini uygula. Kelimelerin tıklanabilir anlamları, özgün metinlerin koyu yazılması ve kaynak doğrulama şartları bu içeriklerde de korunur.
+**Tek anlatı düzeni:** Siyer olayı, sahabe örneği, âyet veya hadis anlatıda ihtiyaç duyulduğu yerde girer; kaynak türü değişti diye akışı kesme. Her örnekten sonra ayrı “Bana ne söylüyor?” veya “Kelime Açıklaması” oluşturma. Konu'nun anlatıya uygun esnek kapanışı, “Bu Hafta Tanıştığımız Kelimeler” ve metin sonundaki “Dipnotlar” düzeni kullanılır. 19. bölüm bu unsurların seçimini ve doğrulanmasını yönetir; ayrı kart üretim şablonu değildir.
 
 ## BELGENİN ÜÇ KATMANI
 
@@ -44,13 +44,13 @@ Bu öncelik sırası, aşağıdaki ayrıntılı kuralları kaldırmaz; çatışa
 
 **İlk dört hafta: tanışma ve merak (M1–M6).** Yıllık planlarda 1–4. haftalar için temel kaynak belirlenmez; hazırlık belirli bir eser veya bölümle sınırlandırılmaz. Bu haftalarda amaç, öğrencinin eseri ve insanları tanıması, önemini fark etmesi ve kendisinin okuyup keşfetmek istemesidir. Doğrulanmış bir yayılma hikâyesi, insan portresi, tarihî yolculuk veya eserin sorularını tanıtan bir anlatı kurulabilir. Konu, ana soru ve hedefler planla uyumlu kalır.
 
-Bu Konu derslerine sırf düzeni tamamlamak için âyet, Risale veya Hocaefendi alıntısı eklemek zorunlu değildir; ihtiyaç duyulan kaynak ve alıntı anlatıya katkısıyla seçilir. Bir eseri kaynaklara dayanarak tanıtmak, mutlaka uzun bir pasaj aktarmak demek değildir. Kullanılan her gerçeklik iddiası ve doğrudan alıntı doğrulanır, dipnotlandırılır. Bu esneklik ayrı âyet, hadis ve dinleme kartlarının kendi içerik zorunluluklarını kaldırmaz. Tanışma dersinin sonunda okumaya istek duymak veya kendi merak sorusunu kurmak yeterli bir anlamlı düşünme kazanımı olabilir; davranış görevi ekleme zorunluluğu yoktur.
+Bu Konu derslerine sırf düzeni tamamlamak için âyet, Risale veya Hocaefendi alıntısı eklemek zorunlu değildir; ihtiyaç duyulan kaynak ve alıntı anlatıya katkısıyla seçilir. Bir eseri kaynaklara dayanarak tanıtmak, mutlaka uzun bir pasaj aktarmak demek değildir. Kullanılan her gerçeklik iddiası ve doğrudan alıntı doğrulanır, dipnotlandırılır. Dinleme içeriğinin kendi sunum ve kaynak şartları korunur; Konu içine âyet, hadis, siyer veya sahabe örneği ekleme kararı anlatının ihtiyacına bağlıdır. Tanışma dersinin sonunda okumaya istek duymak veya kendi merak sorusunu kurmak yeterli bir anlamlı düşünme kazanımı olabilir; davranış görevi ekleme zorunluluğu yoktur.
 
-**Plan ve öğrenci profili → kaynak doğrulama → örnek ders → yazım → bağımsız kaynak ve dil kontrolleri → düzeltme → yayın değerlendirmesi.** Bu akış, altı kategorinin her yeni üretiminde ve revizyonunda uygulanır.
+**Plan ve öğrenci profili → kaynak doğrulama → örnek ders → yazım → bağımsız kaynak ve dil kontrolleri → düzeltme → yayın değerlendirmesi.** Bu akış, Konu ve dinleme içeriklerinin her yeni üretiminde ve revizyonunda uygulanır.
 
 1. **Plan ve profil:** İlgili yıllık Markdown planından başlık, ana soru, hedef ve temel kaynağı çıkar (bölüm 1). Sınıf, ay/hafta, Türkçe okuma düzeyi ve ön bilgi varsayımını belirle (bölüm 10).
 2. **Kaynak doğrulama:** Kullanılacak pasajları ve olayları özgün kaynaklarından kontrol et; kullanılan baskı ve sayfa/bölümü kaydet (bölüm 5–7, 15–16). Kaynağa sadakati koruyarak anlatılabilecek bir pasaj seç (bölüm 4).
-3. **Örnek ders:** Çok sınıflı pakette önce M1 Konu dersini; M1 yoksa üretilecek en erken seviyenin dersini yazıp bölüm 18 ile denetle. Yalnız kısa kartlar üretiliyorsa kapsamdan bir kart seç. Örnek hem anlaşılır hem de okumaya devam etmek için somut bir sebep sunar hâle gelmeden kalan içerikleri aynı yaklaşımla çoğaltma. Kapsamlı revizyonda M1 ve M6 da varsa düşünme farkını karşılaştır.
+3. **Örnek ders:** Çok sınıflı pakette önce M1 Konu dersini; M1 yoksa üretilecek en erken seviyenin dersini yazıp bölüm 18 ile denetle. Yalnız dinleme içerikleri üretiliyorsa kapsamdan bir içerik seç. Örnek hem anlaşılır hem de okumaya devam etmek için somut bir sebep sunar hâle gelmeden kalan içerikleri aynı yaklaşımla çoğaltma. Kapsamlı revizyonda M1 ve M6 da varsa düşünme farkını karşılaştır.
 4. **Yazım:** Konunun merakını ve düşünce hattını kur (bölüm 9–11); özgün alıntıları koruyarak kategorinin sunum düzenini uygula (bölüm 12–17, 19). Her sınıfı kendi planı ve profiliyle ayrıca yaz; örnek dersi şablon olarak kopyalama.
 5. **İki kontrol:** Her içeriği önce plan ve kaynak, sonra öğrenci ve anlatı açısından ayrı okumalarla denetle. Bölüm 18'deki kontrol kaydına metinden kanıt yaz; bir kontrolün geçmesi diğerinin yerine geçmez.
 6. **Düzeltme:** Bilinen sorunları gider; değişen alıntı veya olay varsa kaynağını, değişen açıklama veya soru varsa dilini yeniden kontrol et. Gerekli değerlendirme eksikse tamamla veya içeriği tamamlanmış sayma.
@@ -91,7 +91,7 @@ Görevin, yıllık planda belirlenen konuyu öğrencinin yaş seviyesine uygun �
 
 ### Yazmadan önce yapılacak hazırlık
 
-Her sınıf ve hafta için ayrı çalış. Ana hedefi ve okuma sebebini ayrı ayrı belirle: “Bu dersin sonunda öğrenci ... anlayacak / merak edecek” ve “Öğrenci okumaya devam etmek isteyecek, çünkü ...”. İkinci cümleyi “soru var” veya “konu önemlidir” diye değil, anlatıdaki belirli insan, olay veya beklenmedik ayrıntıyla tamamla. Konu dersinde öğrencinin karşılaşabileceği güçlüğü, temel Risale pasajının getirdiği fikri ve gerekiyorsa Hocaefendi pasajının yeni katkısını belirle. Bölüm 11'deki düşünce hattını kur; hazırlığı bölüm 18'deki içerik kaydına işle. Diğer kartlarda aynı haftanın hedefiyle ilişkili kaynak katkısını belirle; Konu'nun anlatı yapısını kartlara dayatma.
+Her sınıf ve hafta için ayrı çalış. Ana hedefi ve okuma sebebini ayrı ayrı belirle: “Bu dersin sonunda öğrenci ... anlayacak / merak edecek” ve “Öğrenci okumaya devam etmek isteyecek, çünkü ...”. İkinci cümleyi “soru var” veya “konu önemlidir” diye değil, anlatıdaki belirli insan, olay veya beklenmedik ayrıntıyla tamamla. Konu dersinde öğrencinin karşılaşabileceği güçlüğü, temel Risale pasajının getirdiği fikri ve gerekiyorsa Hocaefendi pasajının yeni katkısını belirle. Bölüm 11'deki düşünce hattını kur; hazırlığı bölüm 18'deki içerik kaydına işle. Dinleme içeriğinde aynı haftanın hedefiyle ilişkili kaynak katkısını belirle; Konu'nun anlatı yapısını dinleme kartına dayatma.
 
 Yıllık planın başlığı veya verdiği tarihî ayrıntı kaynakla çelişiyorsa çelişkiyi öğrenciye açıklayan bir giriş yazma. Durumu kontrol kaydında bildir ve plan düzeltilinceye kadar metni yayıma hazır sayma. Kaynakta olmayan bir sahne veya konuşma kurarak boşluğu doldurma.
 
@@ -405,7 +405,7 @@ Yalnız kelime sayısı, cümle uzunluğu veya teknik test sonucu yaşa uygunlu�
 
 ### Kalıcı dil ölçüsü ve üretim kontrolü
 
-Bu kontrol, her yeni üretimde ve revizyonda altı kategori için zorunludur. “Sade yaz” talimatı veya kelime açıklamalarının bulunması tek başına yeterli değildir. M1, ilkokul birinci sınıfı değil yaklaşık 12–13 yaş grubunu belirtir; Türkçe okuma becerisi ayrıca değerlendirilir.
+Bu kontrol, her yeni üretimde ve revizyonda Konu ve dinleme içerikleri için zorunludur. “Sade yaz” talimatı veya kelime açıklamalarının bulunması tek başına yeterli değildir. M1, ilkokul birinci sınıfı değil yaklaşık 12–13 yaş grubunu belirtir; Türkçe okuma becerisi ayrıca değerlendirilir.
 
 **M1–M6'nın tamamı sade ve merak uyandıran bir anlatım ister.** Yaşın büyümesi, ağır açıklama veya çok sayıda yeni kavram için gerekçe değildir. Yukarıdaki sınıf tablosunu her üretimde uygula: M1'de ayrıntıyı fark etme, M2'de neden–sonuç, M3'te seçim, M4'te kaynak–yorum, M5'te gerekçelerin karşılaştırılması ve M6'da sorumluluklarla görüşün sınırları öne çıkar. Bunlar desteklenerek geliştirilecek becerilerdir; ilk hafta öğrencinin zaten sahip olduğu varsayılmaz.
 
@@ -626,10 +626,10 @@ Doğrulanmış daha kısa bir pasaj, doğrulanmamış çarpıcı bir pasajdan he
 
 ### Âyet, hadis, siyer ve sahabe anlatılarında doğrulama
 
-Doğrulama yalnız Risale-i Nur ve Pırlanta alıntılarıyla sınırlı değildir. **Âyet, meal, hadis, tercüme, siyer, sahabe hayatı ve diğer tarihî örneklerdeki bütün kaynak bilgileri ve olaya ilişkin iddialar** kontrol edilmelidir. Bu şart hem ayrı içerik kartları hem Konu anlatısının içine alınan kısa örnekler için geçerlidir.
+Doğrulama yalnız Risale-i Nur ve Pırlanta alıntılarıyla sınırlı değildir. **Âyet, meal, hadis, tercüme, siyer, sahabe hayatı ve diğer tarihî örneklerdeki bütün kaynak bilgileri ve olaya ilişkin iddialar** kontrol edilmelidir. Bu şart Konu anlatısının içine alınan bütün örnekler ve dinleme içeriği için geçerlidir.
 
 - **Âyet ve meal:** Arapça metni, sûre ve âyet numarasını ve mealin aynı âyete ait olduğunu doğrula. Meal sahibinin açıklamasını veya ders yazarının yorumunu âyetin tercümesine karıştırma.
-- **Hadis — bu projenin özel yayın politikası:** Ayrı hadis kartlarında ve diğer beş kategorideki hadis alıntıları ile hadis kaynaklı olay/rivayetlerde **yalnız sahih olduğu doğrulanmış rivayetleri kullan**. Bu, genel hadis usulüne dair bütün kullanım alanlarını hükme bağlayan bir iddia değil; bu müfredat için benimsenmiş editoryal yayın filtresidir. Arapça lafzı, Türkçe tercümenin bu lafızla uyumunu ve hadis kaynağındaki yerini doğrula. Farklı rivayetlerin ifadelerini tek hadis gibi birleştirme. Kullanılan rivayetin sahih değerlendirmesini güvenilir hadis kaynaklarından doğrula; yalnız bir kitapta geçmesi, meşhur olması veya konuya uygunluğu yeterli değildir. Yalnız hasen olarak değerlendirilen, zayıf, uydurma ya da sahihliği doğrulanamayan rivayetleri bu proje kapsamında kullanma. Çözülmemiş sıhhat ihtilafı varsa başka bir sahih rivayet seç; ihtiyat ifadesi eklemek bu şartı kaldırmaz. Bu kural Risale/Pırlanta eserlerinde veya dinleme kaydında nakledilen hadisler için de geçerlidir.
+- **Hadis — bu projenin özel yayın politikası:** Konu ve diğer içeriklerdeki hadis alıntıları ile hadis kaynaklı olay/rivayetlerde **yalnız sahih olduğu doğrulanmış rivayetleri kullan**. Bu, genel hadis usulüne dair bütün kullanım alanlarını hükme bağlayan bir iddia değil; bu müfredat için benimsenmiş editoryal yayın filtresidir. Arapça lafzı, Türkçe tercümenin bu lafızla uyumunu ve hadis kaynağındaki yerini doğrula. Farklı rivayetlerin ifadelerini tek hadis gibi birleştirme. Kullanılan rivayetin sahih değerlendirmesini güvenilir hadis kaynaklarından doğrula; yalnız bir kitapta geçmesi, meşhur olması veya konuya uygunluğu yeterli değildir. Yalnız hasen olarak değerlendirilen, zayıf, uydurma ya da sahihliği doğrulanamayan rivayetleri bu proje kapsamında kullanma. Çözülmemiş sıhhat ihtilafı varsa başka bir sahih rivayet seç; ihtiyat ifadesi eklemek bu şartı kaldırmaz. Bu kural Risale/Pırlanta eserlerinde veya dinleme kaydında nakledilen hadisler için de geçerlidir.
 - **Siyer, sahabe ve tarihî olaylar:** Şahıs adlarını, olayda kimin ne yaptığını, yeri, mesleği, zamanı, olay sırasını ve aktarılan sözleri asıl kaynaktaki anlatımla karşılaştır. Kaynakta belirtilmeyen ayrıntıları hafızadan veya tahminle tamamlama.
 - **Risale-i Nur ve Pırlanta:** Pasajın kelimelerini, bağlamını ve künyesini özgün kaynaktan kontrol et. Bir eserde nakledilen hadis veya tarihî olay için yalnız o eserde bulunmasını yeterli sayma; naklin dayandığı kaynağı da doğrula.
 
@@ -698,7 +698,7 @@ Her içeriği **iki ayrı geçişte** denetle: önce plan ve kaynak doğruluğu,
 - Listedeki her kelime, yalnız Arapça metinde değil öğrencinin okuduğu Türkçe/Osmanlı Türkçesi metinde gerçekten bulunuyor mu? Metindeki işaretli biçim, listedeki madde ve açıklaması doğru eşleşiyor mu?
 - Plan ile doğrulanmış kaynak arasında çözülmemiş çelişki var mı?
 
-Bulguları aşağıdaki kontrol kaydına işle. Teknik testlerin geçmesi veya dipnot bulunması kaynak doğrulamasının yerine geçmez. Ayrı içerik kartlarında bu kontrollerin ilgili maddelerini uygula.
+Bulguları aşağıdaki kontrol kaydına işle. Teknik testlerin geçmesi veya dipnot bulunması kaynak doğrulamasının yerine geçmez. Dinleme içeriklerinde bu kontrollerin ilgili maddelerini uygula.
 
 ### 2. Öğrenci ve anlatı geçişi — editoryal şart
 
@@ -708,7 +708,7 @@ Bölüm 9'daki merak ve ton, bölüm 10'daki sınıf/ay/dil ve bölüm 11'deki d
 - **Kaynak katkısı:** Her alıntı ana soruya gerekli bir fikir katıyor mu? Öğrenci günlük örneğin kaynakla bağını anlatabilecek desteğe sahip mi? Kaynaklar anlatının içinde ilerliyor mu, yoksa kopuk bloklar olarak mı kalıyor?
 - **Anlaşılabilirlik:** Kim ne yapıyor açık mı; öğrenci ana fikri kendi sözüyle anlatabilecek mi? Alıntıdaki bütün zor ifadeler ve yazarın Türkçesi ayrı taranmış mı? Destek yükü ağırsa daha uygun pasaj veya örnek seçilmeli.
 - **Sınıf ve ay:** Türkçe okuma düzeyi yaşından çıkarılmış mı? İlk ay için gerekli ön bilgi veriliyor mu? İlerleyen aylarda önceki kelimeler erişilebilen derslerden kontrol edilerek ve gerektiğinde hatırlatılarak mı kullanılıyor?
-- **Zihinsel hareket:** Konu dersinde kendi merak sorusunu kurma, ayrıntıyı anlamlandırma, örnek, gerekçe, seçenek karşılaştırması, tahmin veya yeni duruma uygulama gibi gerçek bir düşünme alanı var mı; bu alan doğrudan soru olmadan da kurulabiliyor mu? Tanışma dersine gereksiz davranış görevi eklenmiş mi; görevler anlatının ilgisini kesiyor mu? Cevap önceki satırdan kopyalanabiliyor mu veya kapanışta önceden verilmiş mi? Soru tek başına ve birlikte okumada anlaşılır mı? Kısa kartlarda yalnız ilgili ölçüyü uygula.
+- **Zihinsel hareket:** Konu dersinde kendi merak sorusunu kurma, ayrıntıyı anlamlandırma, örnek, gerekçe, seçenek karşılaştırması, tahmin veya yeni duruma uygulama gibi gerçek bir düşünme alanı var mı; bu alan doğrudan soru olmadan da kurulabiliyor mu? Tanışma dersine gereksiz davranış görevi eklenmiş mi; görevler anlatının ilgisini kesiyor mu? Cevap önceki satırdan kopyalanabiliyor mu veya kapanışta önceden verilmiş mi? Soru tek başına ve birlikte okumada anlaşılır mı? Dinleme içeriklerinde yalnız ilgili ölçüyü uygula.
 - **Ton ve ekonomi:** Sesli okuma açısından yapmacık geçiş, tekrar, gereksiz yan fikir, bebeksi hitap, zoraki argo, sürekli emir veya kişisel paylaşım baskısı var mı? Öğrencinin duygu ve inancı onun adına kesinleştirilmiş mi? Paragrafların bilgi, canlandırma, yakınlık, ritim veya merak katkısı var mı? İşlevli tekrarlar gereksiz sayılıp anlatının etkisi silinmiş mi?
 - **Kategori ve sunum:** Âyetin kendi içindeki sunumu, alıntı, kelime desteği ve dipnotlar ilgili kategoriye uyuyor mu (bölüm 17, 19)? Konu anlatısına kaldırılmış bir kaynak sırası, sabit kapanış veya madde kotası dayatılmış mı? Özgün metinler koyu mu? Türkçe metindeki işaretli kelimeyle açıklaması eşleşiyor mu; tıklama/dokunma, hover ve klavye erişimi III. bölümdeki teknik sunum şartlarını karşılıyor mu? Planlama ve doğrulama notları öğrenci anlatısına sızmış mı?
 - **Dinleme:** Kartın açıklaması ve seçilen ses bölümünün kendisi bu profile uygun mu? Bölüm 10'daki kayıt değerlendirmesi gerçekten yapıldı mı? Yalnız sayfada ses bağlantısı bulunması bu kontrolün geçtiğini göstermez.
@@ -733,7 +733,7 @@ Kayıt, öğrenci metninden ayrı olarak yerel, git tarafından dışlanan hazı
 | Kapsam ve denemeler     | Yakın hafta/kategori karşılaştırması, sunum kontrolü, öğrenci denemesi ve dinleme değerlendirmesi yapıldı mı? Yapılanın kapsamı ve yapılmayanın sınırı. |
 | Kabul sonucu            | Aşağıdaki üç sonuçtan biri, gerekçesi ve varsa açık eksikler.                                                                                           |
 
-Kısa kartta uygulanmayan alanı gerekçesiyle belirt; formu doldurmak için öğrenci metnine ek soru veya bölüm koyma. “Uygun”, “evet” veya “geçti” işareti tek başına kanıt değildir. Erişilmeyen kaynak, yapılmayan kontrol veya öğrenci denemesi yapılmış gibi kaydedilemez.
+Dinleme içeriğinde uygulanmayan alanı gerekçesiyle belirt; formu doldurmak için öğrenci metnine ek soru veya bölüm koyma. “Uygun”, “evet” veya “geçti” işareti tek başına kanıt değildir. Erişilmeyen kaynak, yapılmayan kontrol veya öğrenci denemesi yapılmış gibi kaydedilemez.
 
 ### 4. Kabul sonucu ve haftalık bütünlük
 
@@ -747,7 +747,7 @@ Hem sorun hem eksik kontrol varsa sonuç **düzeltme gerekli** olur; eksik kontr
 
 Çok sınıflı pakette her sınıf için merakı açan noktayı, açıklamanın dayandığı somut olayı, beklenen düşünme adımını ve ayına uygun anlam desteğini metinden kanıtla karşılaştır. M1 örneğinin geçmesi M2–M6'yı geçirmiş sayılmaz. Üst sınıfın farkı yalnız metnin uzaması veya kelimelerin ağırlaşmasıysa yeniden yaz; bölüm 10'daki daha derin düşünme fırsatını kur. İlk üretim veya kapsamlı revizyonda M1 ve M6 kapsamdaysa ikisini ayrıca karşılaştır, sonra M2–M5'i kendi profilleriyle denetle.
 
-Aynı sınıf ve haftanın **Konu, âyet, hadis, siyer, sahabe ve dinleme** içeriklerini birlikte değerlendir. Ortak kazanımla bağlarını, kullanılan örnekleri, soruları ve davranış mesajlarını hazırlık notunda karşılaştır. Kategoriler aynı kazanımı desteklerken farklı bir örnek, kaynak katkısı veya bakış sunmalıdır. Aynı paragrafı, günlük örneği ya da kapanışı kategori değiştirerek çoğaltma; kısa kartları Konu bölüm düzenine dönüştürme.
+Aynı sınıf ve haftanın **Konu ve dinleme** içeriklerini birlikte değerlendir. Konu akışında kullanılan âyet, hadis, siyer ve sahabe örneklerinin her birinin ana düşünceye katkısını da kontrol et. Aynı paragrafı, olayı veya mesajı kaynak türünü değiştirerek yeniden sunma. Dinleme aynı kazanıma farklı bir katkı sunmalıdır; Konu bölüm düzenine dönüştürülmez.
 
 Aynı sınıfın erişilebilen önceki içeriklerini, özellikle yakın haftalardaki açılış, olay, örnek, soru ve kapanışları kontrol et. **Pekiştiren tekrar**, öğrenilen bir kavramı yeni bağlamda kullanmak, hatırlamak veya düşünceyi derinleştirmektir; aynı metni yeniden sunmak değildir. Bilinçli tekrarın katkısını hazırlık notunda belirt. Çeşitlilik için kaynak doğruluğundan veya plana uygunluktan vazgeçme. Diğer kategorilere veya önceki haftalara erişilemiyorsa kontrol yapılmış gibi bildirme; denetimin kapsamını kaydet.
 
@@ -756,7 +756,7 @@ Aynı sınıfın erişilebilen önceki içeriklerini, özellikle yakın haftalar
 Çok haftalı paketlerde yalnız tek tek dersleri değil, bütün yılı da örüntü açısından kontrol et. Öğrenciye gösterilmeyen bir hazırlık tablosunda en az şu alanları karşılaştır:
 
 | Hafta | Ana anlatı biçimi | Merak kaynağı | Ana kişi / olay / fikir | Kaynak katkısı | Zihinsel hareket | Kapanış türü |
-| :---- | :---------------- | :------------ | :--------------------- | :-------------- | :--------------- | :------------ |
+| :---- | :---------------- | :------------ | :---------------------- | :------------- | :--------------- | :----------- |
 
 Bu tablo **çeşitlilik kotası** değildir. Ama art arda haftalarda aynı “bir arkadaş grubunu düşün”, aynı ikilem, aynı soru biçimi, aynı günlük örnek veya aynı kapanış kalıbı tekrar ediyorsa bunu görünür kılar. Bilinçli pekiştirme varsa nedenini kaydet; otomatik tekrar varsa anlatıyı yeniden kur.
 
@@ -774,83 +774,47 @@ Pedagojik dayanak: Öğrenme hedefiyle ilişkili seçimler için [CAST — Optim
 
 ---
 
-# 19. SİYER, SAHABE VE HADİS İÇERİKLERİNE ÖZEL KURALLAR
+# 19. KONU AKIŞINDA ÂYET, HADİS, SİYER VE SAHABE
 
-Bu bölüm, haftalık **siyer, sahabe ve hadis kartlarının** hazırlanmasını yönetir. Konu anlatısının içine alınan kısa tarihî örnekler ortak kaynak ve editoryal kurallara tabidir; bu üç kartın çıktı düzenini Konu dersinin içine taşıma.
+## 19.1. Gerektiğinde ve konuya katkısıyla seç
 
-## 19.1. Sınıf, hafta ve yıllık plan
+İlgili sınıfın yıllık planındaki hafta, konu, ana soru ve kazanımı esas al. Âyet, hadis, siyer olayı veya sahabe örneği ancak bir soruyu aydınlatıyor, düşünceyi derinleştiriyor ya da konunun anlamını somutlaştırıyorsa kullanılır. Her derse her türden bir parça ekleme; sayı, uzunluk veya tür kotası yoktur. Uygun bir kaynak bulunamaması tek başına eksik kategori anlamına gelmez. Kullanılacak bir iddia veya rivayet doğrulanamıyorsa onu ekleme; dersin ana düşüncesi için gerekli kaynak doğrulanamıyorsa inceleme eksikliğini kaydet.
 
-Üretime başlamadan önce ilgili sınıfı ve haftayı belirle; o sınıfın yıllık planından haftalık konuyu ve kazanımı çıkar. Başka bir sınıfın veya haftanın konusunu kullanma, bağımsız bir tema üretme.
+## 19.2. Tek ve bağlantılı anlatı
 
-Siyer olayı, sahabe olayı ve hadis mümkün olduğunca aynı haftanın konusu ve kazanımı etrafında anlamlı bir bütünlük oluşturmalıdır. Aynı tema farklı sınıflarda işlense bile dili, uzunluğu, kavramsal seviyesi ve davranış mesajını her sınıf için ayrıca düzenle.
+Örneğe neden ihtiyaç duyulduğu ve örneğin ana düşünceye ne kattığı metinde anlaşılmalıdır. Ayrı Siyer, Sahabe, Âyet veya Hadis kartları, sabit bölüm sırası ve her örneğe ayrı kapanış üretme. Konu'nun esnek anlatı ve kapanış düzenini uygula. Öğrenci kimden ve hangi olaydan söz edildiğini, olayın bağlamını ve sonuçlarını kendi başına anlayabilmelidir. Gerekli doğrulanmış ayrıntıyı koru; bilgi yığını, akademik makale veya sürekli nasihat dili kullanma.
 
-Konuya uygun güvenilir bir olay veya hadis bulunamazsa rivayeti zorlama, kaynakta olmayan bağlantı kurma ve olay uydurma. Eksikliği öğrenci metninden ayrı bildir; uygun içerik doğrulanmadan ilgili kartı yayıma hazır sayma.
+## 19.3. Siyer olayında tarihî sadakat
 
-## 19.2. Öğrencinin kendi başına anlayabilmesi
+Peygamber Efendimiz Aleyhissalâtü Vesselâm'ın hayatından kullanılacak olay güvenilir siyer, hadis veya İslâm tarihi kaynaklarına dayanmalıdır. Başlangıcı, gelişmesi ve sonucu anlaşılır olmalı; farklı olayları veya rivayetleri tek olay gibi birleştirme. Kaynakta olmayan diyalog, duygu, düşünce, niyet, mekân tasviri veya dramatik ayrıntı ekleme. Gerekçeyi yalnız kaynak destekliyorsa kesin bilgi olarak anlat. İlk uygun kullanımda “Peygamber Efendimiz Aleyhissalâtü Vesselâm”, sonra akışa göre “Peygamber Efendimiz” ifadesini tercih et.
 
-Öğrenci metni öğretmen yardımı olmadan okuyup ana fikrini anlayabilmelidir. Olayı anlamaya, insanları gözünde canlandırmaya veya merakı geliştirmeye katkı sağlayan doğrulanmış ayrıntıları seç. Sırf bilgi yığını oluşturmak için tarih, isim, coğrafya ve yan olay ekleme. Gerekli ayrıntıları koru; sadeleştirme amacıyla tarihî gerçekleri değiştirme.
+## 19.4. Sahabe örneğinde somut olay
 
-Küçük sınıflarda somut, kısa ve açık anlatımı tercih et. Sınıf seviyesi yükseldikçe ayrıntı ve düşünce derinliği artabilir; doğal ve keyifle okunabilen anlatımı ve aynı yıl içinde aydan aya dil gelişimini koru. Akademik makale, vaaz, aşırı edebî anlatım ve sürekli emir veren nasihat dili kullanma.
+Sahabe-i Kirâmdan birinin hayatından seçilen örneği güvenilir hadis, siyer, tabakât, terâcim veya İslâm tarihi kaynağından doğrula. Meşhur olması doğrulama yerine geçmez. Sıfat listesi yerine bağlamı ve sonucu anlaşılır somut olay kullan. Siyer için belirtilen tarihî sadakat şartlarını uygula; konuyu desteklesin diye olayı değiştirme veya eksik rivayeti kurgu ile tamamlama.
 
-Temel ölçüt şudur: Öğrenci **“Bu olayda ne olmuş?”** sorusunu cevaplayabilmeli ve olayda bir insanı, davranışı veya düşündürücü ayrıntıyı fark edebilmelidir. **“Ben bundan hareketle ne yapabilirim?”** konuya uygunsa sorulur; her kartı davranış ödevine çevirme. Merak, yakınlık ve olayın anlamını keşfetme de değerli karşılıklardır.
+## 19.5. Âyetin anlatıdaki yeri
 
-## 19.3. Siyer: tek ve bütüncül bir olay
-
-Peygamber Efendimiz Aleyhissalâtü Vesselâm’ın hayatından haftanın konusu ve kazanımıyla ilişkili **tek bir olay** seç. Olay güvenilir siyer, hadis veya İslâm tarihi kaynaklarına dayanmalıdır.
-
-- Başlangıcı, gelişmesi ve sonucu anlaşılır olmalı; yalnız sonuç veya bağlamından koparılmış küçük bir parça verilmemelidir.
-- Birden fazla farklı olayı veya ayrı rivayetleri tek olaymış gibi birleştirme.
-- Öğrencinin örnek alabileceği somut bir davranış ve günlük hayatıyla ilişki kurabileceği bir yön bulunmalıdır.
-- Kaynakta olmayan diyalog, duygu, düşünce, niyet, mekân tasviri veya dramatik ayrıntı ekleme. “İçinden şöyle düşündü”, “şaşkınlıkla baktı” gibi ifadeleri kaynak desteği olmadan kullanma.
-
-Olay doğal akışında mümkün olduğunca **durum → davranış → sonuç → öğrenciye yansıyan mesaj** bütünlüğünü taşımalıdır. Bunları zorunlu ara başlıklar hâline getirme. Kimin ne yaptığı ve ne sonuç ortaya çıktığı açık olmalı; davranışın gerekçesini yalnız kaynak destekliyorsa kesin bilgi olarak anlat.
-
-İlk uygun kullanımda **“Peygamber Efendimiz Aleyhissalâtü Vesselâm”**, sonraki kullanımlarda akışa göre **“Peygamber Efendimiz”** ifadesini tercih et.
-
-## 19.4. Sahabe: sıfat listesi yerine somut olay
-
-Sahabe-i Kirâmdan birinin hayatından haftanın konusu ve kazanımıyla ilişkili **tek ve bütüncül bir olay** seç. Güvenilir hadis, siyer, tabakât, terâcim veya İslâm tarihi kaynaklarından doğrula; yalnız meşhur olduğu için kaynak desteği bulunmayan hikâyeleri kullanma.
-
-“Çok cömertti, çok cesurdu, çok sabırlıydı” gibi genel özellikleri sıralamakla yetinme. Bu özelliği gösteren, başlangıcı, gelişmesi ve sonucu anlaşılır somut bir olay anlat. Siyer için belirtilen tarihî sadakat ve olay bütünlüğü şartları burada da geçerlidir.
-
-Olayın düşündürücü yönünü ve konuya uygunsa öğrencinin günlük hayatıyla bağını görünür kıl; konuya uydurmak için olayı değiştirme veya eksik rivayetleri kurgu ile tamamlama.
-
-## 19.5. Her kartta kısa “Bana ne söylüyor?”
-
-Siyer ve sahabe olayının hemen ardından, hadis kartında ise Türkçe tercümenin ardından **“Bana ne söylüyor?”** başlığını kullan.
-
-Bu bölüm **en fazla 1–2 kısa cümleden** oluşmalıdır. Konu dersindeki daha geniş ve esnek kapanışı bu kartlara taşıma.
-
-- Olayı veya hadisi yeniden özetleme; uzun açıklama ve nasihat verme.
-- Soyut ahlâk tanımı yerine olayın düşündürücü yönünü veya konuya uygunsa öğrencinin yapabileceği somut bir davranışı göster; davranış görevi zorunlu değildir.
-- Mesajı haftanın kazanımına ve anlatılan olaya veya hadise özgü kur; her karta aynı ahlâk mesajını ekleme.
-- Tercihen birinci tekil şahıs kullanılabilir. “Buradan şu sonucu çıkarabiliriz ki…” gibi dolaylı ve akademik girişlerden kaçın.
-
-Yardımlaşma, paylaşma, emaneti koruma, sözünü tutma, özür dileme veya israfı önleme gibi davranışlar ancak ilgili metnin mesajıyla örtüşüyorsa seçilmelidir. Öğrenci **“Ben de buna benzer şekilde davranabilirim”** diyebilir; **“Bu ayrıntı beni düşündürdü”** veya **“Bu insanı daha çok tanımak istiyorum”** da metne uygun karşılıklar olabilir. Öğrencinin adına bu duyguları kesinleştirme.
+Âyeti yalnız konuya katkısıyla seç; kullanılan Arapça metni, sûre/âyet numarasını ve Suat Yıldırım mealini özgün kaynaktan doğrula. **Arapça → hemen altında doğrulanmış meal → mealin bitiminde dipnot işareti** sırasını koru (bölüm 15–17). Açıklamayı mealden ayrı, anlatı içinde ver. Âyet bulunması veya her kaynak türünün temsil edilmesi dersin kabul şartı değildir.
 
 ## 19.6. Hadis seçimi ve tercüme
 
-Haftanın konusu ve kazanımıyla doğrudan veya güçlü biçimde ilişkili **bir hadis-i şerif** seç. Öğrenci seviyesine uygun, mümkün olduğunca kısa ve günlük hayata aktarılabilir bir mesaj taşımalıdır.
+Haftanın konusu ve kazanımıyla doğrudan veya güçlü biçimde ilişkili bir hadis-i şerif ancak anlatıya katkı sağlıyorsa seç. Öğrenci seviyesine uygun, mümkün olduğunca kısa ve günlük hayata aktarılabilir bir mesaj taşımalıdır.
 
 **Yalnız sahih olduğu doğrulanmış hadis seç.** “Güvenilir kabul ediliyor” gibi genel bir ifade sahih değerlendirmesinin yerine geçmez; yalnız hasen, zayıf, uydurma veya sahihliği doğrulanamayan rivayetleri kullanma. Kullanılan rivayetin Arapça lafzını, kaynak yerini ve sahih değerlendirmesini doğrula; bu değerlendirmeyi yapan kaynak/muhaddisi ve ilgili yerini bölüm 18'deki özel kontrol kaydının kaynak doğrulama alanına işle. Çözülmemiş sıhhat ihtilafını sahih kabul ederek geçme.
 
-Yalnız tematik uygunluk yeterli değildir. Hafızadan yaklaşık hadis üretme, farklı rivayetlerin lafızlarını birleştirme veya hadis numarasını tahmin etme. Haftanın kazanımına uygun sahih bir hadis doğrulanamıyorsa başka bir sahih hadis araştır; bulunamazsa eksikliği kontrol kaydında belirt ve kartı yayıma hazır sayma. Aynı şart, diğer kategorilerdeki hadis alıntıları ve hadis kaynaklı olay/rivayetler için de geçerlidir (bölüm 16).
+Yalnız tematik uygunluk yeterli değildir. Hafızadan yaklaşık hadis üretme, farklı rivayetlerin lafızlarını birleştirme veya hadis numarasını tahmin etme. Haftanın kazanımına uygun sahih bir hadis doğrulanamıyorsa başka bir sahih hadis araştır; bulunamazsa sırf hadis eklemek için metni zorlama. Kullanılması gerekli bir rivayet doğrulanamıyorsa eksikliği kontrol kaydında belirt ve dersi yayıma hazır sayma. Aynı şart, diğer kategorilerdeki hadis alıntıları ve hadis kaynaklı olay/rivayetler için de geçerlidir (bölüm 16).
 
-Sunum sırası **Arapça → Türkçesi → Bana ne söylüyor? → gerekiyorsa Kelime Açıklaması → dipnot** olmalıdır. Özgün Arapça metni koyu yaz.
+Hadis kullanıldığında **özgün Arapça → doğrulanmış Türkçe tercüme → dipnot işareti** sırasını koru; açıklamayı anlatının içinde tercümeden ayrı ver. Özgün Arapça metni koyu yaz.
 
-Türkçe tercüme açık ve doğal olmalı; hadisin anlamını daraltmamalı veya genişletmemelidir. Hadisin aslında olmayan öğüt ve yorumları tercümeye ekleme. Kaynak olarak kullanılan yayımlanmış tercümeyi aynen koru; yaşa uygun açıklamayı onun dışında ver. Arapça aslından ayrıca tercüme hazırlanırsa bunu yayımlanmış bir tercüme sahibine nispet etme; Arapça lafızla uyumunu doğrula. “Bana ne söylüyor?” tercümenin yerine geçmez.
+Türkçe tercüme açık ve doğal olmalı; hadisin anlamını daraltmamalı veya genişletmemelidir. Hadisin aslında olmayan öğüt ve yorumları tercümeye ekleme. Kaynak olarak kullanılan yayımlanmış tercümeyi aynen koru; yaşa uygun açıklamayı onun dışında ver. Arapça aslından ayrıca tercüme hazırlanırsa bunu yayımlanmış bir tercüme sahibine nispet etme; Arapça lafızla uyumunu doğrula. Anlatıdaki açıklama tercümenin yerine geçmez.
 
-## 19.7. Yalnız gerektiğinde kelime açıklaması
+## 19.7. Kelime desteği ve kapanış
 
-İlgili kartta öğrencinin anlamakta zorlanabileceği ve metni anlaması için gerekli bir kelime varsa, “Bana ne söylüyor?” bölümünden sonra ve dipnottan hemen önce **“Kelime Açıklaması”** başlığını kullan. Böyle bir kelime yoksa başlığı da listeyi de oluşturma.
+Kelimeleri öğrencinin okuduğu Türkçe anlatım veya tercümeden seç. Gerekli kullanımları `<u>...</u>` ile işaretle; açıklamalarını Konu'nun **“Bu Hafta Tanıştığımız Kelimeler”** bölümünde topla. Yalnız Arapçada geçen kelimeyi Latin harfleriyle listeye ekleme. Tıklama/dokunma, hover ve klavye erişimi şartları korunur. Her kaynak parçası için ayrı “Kelime Açıklaması” veya 1–2 cümlelik “Bana ne söylüyor?” zorunluluğu yoktur; Konu'nun tek, anlatıya uygun kapanışını kullan.
 
-Kelime öğrencinin okuduğu **Türkçe/Osmanlı Türkçesi anlatımda veya Türkçe tercümede gerçekten bulunmalıdır**. Yalnız Arapça hadiste geçen kelimeyi Latin harfleriyle listeye alma. Sırf kelime bölümü oluşturmak için anlatıma zor kelime ekleme; yaygın ve öğrencinin bildiği kelimeleri gereksiz yere açıklama.
+## 19.8. Konu dersinin dipnotları
 
-Metindeki kullanımı `<u>...</u>` ile işaretle; görünür yazımını değiştirmeden açıklamayla eşleştir. Anlam kısa, yaşa uygun ve bağlama bağlı olmalı; mümkünse tek cümleden kısa tutulmalıdır. III. bölümdeki tıklama/dokunma, hover ve klavye erişimi şartları burada da geçerlidir. Çekimli biçim ile madde başı farklıysa aynı açıklamayı açtığını kontrol et.
-
-## 19.8. Bölüm altında kaynak dipnotu
-
-Her olayın veya hadisin dipnot işaretini ilgili metne bağla; kaynak bilgisini **ilgili kartın/bölümün sonunda, varsa kelime açıklamasından sonra** ver. Konu dersindeki metin sonu “Dipnotlar” bölümünü bu kartlara taşıma. Ayrıca “Kaynakça” veya toplu kaynakça oluşturma.
+Her alıntının ve tarihî iddianın dipnot işaretini ilgili metne bağla; kaynak bilgisini Konu'nun metin sonundaki **“Dipnotlar”** bölümünde ver. Numaralandırma ders boyunca tutarlı olmalıdır; ayrı kart veya bölüm altı kaynakça üretme.
 
 İSNAD Dipnotlu Sistem esaslarını koru. Doğrulanabildiği ölçüde müellif, eser, kitap/bölüm, kullanılan baskıya göre cilt/sayfa ve hadis/rivayet numarası ver. Hadislerde bölüm ve hadis numarasını, siyer ve tabakât eserlerinde cilt/sayfayı mümkün olduğunca belirt.
 
@@ -858,41 +822,27 @@ Her olayın veya hadisin dipnot işaretini ilgili metne bağla; kaynak bilgisini
 
 Doğrulayamadığın bibliyografik ayrıntıyı tahmin etme veya yer tutucu olarak bırakma. Kaynağın kendisi ve anlatılan olay/hadis doğrulanmışsa yalnız doğruladığın künye bilgilerini yaz; eksik sayfa veya numara, doğrulanmamış içeriği kullanma izni değildir.
 
-## 19.9. Önceki haftalara göre tekrar kontrolü
+## 19.9. Tekrar kontrolü
 
-Yeni içerik hazırlamadan önce erişilebilen aynı sınıfın önceki içeriklerini, özellikle yakın haftaları kontrol et. Aynı siyer olayını, aynı sahabiyi ve olayı, aynı hadisi, aynı “Bana ne söylüyor?” mesajını ve aynı örnek davranışı gereksiz yere tekrarlama.
+Aynı sınıfın yakın haftalarını ve aynı haftanın dinleme içeriğini karşılaştır. Aynı olay, sahabi, hadis, âyet veya mesaj gereksiz yere tekrar edilmemelidir. Bilinçli pekiştirmenin yeni katkısını hazırlık kaydında belirt. Önceki içeriğe erişilemiyorsa tekrar kontrolü yapılmış gibi bildirme; çeşitlilik için kaynak doğruluğundan veya plana uygunluktan vazgeçme.
 
-Önceki içeriklere erişilemiyorsa tekrar kontrolü yapılmış gibi davranma; bu sınırlılığı hazırlık notunda belirt. Sırf tekrar olmasın diye haftanın konusundan uzaklaşma veya sahihlik şartını karşılamayan bir rivayet seçme.
+## 19.10. Kayıt ve yayın
 
-Karar önceliği: **kaynak doğruluğu → yıllık plana uygunluk → öğrencinin anlayabilmesi → davranışa dönüştürülebilirlik → tekrardan kaçınma → anlatım güzelliği**.
+Seçilen parçalar ayrı kategori kayıtları olarak değil, ilgili sınıf ve haftanın **`konu`** kaydının metni içinde yer alır. Eski dört kategorinin metinlerini otomatik birleştirme veya haftası eşleştiği için uygun sayma. Kullanılacak her parçayı konuya katkı, kaynak doğruluğu, dil ve tekrar açısından yeniden değerlendir. Yönerge değişikliği mevcut derslerin kontrol edilip düzeltildiği anlamına gelmez.
 
-## 19.10. Çıktı düzeni
+## 19.11. Son kontrol
 
-Üç içerik birlikte hazırlanıp sunulduğunda üstte **yıllık plandaki haftalık konu başlığı**, ardından **Sınıf** ve **Hafta** bilgileri yer almalıdır. Bölüm sırası sabittir:
+18. bölümdeki ayrı kaynak ve dil incelemelerine ek olarak:
 
-1. **Peygamber Efendimiz Aleyhissalâtü Vesselâm’ın Hayatından:** Olaya uygun kısa ve merak uyandırıcı başlık → tek ve bütüncül olay → “Bana ne söylüyor?” → gerekiyorsa “Kelime Açıklaması” → kaynak dipnotu.
-2. **Sahabe-i Kirâmın Hayatından:** Sahabinin adı ve olaya uygun kısa başlık → tek ve bütüncül olay → “Bana ne söylüyor?” → gerekiyorsa “Kelime Açıklaması” → kaynak dipnotu.
-3. **Hadis-i Şerif:** “Arapça” altında koyu özgün metin → “Türkçesi” altında doğrulanmış tercüme → “Bana ne söylüyor?” → gerekiyorsa “Kelime Açıklaması” → kaynak dipnotu.
+- Her kaynak veya örnek doğru sınıfın doğru haftasına ve ana düşüncesine katkı sunuyor mu; sırf tür kotası için eklenen parça var mı?
+- Olayın bağlamı ve sonucu anlaşılır mı; şahıslar, sözler ve ayrıntılar asıl kaynakla uyuşuyor mu?
+- Âyetin metni ve meali; hadisin lafzı, tercümesi, kaynak yeri ve sahih değerlendirmesi doğrulanmış mı? Hadis kaynaklı tarihî rivayetler de aynı şartı karşılıyor mu?
+- Özgün alıntı ve tercüme korunmuş, açıklama bunların dışında verilmiş mi?
+- Parçalar tek anlatıda bağlantılı mı; ayrı kategori şablonları, sabit kaynak sırası veya gereksiz tekrarlar akışı kesiyor mu?
+- Kelimeler Türkçe metinde bulunuyor, işaretli kullanımdan doğru açıklama açılıyor mu?
+- Dipnotlar Konu'nun sonunda mı; hadis kaynakları bağlantısız mı; tahminî künye veya hadis sitesi `resourceUrl` alanı var mı?
 
-Birlikte sunulan metinde dipnot numaraları birbirini izlemeli; ayrı kartlarda numaralandırma kart içinde tutarlı olmalıdır. Uygulamada ayrı kartlar olarak kaydedilirken her kategori kendi içeriğini taşır; üçlü paketi tek bir Konu metnine dönüştürme. Sınıf ve hafta bilgileri içerik kaydında doğru tutulmalı; öğrenci anlatısına planlama ve doğrulama notları eklenmemelidir.
-
-## 19.11. Kategoriye özel son kontrol
-
-18. bölümdeki iki geçişli kaynak ve editoryal denetimin ortak kurallarını uygula. Ayrıca her kart için şunları kontrol et:
-
-- Doğru sınıfın doğru haftasına ait konu ve kazanım kullanılmış mı; üç içerik bunlarla ilişkili mi?
-- Siyer ve sahabe içeriklerinin her biri tek ve bütüncül bir olay mı; başlangıç, gelişme ve sonuç açık mı?
-- Şahıslar, sözler, davranışlar ve ayrıntılar asıl kaynakla uyuşuyor mu; kaynaksız duygu, niyet, diyalog veya birleştirilmiş rivayet var mı?
-- Öğrenci metni kendi başına anlayabiliyor mu; gereksiz tarihî ayrıntı veya ağır terminoloji var mı?
-- Her “Bana ne söylüyor?” bölümü en fazla 1–2 kısa cümle mi; somut, metne özgü ve haftanın kazanımıyla ilişkili bir davranış gösteriyor mu?
-- Hadisin Arapça lafzı, tercümesi ve kaynak yeri doğrulanmış mı; kullanılan rivayetin **sahih** değerlendirmesi ve dayanağı kontrol kaydında var mı? Hadis kaynaklı siyer/sahabe rivayetleri de bu şartı karşılıyor mu; açıklama tercümeye karışmış mı?
-- Kelime açıklaması gerçekten gerekli mi; her madde Türkçe metinde bulunuyor ve işaretli kullanımdan doğru anlam açılıyor mu?
-- Dipnot ilgili bölümün altında mı; doğrulanmamış künye, tahminî numara veya gereksiz kaynakça var mı?
-- Hadis kaynaklı dipnotlar eser, bölüm ve doğrulanmış numarayla bağlantısız verilmiş mi; öğrenci metninde veya `resourceUrl` alanında hadis doğrulama sitesi bağlantısı kalmış mı?
-- Önceki haftalarla olay, sahabi, hadis ve mesaj tekrarları kontrol edilmiş mi?
-- Saygılı hitap ve kategoriye özel çıktı sırası korunmuş mu?
-
-Bir sorun varsa kullanıcıya sunmadan veya yayıma hazır saymadan önce düzelt. Bu yönergenin güncellenmesi, daha önce üretilmiş kartların kontrol edilip düzeltilmiş olduğu anlamına gelmez.
+Bilinen sorunları sunum veya yayın öncesinde düzelt; eksik incelemeyi tamamlanmış sayma.
 
 ---
 
@@ -944,7 +894,7 @@ Dışa aktarım yalnız ihtiyaç olduğunda:
 
 ile yapılır.
 
-`adab-i-muaseret`, `ilmihal` ve `esma` korunur.
+Haftalık paket **6 sınıf × 2 kategori (`konu`, `hocaefendi-dinleme`) = 12 kayıt** içerir. Ayrı âyet, hadis, siyer ve sahabe kaydı oluşturulmaz. `adab-i-muaseret`, `ilmihal` ve `esma` korunur.
 
 **CLI şema doğrulaması editoryal kontrollerin yerine geçmez.** Yönerge değişikliği mevcut dersleri kendiliğinden düzeltmez.
 

@@ -40,9 +40,9 @@ describe("CurriculumArchive Component", () => {
     const html = renderToString(
       <EntryContentRenderer
         entry={{
-          id: "g1-sahabe-kissalari-eylul-2",
+          id: "g1-konu-eylul-2",
           grade: 1,
-          categoryId: "sahabe-kissalari",
+          categoryId: "konu",
           month: 9,
           week: 2,
           year: 2026,
@@ -86,7 +86,7 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("<li>Düzgün ve saygılı oturmak.</li>");
     expect(html).not.toContain('<p dir="auto">•');
   });
-  it("should render fixed capsule navigation with 9 category items", () => {
+  it("should render fixed capsule navigation with 5 category items", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
@@ -94,11 +94,11 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('class="archive-fixed-capsule"');
     expect(html).toContain('aria-label="Müfredat Hızlı Menü"');
 
-    // Verify all 9 short labels are present in the capsule navigation
-    expect(html).toContain('<span class="archive-capsule-label">Ayet</span>');
-    expect(html).toContain('<span class="archive-capsule-label">Hadis</span>');
-    expect(html).toContain('<span class="archive-capsule-label">Siyer</span>');
-    expect(html).toContain('<span class="archive-capsule-label">Sahabe</span>');
+    // Verify all 5 short labels are present in the capsule navigation
+    expect(html).not.toContain('<span class="archive-capsule-label">Ayet</span>');
+    expect(html).not.toContain('<span class="archive-capsule-label">Hadis</span>');
+    expect(html).not.toContain('<span class="archive-capsule-label">Siyer</span>');
+    expect(html).not.toContain('<span class="archive-capsule-label">Sahabe</span>');
     expect(html).toContain('<span class="archive-capsule-label">Sohbet</span>');
     expect(html).toContain('<span class="archive-capsule-label">Konu</span>');
     expect(html).toContain('<span class="archive-capsule-label">İlmihal</span>');
@@ -137,10 +137,10 @@ describe("CurriculumArchive Component", () => {
     );
 
     // Every category remains in the document instead of being hidden by the navigation.
-    expect(html).toContain('id="ayet"');
-    expect(html).toContain(">Ayet</h2>");
-    expect(html).toContain('id="hadis"');
-    expect(html).toContain('id="efendimiz"');
+    expect(html).not.toContain('id="ayet"');
+    expect(html).not.toContain(">Ayet</h2>");
+    expect(html).not.toContain('id="hadis"');
+    expect(html).not.toContain('id="efendimiz"');
     expect(html).toContain('id="konu"');
     expect(html).toContain(">Haftanın Konusu</h2>");
     expect(html).not.toContain('id="risale"');
@@ -152,9 +152,9 @@ describe("CurriculumArchive Component", () => {
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
 
-    // Separators between 9 categories should be exactly 8
+    // Separators between 5 categories should be exactly 4
     const separatorCount = (html.match(/class="archive-category-separator"/g) || []).length;
-    expect(separatorCount).toBe(8);
+    expect(separatorCount).toBe(4);
 
     expect(html).toContain(
       'class="archive-category-separator" role="separator" aria-hidden="true"'
@@ -187,7 +187,7 @@ describe("CurriculumArchive Component", () => {
       <CurriculumArchive
         initialCompletedEntryIds={[]}
         isSignedIn={false}
-        initialCategoryId="ayet"
+        initialCategoryId="esma"
       />
     );
 
@@ -199,53 +199,35 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("0 / 48 tamamlandı");
   });
 
-  it("should render real sample entries with correct titles for active category", () => {
-    const ayetHtml = renderToString(
-      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
-    );
-    expect(ayetHtml).toContain("Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak");
-    expect(ayetHtml).toContain("Fâtiha 1/2 — Şükretmek ve hamdetmek");
-
-    const hadisHtml = renderToString(
-      <CurriculumArchive
-        initialCompletedEntryIds={[]}
-        isSignedIn={false}
-        initialCategoryId="hadis"
-      />
-    );
-    expect(hadisHtml).toContain("Niyet: Bir işi neden yapıyorum?");
-    expect(hadisHtml).toContain("İslâm’ın beş temel direği");
-  });
-
   it("should track completion independently per category", () => {
-    // Complete hadis-eylul-1: Ayet should still be 0/55 completed with first entry active
-    const ayetHtml = renderToString(
+    // Complete adab-i-muaseret-eylul-1: Ayet should still be 0/55 completed with first entry active
+    const esmaHtml = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["hadis-eylul-1"]}
+        initialCompletedEntryIds={["adab-i-muaseret-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
+        initialCategoryId="esma"
       />
     );
-    expect(ayetHtml).toContain("0 / 55 tamamlandı");
-    expect(ayetHtml).toContain("archive-folder-card--active");
+    expect(esmaHtml).toContain("0 / 55 tamamlandı");
+    expect(esmaHtml).toContain("archive-folder-card--active");
 
     // Hadis category should show 1/55 completed
-    const hadisHtml = renderToString(
+    const adabHtml = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["hadis-eylul-1"]}
+        initialCompletedEntryIds={["adab-i-muaseret-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="hadis"
+        initialCategoryId="adab-i-muaseret"
       />
     );
-    expect(hadisHtml).toContain("1 / 55 tamamlandı");
+    expect(adabHtml).toContain("1 / 54 tamamlandı");
   });
 
   it("should render entries with proper status when some are completed", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1"]}
+        initialCompletedEntryIds={["esma-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
+        initialCategoryId="esma"
       />
     );
 
@@ -303,16 +285,16 @@ describe("CurriculumArchive Component", () => {
 
   it("should render drawer controls with Geçmiş (History) button and completion count", () => {
     const zeroHtml = renderToString(
-      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={true} initialCategoryId="ayet" />
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={true} initialCategoryId="esma" />
     );
     expect(zeroHtml).toContain("archive-drawer-history-btn");
     expect(zeroHtml).toContain("Geçmiş (0)");
 
     const oneHtml = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1"]}
+        initialCompletedEntryIds={["esma-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
+        initialCategoryId="esma"
       />
     );
     expect(oneHtml).toContain("Geçmiş (1)");
@@ -321,9 +303,9 @@ describe("CurriculumArchive Component", () => {
   it("should omit past shelf and rely on header history button when category has partially completed entries", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1"]}
+        initialCompletedEntryIds={["esma-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
+        initialCategoryId="esma"
       />
     );
 
@@ -368,7 +350,7 @@ describe("CurriculumArchive Component", () => {
       <CurriculumArchive
         initialCompletedEntryIds={[]}
         isSignedIn={false}
-        initialCategoryId="ayet"
+        initialCategoryId="esma"
       />
     );
 
@@ -380,10 +362,10 @@ describe("CurriculumArchive Component", () => {
   it("should render completed entries in reverse chronological order (latest completed first)", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2", "ayet-eylul-3"]}
+        initialCompletedEntryIds={["esma-eylul-1", "esma-eylul-2", "esma-eylul-3"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
-        initialHistoryViewCategoryIds={{ ayet: true }}
+        initialCategoryId="esma"
+        initialHistoryViewCategoryIds={{ esma: true }}
       />
     );
 
@@ -397,8 +379,8 @@ describe("CurriculumArchive Component", () => {
     expect(html).not.toContain("archive-history-ledger__desc");
     expect(html).not.toContain("read-status--complete");
     // eylul-3 title appears before eylul-1 in reverse order
-    const idx3 = html.indexOf("Fâtiha 1/3 — Allah’ın merhametini tanımak");
-    const idx1 = html.indexOf("Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak");
+    const idx3 = html.indexOf("ER-RAHÎM — Çok merhamet eden.");
+    const idx1 = html.indexOf("EL-CEMÎL — Güzel olan, güzellik veren.");
     expect(idx3).toBeGreaterThan(-1);
     expect(idx1).toBeGreaterThan(-1);
     expect(idx3).toBeLessThan(idx1);
@@ -407,24 +389,24 @@ describe("CurriculumArchive Component", () => {
   it("should assign sequential data-depth attributes to locked folders in multi-item stack", () => {
     const multiEntries = [
       {
-        id: "ayet-eylul-1",
-        categoryId: "ayet" as const,
+        id: "esma-eylul-1",
+        categoryId: "esma" as const,
         month: 9,
         week: 1,
         year: 2026,
         title: "Ayet 1",
       },
       {
-        id: "ayet-eylul-2",
-        categoryId: "ayet" as const,
+        id: "esma-eylul-2",
+        categoryId: "esma" as const,
         month: 9,
         week: 2,
         year: 2026,
         title: "Ayet 2",
       },
       {
-        id: "ayet-eylul-3",
-        categoryId: "ayet" as const,
+        id: "esma-eylul-3",
+        categoryId: "esma" as const,
         month: 9,
         week: 3,
         year: 2026,
@@ -473,10 +455,10 @@ describe("CurriculumArchive Component", () => {
 
   it("should handle multi-depth stack with 4 or more items gracefully", () => {
     const fourEntries = [
-      { id: "a1", categoryId: "ayet" as const, month: 9, week: 1, year: 2026, title: "Ayet 1" },
-      { id: "a2", categoryId: "ayet" as const, month: 9, week: 2, year: 2026, title: "Ayet 2" },
-      { id: "a3", categoryId: "ayet" as const, month: 9, week: 3, year: 2026, title: "Ayet 3" },
-      { id: "a4", categoryId: "ayet" as const, month: 9, week: 4, year: 2026, title: "Ayet 4" },
+      { id: "a1", categoryId: "esma" as const, month: 9, week: 1, year: 2026, title: "Ayet 1" },
+      { id: "a2", categoryId: "esma" as const, month: 9, week: 2, year: 2026, title: "Ayet 2" },
+      { id: "a3", categoryId: "esma" as const, month: 9, week: 3, year: 2026, title: "Ayet 3" },
+      { id: "a4", categoryId: "esma" as const, month: 9, week: 4, year: 2026, title: "Ayet 4" },
     ];
 
     const html = renderToString(
@@ -507,7 +489,7 @@ describe("CurriculumArchive Component", () => {
       <CurriculumArchive
         initialCompletedEntryIds={[]}
         isSignedIn={false}
-        initialCategoryId="hadis"
+        initialCategoryId="adab-i-muaseret"
       />
     );
 
@@ -592,37 +574,37 @@ describe("CurriculumArchive Component", () => {
   it("should render 'Okunmadı Olarak İşaretle' button on the latest completed entry in history view", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1"]}
+        initialCompletedEntryIds={["esma-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
-        initialHistoryViewCategoryIds={{ ayet: true }}
+        initialCategoryId="esma"
+        initialHistoryViewCategoryIds={{ esma: true }}
       />
     );
 
     expect(html).toContain("archive-undo-button");
     expect(html).toContain("Okunmadı Olarak İşaretle");
     expect(html).toContain(
-      'aria-label="Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak dosyasını okunmadı olarak işaretle"'
+      'aria-label="EL-CEMÎL — Güzel olan, güzellik veren. dosyasını okunmadı olarak işaretle"'
     );
   });
 
   it("should render 'Okunmadı Olarak İşaretle' button only on the first (latest) completed entry when multiple exist", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        initialCompletedEntryIds={["esma-eylul-1", "esma-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
-        initialHistoryViewCategoryIds={{ ayet: true }}
+        initialCategoryId="esma"
+        initialHistoryViewCategoryIds={{ esma: true }}
       />
     );
 
     // Ayet 2 is latest (rendered first in reverse order)
     expect(html).toContain(
-      'aria-label="Fâtiha 1/2 — Şükretmek ve hamdetmek dosyasını okunmadı olarak işaretle"'
+      'aria-label="ER-RAHMÂN — Merhameti bütün varlıkları kuşatan. dosyasını okunmadı olarak işaretle"'
     );
     // Ayet 1 is not latest -> should not have an undo button
     expect(html).not.toContain(
-      'aria-label="Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak dosyasını okunmadı olarak işaretle"'
+      'aria-label="EL-CEMÎL — Güzel olan, güzellik veren. dosyasını okunmadı olarak işaretle"'
     );
 
     // Only one undo button should exist in this category's history view
@@ -633,10 +615,10 @@ describe("CurriculumArchive Component", () => {
   it("should render dedicated history screen without other categories underneath when history view is open", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1"]}
+        initialCompletedEntryIds={["esma-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
-        initialHistoryViewCategoryIds={{ ayet: true }}
+        initialCategoryId="esma"
+        initialHistoryViewCategoryIds={{ esma: true }}
       />
     );
 
@@ -655,10 +637,10 @@ describe("CurriculumArchive Component", () => {
   it("should render 'Git' button and quick selection dropdown with completed entries in history toolbar", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        initialCompletedEntryIds={["esma-eylul-1", "esma-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
-        initialHistoryViewCategoryIds={{ ayet: true }}
+        initialCategoryId="esma"
+        initialHistoryViewCategoryIds={{ esma: true }}
       />
     );
 
@@ -668,10 +650,10 @@ describe("CurriculumArchive Component", () => {
 
     // Select dropdown with options
     expect(html).toContain('id="history-jump-select"');
-    expect(html).toContain('value="ayet-eylul-1"');
-    expect(html).toContain('value="ayet-eylul-2"');
-    expect(html).toContain("Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak");
-    expect(html).toContain("Fâtiha 1/2 — Şükretmek ve hamdetmek");
+    expect(html).toContain('value="esma-eylul-1"');
+    expect(html).toContain('value="esma-eylul-2"');
+    expect(html).toContain("EL-CEMÎL — Güzel olan, güzellik veren.");
+    expect(html).toContain("ER-RAHMÂN — Merhameti bütün varlıkları kuşatan.");
 
     // The prominent "Git" button
     expect(html).toContain('class="archive-history-jump__btn"');
@@ -682,10 +664,10 @@ describe("CurriculumArchive Component", () => {
   it("should render quick jump chips for En Yeni, En Eski and month pills when multiple entries exist", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1", "ayet-eylul-2"]}
+        initialCompletedEntryIds={["esma-eylul-1", "esma-eylul-2"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
-        initialHistoryViewCategoryIds={{ ayet: true }}
+        initialCategoryId="esma"
+        initialHistoryViewCategoryIds={{ esma: true }}
       />
     );
 
@@ -698,23 +680,23 @@ describe("CurriculumArchive Component", () => {
   it("should assign id='history-card-[id]' to completed cards for jump targeting", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1"]}
+        initialCompletedEntryIds={["esma-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
-        initialHistoryViewCategoryIds={{ ayet: true }}
+        initialCategoryId="esma"
+        initialHistoryViewCategoryIds={{ esma: true }}
       />
     );
 
-    expect(html).toContain('id="history-card-ayet-eylul-1"');
+    expect(html).toContain('id="history-card-esma-eylul-1"');
   });
 
   it("should render structured header with top-row and responsive folder tabs to prevent mobile truncation", () => {
     const html = renderToString(
       <CurriculumArchive
-        initialCompletedEntryIds={["ayet-eylul-1"]}
+        initialCompletedEntryIds={["esma-eylul-1"]}
         isSignedIn={true}
-        initialCategoryId="ayet"
-        initialHistoryViewCategoryIds={{ ayet: true }}
+        initialCategoryId="esma"
+        initialHistoryViewCategoryIds={{ esma: true }}
       />
     );
 
@@ -740,9 +722,9 @@ describe("CurriculumArchive Component", () => {
 
   it("should render extra entries as continuation tabs in the folder stack, not in a separate section", () => {
     const mock48Entries = Array.from({ length: 48 }, (_, i) => ({
-      id: `test-ayet-${i + 1}`,
+      id: `test-esma-${i + 1}`,
       grade: 1,
-      categoryId: "ayet" as const,
+      categoryId: "esma" as const,
       month: Math.min(12, Math.floor(i / 4) + 1),
       week: (i % 4) + 1,
       year: 2026,
@@ -752,9 +734,9 @@ describe("CurriculumArchive Component", () => {
     const mock49Entries = [
       ...mock48Entries,
       {
-        id: "test-ayet-extra-1",
+        id: "test-esma-extra-1",
         grade: 1,
-        categoryId: "ayet" as const,
+        categoryId: "esma" as const,
         month: 12,
         week: 4,
         year: 2026,
@@ -812,7 +794,7 @@ describe("CurriculumArchive Component", () => {
 
   it("should render Okundu işaretle action buttons for currently unlocked entries", () => {
     const html = renderToString(
-      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={true} initialCategoryId="ayet" />
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={true} initialCategoryId="esma" />
     );
 
     expect(html).toContain("archive-complete-button");
@@ -836,26 +818,6 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("archive-reading-action");
   });
 
-  it("should not render Dersi Görüntüle on Hadis entries and should render Kaynağı Aç (sunnah.com)", () => {
-    const html = renderToString(
-      <CurriculumArchive
-        initialCompletedEntryIds={[]}
-        isSignedIn={true}
-        initialCategoryId="hadis"
-      />
-    );
-
-    const hadisSectionStart = html.indexOf('id="hadis"');
-    const nextSectionStart = html.indexOf("<section", hadisSectionStart + 10);
-    const hadisSection = html.substring(
-      hadisSectionStart,
-      nextSectionStart !== -1 ? nextSectionStart : hadisSectionStart + 5000
-    );
-
-    expect(hadisSection).not.toContain("Dersi Görüntüle");
-    expect(hadisSection).toContain("Kaynağı Aç (sunnah.com)");
-  });
-
   describe("scrollCategoryIntoView", () => {
     it("safely handles missing window or element gracefully", () => {
       expect(() => scrollCategoryIntoView("non-existent-category")).not.toThrow();
@@ -873,10 +835,10 @@ describe("CurriculumArchive Component", () => {
           innerWidth: 1024,
         };
         (globalThis as unknown as { document: unknown }).document = {
-          getElementById: (id: string) => (id === "ayet" ? mockElement : null),
+          getElementById: (id: string) => (id === "esma" ? mockElement : null),
         };
 
-        scrollCategoryIntoView("ayet");
+        scrollCategoryIntoView("esma");
         expect(mockElement.scrollIntoView).toHaveBeenCalledWith({
           behavior: "smooth",
           block: "start",
@@ -909,7 +871,7 @@ describe("CurriculumArchive Component", () => {
           scrollTo: mockScrollTo,
         };
         (globalThis as unknown as { document: unknown }).document = {
-          getElementById: (id: string) => (id === "hadis" ? mockElement : null),
+          getElementById: (id: string) => (id === "adab-i-muaseret" ? mockElement : null),
           querySelector: (selector: string) => {
             if (selector === ".site-header") return mockHeader;
             if (selector === ".archive-fixed-capsule") return mockCapsule;
@@ -917,7 +879,7 @@ describe("CurriculumArchive Component", () => {
           },
         };
 
-        scrollCategoryIntoView("hadis");
+        scrollCategoryIntoView("adab-i-muaseret");
         // elementTop = 600 + 100 = 700. totalOffset = 50 + 60 + 16 = 126. top = 700 - 126 = 574.
         expect(mockScrollTo).toHaveBeenCalledWith({
           top: 574,

@@ -132,20 +132,6 @@ describe("Curriculum SQLite Database Module", () => {
     expect(extraKonu.length).toBe(0); // 0 < 48: absolutely no extras before 48 weeks
   });
 
-  it("should retrieve a specific entry by its deterministic ID", async () => {
-    const entry1 = await getCurriculumEntryByIdFromDb("ayet-eylul-1");
-    expect(entry1).not.toBeNull();
-    expect(entry1?.title).toContain("Fâtiha 1/1");
-    expect(entry1?.grade).toBe(1);
-    expect(entry1?.isExtra).toBe(false);
-
-    const entry2 = await getCurriculumEntryByIdFromDb("ayet-aralik-4");
-    expect(entry2).not.toBeNull();
-    expect(entry2?.title).toContain("Âl-i İmrân 3/31");
-    expect(entry2?.grade).toBe(1);
-    expect(entry2?.isExtra).toBe(false);
-  });
-
   it("should return null for non-existent entry ID", async () => {
     const entry = await getCurriculumEntryByIdFromDb("non-existent-id-xyz");
     expect(entry).toBeNull();
@@ -174,51 +160,6 @@ describe("Curriculum SQLite Database Module", () => {
         // Verify high school content for grades 4-6
         expect(standard[0].title).toBe("Edep, Güzel Ahlâk ve Hilim — Edep Nedir?");
       }
-    }
-  });
-
-  it("should have 55 Ayet entries for all 6 grades (330 total)", async () => {
-    const allEntries = await getCurriculumEntriesFromDb();
-    const ayetEntries = allEntries.filter((e) => e.categoryId === "ayet");
-    expect(ayetEntries.length).toBe(330);
-
-    for (let grade = 1; grade <= 6; grade++) {
-      const gradeAyet = (await getCurriculumEntriesFromDb(grade)).filter(
-        (e) => e.categoryId === "ayet"
-      );
-      expect(gradeAyet.length).toBe(55);
-
-      const standard = gradeAyet.filter((e) => !e.isExtra);
-      const extras = gradeAyet.filter((e) => e.isExtra);
-      expect(standard.length).toBe(48);
-      expect(extras.length).toBe(7);
-
-      if (grade <= 3) {
-        expect(standard[0].title).toBe("Fâtiha 1/1 — Her işe Allah’ın adıyla başlamak");
-      } else {
-        expect(standard[0].title).toBe("Fâtiha 1/5 — Kulluk ve istiâne");
-      }
-    }
-  });
-
-  it("should have 55 Hadis entries for all 6 grades (330 total)", async () => {
-    const allEntries = await getCurriculumEntriesFromDb();
-    const hadisEntries = allEntries.filter((e) => e.categoryId === "hadis");
-    expect(hadisEntries.length).toBe(330);
-
-    for (let grade = 1; grade <= 6; grade++) {
-      const gradeHadis = (await getCurriculumEntriesFromDb(grade)).filter(
-        (e) => e.categoryId === "hadis"
-      );
-      expect(gradeHadis.length).toBe(55);
-
-      const standard = gradeHadis.filter((e) => !e.isExtra);
-      const extras = gradeHadis.filter((e) => e.isExtra);
-      expect(standard.length).toBe(48);
-      expect(extras.length).toBe(7);
-
-      expect(standard[0].title).toBe("Niyet: Bir işi neden yapıyorum?");
-      expect(standard[0].resourceUrl).toBe("https://sunnah.com/bukhari:1");
     }
   });
 
@@ -268,112 +209,6 @@ describe("Curriculum SQLite Database Module", () => {
     expect(g4Entry?.isExtra).toBe(false);
 
     const g4Extra = await getCurriculumEntryByIdFromDb("g4-esma-extra-7");
-    expect(g4Extra).not.toBeNull();
-    expect(g4Extra?.grade).toBe(4);
-    expect(g4Extra?.isExtra).toBe(true);
-    expect(g4Extra?.extraOrder).toBe(7);
-  });
-
-  it("should have 55 Efendimiz entries for all 6 grades (330 total)", async () => {
-    const allEntries = await getCurriculumEntriesFromDb();
-    const efendimizEntries = allEntries.filter((e) => e.categoryId === "efendimiz");
-    expect(efendimizEntries.length).toBe(330);
-
-    for (let grade = 1; grade <= 6; grade++) {
-      const gradeEfendimiz = (await getCurriculumEntriesFromDb(grade)).filter(
-        (e) => e.categoryId === "efendimiz"
-      );
-      expect(gradeEfendimiz.length).toBe(55);
-
-      const standard = gradeEfendimiz.filter((e) => !e.isExtra);
-      const extras = gradeEfendimiz.filter((e) => e.isExtra);
-      expect(standard.length).toBe(48);
-      expect(extras.length).toBe(7);
-
-      if (grade <= 3) {
-        expect(standard[0].title).toBe(
-          "ZÂHİR'E DEĞERİNİ HATIRLATMASI — İnsan dış görünüşüyle ölçülmez"
-        );
-      } else {
-        expect(standard[0].title).toBe(
-          "ZÂHİR'İN GÖNLÜNE DOKUNMASI — Değer, görünüşten daha derindir"
-        );
-      }
-    }
-  });
-
-  it("should retrieve Efendimiz entries across grades by deterministic ID", async () => {
-    // Grade 1 standard & extra
-    const g1Entry = await getCurriculumEntryByIdFromDb("efendimiz-eylul-1");
-    expect(g1Entry).not.toBeNull();
-    expect(g1Entry?.title).toContain("ZÂHİR'E DEĞERİNİ HATIRLATMASI");
-    expect(g1Entry?.grade).toBe(1);
-    expect(g1Entry?.isExtra).toBe(false);
-
-    const g1Extra = await getCurriculumEntryByIdFromDb("efendimiz-extra-1");
-    expect(g1Extra).not.toBeNull();
-    expect(g1Extra?.isExtra).toBe(true);
-    expect(g1Extra?.extraOrder).toBe(1);
-
-    // Grade 4 (Lise) standard & extra
-    const g4Entry = await getCurriculumEntryByIdFromDb("g4-efendimiz-eylul-1");
-    expect(g4Entry).not.toBeNull();
-    expect(g4Entry?.title).toContain("ZÂHİR'İN GÖNLÜNE DOKUNMASI");
-    expect(g4Entry?.grade).toBe(4);
-    expect(g4Entry?.isExtra).toBe(false);
-
-    const g4Extra = await getCurriculumEntryByIdFromDb("g4-efendimiz-extra-7");
-    expect(g4Extra).not.toBeNull();
-    expect(g4Extra?.grade).toBe(4);
-    expect(g4Extra?.isExtra).toBe(true);
-    expect(g4Extra?.extraOrder).toBe(7);
-  });
-
-  it("should have 55 Sahabe Kıssaları entries for all 6 grades (330 total)", async () => {
-    const allEntries = await getCurriculumEntriesFromDb();
-    const sahabeEntries = allEntries.filter((e) => e.categoryId === "sahabe-kissalari");
-    expect(sahabeEntries.length).toBe(330);
-
-    for (let grade = 1; grade <= 6; grade++) {
-      const gradeSahabe = (await getCurriculumEntriesFromDb(grade)).filter(
-        (e) => e.categoryId === "sahabe-kissalari"
-      );
-      expect(gradeSahabe.length).toBe(55);
-
-      const standard = gradeSahabe.filter((e) => !e.isExtra);
-      const extras = gradeSahabe.filter((e) => e.isExtra);
-      expect(standard.length).toBe(48);
-      expect(extras.length).toBe(7);
-
-      if (grade <= 3) {
-        expect(standard[0].title).toBe("Hz. Ebû Bekir — Yılların Güveni");
-      } else {
-        expect(standard[0].title).toBe("Sa’d b. Rebî — “Malımın Yarısı Senin”");
-      }
-    }
-  });
-
-  it("should retrieve Sahabe Kıssaları entries across grades by deterministic ID", async () => {
-    // Grade 1 standard & extra
-    const g1Entry = await getCurriculumEntryByIdFromDb("sahabe-kissalari-eylul-1");
-    expect(g1Entry).not.toBeNull();
-    expect(g1Entry?.title).toBe("Hz. Ebû Bekir — Yılların Güveni");
-    expect(g1Entry?.grade).toBe(1);
-    expect(g1Entry?.isExtra).toBe(false);
-
-    const g1Extra = await getCurriculumEntryByIdFromDb("sahabe-kissalari-extra-1");
-    expect(g1Extra).not.toBeNull();
-    expect(g1Extra?.isExtra).toBe(true);
-    expect(g1Extra?.extraOrder).toBe(1);
-
-    // Grade 4 (Lise) standard & extra
-    const g4Entry = await getCurriculumEntryByIdFromDb("g4-sahabe-kissalari-eylul-1");
-    expect(g4Entry).not.toBeNull();
-    expect(g4Entry?.title).toBe("Sa’d b. Rebî — “Malımın Yarısı Senin”");
-    expect(g4Entry?.grade).toBe(4);
-    expect(g4Entry?.isExtra).toBe(false);
-
-    const g4Extra = await getCurriculumEntryByIdFromDb("g4-sahabe-kissalari-extra-7");
     expect(g4Extra).not.toBeNull();
     expect(g4Extra?.grade).toBe(4);
     expect(g4Extra?.isExtra).toBe(true);
@@ -480,22 +315,6 @@ describe("Curriculum SQLite Database Module", () => {
     expect(liseErkekExtra50?.pdfUrl).toBe("/curriculum/ilmihal/lise/erkek/hafta-98.pdf");
   });
 
-  it("should not assign non-PDF resourceUrl as pdfUrl for Hadis entries", async () => {
-    const hadisEntry = await getCurriculumEntryByIdFromDb("hadis-eylul-2");
-    expect(hadisEntry).not.toBeNull();
-    expect(hadisEntry?.categoryId).toBe("hadis");
-    expect(hadisEntry?.resourceUrl).toBe("https://sunnah.com/bukhari:8");
-    expect(hadisEntry?.pdfUrl).toBeUndefined();
-
-    const allEntries = await getCurriculumEntriesFromDb(1);
-    const hadisList = allEntries.filter((e) => e.categoryId === "hadis");
-    expect(hadisList.length).toBe(55);
-    for (const entry of hadisList) {
-      expect(entry.pdfUrl).toBeUndefined();
-      expect(entry.resourceUrl).toBeDefined();
-    }
-  });
-
   it("should have 48 Hocaefendi Sohbetleri entries for all 6 grades (288 total)", async () => {
     for (let grade = 1; grade <= 6; grade++) {
       const entries = (await getCurriculumEntriesFromDb(grade)).filter(
@@ -534,7 +353,7 @@ describe("Curriculum SQLite Database Module", () => {
   });
 
   it("should keep excluded categories empty across regular and forced seeding", async () => {
-    const categoryId = "ayet" as const;
+    const categoryId = "hocaefendi-dinleme" as const;
     await excludeAndDeleteCurriculumCategoriesFromSeed([categoryId]);
 
     try {
@@ -546,7 +365,7 @@ describe("Curriculum SQLite Database Module", () => {
         [categoryId]
       );
       expect(Number(row?.count ?? 0)).toBe(0);
-      expect(await getCurriculumEntryByIdFromDb("ayet-eylul-1")).toBeNull();
+      expect(await getCurriculumEntryByIdFromDb("hocaefendi-dinleme-eylul-1")).toBeNull();
     } finally {
       await allowCurriculumCategoriesToSeed([categoryId]);
       await seedCurriculumDatabase(true);
@@ -588,13 +407,13 @@ describe("Curriculum week management and draft lifecycle", () => {
         {
           ...base,
           id: ids[0],
-          categoryId: "ayet",
+          categoryId: "konu",
           body: "<u>niyet</u> önemlidir.\n\n## Kelime Açıklaması\n\n**niyet** — Amaç.",
         },
         {
           ...base,
           id: ids[1],
-          categoryId: "hadis",
+          categoryId: "hocaefendi-dinleme",
           body: "**تَعَلَّمَ**\n\nÖğrendi.\n\n## Kelime Açıklaması\n\n**taallame** — Öğrendi.",
         },
         { ...base, id: ids[2], categoryId: "adab-i-muaseret", body: "Korunan içerik." },
@@ -641,14 +460,14 @@ describe("Curriculum week management and draft lifecycle", () => {
         isDraft: true,
       },
       {
-        id: "g1-ayet-mayis-3",
+        id: "g1-hocaefendi-dinleme-mayis-3",
         grade: 1 as const,
-        categoryId: "ayet" as const,
+        categoryId: "hocaefendi-dinleme" as const,
         month: 5,
         week: 3,
         year: 2027,
-        title: "Test Ayet Week 35",
-        body: "Test Ayet Body",
+        title: "Test Sohbet Week 35",
+        body: "Test Sohbet Body",
         isDraft: true,
       },
     ];

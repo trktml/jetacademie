@@ -29,14 +29,10 @@ describe("curriculum", () => {
     }
   });
 
-  it("contains all nine real curriculum categories", () => {
+  it("contains all five active curriculum categories", () => {
     expect(curriculumCategories.map((category) => category.label)).toEqual([
       "Haftanın Konusu",
       "Hocaefendi Sohbetleri",
-      "Efendimiz",
-      "Sahabe kıssaları",
-      "Ayet",
-      "Hadis",
       "İlmihal",
       "Adab-ı Muaşeret",
       "Esmâü'l-Hüsnâ",
@@ -47,24 +43,16 @@ describe("curriculum", () => {
     expect(curriculumCategories.map((category) => category.shortLabel)).toEqual([
       "Konu",
       "Sohbet",
-      "Siyer",
-      "Sahabe",
-      "Ayet",
-      "Hadis",
       "İlmihal",
       "Adab",
       "Esmâ",
     ]);
   });
 
-  it("has 55 entries for ayet, 55 for hadis, 55 for esma, 55 for efendimiz, 55 for sahabe-kissalari, 54 for adab-i-muaseret, 56 for ilmihal (28 erkek + 28 bayan), 48 for hocaefendi-dinleme, and 0 for konu", () => {
-    expect(curriculumEntries.length).toBe(433);
+  it("retains the five active categories and their seeded entries", () => {
+    expect(curriculumEntries.length).toBe(213);
 
-    expect(getCategoryEntries("ayet").length).toBe(55);
-    expect(getCategoryEntries("hadis").length).toBe(55);
     expect(getCategoryEntries("esma").length).toBe(55);
-    expect(getCategoryEntries("efendimiz").length).toBe(55);
-    expect(getCategoryEntries("sahabe-kissalari").length).toBe(55);
     expect(getCategoryEntries("adab-i-muaseret").length).toBe(54);
     expect(getCategoryEntries("hocaefendi-dinleme").length).toBe(48);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "erkek").length).toBe(28);
@@ -72,11 +60,7 @@ describe("curriculum", () => {
 
     for (const category of curriculumCategories) {
       if (
-        category.id === "ayet" ||
-        category.id === "hadis" ||
         category.id === "esma" ||
-        category.id === "efendimiz" ||
-        category.id === "sahabe-kissalari" ||
         category.id === "adab-i-muaseret" ||
         category.id === "hocaefendi-dinleme" ||
         category.id === "ilmihal"
@@ -88,85 +72,87 @@ describe("curriculum", () => {
   });
 
   it("uses category-month-week ID pattern", () => {
-    expect(curriculumEntries[0].id).toBe("ayet-eylul-1");
-    expect(curriculumEntries[1].id).toBe("ayet-eylul-2");
-    expect(curriculumEntries[2].id).toBe("ayet-eylul-3");
-    expect(curriculumEntries[3].id).toBe("ayet-eylul-4");
-    expect(curriculumEntries[4].id).toBe("ayet-ekim-1");
-    expect(curriculumEntries[15].id).toBe("ayet-aralik-4");
+    expect(getCategoryEntries("esma")[0].id).toBe("esma-eylul-1");
+    expect(getCategoryEntries("esma")[1].id).toBe("esma-eylul-2");
+    expect(getCategoryEntries("esma")[2].id).toBe("esma-eylul-3");
+    expect(getCategoryEntries("esma")[3].id).toBe("esma-eylul-4");
+    expect(getCategoryEntries("esma")[4].id).toBe("esma-ekim-1");
+    expect(getCategoryEntries("esma")[15].id).toBe("esma-aralik-4");
 
-    const hadisEntries = getCategoryEntries("hadis");
-    expect(hadisEntries[0].id).toBe("hadis-eylul-1");
-    expect(hadisEntries[1].id).toBe("hadis-eylul-2");
+    const adabEntries = getCategoryEntries("adab-i-muaseret");
+    expect(adabEntries[0].id).toBe("adab-i-muaseret-eylul-1");
+    expect(adabEntries[1].id).toBe("adab-i-muaseret-eylul-2");
   });
 
   it("makeEntryId generates correct patterns", () => {
-    expect(makeEntryId("hadis", 9, 1)).toBe("hadis-eylul-1");
-    expect(makeEntryId("ayet", 1, 3)).toBe("ayet-ocak-3");
+    expect(makeEntryId("adab-i-muaseret", 9, 1)).toBe("adab-i-muaseret-eylul-1");
+    expect(makeEntryId("esma", 1, 3)).toBe("esma-ocak-3");
     expect(makeEntryId("konu", 12, 2)).toBe("konu-aralik-2");
   });
 
   it("unlocks only the first unread entry", () => {
-    const entries = getCategoryEntries("hadis");
+    const entries = getCategoryEntries("adab-i-muaseret");
     expect(getUnlockedEntryIndex(entries, new Set())).toBe(0);
-    expect(getUnlockedEntryIndex(entries, new Set(["hadis-eylul-1"]))).toBe(1);
+    expect(getUnlockedEntryIndex(entries, new Set(["adab-i-muaseret-eylul-1"]))).toBe(1);
   });
 
   it("does not allow skipping an unread entry", () => {
-    const entries = getCategoryEntries("hadis");
-    expect(canCompleteEntry("hadis-eylul-2", entries, new Set())).toBe(false);
-    expect(canCompleteEntry("hadis-eylul-2", entries, new Set(["hadis-eylul-1"]))).toBe(true);
+    const entries = getCategoryEntries("adab-i-muaseret");
+    expect(canCompleteEntry("adab-i-muaseret-eylul-2", entries, new Set())).toBe(false);
+    expect(
+      canCompleteEntry("adab-i-muaseret-eylul-2", entries, new Set(["adab-i-muaseret-eylul-1"]))
+    ).toBe(true);
   });
 
   it("tracks progress independently per category", () => {
-    const ayetEntries = getCategoryEntries("ayet");
-    const hadisEntries = getCategoryEntries("hadis");
+    const esmaEntries = getCategoryEntries("esma");
+    const adabEntries = getCategoryEntries("adab-i-muaseret");
 
-    // Completing ayet-eylul-1 should NOT unlock hadis-eylul-2
-    const completedAyet = new Set(["ayet-eylul-1"]);
-    expect(getUnlockedEntryIndex(ayetEntries, completedAyet)).toBe(1); // ayet-eylul-2 unlocked
-    expect(getUnlockedEntryIndex(hadisEntries, completedAyet)).toBe(0); // hadis-eylul-1 still first
+    // Completing esma-eylul-1 should NOT unlock adab-i-muaseret-eylul-2
+    const completedAyet = new Set(["esma-eylul-1"]);
+    expect(getUnlockedEntryIndex(esmaEntries, completedAyet)).toBe(1); // esma-eylul-2 unlocked
+    expect(getUnlockedEntryIndex(adabEntries, completedAyet)).toBe(0); // adab-i-muaseret-eylul-1 still first
 
-    expect(canCompleteEntry("hadis-eylul-2", hadisEntries, completedAyet)).toBe(false);
-    expect(canCompleteEntry("ayet-eylul-2", ayetEntries, completedAyet)).toBe(true);
+    expect(canCompleteEntry("adab-i-muaseret-eylul-2", adabEntries, completedAyet)).toBe(false);
+    expect(canCompleteEntry("esma-eylul-2", esmaEntries, completedAyet)).toBe(true);
   });
 
   it("returns entries sorted by year/month/week within a category", () => {
-    const ayetEntries = getCategoryEntries("ayet");
-    expect(ayetEntries[0].week).toBe(1);
-    expect(ayetEntries[1].week).toBe(2);
-    expect(ayetEntries[2].week).toBe(3);
-    expect(ayetEntries[3].week).toBe(4);
-    expect(ayetEntries[0].id).toBe("ayet-eylul-1");
-    expect(ayetEntries[1].id).toBe("ayet-eylul-2");
+    const esmaEntries = getCategoryEntries("esma");
+    expect(esmaEntries[0].week).toBe(1);
+    expect(esmaEntries[1].week).toBe(2);
+    expect(esmaEntries[2].week).toBe(3);
+    expect(esmaEntries[3].week).toBe(4);
+    expect(esmaEntries[0].id).toBe("esma-eylul-1");
+    expect(esmaEntries[1].id).toBe("esma-eylul-2");
   });
 
   describe("canUnmarkEntry", () => {
     it("allows unmarking the only completed entry", () => {
-      const entries = getCategoryEntries("hadis");
-      const completed = new Set(["hadis-eylul-1"]);
-      expect(canUnmarkEntry("hadis-eylul-1", entries, completed)).toBe(true);
+      const entries = getCategoryEntries("adab-i-muaseret");
+      const completed = new Set(["adab-i-muaseret-eylul-1"]);
+      expect(canUnmarkEntry("adab-i-muaseret-eylul-1", entries, completed)).toBe(true);
     });
 
     it("allows unmarking only the latest completed entry when multiple are completed", () => {
-      const entries = getCategoryEntries("hadis");
-      const completed = new Set(["hadis-eylul-1", "hadis-eylul-2"]);
+      const entries = getCategoryEntries("adab-i-muaseret");
+      const completed = new Set(["adab-i-muaseret-eylul-1", "adab-i-muaseret-eylul-2"]);
 
-      // hadis-eylul-2 is the latest -> allowed
-      expect(canUnmarkEntry("hadis-eylul-2", entries, completed)).toBe(true);
-      // hadis-eylul-1 has hadis-eylul-2 after it -> NOT allowed
-      expect(canUnmarkEntry("hadis-eylul-1", entries, completed)).toBe(false);
+      // adab-i-muaseret-eylul-2 is the latest -> allowed
+      expect(canUnmarkEntry("adab-i-muaseret-eylul-2", entries, completed)).toBe(true);
+      // adab-i-muaseret-eylul-1 has adab-i-muaseret-eylul-2 after it -> NOT allowed
+      expect(canUnmarkEntry("adab-i-muaseret-eylul-1", entries, completed)).toBe(false);
     });
 
     it("returns false if the entry is not currently completed", () => {
-      const entries = getCategoryEntries("hadis");
+      const entries = getCategoryEntries("adab-i-muaseret");
       const completed = new Set<string>();
-      expect(canUnmarkEntry("hadis-eylul-1", entries, completed)).toBe(false);
+      expect(canUnmarkEntry("adab-i-muaseret-eylul-1", entries, completed)).toBe(false);
     });
 
     it("returns false for non-existent entry", () => {
-      const entries = getCategoryEntries("hadis");
-      const completed = new Set(["hadis-eylul-1"]);
+      const entries = getCategoryEntries("adab-i-muaseret");
+      const completed = new Set(["adab-i-muaseret-eylul-1"]);
       expect(canUnmarkEntry("unknown-entry", entries, completed)).toBe(false);
     });
   });
@@ -211,9 +197,9 @@ describe("curriculum", () => {
         const month = Math.min(12, Math.floor(i / 4) + 1);
         const week = (i % 4) + 1;
         return {
-          id: `ayet-w${weekNum}`,
+          id: `esma-w${weekNum}`,
           grade: 1,
-          categoryId: "ayet" as const,
+          categoryId: "esma" as const,
           month,
           week,
           year: 2026,
@@ -221,7 +207,7 @@ describe("curriculum", () => {
         };
       });
 
-      const resolved = getCategoryEntries("ayet", mock50Entries);
+      const resolved = getCategoryEntries("esma", mock50Entries);
       expect(resolved.length).toBe(50);
 
       // First 48 entries must be standard (isExtra: false)
@@ -241,16 +227,16 @@ describe("curriculum", () => {
 
     it("requires completing all 48 weeks before an extra entry can be completed", () => {
       const mock50Entries = Array.from({ length: 50 }, (_, i) => ({
-        id: `ayet-w${i + 1}`,
+        id: `esma-w${i + 1}`,
         grade: 1,
-        categoryId: "ayet" as const,
+        categoryId: "esma" as const,
         month: Math.min(12, Math.floor(i / 4) + 1),
         week: (i % 4) + 1,
         year: 2026,
         title: `Ayet Hafta ${i + 1}`,
       }));
 
-      const resolved = getCategoryEntries("ayet", mock50Entries);
+      const resolved = getCategoryEntries("esma", mock50Entries);
       const extra1 = resolved[48]; // 49th entry (Ekstra 1)
 
       // Only 47 weeks completed: extra cannot be completed

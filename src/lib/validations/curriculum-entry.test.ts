@@ -49,7 +49,7 @@ describe("curriculum-entry validations and slot mapping", () => {
     expect(slotToWeekNumber(5, 4)).toBe(36);
   });
 
-  it("validates a compliant 36-entry weekly package", () => {
+  it("validates a compliant 12-entry weekly package", () => {
     const slot = weekNumberToSlot(3);
     const entries: WeeklyEntryInput[] = [];
 
@@ -79,7 +79,7 @@ describe("curriculum-entry validations and slot mapping", () => {
 
     expect(res.success).toBe(true);
 
-    const hadith = entries.find((entry) => entry.categoryId === "hadis")!;
+    const hadith = entries.find((entry) => entry.categoryId === "hocaefendi-dinleme")!;
     hadith.body =
       "**تَعَلَّمَ**\n\nTürkçesi: Öğrendi.\n\n## Kelime Açıklaması\n\n**taallame** — Öğrendi.";
     const invalid = weeklyPackageSchema.safeParse({ weekNumber: 3, entries });

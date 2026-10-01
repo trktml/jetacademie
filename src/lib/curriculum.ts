@@ -1,29 +1,19 @@
-import {
-  BookHeart,
-  BookOpenText,
-  HandHeart,
-  Layers,
-  ScrollText,
-  UsersRound,
-  Video,
-  type LucideIcon,
-} from "lucide-react";
+import { BookHeart, HandHeart, Layers, Video, type LucideIcon } from "lucide-react";
 import { EsmaIcon } from "@/components/icons/esma-icon";
-import { GoncaGulIcon } from "@/components/icons/gonca-gul-icon";
 
 export const curriculumCategoryIds = [
   "konu",
   "hocaefendi-dinleme",
-  "efendimiz",
-  "sahabe-kissalari",
-  "ayet",
-  "hadis",
   "ilmihal",
   "adab-i-muaseret",
   "esma",
 ] as const;
 
 export type CurriculumCategoryId = (typeof curriculumCategoryIds)[number];
+
+export function isCurriculumCategoryId(value: unknown): value is CurriculumCategoryId {
+  return typeof value === "string" && curriculumCategoryIds.some((id) => id === value);
+}
 
 export interface CurriculumCategory {
   readonly id: CurriculumCategoryId;
@@ -50,22 +40,6 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     accent: "rose",
     resourceType: "video",
   },
-  {
-    id: "efendimiz",
-    label: "Efendimiz",
-    shortLabel: "Siyer",
-    icon: GoncaGulIcon,
-    accent: "blue",
-  },
-  {
-    id: "sahabe-kissalari",
-    label: "Sahabe kıssaları",
-    shortLabel: "Sahabe",
-    icon: UsersRound,
-    accent: "violet",
-  },
-  { id: "ayet", label: "Ayet", shortLabel: "Ayet", icon: BookOpenText, accent: "coral" },
-  { id: "hadis", label: "Hadis", shortLabel: "Hadis", icon: ScrollText, accent: "amber" },
   {
     id: "ilmihal",
     label: "İlmihal",
@@ -152,7 +126,7 @@ const monthLabels: Record<number, string> = {
 
 /**
  * Generates a deterministic entry ID.
- * Pattern: "hadis-eylul-1", "g2-ayet-eylul-2", "g1-ayet-extra-1", etc.
+ * Pattern: "konu-eylul-1", "g2-esma-eylul-2", "g1-esma-extra-1", etc.
  */
 export function makeEntryId(
   categoryId: CurriculumCategoryId,

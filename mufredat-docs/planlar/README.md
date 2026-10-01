@@ -1,42 +1,44 @@
-# Yıllık müfredat planları
+# Annual curriculum plans
 
-Bu dizindeki `M1_Yillik_Plan.md`–`M6_Yillik_Plan.md` dosyaları yıllık planların **esas alınan ve düzenlenen sürümleridir**. Konu, ana soru, yıllık kazanımlar, başlangıç ilkeleri ve temel kaynak seçiminde ilgili Markdown planını kullan.
+`M1_Yillik_Plan.md`–`M6_Yillik_Plan.md` are the authoritative, editable annual plans. Use the relevant Markdown plan for the topic, main question, annual outcomes, starting principles, and primary source.
 
-## Plan seçimi
+## Choosing a plan
 
-| Plan                    | Okul seviyesi | Yaklaşık yaş | Yıllık gelişim yönü             |
-| ----------------------- | ------------- | ------------ | ------------------------------- |
-| [M1](M1_Yillik_Plan.md) | Ortaokul 1    | 12–13        | Merak ve muhabbet               |
-| [M2](M2_Yillik_Plan.md) | Ortaokul 2    | 13–14        | Okuma ve anlama                 |
-| [M3](M3_Yillik_Plan.md) | Ortaokul 3    | 14–15        | Hayata taşıma                   |
-| [M4](M4_Yillik_Plan.md) | Lise 1        | 15–16        | İhtiyaç hissetme                |
-| [M5](M5_Yillik_Plan.md) | Lise 2        | 16–17        | Tahkik ve mukayese              |
-| [M6](M6_Yillik_Plan.md) | Lise 3        | 17–18        | Bütünlük, şahsî duruş ve temsil |
+| Plan                    | School level    | Approximate age | Annual development                             |
+| ----------------------- | --------------- | --------------- | ---------------------------------------------- |
+| [M1](M1_Yillik_Plan.md) | Middle school 1 | 12–13           | Curiosity and affection                        |
+| [M2](M2_Yillik_Plan.md) | Middle school 2 | 13–14           | Reading and understanding                      |
+| [M3](M3_Yillik_Plan.md) | Middle school 3 | 14–15           | Applying learning in life                      |
+| [M4](M4_Yillik_Plan.md) | High school 1   | 15–16           | Recognizing a personal need                    |
+| [M5](M5_Yillik_Plan.md) | High school 2   | 16–17           | Investigation and comparison                   |
+| [M6](M6_Yillik_Plan.md) | High school 3   | 17–18           | Coherence, personal stance, and representation |
 
-Yaş aralıkları [yazım yönergesinden](MUFREDAT-INSTRUCTIONS.md) alınır; Türkçe okuma düzeyi yaşından çıkarılmaz. M1 ilkokul birinci sınıf anlamına gelmez. Önceki seviyelerin tamamlandığını varsayma; ilgili planın başlangıç ilkesini oku.
+Age ranges come from the [writing guide](MUFREDAT-INSTRUCTIONS.md); age does not establish Turkish reading ability. M1 does not mean primary-school grade 1. Do not assume previous levels have been completed; read the plan's starting principles.
 
-## Bir haftayı hazırlarken
+## Preparing a week
 
-1. İlgili sınıfın yıllık hedeflerini, başlangıç ilkesini ve çalışma yöntemini oku.
-2. `M2 — Hafta 01` gibi sınıf ve hafta başlığını bul. Ünite içindeki yerini, **Konu**, **Ana soru** ve **Temel kaynak** alanlarını birlikte oku. Yakın haftaları tekrar ve ilerleyiş açısından karşılaştır.
-3. Yıllık gelişim haritasını, yıl sonu beklentisini ve anne-baba hakkı hattını ilgili haftayla birlikte değerlendir. Yıl sonu becerisini ilk haftanın ön bilgisi sayma.
-4. [MUFREDAT-INSTRUCTIONS.md](MUFREDAT-INSTRUCTIONS.md) başındaki üretim akışını ve kategorinin kurallarını uygula. Kaynak pasajlarını özgün eserlerden ayrıca doğrula.
+1. Read the grade's annual goals, starting principles, and study method.
+2. Find the grade and week heading, such as `M2 — Hafta 01`. Read its place in the unit together with the **Konu**, **Ana soru**, and **Temel kaynak** fields. Compare nearby weeks for progression and repetition.
+3. Consider the annual development map, year-end expectations, and the theme of respecting parents. Do not treat year-end skills as first-week prerequisites.
+4. Follow the production workflow and editorial rules in [MUFREDAT-INSTRUCTIONS.md](MUFREDAT-INSTRUCTIONS.md). Verify source passages against their original works.
 
-Her plan 9 ünite ve 36 hafta içerir. Haftalar 01–36 arasında kesintisiz numaralanır. Planlar ay belirtmez; uygulamadaki Eylül–Mayıs eşlemesi dörder haftalık takvim düzenidir, kaynak planın bilgisi olarak gösterilmez. Haftalık alanlara dönüşüm sırasında yeni kazanım veya doğrulanmamış pasaj/sayfa eklenmedi. Haftanın hedefi, ana soru ve yıllık hedeflerle ilişkisi üzerinden hazırlık kaydında belirlenir.
+Each plan contains nine units and 36 consecutively numbered weeks. Plans do not assign months; the application's September–May mapping uses four weeks per month and is not source-plan information. Conversion added no new outcomes or unverified passages/pages. Determine the week's learning objective from its main question and annual goals in the private preparation record.
 
-## Belge önceliği
+## Document precedence and presentation
 
-- **Yıllık Markdown planı:** Konu, ana soru, kazanım/hedef, başlangıç ilkesi ve temel kaynak için yetkilidir.
-- **MUFREDAT-INSTRUCTIONS.md:** Öğrenci metninin dili, anlatısı, kategori düzeni, alıntı ve dipnot sunumu, kaynak kontrolü ve editoryal kabul için yetkilidir.
-- **Uygulamadaki `src/lib/data/curriculum-plans.ts`:** Planların öğrenci arayüzünde kullanılan temsilidir; planın tamamını içermez. Plan metninin yerine kullanılmaz.
-- **Veritabanı:** Üretilmiş öğrenci içeriklerinin asıl kayıt yeridir. Plan dosyaları ders paketi veya yayın durumu değildir.
+- **Annual Markdown plan:** Authoritative for topic, main question, outcomes/goals, starting principles, and primary source.
+- **MUFREDAT-INSTRUCTIONS.md:** Authoritative for student-facing language, narrative, category structure, quotations, footnotes, source review, and editorial acceptance.
+- **`src/lib/data/curriculum-plans.ts`:** A partial application representation; it does not replace the full plan.
+- **Database:** The authoritative store for generated student content. Plan files do not represent lesson packages or publication status.
 
-Kaynak DOCX belgelerindeki “Haftalık Ders Dosyaları Hazırlanırken”, “Haftalık Ders Dosyası Standardı”, “Kaynak Metin İlkesi” ve görsel/video önerileri, aktarımın eksiksiz olması için korundu. Bu eski sunum önerileri güncel yazım yönergesini değiştirmez: 15–20 dakika metin uzunluğu hedefi değildir; ayrı kaynak başlıkları, öğretmen notu, cevap anahtarı, toplu kaynakça veya her ders için görsel zorunluluğu doğurmaz. Özgün alıntı sadeleştirilmez; anlaşılır açıklama alıntının dışında verilir. Çözülmemiş konu/kaynak çelişkisi ayrıca bildirilir.
+**Siyer, Sahabe, Ayet, and Hadis are no longer separate categories.** Include verified events and passages only where they support the Topic narrative, without mandatory quotas or a fixed sequence of source sections. Weekly production packages contain six grades × two categories (`konu`, `hocaefendi-dinleme`) = 12 entries. Listening remains separate; `adab-i-muaseret`, `ilmihal`, and `esma` are preserved.
 
-## Güncelleme ve dışa aktarım
+Historical instructions retained from the source DOCX files, including “Haftalık Ders Dosyaları Hazırlanırken”, “Haftalık Ders Dosyası Standardı”, “Kaynak Metin İlkesi”, and visual/video suggestions, document the original plans. They do not override current presentation rules: 15–20 minutes is not a text-length target, and separate source sections, teacher notes, answer keys, bibliographies, or a visual for every lesson are not mandatory. Preserve original quotations; put accessible explanations outside them. Report unresolved topic/source conflicts separately.
 
-Değişiklikleri önce ilgili Markdown planında yap. Konu, ana soru veya temel kaynak değişiyorsa uygulama temsilini de aynı değişiklikte karşılaştırıp güncelle. Markdown dosyaları Git üzerinden izlenir; farklı plan sürümlerini elle paralel düzenleme.
+## Updates and exports
 
-DOCX dosyaları, **1 Ekim 2026 Markdown geçişinin doğrulanmasının ardından kaldırıldı**. Özgün belgeler Git geçmişinden bulunabilir. Word veya PDF paylaşımı gerektiğinde güncel Markdown'dan dışa aktar; plan değişikliklerini Markdown üzerinde yap.
+Edit the relevant Markdown plan first. When a topic, main question, or primary source changes, compare and update the application representation in the same change. Markdown plans are tracked in Git; do not maintain parallel plan versions manually. Keep the plans, quotations, and student-content labels in their original languages.
 
-Geçişte altı DOCX belgesinin bütün metin paragrafları ve tablo hücreleri karşılaştırıldı. 54 ünite ve 216 haftanın konu, ana soru ve kaynak alanları aktarıldı; haftalık tablolar ayrı hafta başlıklarına dönüştürüldü. Diğer tablolar ve metinlerin sırası korundu. Sayfa düzeni, renk ve yazı tipi Markdown'ın parçası değildir.
+The source DOCX files were removed after verification of the **1 October 2026 Markdown migration**. Originals remain available in Git history. Export the current Markdown when Word or PDF sharing is needed.
+
+Migration verification compared all text paragraphs and table cells from six DOCX documents. It transferred 54 units and 216 weeks with their topic, main question, and source fields; weekly tables became separate week headings. Other tables and text order were preserved. Page layout, colors, and fonts are not part of Markdown.

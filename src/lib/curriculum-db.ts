@@ -1,6 +1,7 @@
 import { ensureDatabaseSchema } from "@/lib/auth";
 import { execute, getPool, getSqlite, isPostgres, query, queryOne } from "@/lib/db";
 import {
+  isCurriculumCategoryId,
   resolveAllCurriculumEntries,
   resolveCategoryEntries,
   type CurriculumCategoryId,
@@ -8,16 +9,12 @@ import {
 } from "@/lib/curriculum";
 import { curriculumEntries } from "@/lib/curriculum-data";
 import { getAdabEntriesForGrade } from "@/lib/data/adab-curriculum";
-import { getAyetEntriesForGrade } from "@/lib/data/ayet-curriculum";
-import { getEfendimizEntriesForGrade } from "@/lib/data/efendimiz-curriculum";
 import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
-import { getHadisEntriesForGrade } from "@/lib/data/hadis-curriculum";
 import {
   getAllIlmihalEntries,
   getIlmihalEntriesForGrade,
   type Gender,
 } from "@/lib/data/ilmihal-curriculum";
-import { getSahabeEntriesForGrade } from "@/lib/data/sahabe-curriculum";
 import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
 import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
 import { getEditorOverrideById, mergeEditorContent } from "@/lib/editor/content";
@@ -181,14 +178,9 @@ export async function ensureCurriculumEntriesTable(): Promise<void> {
 
   try {
     await execute(`
-      -- Migrate any legacy siyer entries and progress to efendimiz
-      UPDATE "curriculum_entries" SET "categoryId" = 'efendimiz' WHERE "categoryId" = 'siyer';
-      UPDATE "curriculum_entries" SET "id" = REPLACE("id", 'siyer', 'efendimiz') WHERE "id" LIKE '%siyer%';
-      UPDATE "curriculum_progress" SET "entryId" = REPLACE("entryId", 'siyer', 'efendimiz') WHERE "entryId" LIKE '%siyer%';
-
       -- Clean up legacy premature extra entries that violated the 48-week rule
-      DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" NOT IN ('adab-i-muaseret', 'ilmihal', 'ayet', 'hadis', 'esma', 'efendimiz');
-      DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%' AND "entryId" NOT LIKE '%ayet%' AND "entryId" NOT LIKE '%hadis%' AND "entryId" NOT LIKE '%esma%' AND "entryId" NOT LIKE '%efendimiz%';
+      DELETE FROM "curriculum_entries" WHERE "id" LIKE '%-extra-%' AND "categoryId" NOT IN ('adab-i-muaseret', 'ilmihal', 'ayet', 'hadis', 'esma', 'efendimiz', 'sahabe-kissalari', 'siyer');
+      DELETE FROM "curriculum_progress" WHERE "entryId" LIKE '%-extra-%' AND "entryId" NOT LIKE '%adab-i-muaseret%' AND "entryId" NOT LIKE '%ilmihal%' AND "entryId" NOT LIKE '%ayet%' AND "entryId" NOT LIKE '%hadis%' AND "entryId" NOT LIKE '%esma%' AND "entryId" NOT LIKE '%efendimiz%' AND "entryId" NOT LIKE '%sahabe-kissalari%' AND "entryId" NOT LIKE '%siyer%';
 
       -- Clean up removed categories (risale, pirlanta) and their progress
       DELETE FROM "curriculum_entries" WHERE "categoryId" IN ('risale', 'pirlanta');
@@ -200,6 +192,13 @@ export async function ensureCurriculumEntriesTable(): Promise<void> {
         "createdAt" timestamp not null default current_timestamp
       );
     `);
+    for (const categoryId of ["ayet", "hadis", "efendimiz", "sahabe-kissalari", "siyer"]) {
+      await execute(
+        `INSERT INTO "curriculum_seed_exclusions" ("categoryId", "createdAt")
+         VALUES ($1, $2) ON CONFLICT ("categoryId") DO NOTHING`,
+        [categoryId, new Date().toISOString()]
+      );
+    }
     if (isPostgres) await ensurePostgresCurriculumSeedGuard();
     await migrateLegacyGradeOneCurriculumEntryIds();
     tableEnsured = true;
@@ -293,6 +292,9 @@ export async function bulkUpsertCurriculumEntries(
 ): Promise<void> {
   if (rows.length === 0) return;
   const now = new Date().toISOString();
+  if (rows.some((row) => !isCurriculumCategoryId(row.categoryId))) {
+    throw new Error("Cannot save a retired or unknown curriculum category.");
+  }
   const gradeScopedRows = rows.map(withGradeScopedId);
   const CHUNK_SIZE = 50;
 
@@ -450,78 +452,6 @@ export async function syncIlmihalCurriculumIfOutdated(): Promise<void> {
   });
 }
 
-export async function syncAyetCurriculumIfOutdated(): Promise<void> {
-  await ensureCurriculumEntriesTable();
-  await syncCategoryIfOutdated("ayet", 330, () => {
-    const now = new Date().toISOString();
-    const batch: CurriculumEntryRow[] = [];
-    for (let grade = 1; grade <= 6; grade++) {
-      const entries = getAyetEntriesForGrade(grade);
-      for (const entry of entries) {
-        batch.push({
-          id: entry.id,
-          grade,
-          categoryId: "ayet",
-          gender: null,
-          month: entry.month,
-          week: entry.week,
-          year: entry.year,
-          isExtra: entry.isExtra ? 1 : 0,
-          extraOrder: entry.extraOrder ?? null,
-          title: entry.title,
-          body: entry.body ?? null,
-          resourceUrl: entry.resourceUrl ?? null,
-          pdfUrl: isPdf(entry.pdfUrl)
-            ? entry.pdfUrl
-            : isPdf(entry.resourceUrl)
-              ? entry.resourceUrl
-              : null,
-          pageCount: entry.pageCount ?? null,
-          createdAt: now,
-          updatedAt: now,
-        });
-      }
-    }
-    return batch;
-  });
-}
-
-export async function syncHadisCurriculumIfOutdated(): Promise<void> {
-  await ensureCurriculumEntriesTable();
-  await syncCategoryIfOutdated("hadis", 330, () => {
-    const now = new Date().toISOString();
-    const batch: CurriculumEntryRow[] = [];
-    for (let grade = 1; grade <= 6; grade++) {
-      const entries = getHadisEntriesForGrade(grade);
-      for (const entry of entries) {
-        batch.push({
-          id: entry.id,
-          grade,
-          categoryId: "hadis",
-          gender: null,
-          month: entry.month,
-          week: entry.week,
-          year: entry.year,
-          isExtra: entry.isExtra ? 1 : 0,
-          extraOrder: entry.extraOrder ?? null,
-          title: entry.title,
-          body: entry.body ?? null,
-          resourceUrl: entry.resourceUrl ?? null,
-          pdfUrl: isPdf(entry.pdfUrl)
-            ? entry.pdfUrl
-            : isPdf(entry.resourceUrl)
-              ? entry.resourceUrl
-              : null,
-          pageCount: entry.pageCount ?? null,
-          createdAt: now,
-          updatedAt: now,
-        });
-      }
-    }
-    return batch;
-  });
-}
-
 export async function syncEsmaCurriculumIfOutdated(): Promise<void> {
   await ensureCurriculumEntriesTable();
   await syncCategoryIfOutdated("esma", 330, () => {
@@ -534,78 +464,6 @@ export async function syncEsmaCurriculumIfOutdated(): Promise<void> {
           id: entry.id,
           grade,
           categoryId: "esma",
-          gender: null,
-          month: entry.month,
-          week: entry.week,
-          year: entry.year,
-          isExtra: entry.isExtra ? 1 : 0,
-          extraOrder: entry.extraOrder ?? null,
-          title: entry.title,
-          body: entry.body ?? null,
-          resourceUrl: entry.resourceUrl ?? null,
-          pdfUrl: isPdf(entry.pdfUrl)
-            ? entry.pdfUrl
-            : isPdf(entry.resourceUrl)
-              ? entry.resourceUrl
-              : null,
-          pageCount: entry.pageCount ?? null,
-          createdAt: now,
-          updatedAt: now,
-        });
-      }
-    }
-    return batch;
-  });
-}
-
-export async function syncEfendimizCurriculumIfOutdated(): Promise<void> {
-  await ensureCurriculumEntriesTable();
-  await syncCategoryIfOutdated("efendimiz", 330, () => {
-    const now = new Date().toISOString();
-    const batch: CurriculumEntryRow[] = [];
-    for (let grade = 1; grade <= 6; grade++) {
-      const entries = getEfendimizEntriesForGrade(grade);
-      for (const entry of entries) {
-        batch.push({
-          id: entry.id,
-          grade,
-          categoryId: "efendimiz",
-          gender: null,
-          month: entry.month,
-          week: entry.week,
-          year: entry.year,
-          isExtra: entry.isExtra ? 1 : 0,
-          extraOrder: entry.extraOrder ?? null,
-          title: entry.title,
-          body: entry.body ?? null,
-          resourceUrl: entry.resourceUrl ?? null,
-          pdfUrl: isPdf(entry.pdfUrl)
-            ? entry.pdfUrl
-            : isPdf(entry.resourceUrl)
-              ? entry.resourceUrl
-              : null,
-          pageCount: entry.pageCount ?? null,
-          createdAt: now,
-          updatedAt: now,
-        });
-      }
-    }
-    return batch;
-  });
-}
-
-export async function syncSahabeCurriculumIfOutdated(): Promise<void> {
-  await ensureCurriculumEntriesTable();
-  await syncCategoryIfOutdated("sahabe-kissalari", 330, () => {
-    const now = new Date().toISOString();
-    const batch: CurriculumEntryRow[] = [];
-    for (let grade = 1; grade <= 6; grade++) {
-      const entries = getSahabeEntriesForGrade(grade);
-      for (const entry of entries) {
-        batch.push({
-          id: entry.id,
-          grade,
-          categoryId: "sahabe-kissalari",
           gender: null,
           month: entry.month,
           week: entry.week,
@@ -747,13 +605,9 @@ async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
 
   const count = Number(countRow?.c ?? 0);
   if (!force && count > 0) {
-    await syncAyetCurriculumIfOutdated();
-    await syncHadisCurriculumIfOutdated();
     await syncAdabCurriculumIfOutdated();
     await syncIlmihalCurriculumIfOutdated();
     await syncEsmaCurriculumIfOutdated();
-    await syncEfendimizCurriculumIfOutdated();
-    await syncSahabeCurriculumIfOutdated();
     await syncHocaefendiCurriculumIfOutdated();
     await syncKonuCurriculumIfOutdated();
     return;
@@ -812,116 +666,12 @@ async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
       });
     }
 
-    const gradeAyetEntries = getAyetEntriesForGrade(grade);
-    for (const entry of gradeAyetEntries) {
-      seedBatch.push({
-        id: entry.id,
-        grade,
-        categoryId: "ayet",
-        gender: null,
-        month: entry.month,
-        week: entry.week,
-        year: entry.year,
-        isExtra: entry.isExtra ? 1 : 0,
-        extraOrder: entry.extraOrder ?? null,
-        title: entry.title,
-        body: entry.body ?? null,
-        resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: isPdf(entry.pdfUrl)
-          ? entry.pdfUrl
-          : isPdf(entry.resourceUrl)
-            ? entry.resourceUrl
-            : null,
-        pageCount: entry.pageCount ?? null,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
-
-    const gradeHadisEntries = getHadisEntriesForGrade(grade);
-    for (const entry of gradeHadisEntries) {
-      seedBatch.push({
-        id: entry.id,
-        grade,
-        categoryId: "hadis",
-        gender: null,
-        month: entry.month,
-        week: entry.week,
-        year: entry.year,
-        isExtra: entry.isExtra ? 1 : 0,
-        extraOrder: entry.extraOrder ?? null,
-        title: entry.title,
-        body: entry.body ?? null,
-        resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: isPdf(entry.pdfUrl)
-          ? entry.pdfUrl
-          : isPdf(entry.resourceUrl)
-            ? entry.resourceUrl
-            : null,
-        pageCount: entry.pageCount ?? null,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
-
     const gradeEsmaEntries = getEsmaEntriesForGrade(grade);
     for (const entry of gradeEsmaEntries) {
       seedBatch.push({
         id: entry.id,
         grade,
         categoryId: "esma",
-        gender: null,
-        month: entry.month,
-        week: entry.week,
-        year: entry.year,
-        isExtra: entry.isExtra ? 1 : 0,
-        extraOrder: entry.extraOrder ?? null,
-        title: entry.title,
-        body: entry.body ?? null,
-        resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: isPdf(entry.pdfUrl)
-          ? entry.pdfUrl
-          : isPdf(entry.resourceUrl)
-            ? entry.resourceUrl
-            : null,
-        pageCount: entry.pageCount ?? null,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
-
-    const gradeEfendimizEntries = getEfendimizEntriesForGrade(grade);
-    for (const entry of gradeEfendimizEntries) {
-      seedBatch.push({
-        id: entry.id,
-        grade,
-        categoryId: "efendimiz",
-        gender: null,
-        month: entry.month,
-        week: entry.week,
-        year: entry.year,
-        isExtra: entry.isExtra ? 1 : 0,
-        extraOrder: entry.extraOrder ?? null,
-        title: entry.title,
-        body: entry.body ?? null,
-        resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: isPdf(entry.pdfUrl)
-          ? entry.pdfUrl
-          : isPdf(entry.resourceUrl)
-            ? entry.resourceUrl
-            : null,
-        pageCount: entry.pageCount ?? null,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
-
-    const gradeSahabeEntries = getSahabeEntriesForGrade(grade);
-    for (const entry of gradeSahabeEntries) {
-      seedBatch.push({
-        id: entry.id,
-        grade,
-        categoryId: "sahabe-kissalari",
         gender: null,
         month: entry.month,
         week: entry.week,
@@ -1026,12 +776,8 @@ async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
 
 export function getFallbackEntries(grade?: number, gender?: Gender): CurriculumEntry[] {
   if (typeof grade === "number" && grade >= 1 && grade <= 6) {
-    const ayet = getAyetEntriesForGrade(grade);
-    const hadis = getHadisEntriesForGrade(grade);
     const adab = getAdabEntriesForGrade(grade);
     const esma = getEsmaEntriesForGrade(grade);
-    const efendimiz = getEfendimizEntriesForGrade(grade);
-    const sahabe = getSahabeEntriesForGrade(grade);
     const hocaefendi = getHocaefendiEntriesForGrade(grade);
     const ilmihal = gender
       ? getIlmihalEntriesForGrade(grade, gender)
@@ -1044,22 +790,14 @@ export function getFallbackEntries(grade?: number, gender?: Gender): CurriculumE
         (e) =>
           e.categoryId !== "adab-i-muaseret" &&
           e.categoryId !== "ilmihal" &&
-          e.categoryId !== "ayet" &&
-          e.categoryId !== "hadis" &&
           e.categoryId !== "esma" &&
-          e.categoryId !== "efendimiz" &&
-          e.categoryId !== "sahabe-kissalari" &&
           e.categoryId !== "hocaefendi-dinleme"
       )
       .map((e) => ({ ...e, grade, id: grade === 1 ? e.id : `g${grade}-${e.id}` }));
     return resolveAllCurriculumEntries([
       ...others,
-      ...ayet,
-      ...hadis,
       ...adab,
       ...esma,
-      ...efendimiz,
-      ...sahabe,
       ...hocaefendi,
       ...ilmihal,
     ]).map(withGradeScopedId);
@@ -1097,6 +835,8 @@ export async function getCurriculumEntriesFromDb(
     if (!rows || rows.length === 0) {
       return mergeEditorContent(getFallbackEntries(grade, gender), grade, gender);
     }
+
+    rows = rows.filter((row) => isCurriculumCategoryId(row.categoryId));
 
     let filteredRows = gender
       ? rows.filter((r) => r.categoryId !== "ilmihal" || !r.gender || r.gender === gender)
@@ -1199,7 +939,7 @@ export async function publishCurriculumWeek(
 }
 
 /**
- * Deletes entries for a given week number (1-36) or month and week for the 6 weekly content categories.
+ * Deletes entries for a given week number (1-36) or month and week for the two weekly content categories.
  * Strictly preserves adab-i-muaseret, ilmihal, and esma categories.
  */
 export async function deleteCurriculumWeek(
@@ -1218,14 +958,7 @@ export async function deleteCurriculumWeek(
     week = slot.week;
   }
 
-  const allowedCategories = [
-    "konu",
-    "ayet",
-    "hadis",
-    "efendimiz",
-    "sahabe-kissalari",
-    "hocaefendi-dinleme",
-  ];
+  const allowedCategories = WEEKLY_CONTENT_CATEGORIES;
   const placeholders = allowedCategories.map((_, i) => `$${i + 3}`).join(", ");
   const res = await query<{ id: string }>(
     `DELETE FROM "curriculum_entries"
@@ -1233,6 +966,11 @@ export async function deleteCurriculumWeek(
      RETURNING "id"`,
     [month, week, ...allowedCategories]
   );
+  if (res.length > 0) {
+    const ids = res.map((r) => r.id);
+    const idPlaceholders = ids.map((_, i) => `$${i + 1}`).join(", ");
+    await query(`DELETE FROM "curriculum_progress" WHERE "entryId" IN (${idPlaceholders})`, ids);
+  }
   return { deletedCount: res.length };
 }
 
@@ -1253,7 +991,7 @@ export async function getCurriculumWeekSummaries(): Promise<WeekSummary[]> {
             COUNT(CASE WHEN "isDraft" = 1 THEN 1 END) as drafts,
             COUNT(CASE WHEN "isDraft" = 0 THEN 1 END) as published
      FROM "curriculum_entries"
-     WHERE "categoryId" IN ('konu', 'ayet', 'hadis', 'efendimiz', 'sahabe-kissalari', 'hocaefendi-dinleme')
+     WHERE "categoryId" IN ('konu', 'hocaefendi-dinleme')
        AND "month" IS NOT NULL AND "week" IS NOT NULL
      GROUP BY "month", "week"`
   );
@@ -1304,7 +1042,7 @@ export async function getCurriculumWeekSummaries(): Promise<WeekSummary[]> {
 export async function getCurriculumEntryByIdFromDb(id: string): Promise<CurriculumEntry | null> {
   await seedCurriculumDatabase();
   const override = await getEditorOverrideById(/^g[1-6]-/.test(id) ? id : `g1-${id}`);
-  if (override) return override;
+  if (override && isCurriculumCategoryId(override.categoryId)) return override;
 
   try {
     let row = await queryOne<CurriculumEntryRow>(
@@ -1336,6 +1074,8 @@ export async function getCurriculumEntryByIdFromDb(id: string): Promise<Curricul
       }
       return null;
     }
+
+    if (!isCurriculumCategoryId(row.categoryId)) return null;
 
     // Resolve within its category to ensure accurate 48-week extra status
     let categoryRows: CurriculumEntryRow[];

@@ -1,5 +1,5 @@
 import type { CurriculumEntry } from "@/lib/curriculum";
-import { makeEntryId, sortCurriculumEntries } from "@/lib/curriculum";
+import { isCurriculumCategoryId, makeEntryId, sortCurriculumEntries } from "@/lib/curriculum";
 import { query, queryOne } from "@/lib/db";
 import { ensureEditorSchema } from "./schema";
 import type { EditorEntryInput } from "./validation";
@@ -28,11 +28,13 @@ export async function getEditorOverrides(grade?: number): Promise<EditorRecord[]
     `SELECT "entry", "revision", "updatedAt" FROM "curriculum_editor_content"${grade ? ' WHERE "grade" = $1' : ""}`,
     grade ? [grade] : []
   );
-  return rows.map((row) => ({
-    entry: JSON.parse(row.entry) as CurriculumEntry,
-    revision: row.revision,
-    updatedAt: row.updatedAt,
-  }));
+  return rows
+    .map((row) => ({
+      entry: JSON.parse(row.entry) as CurriculumEntry,
+      revision: row.revision,
+      updatedAt: row.updatedAt,
+    }))
+    .filter(({ entry }) => isCurriculumCategoryId(entry.categoryId));
 }
 export async function mergeEditorContent(
   entries: CurriculumEntry[],
@@ -57,7 +59,8 @@ export async function getEditorOverrideById(id: string): Promise<CurriculumEntry
     `SELECT "entry", "revision", "updatedAt" FROM "curriculum_editor_content" WHERE "entryId" = $1`,
     [id]
   );
-  return row ? (JSON.parse(row.entry) as CurriculumEntry) : null;
+  const entry = row ? (JSON.parse(row.entry) as CurriculumEntry) : null;
+  return entry && isCurriculumCategoryId(entry.categoryId) ? entry : null;
 }
 export async function saveEditorContent(
   input: EditorEntryInput,

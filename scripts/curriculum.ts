@@ -25,7 +25,7 @@ KULLANIM:
 
 KOMUTLAR:
   list                          36 haftanın durumunu (boş, taslak, yayında) listeler
-  save --week <N> [seçenekler]   Haftalık 36 kaydı doğrular ve veritabanına taslak olarak kaydeder
+  save --week <N> [seçenekler]   Haftalık 12 kaydı doğrular ve veritabanına taslak olarak kaydeder
   publish --week <N>            Belirtilen haftanın taslak kayıtlarını yayına alır (isDraft = 0)
   export --week <N> [seçenekler] Belirtilen haftanın kayıtlarını Markdown olarak dışa aktarır
   delete --week <N>             Belirtilen haftanın içerik kayıtlarını siler (adab, ilmihal, esma hariç)
@@ -174,7 +174,7 @@ async function handleSave(options: Record<string, string | boolean>) {
   const isDraftVal = !shouldPublish;
 
   console.log(
-    `\n⏳ Hafta ${weekNumber} için 36 kayıt veritabanına aktarılıyor (isDraft: ${isDraftVal})...`
+    `\n⏳ Hafta ${weekNumber} için 12 kayıt veritabanına aktarılıyor (isDraft: ${isDraftVal})...`
   );
 
   const pool = getPool();
@@ -262,7 +262,7 @@ async function handleSave(options: Record<string, string | boolean>) {
   }
 
   console.log(
-    `✅ Hafta ${weekNumber} başarıyla kaydedildi! (36 kayıt, Statü: ${isDraftVal ? "Taslak" : "Yayında"})\n`
+    `✅ Hafta ${weekNumber} başarıyla kaydedildi! (12 kayıt, Statü: ${isDraftVal ? "Taslak" : "Yayında"})\n`
   );
 }
 

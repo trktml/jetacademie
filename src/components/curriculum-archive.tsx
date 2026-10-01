@@ -1400,9 +1400,7 @@ export function CurriculumArchive({
                             <span>
                               {getYouTubeVideoId(entry.resourceUrl)
                                 ? "YouTube'da İzle"
-                                : entry.categoryId === "hadis"
-                                  ? "Kaynağı Aç (sunnah.com)"
-                                  : "Kaynağı Aç"}
+                                : "Kaynağı Aç"}
                             </span>
                           </a>
                         </div>
@@ -1737,9 +1735,7 @@ export function CurriculumArchive({
                                           <span>
                                             {getYouTubeVideoId(entry.resourceUrl)
                                               ? "YouTube'da İzle"
-                                              : entry.categoryId === "hadis"
-                                                ? "Kaynağı Aç (sunnah.com)"
-                                                : "Kaynağı Aç"}
+                                              : "Kaynağı Aç"}
                                           </span>
                                         </a>
                                       </div>
@@ -1874,9 +1870,7 @@ export function CurriculumArchive({
                                         <span>
                                           {getYouTubeVideoId(currentEntry.resourceUrl)
                                             ? "YouTube'da İzle"
-                                            : currentEntry.categoryId === "hadis"
-                                              ? "Kaynağı Aç (sunnah.com)"
-                                              : "Kaynağı Aç"}
+                                            : "Kaynağı Aç"}
                                         </span>
                                       </a>
                                     </div>

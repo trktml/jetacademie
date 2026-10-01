@@ -1,14 +1,7 @@
 import { z } from "zod";
 import { curriculumVocabularyIssues } from "@/lib/curriculum-vocabulary";
 
-export const WEEKLY_CONTENT_CATEGORIES = [
-  "konu",
-  "ayet",
-  "hadis",
-  "efendimiz",
-  "sahabe-kissalari",
-  "hocaefendi-dinleme",
-] as const;
+export const WEEKLY_CONTENT_CATEGORIES = ["konu", "hocaefendi-dinleme"] as const;
 
 export type WeeklyContentCategory = (typeof WEEKLY_CONTENT_CATEGORIES)[number];
 
@@ -69,10 +62,10 @@ export const weeklyPackageSchema = z
   .superRefine((val, ctx) => {
     const slot = weekNumberToSlot(val.weekNumber);
 
-    if (val.entries.length !== 36) {
+    if (val.entries.length !== 6 * WEEKLY_CONTENT_CATEGORIES.length) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `Haftalık paket tam 36 kayıt içermelidir (6 sınıf × 6 kategori). Alınan kayıt sayısı: ${val.entries.length}`,
+        message: `Haftalık paket tam ${6 * WEEKLY_CONTENT_CATEGORIES.length} kayıt içermelidir (6 sınıf × ${WEEKLY_CONTENT_CATEGORIES.length} kategori). Alınan kayıt sayısı: ${val.entries.length}`,
       });
       return;
     }
@@ -81,10 +74,10 @@ export const weeklyPackageSchema = z
 
     for (let grade = 1; grade <= 6; grade++) {
       const gradeEntries = val.entries.filter((e) => e.grade === grade);
-      if (gradeEntries.length !== 6) {
+      if (gradeEntries.length !== WEEKLY_CONTENT_CATEGORIES.length) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `${grade}. sınıf için tam 6 kategori bulunmalıdır. Mevcut: ${gradeEntries.length}`,
+          message: `${grade}. sınıf için tam ${WEEKLY_CONTENT_CATEGORIES.length} kategori bulunmalıdır. Mevcut: ${gradeEntries.length}`,
         });
       }
 
