@@ -34,10 +34,11 @@ describe("GradeSelector Component", () => {
     expect(html).toContain('aria-label="Sınıf seçimi: 5. Sınıf"');
   });
 
-  it("shows the selected grade and a visible change action in labeled mode", () => {
+  it("shows the visible change action in labeled mode without redundant grade text", () => {
     const html = renderToString(<GradeSelector labeled value={4} />);
 
-    expect(html).toContain("4. Sınıf<!-- --> · Sınıfı değiştir");
+    expect(html).toContain("Sınıfı değiştir");
+    expect(html).not.toContain("4. Sınıf · Sınıfı değiştir");
     expect(html).toContain("grade-selector-trigger--labeled");
     expect(html).toContain('aria-label="Sınıf seçimi: 4. Sınıf"');
   });

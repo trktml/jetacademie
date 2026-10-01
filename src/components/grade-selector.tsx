@@ -267,9 +267,7 @@ export function GradeSelector({
         {!labeled && <span className="grade-selector-trigger__num">{selectedGrade}</span>}
         {labeled && (
           <>
-            <span className="grade-selector-trigger__label">
-              {GRADE_LABELS[selectedGrade]} · Sınıfı değiştir
-            </span>
+            <span className="grade-selector-trigger__label">Sınıfı değiştir</span>
             <ChevronDown className="grade-selector-trigger__chevron" aria-hidden="true" />
           </>
         )}
