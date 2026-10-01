@@ -3,6 +3,30 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MarkdownContent } from "./markdown-content";
 
 describe("Safe shared Markdown rendering", () => {
+  it("keeps footnotes and return links inside their own card after sanitizing", () => {
+    const html = renderToStaticMarkup(
+      <>
+        <MarkdownContent>{"Birinci kart.[^1]\n\n[^1]: Birinci kaynak."}</MarkdownContent>
+        <MarkdownContent>{"İkinci kart.[^1]\n\n[^1]: İkinci kaynak."}</MarkdownContent>
+      </>
+    );
+    const cards = html.split('<div class="curriculum-markdown" dir="auto">').slice(1);
+    const allIds: string[] = [];
+    for (const card of cards) {
+      const ids = [...card.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
+      const links = [...card.matchAll(/<a\b[^>]*href="#([^"]+)"[^>]*>/g)];
+      expect(links).toHaveLength(2);
+      for (const link of links) {
+        expect(ids).toContain(link[1]);
+        expect(link[0]).not.toContain('target="_blank"');
+      }
+      for (const match of card.matchAll(/aria-describedby="([^"]+)"/g)) {
+        for (const id of match[1].split(/\s+/)) expect(ids).toContain(id);
+      }
+      allIds.push(...ids);
+    }
+    expect(new Set(allIds).size).toBe(allIds.length);
+  });
   it("opens vocabulary definitions from a non-Konu card's own glossary", () => {
     const html = renderToStaticMarkup(
       <MarkdownContent>

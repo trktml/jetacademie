@@ -4,12 +4,55 @@ import { useId, useMemo, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
+import type { Element, Root } from "hast";
 import { readCurriculumVocabulary } from "@/lib/curriculum-vocabulary";
 import "./markdown-content.css";
 
 interface VocabularyItem {
   readonly word: string;
   readonly definition: string;
+}
+
+/** Keep sanitized footnote anchors local to each card, including their back links. */
+function rehypeFootnoteAnchors(prefix: string) {
+  return () => (tree: Root) => {
+    const elements: Element[] = [];
+    function collect(node: Root | Element) {
+      for (const child of node.children) {
+        if (child.type === "element") {
+          elements.push(child);
+          collect(child);
+        }
+      }
+    }
+    collect(tree);
+
+    const anchors = new Map<string, string>();
+    const normalize = (id: string) => id.replace(/^(?:user-content-)+/, "");
+    for (const element of elements) {
+      const id = element.properties.id;
+      if (typeof id !== "string") continue;
+      const name = normalize(id);
+      if (!/^fn(?:ref)?-/.test(name) && name !== "footnote-label") continue;
+      const scopedId = `${prefix}-${name}`;
+      anchors.set(name, scopedId);
+      element.properties.id = scopedId;
+    }
+    for (const element of elements) {
+      const href = element.properties.href;
+      if (typeof href === "string" && href.startsWith("#")) {
+        const target = anchors.get(normalize(href.slice(1)));
+        if (target) element.properties.href = `#${target}`;
+      }
+      const describedBy = element.properties.ariaDescribedBy;
+      if (describedBy) {
+        const ids = Array.isArray(describedBy) ? describedBy : String(describedBy).split(/\s+/);
+        element.properties.ariaDescribedBy = ids.map(
+          (id) => anchors.get(normalize(String(id))) ?? id
+        );
+      }
+    }
+  };
 }
 
 function VocabularyTerm({ word, definition }: VocabularyItem) {
@@ -110,6 +153,7 @@ export function MarkdownContent({
   stripTitle?: string;
   vocabulary?: readonly VocabularyItem[];
 }) {
+  const footnotePrefix = `footnotes-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const effectiveVocabulary = useMemo(
     () => vocabulary ?? readCurriculumVocabulary(children ?? "").items,
     [children, vocabulary]
@@ -131,14 +175,21 @@ export function MarkdownContent({
       <Markdown
         skipHtml
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeSanitize]}
+        rehypePlugins={[rehypeSanitize, rehypeFootnoteAnchors(footnotePrefix)]}
         disallowedElements={["img"]}
         components={{
-          a: ({ children, href }) => {
+          a: ({ children, href, id, "aria-describedby": describedBy }) => {
             const match = href?.match(/^#curriculum-vocabulary-(\d+)$/);
             const item = match ? effectiveVocabulary[Number(match[1])] : undefined;
             if (item) {
               return <VocabularyTerm word={String(children)} definition={item.definition} />;
+            }
+            if (href?.startsWith("#")) {
+              return (
+                <a href={href} id={id} aria-describedby={describedBy}>
+                  {children}
+                </a>
+              );
             }
             return (
               <a href={href} target="_blank" rel="noopener noreferrer">
