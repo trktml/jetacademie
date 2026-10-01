@@ -6,16 +6,19 @@ import {
 } from "./adab-curriculum";
 
 describe("adab-curriculum", () => {
-  it("contains exactly 54 weeks for both Ortaokul and Lise", () => {
-    expect(ortaokulAdabCurriculum.length).toBe(54);
+  it("contains exactly 30 weeks for Ortaokul and 54 weeks for Lise", () => {
+    expect(ortaokulAdabCurriculum.length).toBe(30);
     expect(liseAdabCurriculum.length).toBe(54);
   });
 
-  it("assigns sequential week numbers from 1 to 54", () => {
+  it("assigns sequential week numbers and modular pdfUrl for Ortaokul", () => {
     ortaokulAdabCurriculum.forEach((item, index) => {
       expect(item.weekNumber).toBe(index + 1);
       expect(item.title).toContain(" — ");
       expect(item.body).toContain("• ");
+      expect(item.pageCount).toBe(3);
+      const padWeek = String(index + 1).padStart(2, "0");
+      expect(item.pdfUrl).toBe(`/curriculum/adab/ortaokul/hafta-${padWeek}.pdf`);
     });
 
     liseAdabCurriculum.forEach((item, index) => {
@@ -25,8 +28,25 @@ describe("adab-curriculum", () => {
     });
   });
 
-  it("produces 54 curriculum entries for each grade with 48 standard and 6 extras", () => {
-    for (let grade = 1; grade <= 6; grade++) {
+  it("produces 30 entries for Ortaokul (grades 1-3) and 54 entries for Lise (grades 4-6)", () => {
+    for (let grade = 1; grade <= 3; grade++) {
+      const entries = getAdabEntriesForGrade(grade);
+      expect(entries.length).toBe(30);
+      expect(entries.every((e) => !e.isExtra)).toBe(true);
+      expect(entries.every((e) => e.pdfUrl && e.pageCount === 3)).toBe(true);
+
+      if (grade === 1) {
+        expect(entries[0].id).toBe("adab-i-muaseret-eylul-1");
+        expect(entries[15].id).toBe("adab-i-muaseret-aralik-4");
+        expect(entries[16].id).toBe("adab-i-muaseret-ocak-1");
+        expect(entries[29].id).toBe("adab-i-muaseret-nisan-2");
+      } else {
+        expect(entries[0].id).toBe(`g${grade}-adab-i-muaseret-eylul-1`);
+        expect(entries[29].id).toBe(`g${grade}-adab-i-muaseret-nisan-2`);
+      }
+    }
+
+    for (let grade = 4; grade <= 6; grade++) {
       const entries = getAdabEntriesForGrade(grade);
       expect(entries.length).toBe(54);
 
@@ -36,18 +56,8 @@ describe("adab-curriculum", () => {
       expect(standard.length).toBe(48);
       expect(extras.length).toBe(6);
 
-      // Grade 1 ID pattern
-      if (grade === 1) {
-        expect(standard[0].id).toBe("adab-i-muaseret-eylul-1");
-        expect(standard[15].id).toBe("adab-i-muaseret-aralik-4");
-        expect(standard[16].id).toBe("adab-i-muaseret-ocak-1");
-        expect(standard[47].id).toBe("adab-i-muaseret-agustos-4");
-        expect(extras[0].id).toBe("adab-i-muaseret-extra-1");
-        expect(extras[5].id).toBe("adab-i-muaseret-extra-6");
-      } else {
-        expect(standard[0].id).toBe(`g${grade}-adab-i-muaseret-eylul-1`);
-        expect(extras[0].id).toBe(`g${grade}-adab-i-muaseret-extra-1`);
-      }
+      expect(standard[0].id).toBe(`g${grade}-adab-i-muaseret-eylul-1`);
+      expect(extras[0].id).toBe(`g${grade}-adab-i-muaseret-extra-1`);
     }
   });
 
@@ -59,10 +69,10 @@ describe("adab-curriculum", () => {
     const g5 = getAdabEntriesForGrade(5);
     const g6 = getAdabEntriesForGrade(6);
 
-    // Ortaokul week 1 is Sohbet Âdâbı
-    expect(g1[0].title).toBe("Sohbet Âdâbı — Sohbete Yer ve Gönül Hazırlığı");
-    expect(g2[0].title).toBe("Sohbet Âdâbı — Sohbete Yer ve Gönül Hazırlığı");
-    expect(g3[0].title).toBe("Sohbet Âdâbı — Sohbete Yer ve Gönül Hazırlığı");
+    // Ortaokul week 1 is Âdâb-ı Muaşeret
+    expect(g1[0].title).toBe("Âdâb-ı Muaşeret — Ahdinde Durmak, Dostu Aramak ve Kusurları Örtmek");
+    expect(g2[0].title).toBe("Âdâb-ı Muaşeret — Ahdinde Durmak, Dostu Aramak ve Kusurları Örtmek");
+    expect(g3[0].title).toBe("Âdâb-ı Muaşeret — Ahdinde Durmak, Dostu Aramak ve Kusurları Örtmek");
 
     // Lise week 1 is Edep, Güzel Ahlâk ve Hilim
     expect(g4[0].title).toBe("Edep, Güzel Ahlâk ve Hilim — Edep Nedir?");

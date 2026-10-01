@@ -219,7 +219,7 @@ describe("CurriculumArchive Component", () => {
         initialCategoryId="adab-i-muaseret"
       />
     );
-    expect(adabHtml).toContain("1 / 54 tamamlandı");
+    expect(adabHtml).toContain("1 / 30 tamamlandı");
   });
 
   it("should render entries with proper status when some are completed", () => {

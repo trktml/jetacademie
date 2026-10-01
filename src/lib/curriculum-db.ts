@@ -388,7 +388,22 @@ async function syncCategoryIfOutdated(
 
 export async function syncAdabCurriculumIfOutdated(): Promise<void> {
   await ensureCurriculumEntriesTable();
-  await syncCategoryIfOutdated("adab-i-muaseret", 324, () => {
+  try {
+    const exclusion = await queryOne<{ categoryId: string }>(
+      `SELECT "categoryId" FROM "curriculum_seed_exclusions" WHERE "categoryId" = $1`,
+      ["adab-i-muaseret"]
+    );
+    if (exclusion) return;
+
+    const row = await queryOne<{ c: number | string; missingPdf: number | string }>(
+      `SELECT COUNT(*) as c, COUNT(CASE WHEN "grade" <= 3 AND "pdfUrl" IS NULL THEN 1 END) as "missingPdf" FROM "curriculum_entries" WHERE "categoryId" = $1`,
+      ["adab-i-muaseret"]
+    );
+
+    if (row && Number(row.c) === 252 && Number(row.missingPdf) === 0) {
+      return;
+    }
+
     const now = new Date().toISOString();
     const batch: CurriculumEntryRow[] = [];
     for (let grade = 1; grade <= 6; grade++) {
@@ -407,15 +422,26 @@ export async function syncAdabCurriculumIfOutdated(): Promise<void> {
           title: entry.title,
           body: entry.body ?? null,
           resourceUrl: entry.resourceUrl ?? null,
-          pdfUrl: null,
+          pdfUrl: isPdf(entry.pdfUrl)
+            ? entry.pdfUrl
+            : isPdf(entry.resourceUrl)
+              ? entry.resourceUrl
+              : null,
           pageCount: entry.pageCount ?? null,
           createdAt: now,
           updatedAt: now,
         });
       }
     }
-    return batch;
-  });
+
+    await execute(`DELETE FROM "curriculum_entries" WHERE "categoryId" = $1`, ["adab-i-muaseret"]);
+    await execute(
+      `DELETE FROM "curriculum_editor_content" WHERE "slot" LIKE '%:adab-i-muaseret:%' AND ("grade" <= 3 OR "grade" IS NULL)`
+    );
+    await bulkUpsertCurriculumEntries(batch);
+  } catch (err) {
+    console.error(`Failed to sync category adab-i-muaseret:`, err);
+  }
 }
 
 export async function syncIlmihalCurriculumIfOutdated(): Promise<void> {
@@ -659,7 +685,11 @@ async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
         title: entry.title,
         body: entry.body ?? null,
         resourceUrl: entry.resourceUrl ?? null,
-        pdfUrl: null,
+        pdfUrl: isPdf(entry.pdfUrl)
+          ? entry.pdfUrl
+          : isPdf(entry.resourceUrl)
+            ? entry.resourceUrl
+            : null,
         pageCount: entry.pageCount ?? null,
         createdAt: now,
         updatedAt: now,
