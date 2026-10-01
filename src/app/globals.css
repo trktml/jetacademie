@@ -2724,6 +2724,7 @@ body:has(.landing-page),
 }
 
 .textLayer {
+  color-scheme: only light;
   position: absolute;
   text-align: initial;
   inset: 0;
@@ -2741,6 +2742,9 @@ body:has(.landing-page),
   z-index: 2;
   user-select: text;
   -webkit-user-select: text;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor, 1) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
 }
 
 .textLayer :is(span, br) {
@@ -2753,6 +2757,12 @@ body:has(.landing-page),
   -webkit-user-select: text;
 }
 
+.textLayer br {
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 .textLayer ::selection {
   background: rgba(16, 185, 129, 0.35);
   color: transparent;
@@ -2762,10 +2772,10 @@ body:has(.landing-page),
 .textLayer .markedContent span:not(.markedContent) {
   z-index: 1;
   --font-height: 0;
-  font-size: calc(var(--text-scale-factor, 1) * var(--font-height));
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
   --scale-x: 1;
   --rotate: 0deg;
-  transform: rotate(var(--rotate)) scaleX(var(--scale-x));
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
 }
 
 .textLayer .markedContent {

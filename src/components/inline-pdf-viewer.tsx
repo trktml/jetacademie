@@ -154,6 +154,9 @@ export function InlinePdfViewer({
       textLayerDiv.replaceChildren();
       textLayerDiv.style.width = `${Math.floor(viewport.width)}px`;
       textLayerDiv.style.height = `${Math.floor(viewport.height)}px`;
+      textLayerDiv.style.setProperty("--total-scale-factor", `${viewport.scale}`);
+      textLayerDiv.style.setProperty("--scale-round-x", "1px");
+      textLayerDiv.style.setProperty("--scale-round-y", "1px");
 
       const pdfjs = await import("pdfjs-dist");
       if (pdfjs.TextLayer) {
