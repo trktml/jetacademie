@@ -33,13 +33,13 @@ Not: Sayfa numaraları baskıya göre değişebildiği için yıllık planda ese
 
 ## 1. ÜNİTE — TANIŞMA VE MERAK
 
+İlk dört haftada temel kaynak belirlenmez; hazırlık belirli bir eser veya bölümle sınırlandırılmaz.
+
 ### M1 — Hafta 01
 
 **Konu:** Bu eser neden hâlâ okunuyor?
 
 **Ana soru:** Bu kadar farklı insanın yıllardır okuduğu, çoğalttığı ve araştırdığı bir eserde ne var?
-
-**Temel kaynak:** Risale-i Nur’a giriş; Birinci Söz’den ilk temas
 
 ### M1 — Hafta 02
 
@@ -47,23 +47,17 @@ Not: Sayfa numaraları baskıya göre değişebildiği için yıllık planda ese
 
 **Ana soru:** Bu eserlerin arkasında nasıl bir hayat ve ilim yolculuğu var?
 
-**Temel kaynak:** Tarihçe-i Hayat — İlk Hayatı
-
 ### M1 — Hafta 03
 
 **Konu:** Hocaefendi ve Risale-i Nur
 
 **Ana soru:** Bir insan bir eseri niçin hayatı boyunca tekrar tekrar okur?
 
-**Temel kaynak:** Hocaefendi’nin Risale ile tanışma ve okuma bahisleri
-
 ### M1 — Hafta 04
 
 **Konu:** Biz bu eserleri nasıl okuyacağız?
 
 **Ana soru:** Bir metni anlamadığımızda ne yapacağız?
-
-**Temel kaynak:** Birinci Söz + okuma usulüne dair Pırlanta metinleri
 
 ## 2. ÜNİTE — BESMELE, İMAN VE KULLUK
 

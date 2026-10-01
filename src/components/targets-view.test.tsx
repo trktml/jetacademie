@@ -60,10 +60,10 @@ describe("Targets UI Components (SSR & Rendering)", () => {
       expect(html).toContain("Besmele, İman ve Kulluk");
       expect(html).toContain("9. Ünite");
 
-      // First unit is expanded by default with the Word plan's topic, question, and source.
+      // First unit is expanded by default with the annual plan's topic and question.
       expect(html).toContain("Bu eser neden hâlâ okunuyor?");
       expect(html).toContain(planM1.units[0].weeks[0].mainQuestion);
-      expect(html).toContain(planM1.units[0].weeks[0].primarySource);
+      expect(html).not.toContain("target-week-card__source-box");
       expect(html).not.toContain("Maksat");
       expect(html).toContain("Eylül 1");
 

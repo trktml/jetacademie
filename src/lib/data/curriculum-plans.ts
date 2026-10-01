@@ -8,7 +8,7 @@ export interface PlanWeek {
   readonly weekNumber: number;
   readonly topic: string;
   readonly mainQuestion: string;
-  readonly primarySource: string;
+  readonly primarySource?: string;
   readonly isFamilyRespectHighlight?: boolean;
 }
 
@@ -67,25 +67,21 @@ export const curriculumPlans: readonly GradePlan[] = [
             topic: "Bu eser neden hâlâ okunuyor?",
             mainQuestion:
               "Bu kadar farklı insanın yıllardır okuduğu, çoğalttığı ve araştırdığı bir eserde ne var?",
-            primarySource: "Risale-i Nur’a giriş; Birinci Söz’den ilk temas",
           },
           {
             weekNumber: 2,
             topic: "Bediüzzaman kimdir?",
             mainQuestion: "Bu eserlerin arkasında nasıl bir hayat ve ilim yolculuğu var?",
-            primarySource: "Tarihçe-i Hayat — İlk Hayatı",
           },
           {
             weekNumber: 3,
             topic: "Hocaefendi ve Risale-i Nur",
             mainQuestion: "Bir insan bir eseri niçin hayatı boyunca tekrar tekrar okur?",
-            primarySource: "Hocaefendi’nin Risale ile tanışma ve okuma bahisleri",
           },
           {
             weekNumber: 4,
             topic: "Biz bu eserleri nasıl okuyacağız?",
             mainQuestion: "Bir metni anlamadığımızda ne yapacağız?",
-            primarySource: "Birinci Söz + okuma usulüne dair Pırlanta metinleri",
           },
         ],
       },
@@ -380,27 +376,23 @@ export const curriculumPlans: readonly GradePlan[] = [
             weekNumber: 1,
             topic: "Küçük Bir Terzi Dükkânında Başlayan Yolculuk",
             mainQuestion: "Bir kitap insanın hayatında nasıl sıradan bir kitap olmaktan çıkar?",
-            primarySource: "Hocaefendi’nin Risale-i Nur’la tanışma hatırası; Tarihçe-i Hayat",
           },
           {
             weekNumber: 2,
             topic: "Bediüzzaman: Bir Ömür Neden İman Meselelerine Adanır?",
             mainQuestion: "Bir insan niçin rahatını değil, inandığı bir hakikati anlatmayı seçer?",
-            primarySource: "Tarihçe-i Hayat — İlk Hayatı ve Barla’ya uzanan hayat çizgisi",
           },
           {
             weekNumber: 3,
             topic: "Bir Kitap Neden Tekrar Tekrar Okunur?",
             mainQuestion:
               "Bir metni daha önce okumuş olmak, onu tamamen anladığımız anlamına gelir mi?",
-            primarySource: "Tarihçe-i Hayat — Isparta Hayatı; Pırlanta — kitap okuma bahisleri",
           },
           {
             weekNumber: 4,
             topic: "Bir Risale Metnini Nasıl Çözeriz?",
             mainQuestion:
               "Bir paragrafın ana fikrini nasıl bulur ve kendi cümlemizle nasıl anlatırız?",
-            primarySource: "Sözler — Birinci Söz’den kısa okuma; Pırlanta — okuma usulü",
           },
         ],
       },
@@ -706,28 +698,23 @@ export const curriculumPlans: readonly GradePlan[] = [
             weekNumber: 1,
             topic: "Bir Hakikat Hayata Ne Zaman Girer?",
             mainQuestion: "Bir şeyi bilmekle onu yaşamak arasındaki fark nedir?",
-            primarySource:
-              "Risale-i Nur’dan yaşama/amel bağlantılı kısa pasajlar; Hocaefendi’de ilim-amel ve temsil bahisleri",
           },
           {
             weekNumber: 2,
             topic: "Bediüzzaman: Bilgi Neden Sorumluluk Doğurur?",
             mainQuestion:
               "İnsan bildiği bir hakikate göre yaşamazsa bilgi tek başına yeterli olur mu?",
-            primarySource: "Tarihçe-i Hayat — hayat, hizmet ve mesuliyet çizgisi",
           },
           {
             weekNumber: 3,
             topic: "Hocaefendi: Okumak İnsanı Değiştirmiyorsa Ne Eksik Kalır?",
             mainQuestion: "Okuduğumuz kitapların davranışımıza yansımaması bize ne söyler?",
-            primarySource: "Pırlanta — kitap okuma, yaşama ve insan yetiştirme bahisleri",
           },
           {
             weekNumber: 4,
             topic: "Bu Metin Bana Ne Söylüyor?",
             mainQuestion:
               "Bir Risale paragrafını kendi hayatımızdaki bir meseleyle nasıl ilişkilendiririz?",
-            primarySource: "Kısa Risale metni + uygulama yöntemi",
           },
         ],
       },
@@ -1032,30 +1019,23 @@ export const curriculumPlans: readonly GradePlan[] = [
             topic: "Bir Kitap Ne Zaman 'Kaynak' Olur?",
             mainQuestion:
               "Bir kitabı sadece okumakla, bir sorumuz olduğunda ona başvurmak arasında ne fark vardır?",
-            primarySource:
-              "Risale-i Nur’dan seçilmiş giriş metinleri; Pırlanta’da okuma ve kaynakla ilişki bahisleri",
           },
           {
             weekNumber: 2,
             topic: "Bediüzzaman: Çağın İman Sorularına Neden Yöneldi?",
             mainQuestion: "Bir düşünür kendi döneminin hangi sorularını merkeze alır ve neden?",
-            primarySource:
-              "Tarihçe-i Hayat; Risale-i Nur’un iman hizmetine dair bahisler; uygun dış/akademik tanıtım kaynakları",
           },
           {
             weekNumber: 3,
             topic: "Hocaefendi: Bir Kaynakla Yıllarca Nasıl Yaşanır?",
             mainQuestion:
               "Bir eser insanın düşünce ve hayat dünyasında nasıl sürekli başvurulan bir kaynağa dönüşür?",
-            primarySource:
-              "Hocaefendi’nin Risale-i Nur’la ilişkisi; Pırlanta’da okuma ve tekrar okuma bahisleri",
           },
           {
             weekNumber: 4,
             topic: "Sorudan Kaynağa: Aradığımı Nasıl Bulurum?",
             mainQuestion:
               "Aklımdaki bir soruyu Risale veya Pırlanta’da aramak için hangi adımları izlemeliyim?",
-            primarySource: "Dijital külliyat / indeks kullanımı; kısa uygulamalı kaynak arama",
           },
         ],
       },
@@ -1368,29 +1348,23 @@ export const curriculumPlans: readonly GradePlan[] = [
             topic: "Bu Yıl Bir Metni Nasıl Daha Derin Okuyacağız?",
             mainQuestion:
               "Bir şeyi anlamakla, onun neden doğru olduğunu araştırmak arasında ne fark vardır?",
-            primarySource:
-              "M5 çalışma yöntemi; Nurlardan Seçmeler-2’de tahkikî iman; Pırlanta’da okuma ve tefekkür bahisleri",
           },
           {
             weekNumber: 2,
             topic: "Bediüzzaman: İman Hakikatlerini Neden Delille Anlatıyor?",
             mainQuestion:
               "Bir iman meselesinde yalnız sonucu söylemek yerine delil kurmak niçin önemlidir?",
-            primarySource: "Tarihçe-i Hayat; Şuâlar’da imanî hüccetler; Muhakemat’tan seçmeler",
           },
           {
             weekNumber: 3,
             topic: "Hocaefendi: Bir Meseleyi Farklı Kaynaklarla Nasıl Okuruz?",
             mainQuestion: "Aynı meseleyi Risale ve Pırlanta’dan okumak bize ne kazandırır?",
-            primarySource:
-              "Kendi Dünyamıza Doğru; Kırık Testi-1’de okuma ve temel eserler bahisleri",
           },
           {
             weekNumber: 4,
             topic: "İddia, Delil ve Yorum: Üçünü Nasıl Ayırırım?",
             mainQuestion:
               "Yazarın söylediği, gösterdiği delil ve bizim çıkardığımız yorum aynı şey midir?",
-            primarySource: "Muhakemat; Risale’de delil dili; kaynak-bağlam yöntemi",
           },
         ],
       },
@@ -1696,28 +1670,24 @@ export const curriculumPlans: readonly GradePlan[] = [
             topic: "Bu Yıl Parçaları Nasıl Bir Bütüne Dönüştüreceğiz?",
             mainQuestion:
               "Yıllardır öğrendiğimiz iman ve ahlâk hakikatleri hayatımızda nasıl tek bir yön ve duruş oluşturabilir?",
-            primarySource: "Kendi Dünyamıza Doğru; Risale’de iman-hayat bütünlüğü bahisleri",
           },
           {
             weekNumber: 2,
             topic: "Bediüzzaman: Bir Ömür Nasıl Bir Merkez Etrafında Toplanır?",
             mainQuestion:
               "Bir insanın farklı kararlarını ve fedakârlıklarını tek bir ana gaye nasıl birleştirir?",
-            primarySource: "Tarihçe-i Hayat; iman hizmeti ve mesuliyet çizgisi",
           },
           {
             weekNumber: 3,
             topic: "Hocaefendi: Sözden Önce Temsil",
             mainQuestion:
               "Bir hakikati anlatırken hayatımız söylediğimizi desteklemiyorsa ne eksik kalır?",
-            primarySource: "Pırlanta’da temsil, tebliğ ve hâl dili bahisleri",
           },
           {
             weekNumber: 4,
             topic: "Bir Hakikati Doğru ve Ölçülü Nasıl Anlatırım?",
             mainQuestion:
               "Bir şeyi doğru bilmek ile onu karşıdakine uygun, sınırlarını koruyarak anlatmak aynı şey midir?",
-            primarySource: "Risale’de temsil ve üslup örnekleri; Pırlanta’da irşad ve üslup",
           },
         ],
       },

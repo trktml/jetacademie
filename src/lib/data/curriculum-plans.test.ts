@@ -46,12 +46,16 @@ describe("curriculum-plans (M1–M6)", () => {
       expect(plan?.methodSteps.length).toBeGreaterThanOrEqual(4);
       expect(plan?.familyRespectFocus.length).toBeGreaterThan(10);
 
-      // Word plans provide a topic, guiding question, and primary source for every week.
+      // Annual plans leave source selection open for the first four weeks.
       for (const unit of plan?.units ?? []) {
         for (const week of unit.weeks) {
           expect(week.topic.length).toBeGreaterThan(3);
           expect(week.mainQuestion.length).toBeGreaterThan(10);
-          expect(week.primarySource.length).toBeGreaterThan(3);
+          if (week.weekNumber <= 4) {
+            expect(week.primarySource).toBeUndefined();
+          } else {
+            expect(week.primarySource!.length).toBeGreaterThan(3);
+          }
           expect("purpose" in week).toBe(false);
         }
       }

@@ -39,13 +39,13 @@ Haftalık derslerde temel soru: “Ben buradan ne anladım ve bunu kendi cümlem
 
 ## 1. ÜNİTE — TANIŞMA, MUHABBET VE OKUMA YÖNTEMİ
 
+İlk dört haftada temel kaynak belirlenmez; hazırlık belirli bir eser veya bölümle sınırlandırılmaz.
+
 ### M2 — Hafta 01
 
 **Konu:** Küçük Bir Terzi Dükkânında Başlayan Yolculuk
 
 **Ana soru:** Bir kitap insanın hayatında nasıl sıradan bir kitap olmaktan çıkar?
-
-**Temel kaynak:** Hocaefendi’nin Risale-i Nur’la tanışma hatırası; Tarihçe-i Hayat
 
 ### M2 — Hafta 02
 
@@ -53,23 +53,17 @@ Haftalık derslerde temel soru: “Ben buradan ne anladım ve bunu kendi cümlem
 
 **Ana soru:** Bir insan niçin rahatını değil, inandığı bir hakikati anlatmayı seçer?
 
-**Temel kaynak:** Tarihçe-i Hayat — İlk Hayatı ve Barla’ya uzanan hayat çizgisi
-
 ### M2 — Hafta 03
 
 **Konu:** Bir Kitap Neden Tekrar Tekrar Okunur?
 
 **Ana soru:** Bir metni daha önce okumuş olmak, onu tamamen anladığımız anlamına gelir mi?
 
-**Temel kaynak:** Tarihçe-i Hayat — Isparta Hayatı; Pırlanta — kitap okuma bahisleri
-
 ### M2 — Hafta 04
 
 **Konu:** Bir Risale Metnini Nasıl Çözeriz?
 
 **Ana soru:** Bir paragrafın ana fikrini nasıl bulur ve kendi cümlemizle nasıl anlatırız?
-
-**Temel kaynak:** Sözler — Birinci Söz’den kısa okuma; Pırlanta — okuma usulü
 
 ## 2. ÜNİTE — ÖLÜM, AHİRET VE YENİDEN DİRİLİŞ
 

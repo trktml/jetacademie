@@ -89,7 +89,7 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
         (w) =>
           w.topic.toLocaleLowerCase("tr").includes(normalizedQuery) ||
           w.mainQuestion.toLocaleLowerCase("tr").includes(normalizedQuery) ||
-          w.primarySource.toLocaleLowerCase("tr").includes(normalizedQuery)
+          w.primarySource?.toLocaleLowerCase("tr").includes(normalizedQuery)
       );
       return {
         ...unit,
@@ -303,10 +303,12 @@ function WeekCard({ week, month }: { week: PlanWeek; month: string }) {
       <p className="target-week-card__question">&ldquo;{week.mainQuestion}&rdquo;</p>
 
       {/* Source Reference (Kaynak) */}
-      <div className="target-week-card__source-box">
-        <BookOpen className="text-ink-faint h-3 w-3 shrink-0" aria-hidden="true" />
-        <span className="target-week-card__source">{week.primarySource}</span>
-      </div>
+      {week.primarySource && (
+        <div className="target-week-card__source-box">
+          <BookOpen className="text-ink-faint h-3 w-3 shrink-0" aria-hidden="true" />
+          <span className="target-week-card__source">{week.primarySource}</span>
+        </div>
+      )}
     </article>
   );
 }

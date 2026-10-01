@@ -37,13 +37,13 @@ Haftalık temel soru: “Bu hakikat bugün benim düşüncemi, davranışımı v
 
 ## 1. ÜNİTE — TANIŞMA, MUHABBET VE HAYATA TAŞIMA
 
+İlk dört haftada temel kaynak belirlenmez; hazırlık belirli bir eser veya bölümle sınırlandırılmaz.
+
 ### M3 — Hafta 01
 
 **Konu:** Bir Hakikat Hayata Ne Zaman Girer?
 
 **Ana soru:** Bir şeyi bilmekle onu yaşamak arasındaki fark nedir?
-
-**Temel kaynak:** Risale-i Nur’dan yaşama/amel bağlantılı kısa pasajlar; Hocaefendi’de ilim-amel ve temsil bahisleri
 
 ### M3 — Hafta 02
 
@@ -51,23 +51,17 @@ Haftalık temel soru: “Bu hakikat bugün benim düşüncemi, davranışımı v
 
 **Ana soru:** İnsan bildiği bir hakikate göre yaşamazsa bilgi tek başına yeterli olur mu?
 
-**Temel kaynak:** Tarihçe-i Hayat — hayat, hizmet ve mesuliyet çizgisi
-
 ### M3 — Hafta 03
 
 **Konu:** Hocaefendi: Okumak İnsanı Değiştirmiyorsa Ne Eksik Kalır?
 
 **Ana soru:** Okuduğumuz kitapların davranışımıza yansımaması bize ne söyler?
 
-**Temel kaynak:** Pırlanta — kitap okuma, yaşama ve insan yetiştirme bahisleri
-
 ### M3 — Hafta 04
 
 **Konu:** Bu Metin Bana Ne Söylüyor?
 
 **Ana soru:** Bir Risale paragrafını kendi hayatımızdaki bir meseleyle nasıl ilişkilendiririz?
-
-**Temel kaynak:** Kısa Risale metni + uygulama yöntemi
 
 ## 2. ÜNİTE — GENÇLİK, ÖZGÜRLÜK VE İRADE
 

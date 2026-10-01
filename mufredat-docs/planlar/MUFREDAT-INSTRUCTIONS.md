@@ -8,6 +8,8 @@ Bu belge **Konu** dersinin hazırlığını ve öğrenciye gösterilen metnini y
 
 ## Üretim akışı ve öncelikler
 
+**İlk dört hafta istisnası (M1–M6):** Yıllık planlarda 1–4. haftalar için temel kaynak belirlenmez. Aşağıdaki önceden belirlenmiş temel eser/bölümü esas alma kuralları bu haftalara uygulanmaz; hazırlık belirli bir eser veya bölümle sınırlandırılmaz ve temel kaynak zorunluluğu aranmaz. Konu, ana soru ve hedefler planla uyumlu kalır. Kaynak kullanılırsa özgün kaynaktan doğrulama, alıntı ve dipnot kuralları geçerlidir.
+
 **Plan ve öğrenci profili → kaynak doğrulama → örnek ders → yazım → bağımsız kaynak ve dil kontrolleri → düzeltme → yayın değerlendirmesi.** Bu akış, altı kategorinin her yeni üretiminde ve revizyonunda uygulanır.
 
 1. **Plan ve profil:** İlgili yıllık Markdown planından başlık, ana soru, hedef ve temel kaynağı çıkar (bölüm 1). Sınıf, ay/hafta, Türkçe okuma düzeyi ve ön bilgi varsayımını belirle (bölüm 10).

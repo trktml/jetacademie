@@ -37,13 +37,13 @@ Haftalık temel soru: “Bu mesele için hangi kaynağa başvurabilirim ve buldu
 
 ## 1. ÜNİTE — KAYNAKLA TANIŞMA VE İHTİYAÇ HİSSETME
 
+İlk dört haftada temel kaynak belirlenmez; hazırlık belirli bir eser veya bölümle sınırlandırılmaz.
+
 ### M4 — Hafta 01
 
 **Konu:** Bir Kitap Ne Zaman 'Kaynak' Olur?
 
 **Ana soru:** Bir kitabı sadece okumakla, bir sorumuz olduğunda ona başvurmak arasında ne fark vardır?
-
-**Temel kaynak:** Risale-i Nur’dan seçilmiş giriş metinleri; Pırlanta’da okuma ve kaynakla ilişki bahisleri
 
 ### M4 — Hafta 02
 
@@ -51,23 +51,17 @@ Haftalık temel soru: “Bu mesele için hangi kaynağa başvurabilirim ve buldu
 
 **Ana soru:** Bir düşünür kendi döneminin hangi sorularını merkeze alır ve neden?
 
-**Temel kaynak:** Tarihçe-i Hayat; Risale-i Nur’un iman hizmetine dair bahisler; uygun dış/akademik tanıtım kaynakları
-
 ### M4 — Hafta 03
 
 **Konu:** Hocaefendi: Bir Kaynakla Yıllarca Nasıl Yaşanır?
 
 **Ana soru:** Bir eser insanın düşünce ve hayat dünyasında nasıl sürekli başvurulan bir kaynağa dönüşür?
 
-**Temel kaynak:** Hocaefendi’nin Risale-i Nur’la ilişkisi; Pırlanta’da okuma ve tekrar okuma bahisleri
-
 ### M4 — Hafta 04
 
 **Konu:** Sorudan Kaynağa: Aradığımı Nasıl Bulurum?
 
 **Ana soru:** Aklımdaki bir soruyu Risale veya Pırlanta’da aramak için hangi adımları izlemeliyim?
-
-**Temel kaynak:** Dijital külliyat / indeks kullanımı; kısa uygulamalı kaynak arama
 
 ## 2. ÜNİTE — TEVHİD: DAĞINIK GÖRÜNEN ÂLEMDE BİRLİK
 

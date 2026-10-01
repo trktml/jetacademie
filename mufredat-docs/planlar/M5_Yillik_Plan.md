@@ -34,13 +34,13 @@ M5 öğrencisinin M1–M4’ü görmüş olduğu varsayılmayacaktır. İlk dör
 
 ## 1. ÜNİTE — TANIŞMA, TAHKİK VE KAYNAK DİSİPLİNİ
 
+İlk dört haftada temel kaynak belirlenmez; hazırlık belirli bir eser veya bölümle sınırlandırılmaz.
+
 ### M5 — Hafta 01
 
 **Konu:** Bu Yıl Bir Metni Nasıl Daha Derin Okuyacağız?
 
 **Ana soru:** Bir şeyi anlamakla, onun neden doğru olduğunu araştırmak arasında ne fark vardır?
-
-**Temel kaynak:** M5 çalışma yöntemi; Nurlardan Seçmeler-2’de tahkikî iman; Pırlanta’da okuma ve tefekkür bahisleri
 
 ### M5 — Hafta 02
 
@@ -48,23 +48,17 @@ M5 öğrencisinin M1–M4’ü görmüş olduğu varsayılmayacaktır. İlk dör
 
 **Ana soru:** Bir iman meselesinde yalnız sonucu söylemek yerine delil kurmak niçin önemlidir?
 
-**Temel kaynak:** Tarihçe-i Hayat; Şuâlar’da imanî hüccetler; Muhakemat’tan seçmeler
-
 ### M5 — Hafta 03
 
 **Konu:** Hocaefendi: Bir Meseleyi Farklı Kaynaklarla Nasıl Okuruz?
 
 **Ana soru:** Aynı meseleyi Risale ve Pırlanta’dan okumak bize ne kazandırır?
 
-**Temel kaynak:** Kendi Dünyamıza Doğru; Kırık Testi-1’de okuma ve temel eserler bahisleri
-
 ### M5 — Hafta 04
 
 **Konu:** İddia, Delil ve Yorum: Üçünü Nasıl Ayırırım?
 
 **Ana soru:** Yazarın söylediği, gösterdiği delil ve bizim çıkardığımız yorum aynı şey midir?
-
-**Temel kaynak:** Muhakemat; Risale’de delil dili; kaynak-bağlam yöntemi
 
 ## 2. ÜNİTE — TEVHİD, KANUNLAR VE SEBEPLER
 

@@ -34,13 +34,13 @@ M6 öğrencisinin önceki seviyeleri görmüş olduğu varsayılmayacaktır. İl
 
 ## 1. ÜNİTE — TANIŞMA, BÜTÜNLÜK VE TEMSİL
 
+İlk dört haftada temel kaynak belirlenmez; hazırlık belirli bir eser veya bölümle sınırlandırılmaz.
+
 ### M6 — Hafta 01
 
 **Konu:** Bu Yıl Parçaları Nasıl Bir Bütüne Dönüştüreceğiz?
 
 **Ana soru:** Yıllardır öğrendiğimiz iman ve ahlâk hakikatleri hayatımızda nasıl tek bir yön ve duruş oluşturabilir?
-
-**Temel kaynak:** Kendi Dünyamıza Doğru; Risale’de iman-hayat bütünlüğü bahisleri
 
 ### M6 — Hafta 02
 
@@ -48,23 +48,17 @@ M6 öğrencisinin önceki seviyeleri görmüş olduğu varsayılmayacaktır. İl
 
 **Ana soru:** Bir insanın farklı kararlarını ve fedakârlıklarını tek bir ana gaye nasıl birleştirir?
 
-**Temel kaynak:** Tarihçe-i Hayat; iman hizmeti ve mesuliyet çizgisi
-
 ### M6 — Hafta 03
 
 **Konu:** Hocaefendi: Sözden Önce Temsil
 
 **Ana soru:** Bir hakikati anlatırken hayatımız söylediğimizi desteklemiyorsa ne eksik kalır?
 
-**Temel kaynak:** Pırlanta’da temsil, tebliğ ve hâl dili bahisleri
-
 ### M6 — Hafta 04
 
 **Konu:** Bir Hakikati Doğru ve Ölçülü Nasıl Anlatırım?
 
 **Ana soru:** Bir şeyi doğru bilmek ile onu karşıdakine uygun, sınırlarını koruyarak anlatmak aynı şey midir?
-
-**Temel kaynak:** Risale’de temsil ve üslup örnekleri; Pırlanta’da irşad ve üslup
 
 ## 2. ÜNİTE — ŞÜPHE, KESİNLİK, AKIL VE İTİRAZ
 
