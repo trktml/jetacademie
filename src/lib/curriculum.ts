@@ -12,15 +12,15 @@ import { EsmaIcon } from "@/components/icons/esma-icon";
 import { GoncaGulIcon } from "@/components/icons/gonca-gul-icon";
 
 export const curriculumCategoryIds = [
-  "esma",
+  "konu",
+  "hocaefendi-dinleme",
   "efendimiz",
+  "sahabe-kissalari",
   "ayet",
   "hadis",
-  "sahabe-kissalari",
-  "hocaefendi-dinleme",
-  "konu",
   "ilmihal",
   "adab-i-muaseret",
+  "esma",
 ] as const;
 
 export type CurriculumCategoryId = (typeof curriculumCategoryIds)[number];
@@ -36,27 +36,11 @@ export interface CurriculumCategory {
 
 export const curriculumCategories: readonly CurriculumCategory[] = [
   {
-    id: "esma",
-    label: "Esmâü'l-Hüsnâ",
-    shortLabel: "Esmâ",
-    icon: EsmaIcon,
-    accent: "emerald",
-  },
-  {
-    id: "efendimiz",
-    label: "Efendimiz",
-    shortLabel: "Siyer",
-    icon: GoncaGulIcon,
-    accent: "blue",
-  },
-  { id: "ayet", label: "Ayet", shortLabel: "Ayet", icon: BookOpenText, accent: "coral" },
-  { id: "hadis", label: "Hadis", shortLabel: "Hadis", icon: ScrollText, accent: "amber" },
-  {
-    id: "sahabe-kissalari",
-    label: "Sahabe kıssaları",
-    shortLabel: "Sahabe",
-    icon: UsersRound,
-    accent: "violet",
+    id: "konu",
+    label: "Haftanın Konusu",
+    shortLabel: "Konu",
+    icon: Layers,
+    accent: "teal",
   },
   {
     id: "hocaefendi-dinleme",
@@ -67,12 +51,21 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     resourceType: "video",
   },
   {
-    id: "konu",
-    label: "Haftanın Konusu",
-    shortLabel: "Konu",
-    icon: Layers,
-    accent: "teal",
+    id: "efendimiz",
+    label: "Efendimiz",
+    shortLabel: "Siyer",
+    icon: GoncaGulIcon,
+    accent: "blue",
   },
+  {
+    id: "sahabe-kissalari",
+    label: "Sahabe kıssaları",
+    shortLabel: "Sahabe",
+    icon: UsersRound,
+    accent: "violet",
+  },
+  { id: "ayet", label: "Ayet", shortLabel: "Ayet", icon: BookOpenText, accent: "coral" },
+  { id: "hadis", label: "Hadis", shortLabel: "Hadis", icon: ScrollText, accent: "amber" },
   {
     id: "ilmihal",
     label: "İlmihal",
@@ -87,6 +80,13 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     shortLabel: "Adab",
     icon: HandHeart,
     accent: "orange",
+  },
+  {
+    id: "esma",
+    label: "Esmâü'l-Hüsnâ",
+    shortLabel: "Esmâ",
+    icon: EsmaIcon,
+    accent: "emerald",
   },
 ] as const;
 

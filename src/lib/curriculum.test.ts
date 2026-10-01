@@ -31,29 +31,29 @@ describe("curriculum", () => {
 
   it("contains all nine real curriculum categories", () => {
     expect(curriculumCategories.map((category) => category.label)).toEqual([
-      "Esmâü'l-Hüsnâ",
+      "Haftanın Konusu",
+      "Hocaefendi Sohbetleri",
       "Efendimiz",
+      "Sahabe kıssaları",
       "Ayet",
       "Hadis",
-      "Sahabe kıssaları",
-      "Hocaefendi Sohbetleri",
-      "Haftanın Konusu",
       "İlmihal",
       "Adab-ı Muaşeret",
+      "Esmâü'l-Hüsnâ",
     ]);
   });
 
   it("provides concise short labels for compact navigation", () => {
     expect(curriculumCategories.map((category) => category.shortLabel)).toEqual([
-      "Esmâ",
+      "Konu",
+      "Sohbet",
       "Siyer",
+      "Sahabe",
       "Ayet",
       "Hadis",
-      "Sahabe",
-      "Sohbet",
-      "Konu",
       "İlmihal",
       "Adab",
+      "Esmâ",
     ]);
   });
 

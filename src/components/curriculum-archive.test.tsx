@@ -127,7 +127,7 @@ describe("CurriculumArchive Component", () => {
     );
 
     expect(html).toContain(
-      'class="archive-capsule-item" data-active="true" aria-current="true" aria-label="Esmâü&#x27;l-Hüsnâ"'
+      'class="archive-capsule-item" data-active="true" aria-current="true" aria-label="Haftanın Konusu"'
     );
   });
 
@@ -783,26 +783,26 @@ describe("CurriculumArchive Component", () => {
   });
 
   it("should render active category purely from props during SSR without window branching", () => {
-    // Default initialCategoryId is first category ('esma')
+    // Default initialCategoryId is first category ('konu')
     const defaultHtml = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
     expect(defaultHtml).toContain(
-      'data-active="true" aria-current="true" aria-label="Esmâü&#x27;l-Hüsnâ"'
+      'data-active="true" aria-current="true" aria-label="Haftanın Konusu"'
     );
-    expect(defaultHtml).toContain('data-active="false" aria-label="Haftanın Konusu"');
+    expect(defaultHtml).toContain('data-active="false" aria-label="Esmâü&#x27;l-Hüsnâ"');
 
-    // Explicit initialCategoryId="konu" renders konu as active consistently
-    const konuHtml = renderToString(
+    // Explicit initialCategoryId="esma" renders esma as active consistently
+    const esmaHtml = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={[]}
         isSignedIn={false}
-        initialCategoryId="konu"
+        initialCategoryId="esma"
       />
     );
-    expect(konuHtml).toContain('data-active="false" aria-label="Esmâü&#x27;l-Hüsnâ"');
-    expect(konuHtml).toContain(
-      'data-active="true" aria-current="true" aria-label="Haftanın Konusu"'
+    expect(esmaHtml).toContain('data-active="false" aria-label="Haftanın Konusu"');
+    expect(esmaHtml).toContain(
+      'data-active="true" aria-current="true" aria-label="Esmâü&#x27;l-Hüsnâ"'
     );
   });
 
