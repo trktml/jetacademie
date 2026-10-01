@@ -19,10 +19,10 @@ describe("Targets UI Components (SSR & Rendering)", () => {
       );
 
       expect(html).toContain("1. Sınıf");
-      expect(html).toContain("M1");
       expect(html).toContain("6. Sınıf");
-      expect(html).toContain("M6");
-      expect(html).toContain("targets-ladder__step--active");
+      expect(html).toContain("M1 Basamağı");
+      expect(html).toContain("curriculum-grade-nav__track");
+      expect(html).toContain("curriculum-grade-nav__item--active");
     });
   });
 

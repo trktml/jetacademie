@@ -1,6 +1,7 @@
 "use client";
 
 import type { GradePlan } from "@/lib/data/curriculum-plans";
+import { GRADE_LABELS, type BelgiumGrade } from "@/lib/curriculum";
 
 interface TargetsProgressionLadderProps {
   plans: readonly GradePlan[];
@@ -15,10 +16,27 @@ export function TargetsProgressionLadder({
 }: TargetsProgressionLadderProps) {
   const activePlan = plans.find((p) => p.grade === selectedGrade) ?? plans[0];
 
+  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const currentIndex = plans.findIndex((p) => p.grade === selectedGrade);
+    if (currentIndex === -1) return;
+    const nextIndex =
+      event.key === "ArrowRight"
+        ? (currentIndex + 1) % plans.length
+        : (currentIndex - 1 + plans.length) % plans.length;
+    onSelectGrade(plans[nextIndex].grade);
+  }
+
   return (
     <nav className="targets-ladder" aria-label="Sınıf ve Basamak Seçimi">
-      {/* Sleek Segmented Switcher */}
-      <div className="targets-ladder__track" role="tablist" aria-label="Sınıflar">
+      {/* Segmented Switcher matching Curriculum page */}
+      <div
+        className="curriculum-grade-nav__track"
+        role="tablist"
+        aria-label="Belçika müfredat sınıfları"
+        onKeyDown={handleKeyDown}
+      >
         {plans.map((plan) => {
           const isSelected = plan.grade === selectedGrade;
 
@@ -30,14 +48,11 @@ export function TargetsProgressionLadder({
               aria-selected={isSelected}
               aria-controls={`target-panel-${plan.grade}`}
               id={`target-tab-${plan.grade}`}
-              className={`targets-ladder__step ${isSelected ? "targets-ladder__step--active" : ""}`}
+              tabIndex={isSelected ? 0 : -1}
+              className={`curriculum-grade-nav__item ${isSelected ? "curriculum-grade-nav__item--active" : ""}`}
               onClick={() => onSelectGrade(plan.grade)}
             >
-              <span className="targets-ladder__code">{plan.code}</span>
-              <span className="targets-ladder__dot" aria-hidden="true">
-                ·
-              </span>
-              <span className="targets-ladder__grade-label">{`${plan.grade}. Sınıf`}</span>
+              <span>{GRADE_LABELS[plan.grade as BelgiumGrade] ?? `${plan.grade}. Sınıf`}</span>
             </button>
           );
         })}
@@ -46,7 +61,7 @@ export function TargetsProgressionLadder({
       {/* Active Grade Stage Summary Line */}
       {activePlan && (
         <div className="targets-ladder__stage-summary">
-          <span className="targets-ladder__stage-pill">{activePlan.code} Basamağı</span>
+          <span className="targets-ladder__stage-pill">{`${activePlan.code} Basamağı`}</span>
           <span className="targets-ladder__stage-text">
             <strong>{activePlan.stage}</strong>
             <span className="targets-ladder__stage-sep"> — </span>
