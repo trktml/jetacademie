@@ -1,6 +1,6 @@
 /**
  * M1–M6 hedef ve yıllık plan verileri.
- * Kaynak: mufredat-docs/planlar/M1_Yillik_Plan.docx – M6_Yillik_Plan.docx.
+ * Kaynak: mufredat-docs/planlar/M1_Yillik_Plan.md – M6_Yillik_Plan.md.
  * Eylül–Mayıs eşlemesi arayüzde korunur; kaynak belgelerde ay bilgisi yoktur.
  */
 

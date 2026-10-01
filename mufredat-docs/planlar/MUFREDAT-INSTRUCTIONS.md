@@ -10,7 +10,7 @@ Bu belge **Konu** dersinin hazırlığını ve öğrenciye gösterilen metnini y
 
 **Plan ve öğrenci profili → kaynak doğrulama → örnek ders → yazım → bağımsız kaynak ve dil kontrolleri → düzeltme → yayın değerlendirmesi.** Bu akış, altı kategorinin her yeni üretiminde ve revizyonunda uygulanır.
 
-1. **Plan ve profil:** İlgili yıllık Word planından başlık, ana soru, hedef ve temel kaynağı çıkar (bölüm 1). Sınıf, ay/hafta, Türkçe okuma düzeyi ve ön bilgi varsayımını belirle (bölüm 10).
+1. **Plan ve profil:** İlgili yıllık Markdown planından başlık, ana soru, hedef ve temel kaynağı çıkar (bölüm 1). Sınıf, ay/hafta, Türkçe okuma düzeyi ve ön bilgi varsayımını belirle (bölüm 10).
 2. **Kaynak doğrulama:** Kullanılacak pasajları ve olayları özgün kaynaklarından kontrol et; kullanılan baskı ve sayfa/bölümü kaydet (bölüm 5–7, 15–16). Kaynağa sadakati koruyarak anlatılabilecek bir pasaj seç (bölüm 4).
 3. **Örnek ders:** Çok sınıflı pakette önce M1 Konu dersini; M1 yoksa üretilecek en erken seviyenin dersini yazıp bölüm 18 ile denetle. Yalnız kısa kartlar üretiliyorsa kapsamdan bir kart seç. Örnek anlaşılır olmadan kalan içerikleri aynı yaklaşımla çoğaltma. Kapsamlı revizyonda M1 ve M6 da varsa düşünme farkını karşılaştır.
 4. **Yazım:** Konunun merakını ve düşünce hattını kur (bölüm 9–11); özgün alıntıları koruyarak kategorinin sunum düzenini uygula (bölüm 12–17, 19). Her sınıfı kendi planı ve profiliyle ayrıca yaz; örnek dersi şablon olarak kopyalama.
@@ -42,7 +42,7 @@ Görevin, yıllık planda belirlenen konuyu öğrencinin yaş seviyesine uygun �
 
 ### Belge yetkisi ve kullanım amacı
 
-- **Yıllık plan**, haftanın konusu, ana sorusu, kazanımı/hedefi ve temel kaynağı için yetkilidir. İlgili Word planını esas al; uygulamadaki plan verisini onunla karşılaştır.
+- **Yıllık plan**, haftanın konusu, ana sorusu, kazanımı/hedefi ve temel kaynağı için yetkilidir. İlgili `M1_Yillik_Plan.md`–`M6_Yillik_Plan.md` dosyasını esas al; uygulamadaki plan verisini onunla karşılaştır. [Planlar README](README.md) belge önceliğini ve kullanımını açıklar. DOCX kopyaları doğrulanmış Markdown geçişinden sonra kaldırılmıştır.
 - **Bu yazım yönergesi**, öğrenciye gösterilecek metnin dili, anlatısı, kaynak sunumu ve denetimi için yetkilidir. Yıllık planlardaki eski dosya düzeni, ayrı kaynak başlıkları, tam kaynakça ve 15–20 dakikalık anlatım önerileri bu düzenin yerine geçmez. Süre önerisi öğrenci metnini uzatma zorunluluğu oluşturmaz.
 - Konu ve kaynak hakkındaki çözülmemiş çelişkilerde aşağıdaki doğrulama kuralını uygula; biçim farklılığını gidermek için yıllık konuyu veya kazanımı değiştirme.
 
