@@ -2,6 +2,7 @@
 
 import { useId, useMemo, useState } from "react";
 import Markdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import type { Element, Root } from "hast";
@@ -174,7 +175,7 @@ export function MarkdownContent({
     <div className="curriculum-markdown" dir="auto">
       <Markdown
         skipHtml
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         rehypePlugins={[rehypeSanitize, rehypeFootnoteAnchors(footnotePrefix)]}
         disallowedElements={["img"]}
         components={{

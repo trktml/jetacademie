@@ -50,6 +50,18 @@ describe("Safe shared Markdown rendering", () => {
     expect(html).toContain("<table>");
     expect(html).toContain('dir="auto"');
   });
+  it("preserves authored line breaks within paragraphs", () => {
+    const html = renderToStaticMarkup(
+      <MarkdownContent>
+        {"**Müellif** — Kitap yazan.\n**Nüsha** — Kopyası.\n\n¹ Birinci kaynak.\n² İkinci kaynak."}
+      </MarkdownContent>
+    );
+
+    expect(html).toContain(
+      "<strong>Müellif</strong> — Kitap yazan.<br/>\n<strong>Nüsha</strong> — Kopyası."
+    );
+    expect(html).toContain("¹ Birinci kaynak.<br/>\n² İkinci kaynak.");
+  });
   it("removes raw HTML, images and executable link protocols", () => {
     const html = renderToStaticMarkup(
       <MarkdownContent>
