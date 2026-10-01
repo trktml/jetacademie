@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import {
   getEsmaEntriesForGrade,
   getAllEsmaEntries,
+  getEsmaArabic,
   liseEsmaCurriculum,
   ortaokulEsmaCurriculum,
 } from "./esma-curriculum";
@@ -81,5 +82,41 @@ describe("esma-curriculum", () => {
   it("returns 330 entries for all 6 grades", () => {
     const all = getAllEsmaEntries();
     expect(all.length).toBe(330);
+  });
+
+  it("contains authentic Arabic calligraphy with harakat for all 55 names", () => {
+    const arabicRegex = /[\u0600-\u06FF]/;
+    ortaokulEsmaCurriculum.forEach((item) => {
+      expect(item.arabic).toBeTruthy();
+      expect(arabicRegex.test(item.arabic)).toBe(true);
+    });
+    liseEsmaCurriculum.forEach((item) => {
+      expect(item.arabic).toBeTruthy();
+      expect(arabicRegex.test(item.arabic)).toBe(true);
+    });
+  });
+
+  it("resolves Arabic names via getEsmaArabic helper", () => {
+    expect(getEsmaArabic("EL-CEMÎL")).toBe("اَلْجَمِيلُ");
+    expect(getEsmaArabic("EL-CEMÎL — Güzel olan, güzellik veren.")).toBe("اَلْجَمِيلُ");
+    expect(getEsmaArabic("ER-RAHMÂN")).toBe("اَلرَّحْمٰنُ");
+    expect(getEsmaArabic("ALLAH")).toBe("اَللّٰهُ");
+    expect(getEsmaArabic("UNKNOWN_NAME")).toBeUndefined();
+  });
+
+  it("includes examples from the universe (Kâinattaki örnekleri/tecellisi) in all explanations", () => {
+    ortaokulEsmaCurriculum.forEach((item) => {
+      expect(item.body.includes("Kâinattaki")).toBe(true);
+    });
+    liseEsmaCurriculum.forEach((item) => {
+      expect(item.body.includes("Kâinattaki")).toBe(true);
+    });
+  });
+
+  it("populates the arabic field on CurriculumEntry instances", () => {
+    const entries = getEsmaEntriesForGrade(1);
+    expect(entries[0].arabic).toBe("اَلْجَمِيلُ");
+    expect(entries[1].arabic).toBe("اَلرَّحْمٰنُ");
+    expect(entries[54].arabic).toBe("اَللّٰهُ");
   });
 });

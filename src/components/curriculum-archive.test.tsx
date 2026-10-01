@@ -240,6 +240,16 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain("archive-folder-card--active");
   });
 
+  it("renders Arabic calligraphy header and universe examples for Esma category cards", () => {
+    const esmaHtml = renderToString(
+      <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={true} initialCategoryId="esma" />
+    );
+    expect(esmaHtml).toContain("esma-card-header");
+    expect(esmaHtml).toContain("اَلْجَمِيلُ");
+    expect(esmaHtml).toContain("EL-CEMÎL");
+    expect(esmaHtml).toContain("Kâinattaki");
+  });
+
   it("should omit the decorative outer archive casing", () => {
     const html = renderToString(
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />

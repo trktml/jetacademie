@@ -480,7 +480,22 @@ export async function syncIlmihalCurriculumIfOutdated(): Promise<void> {
 
 export async function syncEsmaCurriculumIfOutdated(): Promise<void> {
   await ensureCurriculumEntriesTable();
-  await syncCategoryIfOutdated("esma", 330, () => {
+  try {
+    const exclusion = await queryOne<{ categoryId: string }>(
+      `SELECT "categoryId" FROM "curriculum_seed_exclusions" WHERE "categoryId" = $1`,
+      ["esma"]
+    );
+    if (exclusion) return;
+
+    const row = await queryOne<{ c: number | string; updatedCount: number | string }>(
+      `SELECT COUNT(*) as c, COUNT(CASE WHEN "body" LIKE '%Kâinattaki%' THEN 1 END) as "updatedCount" FROM "curriculum_entries" WHERE "categoryId" = $1`,
+      ["esma"]
+    );
+
+    if (row && Number(row.c) === 330 && Number(row.updatedCount) === 330) {
+      return;
+    }
+
     const now = new Date().toISOString();
     const batch: CurriculumEntryRow[] = [];
     for (let grade = 1; grade <= 6; grade++) {
@@ -510,8 +525,12 @@ export async function syncEsmaCurriculumIfOutdated(): Promise<void> {
         });
       }
     }
-    return batch;
-  });
+
+    await execute(`DELETE FROM "curriculum_entries" WHERE "categoryId" = $1`, ["esma"]);
+    await bulkUpsertCurriculumEntries(batch);
+  } catch (err) {
+    console.error(`Failed to sync category esma:`, err);
+  }
 }
 
 export async function syncHocaefendiCurriculumIfOutdated(): Promise<void> {

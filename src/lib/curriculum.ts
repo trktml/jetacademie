@@ -102,6 +102,7 @@ export interface CurriculumEntry {
   extraOrder?: number;
   isDraft?: boolean;
   title: string;
+  arabic?: string;
   body?: string;
   contentFormat?: "markdown";
   resourceUrl?: string;

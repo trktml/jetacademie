@@ -40,6 +40,7 @@ import { InlinePdfViewer } from "@/components/inline-pdf-viewer";
 import { KonuLessonReader } from "@/components/konu-lesson-reader";
 import { MarkdownContent } from "@/components/markdown-content";
 import { getKonuItem, parseKonuItemFromBody } from "@/lib/data/konu-curriculum";
+import { getEsmaArabic } from "@/lib/data/esma-curriculum";
 
 import { useUiStore } from "@/store/use-ui-store";
 import { useGuestStore } from "@/store/use-guest-store";
@@ -204,6 +205,76 @@ export function parseEntryContent(body?: string | null): {
   }
 
   return { summary, vocabList };
+}
+
+export function EsmaCardHeader({
+  entry,
+  isLocked = false,
+}: {
+  entry: CurriculumEntry;
+  isLocked?: boolean;
+}) {
+  const arabic = entry.arabic || getEsmaArabic(entry.title) || getEsmaArabic(entry.id);
+  const parts = entry.title.split(/—|–/);
+  const name = parts[0]?.trim() || entry.title;
+  const meaning = parts.length > 1 ? parts.slice(1).join("—").trim() : "";
+
+  return (
+    <div className="esma-card-header mb-4 w-full">
+      <div
+        className={`relative overflow-hidden rounded-2xl border px-4 py-4 text-center shadow-xs transition-colors sm:px-6 sm:py-5 ${
+          isLocked
+            ? "border-slate-300/60 bg-slate-100/50 dark:border-slate-800 dark:bg-slate-900/40"
+            : "border-emerald-500/25 bg-gradient-to-b from-emerald-500/12 via-emerald-500/5 to-transparent dark:border-emerald-500/30 dark:from-emerald-950/40 dark:via-emerald-950/20"
+        }`}
+      >
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(#059669_1px,transparent_1px)] [background-size:14px_14px] opacity-[0.035] dark:opacity-[0.06]"
+          aria-hidden="true"
+        />
+
+        {arabic && (
+          <div
+            dir="rtl"
+            lang="ar"
+            className={`relative font-serif text-3xl font-bold tracking-wide select-text sm:text-4xl md:text-5xl ${
+              isLocked
+                ? "text-slate-600 dark:text-slate-400"
+                : "text-emerald-950 dark:text-emerald-100"
+            }`}
+            style={{
+              fontFamily:
+                "'Traditional Arabic', 'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', serif",
+              lineHeight: 1.35,
+            }}
+          >
+            <span className="inline-block transition-transform duration-300 hover:scale-105">
+              {arabic}
+            </span>
+          </div>
+        )}
+
+        <div
+          className="my-2.5 flex items-center justify-center gap-2 opacity-60 dark:opacity-40"
+          aria-hidden="true"
+        >
+          <div className="h-[1px] w-10 bg-gradient-to-r from-transparent to-emerald-500/50 sm:w-16" />
+          <span className="text-[11px] text-emerald-700 dark:text-emerald-300">✦</span>
+          <div className="h-[1px] w-10 bg-gradient-to-l from-transparent to-emerald-500/50 sm:w-16" />
+        </div>
+
+        <h3 className="archive-entry-title !mb-1 !text-base font-bold tracking-wider text-slate-900 uppercase sm:!text-lg dark:text-slate-100">
+          {name}
+          {meaning && <span className="sr-only"> — {meaning}</span>}
+        </h3>
+        {meaning && (
+          <p className="text-xs font-medium text-emerald-800/90 italic sm:text-sm dark:text-emerald-300/90">
+            “{meaning}”
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export function EntryContentRenderer({
@@ -1334,7 +1405,12 @@ export function CurriculumArchive({
                         expandedReadingEntryId === entry.id &&
                         entry.categoryId === "konu" &&
                         entry.contentFormat !== "markdown"
-                      ) && <h3 className="archive-entry-title">{entry.title}</h3>}
+                      ) &&
+                        (entry.categoryId === "esma" ? (
+                          <EsmaCardHeader entry={entry} />
+                        ) : (
+                          <h3 className="archive-entry-title">{entry.title}</h3>
+                        ))}
                       <EntryContentRenderer
                         entry={entry}
                         isExpanded={expandedReadingEntryId === entry.id}
@@ -1651,7 +1727,12 @@ export function CurriculumArchive({
                                     expandedReadingEntryId === entry.id &&
                                     entry.categoryId === "konu" &&
                                     entry.contentFormat !== "markdown"
-                                  ) && <h3 className="archive-entry-title">{entry.title}</h3>}
+                                  ) &&
+                                    (entry.categoryId === "esma" ? (
+                                      <EsmaCardHeader entry={entry} />
+                                    ) : (
+                                      <h3 className="archive-entry-title">{entry.title}</h3>
+                                    ))}
                                   <EntryContentRenderer
                                     entry={entry}
                                     renderMedia={isFront}
@@ -1788,7 +1869,12 @@ export function CurriculumArchive({
                                   expandedReadingEntryId === currentEntry.id &&
                                   currentEntry.categoryId === "konu" &&
                                   currentEntry.contentFormat !== "markdown"
-                                ) && <h3 className="archive-entry-title">{currentEntry.title}</h3>}
+                                ) &&
+                                  (currentEntry.categoryId === "esma" ? (
+                                    <EsmaCardHeader entry={currentEntry} />
+                                  ) : (
+                                    <h3 className="archive-entry-title">{currentEntry.title}</h3>
+                                  ))}
                                 <EntryContentRenderer
                                   entry={currentEntry}
                                   renderMedia={true}
@@ -1973,7 +2059,11 @@ export function CurriculumArchive({
                                         </span>
                                       </div>
 
-                                      <h3 className="archive-entry-title">{lockedEntry.title}</h3>
+                                      {lockedEntry.categoryId === "esma" ? (
+                                        <EsmaCardHeader entry={lockedEntry} isLocked={true} />
+                                      ) : (
+                                        <h3 className="archive-entry-title">{lockedEntry.title}</h3>
+                                      )}
                                     </article>
                                   );
                                 })}
