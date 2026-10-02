@@ -142,17 +142,17 @@ hissini taşımalıdır.
 
 ### Tekrar filtresi
 
-Aynı düşünceyi yalnız farklı kelimelerle yeniden anlatma. Olay anlatımı, kaynak pasajı, açıklama ve kapanış birbirini tekrar etmek yerine her biri yeni bir bilgi, gerekçe, bağlantı, bakış veya hatırlanabilir ayrıntı eklemelidir.
+Aynı düşünceyi katkı sağlamadan yalnız farklı kelimelerle yeniden anlatma. Olay anlatımı, kaynak pasajı, açıklama ve kapanış bilgi, gerekçe, bağlantı, bakış veya hatırlanabilir ayrıntı sunabilir; anlamı pekiştirebilir, olayın ağırlığını hissettirebilir, ritim kurabilir ya da açılışla kapanışı bağlayabilir. Yeni bilgi vermemesi tek başına bir parçayı çıkarma sebebi değildir.
 
-**İki ardışık paragrafın ana fikri aynı cümleyle özetlenebiliyorsa**, aralarında yeni bir katkı olup olmadığını kontrol et. Yeni katkı yoksa paragrafları birleştir veya birini çıkar. Bir alıntının ardından yapılan açıklama yalnız alıntıyı daha sade sözlerle tekrar etmekle yetinmemeli; öğrencinin bağlamı, gerekçeyi veya ana soruyla ilişkiyi görmesine yardım etmelidir.
+**İki ardışık paragrafın ana fikri aynı cümleyle özetlenebiliyorsa**, bilgi, anlam desteği ve anlatı açısından katkılarını kontrol et. İşlevli tekrarın katkısını metindeki belirli karşılığıyla göster; yalnız “ritim için” demek yeterli değildir. Hiçbir katkı yoksa paragrafları birleştir veya birini çıkar. Bir alıntının ardından yapılan açıklama, öğrencinin zor ifadeyi, bağlamı, gerekçeyi veya ana soruyla ilişkiyi anlamasına yardım etmelidir; anlaşılmış bir fikri katkısız biçimde yeniden söylemekle yetinmemelidir.
 
 ---
 
 # 3. RİSALE-İ NUR KONU İÇERİĞİNİN TEMEL KAYNAĞIDIR
 
-Yıllık planda her konu için kullanılacak temel Risale-i Nur bölümü önceden belirlenmiştir.
+İlk dört haftada temel kaynak belirlenmez. Sonraki haftalarda kullanılacak temel Risale-i Nur bölümü yıllık planda belirlenmiştir.
 
-Bu bölümü esas al.
+Belirlenmiş bu bölümü esas al; destekleyici kaynakların isteğe bağlı olması temel kaynağı kullanma şartını kaldırmaz.
 
 Konu gerçekten ihtiyaç gösteriyorsa Risale-i Nur’un **başka bir bölümünden kısa ve tamamlayıcı ikinci bir pasaj** da kullanılabilir.
 
@@ -216,16 +216,16 @@ Risale-i Nur ve Hocaefendi/Pırlanta pasajları ile âyet ve hadislerin özgün 
 
 # 6. HOCAEFENDİ’NİN ESERLERİNDEN PASAJI SEN BELİRLEYECEKSİN
 
-Yıllık planda Risale-i Nur bölümü bellidir.
+İlk dört haftada temel kaynak belirlenmez; sonraki haftalarda yıllık planda belirlenen Risale-i Nur bölümünü esas al.
 
 Ancak Hocaefendi’nin hangi eserinden hangi pasajın kullanılacağı çoğu zaman önceden belirtilmeyecektir.
 
-Konuya en uygun metni **sen araştırıp belirlemelisin.**
+Ana soruyu tamamlayabilecek katkıyı belirleyip uygun metni **sen araştırmalısın.** Araştırmak, bulunan pasajı Konu metnine mutlaka eklemek demek değildir. Tamamlayıcı katkı sağlayan, doğrulanmış ve öğrenci profiline uygun bir pasaj seç; sırf kaynak türü bulunsun diye pasaj arama veya ekleme.
 
 Seçim yaparken şu sırayı izle:
 
 1. Yıllık plandaki konunun ana fikrini belirle.
-2. Belirlenen Risale-i Nur bölümünün hangi yönü öne çıkardığını gör.
+2. Varsa belirlenen Risale-i Nur bölümünün hangi yönü öne çıkardığını gör; ilk dört haftada anlatının ihtiyaç duyduğu kaynak katkısını esas al.
 3. Hocaefendi’nin eserlerinden bu düşünceyi doğal biçimde:
    - açıklayan,
    - tamamlayan,
@@ -233,11 +233,13 @@ Seçim yaparken şu sırayı izle:
    - çağdaş hayata yaklaştıran
      bir metin ara.
 4. Pasajı özgün kaynağından doğrula.
-5. Ancak doğruladıktan sonra kullan.
+5. Doğrulandıktan sonra anlatıya somut katkısını ve öğrenci için anlaşılabilirliğini değerlendir; katkısız veya yalnız aynı fikri tekrarlayan pasajı ekleme.
 
 Hocaefendi’den metin seçmek için tek tek eserleri baştan sona okumak yerine sistemde bulunan kaynak arama imkânlarından yararlanabilirsin.
 
 Ancak arama sonucunda bulunan metni **orijinal kaynaktan doğrulamadan doğrudan alıntı olarak verme.**
+
+Konu içine Hocaefendi pasajı eklenmemesi, ayrı dinleme içeriğinin hazırlanma ve değerlendirme şartlarını kaldırmaz.
 
 ---
 
@@ -245,7 +247,7 @@ Ancak arama sonucunda bulunan metni **orijinal kaynaktan doğrulamadan doğrudan
 
 Hocaefendi’nin eserlerinden mutlaka bir cümle bulup metne yerleştirmiş olmak amaç değildir.
 
-Pasaj konuya gerçek anlamda hizmet etmelidir.
+Pasaj konuya gerçek anlamda hizmet etmelidir. Özgün kaynağının doğrulanmış olması tek başına anlatıya eklenmesi için yeterli değildir; ana soruya katkı sunmayan pasajı kullanma.
 
 Şu tür kullanım yanlıştır:
 
@@ -272,7 +274,7 @@ Kaynakları mekanik başlıklarla ayırma.
 
 “RİSALE-İ NUR’DAN”, “HOCAEFENDİ’DEN”, “BU PASAJI AÇIKLAYALIM” ve “İKİ METNİ BAĞLAYALIM” gibi zorunlu ara başlıklar kullanma. “Bediüzzaman bu noktayı çarpıcı biçimde anlatır” gibi her konuya takılabilecek geçiş cümlelerini de hazır kalıp olarak kullanma.
 
-Her pasajın anlatıda hangi **belirli soruya veya ihtiyaca** cevap verdiğini önceden belirle. Pasajdan sonra önce o pasajın fikrini ve bağlamını açıkla, sonra anlatıyı bir adım ileri götür. Hocaefendi’ye geçiş, aynı fikrin yeniden söylenmesi için değil, gerçekten yeni bir yönün gerektiği yerde gerçekleşsin. Bir alıntı çıkarıldığında düşünce akışı hiçbir şey kaybetmiyorsa alıntıyı veya kurduğun akışı yeniden seç.
+Her pasajın anlatıda hangi **belirli soruya veya ihtiyaca** cevap verdiğini önceden belirle. Pasajdan sonra önce o pasajın fikrini ve bağlamını açıkla, sonra anlatıyı bir adım ileri götür. Hocaefendi’ye geçiş, aynı fikrin yeniden söylenmesi için değil, gerçekten yeni bir yönün gerektiği yerde gerçekleşsin. Bir alıntı çıkarıldığında kaynakla temas, anlam desteği ve düşünce akışı hiçbir şey kaybetmiyorsa alıntıyı çıkar veya kurduğun akışı yeniden değerlendir; yerine mutlaka başka bir tamamlayıcı alıntı eklemek gerekmez. Yıllık planda belirlenen temel kaynağı kullanma şartı korunur.
 
 Bu soru her defasında ayrı bir soru cümlesi veya başlık olarak yazılmak zorunda değildir; önceki anlatıdan doğabilir. Pasaj–açıklama–diğer pasaj–ortak sonuç dizisini tekrarlayan bir şablon kurma. Ana soruyu, ihtiyaç duyulan kaynaklar ve yerinde kullanılan hayat örnekleriyle kesintisiz geliştir; ilk dört haftada alıntısız, kaynakla doğrulanmış bir tanışma anlatısı da kurulabilir.
 
@@ -419,14 +421,14 @@ Dinleme kartında yönlendirme kadar kaydın kendi dilini de değerlendir; yaln�
 
 **Yerel hazırlık kayıtları:** Geçici araştırma ve değerlendirme kayıtları güncel planın veya yayımlanmış/veritabanındaki içeriğin yerine geçmez. Eski bir taslağı yeni dersin başlangıç kaynağı sayma; güncel yetkili içeriği kullan. Dosya yolları, veritabanı ve CLI ayrıntıları **III. Teknik Sunum ve Yayın** bölümünde tutulur.
 
-| Denetlenecek unsur | İlk ay için beklenen anlatım                                                                                                    |
-| :----------------- | :------------------------------------------------------------------------------------------------------------------------------ |
-| Merak              | Öğrencinin anlayabileceği bir olay, fark veya seçim; cevabı metinde ilerleyen bir soru.                                         |
-| Açıklama           | Kim ne yapıyor açık; bir paragrafta bir düşünce adımı; günlük Türkçe.                                                           |
-| Kavram yükü        | M1'de bir günlük durum ve tek ana fikir. Gerekli yeni kelime kısa açıklanır; yan kavramlarla ders genişletilmez.                |
-| Kaynak             | Kısa, anlamlı ve doğrulanmış alıntı; zor ifadeler alıntının dışında açıklanır.                                                  |
-| Soru               | M1'de yapılabilecek bir davranış veya somut bir örnek; üst sınıflarda gerekçe ve karşılaştırma artar, açıklama dili ağırlaşmaz. |
-| Ton                | Saygılı ve meraklı; bebeksi hitap, reklam coşkusu ve peş peşe nasihat yok.                                                      |
+| Denetlenecek unsur | İlk ay için beklenen anlatım                                                                                                              |
+| :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| Merak              | Öğrencinin anlayabileceği bir olay, fark veya seçim; cevabı metinde ilerleyen bir soru.                                                   |
+| Açıklama           | Kim ne yapıyor açık; bir paragrafta bir düşünce adımı; günlük Türkçe.                                                                     |
+| Kavram yükü        | M1'de bir günlük durum ve tek ana fikir. Gerekli yeni kelime kısa açıklanır; yan kavramlarla ders genişletilmez.                          |
+| Kaynak             | Kullanılmışsa anlamlı ve doğrulanmış alıntı; zor ifadeler alıntının dışında açıklanır. İlk dört haftada doğrudan alıntı zorunlu değildir. |
+| Soru               | M1'de yapılabilecek bir davranış veya somut bir örnek; üst sınıflarda gerekçe ve karşılaştırma artar, açıklama dili ağırlaşmaz.           |
+| Ton                | Saygılı ve meraklı; bebeksi hitap, reklam coşkusu ve peş peşe nasihat yok.                                                                |
 
 Örneğin “Bir metnin tekrar okunmasının anlamını, ondan kendi hayatınla ilgili yeni bir şey fark ettiğinde görebilirsin” yerine “Yeni şeyler öğrendikçe, kitapta daha önce gözünden kaçan bir şeyi fark edebilirsin” denebilir. Değişen yalnız cümle uzunluğu değildir: öğrenci ne yaptığını ve neyi fark ettiğini takip edebilir. Bu karşılaştırma yazarın açıklaması içindir; özgün alıntılar böyle yeniden yazılmaz.
 
@@ -459,6 +461,8 @@ Kaynaklar, örnekler ve açıklamalar ana fikri ilerletmeli.
 Ders sonunda birbirinden bağımsız beş farklı bilgi kalmamalı.
 
 Öğrencinin zihninde **tek ve güçlü bir düşünce örgüsü** oluşmalıdır.
+
+**Zengin anlatı**, kaynak veya bilgi sayısıyla değil; öğrencinin bağlamı anlaması, anlatılan olayı veya durumu gözünde canlandırabilmesi, kaynağın ne kattığını görmesi ve düşüncenin nasıl geliştiğini takip edebilmesiyle değerlendirilir. Gerekli bağlamı, olayın gelişmesini ve anlam desteğini kısalık uğruna çıkarma. Bu ölçü her dersi hikâyeye dönüştürme veya kaynak, kelime ve uzunluk kotası koyma talimatı değildir; doğrulanmış ayrıntılar ve anlaşılır düşünce bağlarıyla konunun ihtiyacı kadar geliştir.
 
 Yazmadan önce okurun ilgisinin nasıl gelişeceğini çalışma notunda belirle: dikkatini çeken ilk ayrıntı, soruyu büyüten olay veya kaynak katkısı ve kapanışta yanında götüreceği düşünce ya da yeni merak. Bu bir sıra veya üç başlık zorunluluğu değildir. Uygulama konuya hizmet ediyorsa kullanılabilir; özellikle tanışma dersinde keşfetme isteği, kendi sorusunu bulma veya bir insanın emeğini fark etme de yeterli bir kapanış olabilir. Ana anlatı, alıntıların çevresine yazılmış kısa açıklamalardan ibaret kalmamalı; pasajların bağlamını ve aralarındaki düşünce bağını öğrencinin takip edebileceği kadar geliştirmelidir.
 
@@ -596,7 +600,7 @@ Doğrudan alıntının özgün kaynağından emin değilsen alıntı yapma. Eksi
 
 ### Âyetin yeri, meal ve dipnot düzeni
 
-Konu dersinde kullanılan **konuyla doğrudan ilgili âyet**, anlatının ona ihtiyaç duyduğu yerde sunulur; âyetle başlanabilir veya önce gelişen bir giriş bulunabilir. Risale/Hocaefendi pasajlarından önce gelme zorunluluğu yoktur. İlk dört haftada âyet ekleme zorunluluğu aranmaz (başlangıç bölümü); sonraki Konu derslerinde ilgili âyet kullanılır. Âyetin kendi içindeki sunum sırası şöyledir:
+Konu dersinde kullanılan **konuyla doğrudan ilgili âyet**, anlatının ona ihtiyaç duyduğu yerde sunulur; âyetle başlanabilir veya önce gelişen bir giriş bulunabilir. Risale/Hocaefendi pasajlarından önce gelme zorunluluğu yoktur. İlk dört hafta dâhil bütün haftalarda âyet, hadis, siyer ve sahabe örnekleri anlatıya katkılarıyla seçilir; bulunmaları zorunlu değildir. İlk dört haftanın temel kaynak ve doğrudan alıntı esnekliği, sonraki haftalarda yıllık planda belirlenen temel kaynağı kullanma şartı korunur. Âyet kullanıldığında kendi içindeki sunum sırası şöyledir:
 
 1. Âyetin doğrulanmış **özgün Arapça metni, koyu puntoyla**.
 2. Hemen altında Suat Yıldırım mealinden doğrulanmış Türkçe meal.
@@ -649,7 +653,7 @@ Arama sonucu, özet, yapay zekâ cevabı veya önceki ders metni tek başına do
 
 **Merak uyandıran alt soru veya gelişen giriş; uzunluğu anlatının ihtiyacına göre belirlenir**
 
-**İlgili âyet kullanıldığında anlatının ihtiyaç duyduğu yerde koyu yazılmış Arapça metni; ilk dört haftada zorunlu değildir**
+**İlgili âyet seçilmişse anlatının ihtiyaç duyduğu yerde koyu yazılmış Arapça metni; hiçbir haftada âyet bulunması zorunlu değildir**
 
 **Hemen altında başlıksız Suat Yıldırım meali ve mealin bitiminde dipnot işareti**
 
@@ -690,8 +694,8 @@ Her içeriği **iki ayrı geçişte** denetle: önce plan ve kaynak doğruluğu,
 
 - Haftanın konusu, ana sorusu, hedefi ve varsa temel Risale bölümü yıllık planla uyuşuyor mu? Yaratıcı öğrenci başlığı aynı konuyu doğru temsil ediyor mu? İlk dört haftanın kaynak esnekliği uygulanmış mı?
 - Her doğrudan alıntı kullanılan baskının asıl sayfasıyla kelime kelime karşılaştırıldı mı? Alıntıya sadeleştirme, açıklama veya kaynaktaki dipnot metni karıştı mı?
-- Hocaefendi pasajının özgün yeri doğrulandı mı ve Risale pasajına yeni bir katkısı var mı?
-- Âyetin Arapça metni, sûre/âyet numarası ve Suat Yıldırım meali birbiriyle ve kaynakla uyuşuyor mu?
+- Hocaefendi pasajı kullanılmışsa özgün yeri doğrulandı mı ve ana soruya somut, tamamlayıcı katkısı var mı? Araştırılmış olması, katkısız bir pasajı ekleme zorunluluğu gibi uygulanmış mı?
+- Âyet kullanılmışsa Arapça metni, sûre/âyet numarası ve Suat Yıldırım meali birbiriyle ve kaynakla uyuşuyor mu? Âyet veya başka bir destekleyici kaynak türünün bulunmaması tek başına eksik kabul edilmiş mi?
 - Hadisin Arapça lafzı, Türkçe tercümesi ve kaynak yeri kontrol edildi mi; kullanılan rivayetin **sahih** olduğu ve bu değerlendirmenin dayanağı kaydedildi mi? Diğer kategorilerdeki hadis kaynaklı olay/rivayetler de aynı şartı karşılıyor mu?
 - Siyer, sahabe ve diğer tarihî örneklerde şahıs, yer, meslek, zaman, olay sırası ve sözler kaynakla aynı mı? Farklı rivayetler birleştirilmiş veya kaynaksız ayrıntı eklenmiş mi?
 - Dipnotlar, sayfalar ve alıntı işaretleri doğru mu?
@@ -705,7 +709,7 @@ Bulguları aşağıdaki kontrol kaydına işle. Teknik testlerin geçmesi veya d
 Bölüm 9'daki merak ve ton, bölüm 10'daki sınıf/ay/dil ve bölüm 11'deki düşünce hattını birlikte değerlendir. Her madde için kısa bir metin örneği ve gerekçe kaydet:
 
 - **Okuma isteği ve ana fikir:** İlk bölümde okumaya devam etmek için hangi somut sebep var? Anlatının ortasında merakı büyüten veya bakışı değiştiren hangi ayrıntı var? Son cümle hangi düşünceyi veya keşif isteğini bırakıyor? Bu noktaları metinden göster; yalnız “soru var”, “kısa” veya “dil sade” diye kabul etme. Büyük soru açık kalıyorsa o günkü anlam yine anlaşılır mı; metin genel öğütlere dönüşüyor mu?
-- **Kaynak katkısı:** Her alıntı ana soruya gerekli bir fikir katıyor mu? Öğrenci günlük örneğin kaynakla bağını anlatabilecek desteğe sahip mi? Kaynaklar anlatının içinde ilerliyor mu, yoksa kopuk bloklar olarak mı kalıyor?
+- **Kaynak katkısı ve zenginlik:** Her alıntı ana soruya somut katkı sunuyor mu? Öğrenci bağlamı, olayın veya düşüncenin gelişimini ve örneğin kaynakla bağını takip edebilecek desteğe sahip mi? Kaynaklar anlatının içinde ilerliyor mu, yoksa kopuk bloklar olarak mı kalıyor? Gerekli ayrıntı ve açıklamalar kısalık uğruna çıkarılmış veya kaynak sayısı zenginlik sayılmış mı?
 - **Anlaşılabilirlik:** Kim ne yapıyor açık mı; öğrenci ana fikri kendi sözüyle anlatabilecek mi? Alıntıdaki bütün zor ifadeler ve yazarın Türkçesi ayrı taranmış mı? Destek yükü ağırsa daha uygun pasaj veya örnek seçilmeli.
 - **Sınıf ve ay:** Türkçe okuma düzeyi yaşından çıkarılmış mı? İlk ay için gerekli ön bilgi veriliyor mu? İlerleyen aylarda önceki kelimeler erişilebilen derslerden kontrol edilerek ve gerektiğinde hatırlatılarak mı kullanılıyor?
 - **Zihinsel hareket:** Konu dersinde kendi merak sorusunu kurma, ayrıntıyı anlamlandırma, örnek, gerekçe, seçenek karşılaştırması, tahmin veya yeni duruma uygulama gibi gerçek bir düşünme alanı var mı; bu alan doğrudan soru olmadan da kurulabiliyor mu? Tanışma dersine gereksiz davranış görevi eklenmiş mi; görevler anlatının ilgisini kesiyor mu? Cevap önceki satırdan kopyalanabiliyor mu veya kapanışta önceden verilmiş mi? Soru tek başına ve birlikte okumada anlaşılır mı? Dinleme içeriklerinde yalnız ilgili ölçüyü uygula.
@@ -721,17 +725,18 @@ Sorun varsa yalnız kelimeleri cilalama; gerekirse örneği, pasajı ve anlatın
 
 Kayıt, öğrenci metninden ayrı olarak yerel, git tarafından dışlanan hazırlık dizininde tutulur; derslerin ikinci bir kaynak deposu veya öğretmen notu değildir. Biçim serbesttir; aşağıdaki alanlar her içerik için bulunmalıdır:
 
-| Alan                    | Kaydedilecek bilgi                                                                                                                                      |
-| :---------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Kimlik ve profil        | İçerik kimliği, kategori, sınıf, hafta/ay, yaklaşık yaş, bilinen Türkçe okuma düzeyi ve ön bilgi varsayımı. Bilinmeyen bilgiyi varsayım olarak belirt.  |
-| Plan ve hedef           | İlgili yıllık plan, haftanın ana sorusu ve hedefi; bu içeriğin hedefe katkısı.                                                                          |
-| Kaynak doğrulama        | Kullanılan özgün dosya veya sayfa, baskı ve doğrulanan sayfa/bölüm; karşılaştırılan alıntı veya olay. Erişilemeyen kaynakları belirt.                   |
-| Merak ve düşünce hattı  | Okumaya devam etme sebebi, ortada ilgiyi geliştiren ayrıntı, kapanışın düşüncesi/yeni merakı ve ana fikirle bağları; metinden kısa kanıt.               |
-| Dil ve anlam desteği    | Zor ifadeler, verilen açıklamalar ve desteğin yeterliliğine ilişkin gerekçe; alıntı yükü ile yazarın dilini ayrı değerlendir.                           |
-| Düşünme beklentisi      | Sınıf ölçüsüne göre öğrenciden beklenen adım ve metindeki karşılığı; Konu için anlamlı düşünme sorusu/uygulaması.                                       |
-| Bulgular ve düzeltmeler | Her geçişte bulunan sorun, ilgili metin örneği, yapılan düzeltme ve yeniden kontrol sonucu. Sorun yoksa bu yargının dayanağını yaz.                     |
-| Kapsam ve denemeler     | Yakın hafta/kategori karşılaştırması, sunum kontrolü, öğrenci denemesi ve dinleme değerlendirmesi yapıldı mı? Yapılanın kapsamı ve yapılmayanın sınırı. |
-| Kabul sonucu            | Aşağıdaki üç sonuçtan biri, gerekçesi ve varsa açık eksikler.                                                                                           |
+| Alan                        | Kaydedilecek bilgi                                                                                                                                                                |
+| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kimlik ve profil            | İçerik kimliği, kategori, sınıf, hafta/ay, yaklaşık yaş, bilinen Türkçe okuma düzeyi ve ön bilgi varsayımı. Bilinmeyen bilgiyi varsayım olarak belirt.                            |
+| Plan ve hedef               | İlgili yıllık plan, haftanın ana sorusu ve hedefi; bu içeriğin hedefe katkısı.                                                                                                    |
+| Kaynak doğrulama            | Kullanılan özgün dosya veya sayfa, baskı ve doğrulanan sayfa/bölüm; karşılaştırılan alıntı veya olay. Erişilemeyen kaynakları belirt.                                             |
+| Destekleyici kaynak katkısı | Kullanılan kaynak türü ve ana soruya somut katkısı; değerlendirilip eklenmeyen aday varsa kısa gerekçesi. Kullanılmayan her tür için açıklama veya aday arama zorunluluğu yoktur. |
+| Merak ve düşünce hattı      | Okumaya devam etme sebebi, ortada ilgiyi geliştiren ayrıntı, kapanışın düşüncesi/yeni merakı ve ana fikirle bağları; metinden kısa kanıt.                                         |
+| Dil ve anlam desteği        | Zor ifadeler, verilen açıklamalar ve desteğin yeterliliğine ilişkin gerekçe; alıntı yükü ile yazarın dilini ayrı değerlendir.                                                     |
+| Düşünme beklentisi          | Sınıf ölçüsüne göre öğrenciden beklenen adım ve metindeki karşılığı; Konu için anlamlı düşünme sorusu/uygulaması.                                                                 |
+| Bulgular ve düzeltmeler     | Her geçişte bulunan sorun, ilgili metin örneği, yapılan düzeltme ve yeniden kontrol sonucu. Sorun yoksa bu yargının dayanağını yaz.                                               |
+| Kapsam ve denemeler         | Yakın hafta/kategori karşılaştırması, sunum kontrolü, öğrenci denemesi ve dinleme değerlendirmesi yapıldı mı? Yapılanın kapsamı ve yapılmayanın sınırı.                           |
+| Kabul sonucu                | Aşağıdaki üç sonuçtan biri, gerekçesi ve varsa açık eksikler.                                                                                                                     |
 
 Dinleme içeriğinde uygulanmayan alanı gerekçesiyle belirt; formu doldurmak için öğrenci metnine ek soru veya bölüm koyma. “Uygun”, “evet” veya “geçti” işareti tek başına kanıt değildir. Erişilmeyen kaynak, yapılmayan kontrol veya öğrenci denemesi yapılmış gibi kaydedilemez.
 
@@ -755,10 +760,12 @@ Aynı sınıfın erişilebilen önceki içeriklerini, özellikle yakın haftalar
 
 Çok haftalı paketlerde yalnız tek tek dersleri değil, bütün yılı da örüntü açısından kontrol et. Öğrenciye gösterilmeyen bir hazırlık tablosunda en az şu alanları karşılaştır:
 
-| Hafta | Ana anlatı biçimi | Merak kaynağı | Ana kişi / olay / fikir | Kaynak katkısı | Zihinsel hareket | Kapanış türü |
-| :---- | :---------------- | :------------ | :---------------------- | :------------- | :--------------- | :----------- |
+| Hafta | Ana anlatı biçimi | Merak kaynağı | Ana kişi / olay / fikir | Destekleyici kaynak türü | Kaynakların somut katkısı | Zihinsel hareket | Kapanış türü |
+| :---- | :---------------- | :------------ | :---------------------- | :----------------------- | :------------------------ | :--------------- | :----------- |
 
 Bu tablo **çeşitlilik kotası** değildir. Ama art arda haftalarda aynı “bir arkadaş grubunu düşün”, aynı ikilem, aynı soru biçimi, aynı günlük örnek veya aynı kapanış kalıbı tekrar ediyorsa bunu görünür kılar. Bilinçli pekiştirme varsa nedenini kaydet; otomatik tekrar varsa anlatıyı yeniden kur.
+
+**Ünite sonunda kaynak fırsatlarını değerlendir:** “Konuyu anlamayı belirgin biçimde güçlendirecek âyet, hadis, siyer veya sahabe örneği fırsatları gözden kaçmış mı?” sorusunu haftaların ana soruları ve kullanılan kaynakların katkıları üzerinden cevapla. Belirli bir fırsat fark edilirse ilgili dersi yeniden değerlendir; eklenecek parçayı özgün kaynaktan doğrula ve anlatı/dil kontrolünü yeniden yap. Bir türün hiç kullanılmamış olması tek başına eksiklik veya ret sebebi değildir. Amaç türleri eşitlemek değil, anlamlı bağlantıları bulmaktır; her hafta bütün türleri araştırma ya da kullanılmayan her tür için gerekçe üretme zorunluluğu yoktur. Tamamlanan ünitelerde bu değerlendirmenin kapsamını, bulgusunu ve varsa düzeltmeyi mevcut hazırlık kaydına işle; henüz tamamlanmamış bir ünite veya erişilemeyen haftalar için kontrol yapılmış gibi bildirme.
 
 Teknik veritabanı ve yayınlama akışı bu belgenin **III. Teknik Sunum ve Yayın** bölümündedir. Teknik şema doğrulamasını editoryal kabul yerine kullanma.
 
@@ -778,7 +785,7 @@ Pedagojik dayanak: Öğrenme hedefiyle ilişkili seçimler için [CAST — Optim
 
 ## 19.1. Gerektiğinde ve konuya katkısıyla seç
 
-İlgili sınıfın yıllık planındaki hafta, konu, ana soru ve kazanımı esas al. Âyet, hadis, siyer olayı veya sahabe örneği ancak bir soruyu aydınlatıyor, düşünceyi derinleştiriyor ya da konunun anlamını somutlaştırıyorsa kullanılır. Her derse her türden bir parça ekleme; sayı, uzunluk veya tür kotası yoktur. Uygun bir kaynak bulunamaması tek başına eksik kategori anlamına gelmez. Kullanılacak bir iddia veya rivayet doğrulanamıyorsa onu ekleme; dersin ana düşüncesi için gerekli kaynak doğrulanamıyorsa inceleme eksikliğini kaydet.
+İlgili sınıfın yıllık planındaki hafta, konu, ana soru ve kazanımı esas al. İlk dört hafta dâhil bütün haftalarda âyet, hadis, siyer olayı veya sahabe örneği ancak bir soruyu aydınlatıyor, düşünceyi derinleştiriyor ya da konunun anlamını somutlaştırıyorsa kullanılır. Her derse her türden bir parça ekleme; sayı, uzunluk veya tür kotası yoktur. Uygun bir kaynak bulunamaması tek başına eksik kategori anlamına gelmez. İsteğe bağlı kullanım, katkı sağlayabilecek belirli bir kaynak fırsatını göz ardı etme gerekçesi değildir; ünite değerlendirmesinde bölüm 18'deki ölçüyü uygula. Kullanılacak bir iddia veya rivayet doğrulanamıyorsa onu ekleme; dersin ana düşüncesi için gerekli kaynak doğrulanamıyorsa inceleme eksikliğini kaydet.
 
 ## 19.2. Tek ve bağlantılı anlatı
 
@@ -834,11 +841,11 @@ Seçilen parçalar ayrı kategori kayıtları olarak değil, ilgili sınıf ve h
 
 18. bölümdeki ayrı kaynak ve dil incelemelerine ek olarak:
 
-- Her kaynak veya örnek doğru sınıfın doğru haftasına ve ana düşüncesine katkı sunuyor mu; sırf tür kotası için eklenen parça var mı?
+- Her kaynak veya örnek doğru sınıfın doğru haftasına ve ana düşüncesine somut katkı sunuyor mu; sırf tür kotası için eklenen parça var mı? Tamamlanan ünitenin kaynak fırsatları bölüm 18'e göre değerlendirilmiş mi; bir türün yokluğu tek başına eksiklik sayılmış mı?
 - Olayın bağlamı ve sonucu anlaşılır mı; şahıslar, sözler ve ayrıntılar asıl kaynakla uyuşuyor mu?
 - Âyetin metni ve meali; hadisin lafzı, tercümesi, kaynak yeri ve sahih değerlendirmesi doğrulanmış mı? Hadis kaynaklı tarihî rivayetler de aynı şartı karşılıyor mu?
 - Özgün alıntı ve tercüme korunmuş, açıklama bunların dışında verilmiş mi?
-- Parçalar tek anlatıda bağlantılı mı; ayrı kategori şablonları, sabit kaynak sırası veya gereksiz tekrarlar akışı kesiyor mu?
+- Parçalar tek anlatıda bağlantılı mı; gerekli bağlam, olayın gelişmesi ve anlam desteği korunmuş mu? Ayrı kategori şablonları, sabit kaynak sırası veya katkısız tekrarlar akışı kesiyor mu; işlevli tekrarlar yalnız yeni bilgi vermediği için çıkarılmış mı?
 - Kelimeler Türkçe metinde bulunuyor, işaretli kullanımdan doğru açıklama açılıyor mu?
 - Dipnotlar Konu'nun sonunda mı; hadis kaynakları bağlantısız mı; tahminî künye veya hadis sitesi `resourceUrl` alanı var mı?
 
@@ -906,7 +913,7 @@ Bu programda amaç Risale-i Nur ve Hocaefendi’den birkaç alıntıyı dersin i
 
 Amaç:
 
-**yıllık plandaki konuyu, kaynaklara sadık kalarak; çocuk ve gençlerin insanları ve fikirleri tanımaktan keyif aldığı, okumaya devam etmek ve kendi sorularını keşfetmek istediği, anlaşılır ve düşünce bakımından doyurucu bir anlatı hâline getirmektir.** İlk dört hafta tanışma ve merak önceliklidir; sonraki derslerde belirlenmiş Risale kaynağı ve konuya gerçekten katkı sunan Hocaefendi metinleri bu anlatıya hizmet eder.
+**yıllık plandaki konuyu, kaynaklara sadık kalarak; çocuk ve gençlerin insanları ve fikirleri tanımaktan keyif aldığı, okumaya devam etmek ve kendi sorularını keşfetmek istediği, anlaşılır ve düşünce bakımından doyurucu bir anlatı hâline getirmektir.** İlk dört hafta tanışma ve merak önceliklidir; sonraki derslerde belirlenmiş Risale kaynağı ve gerektiğinde seçilen, konuya gerçekten katkı sunan Hocaefendi metinleri bu anlatıya hizmet eder.
 
 Bu amaç için **daha çok kural uygulamak değil, doğru önceliği korumak** esastır. Kaynak doğruluğu ve plan sınırları içinde, her ders kendi parmak izine sahip olmalı; gereksiz bilgiyi, tekrarı, yapay gerilimi ve şablon kapanışları taşımamalıdır.
 
