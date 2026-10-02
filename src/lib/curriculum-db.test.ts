@@ -545,4 +545,164 @@ describe("Curriculum week management and draft lifecycle", () => {
 
     expect(remainingPreserved.length).toBe(initialPreserved.length);
   });
+
+  it("deletes matching editor content and user progress while preserving protected categories", async () => {
+    await ensureCurriculumEntriesTable();
+
+    // Ensure curriculum_editor_content table exists
+    await execute(`
+      CREATE TABLE IF NOT EXISTS "curriculum_editor_content" (
+        "slot" text PRIMARY KEY,
+        "grade" integer NOT NULL,
+        "entryId" text NOT NULL UNIQUE,
+        "entry" text NOT NULL,
+        "revision" integer NOT NULL,
+        "updatedAt" text NOT NULL
+      );
+    `);
+
+    // Insert weekly content in entries, editor overrides, and progress
+    const now = new Date().toISOString();
+    await bulkUpsertCurriculumEntries([
+      {
+        id: "g1-konu-subat-1",
+        grade: 1,
+        categoryId: "konu",
+        gender: null,
+        month: 2,
+        week: 1,
+        year: 2027,
+        isExtra: 0,
+        extraOrder: null,
+        isDraft: 1,
+        title: "Test Konu Subat 1",
+        body: "Test body content",
+        resourceUrl: null,
+        pdfUrl: null,
+        pageCount: 2,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ]);
+
+    // Insert editor overrides: one for topic (week 21 / subat-1) and one for adab (preserved)
+    await execute(
+      `INSERT OR REPLACE INTO "curriculum_editor_content" ("slot", "grade", "entryId", "entry", "revision", "updatedAt")
+       VALUES ($1, $2, $3, $4, 1, $5)`,
+      [
+        "1:konu:all:2-1",
+        1,
+        "g1-konu-subat-1",
+        JSON.stringify({
+          id: "g1-konu-subat-1",
+          grade: 1,
+          categoryId: "konu",
+          month: 2,
+          week: 1,
+          year: 2027,
+          title: "Override Konu Subat 1",
+          body: "Override body",
+        }),
+        now,
+      ]
+    );
+
+    // Also a custom override for hocaefendi in the same slot
+    await execute(
+      `INSERT OR REPLACE INTO "curriculum_editor_content" ("slot", "grade", "entryId", "entry", "revision", "updatedAt")
+       VALUES ($1, $2, $3, $4, 1, $5)`,
+      [
+        "1:hocaefendi-dinleme:all:2-1",
+        1,
+        "custom-hocaefendi-subat-1",
+        JSON.stringify({
+          id: "custom-hocaefendi-subat-1",
+          grade: 1,
+          categoryId: "hocaefendi-dinleme",
+          month: 2,
+          week: 1,
+          year: 2027,
+          title: "Override Sohbet Subat 1",
+          body: "Sohbet body",
+        }),
+        now,
+      ]
+    );
+
+    // Preserved category override
+    await execute(
+      `INSERT OR REPLACE INTO "curriculum_editor_content" ("slot", "grade", "entryId", "entry", "revision", "updatedAt")
+       VALUES ($1, $2, $3, $4, 1, $5)`,
+      [
+        "1:adab-i-muaseret:all:2-1",
+        1,
+        "g1-adab-subat-1-override",
+        JSON.stringify({
+          id: "g1-adab-subat-1-override",
+          grade: 1,
+          categoryId: "adab-i-muaseret",
+          month: 2,
+          week: 1,
+          year: 2027,
+          title: "Adab Override",
+          body: "Adab body",
+        }),
+        now,
+      ]
+    );
+
+    // User progress records
+    const testUserId = `test-user-del-week-${Date.now()}`;
+    await execute(
+      `INSERT INTO "user" ("id", "name", "email", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5)`,
+      [testUserId, "Test User", `${testUserId}@example.com`, now, now]
+    );
+    await execute(
+      `INSERT INTO "curriculum_progress" ("userId", "entryId", "completedAt") VALUES ($1, $2, $3)`,
+      [testUserId, "g1-konu-subat-1", now]
+    );
+    await execute(
+      `INSERT INTO "curriculum_progress" ("userId", "entryId", "completedAt") VALUES ($1, $2, $3)`,
+      [testUserId, "custom-hocaefendi-subat-1", now]
+    );
+    await execute(
+      `INSERT INTO "curriculum_progress" ("userId", "entryId", "completedAt") VALUES ($1, $2, $3)`,
+      [testUserId, "g1-adab-subat-1-override", now]
+    );
+
+    // Week 21 corresponds to Subat 1 (month 2, week 1)
+    await deleteCurriculumWeek(21);
+
+    // Verify konu and hocaefendi entries are gone from curriculum_entries
+    const entries = await query(`SELECT * FROM "curriculum_entries" WHERE "id" = $1`, [
+      "g1-konu-subat-1",
+    ]);
+    expect(entries.length).toBe(0);
+
+    // Verify konu and hocaefendi editor overrides are gone
+    const topicEditor = await query(
+      `SELECT * FROM "curriculum_editor_content" WHERE "slot" IN ('1:konu:all:2-1', '1:hocaefendi-dinleme:all:2-1')`
+    );
+    expect(topicEditor.length).toBe(0);
+
+    // Verify progress for topic and hocaefendi are gone
+    const progress = await query<{ entryId: string }>(
+      `SELECT "entryId" FROM "curriculum_progress" WHERE "userId" = $1`,
+      [testUserId]
+    );
+    expect(progress.map((p) => p.entryId)).toEqual(["g1-adab-subat-1-override"]);
+
+    // Verify preserved category override is still intact
+    const preservedEditor = await query(
+      `SELECT * FROM "curriculum_editor_content" WHERE "slot" = '1:adab-i-muaseret:all:2-1'`
+    );
+    expect(preservedEditor.length).toBe(1);
+
+    // Cleanup test data
+    await execute(`DELETE FROM "curriculum_progress" WHERE "userId" = $1`, [testUserId]);
+    await execute(`DELETE FROM "user" WHERE "id" = $1`, [testUserId]);
+    await execute(
+      `DELETE FROM "curriculum_editor_content" WHERE "slot" = '1:adab-i-muaseret:all:2-1'`
+    );
+  });
 });

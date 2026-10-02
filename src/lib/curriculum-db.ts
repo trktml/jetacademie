@@ -1019,6 +1019,36 @@ export async function deleteCurriculumWeek(
     const ids = res.map((r) => r.id);
     const idPlaceholders = ids.map((_, i) => `$${i + 1}`).join(", ");
     await query(`DELETE FROM "curriculum_progress" WHERE "entryId" IN (${idPlaceholders})`, ids);
+    try {
+      await query(
+        `DELETE FROM "curriculum_editor_content" WHERE "entryId" IN (${idPlaceholders})`,
+        ids
+      );
+    } catch {
+      // Table may not exist in some test environments
+    }
+  }
+  try {
+    for (const cat of allowedCategories) {
+      const slotPattern = `%:${cat}:%:${month}-${week}`;
+      const editorRows = await query<{ entryId: string }>(
+        `SELECT "entryId" FROM "curriculum_editor_content" WHERE "slot" LIKE $1`,
+        [slotPattern]
+      );
+      if (editorRows.length > 0) {
+        const editorIds = editorRows.map((r) => r.entryId).filter(Boolean);
+        if (editorIds.length > 0) {
+          const editorPlaceholders = editorIds.map((_, i) => `$${i + 1}`).join(", ");
+          await query(
+            `DELETE FROM "curriculum_progress" WHERE "entryId" IN (${editorPlaceholders})`,
+            editorIds
+          );
+        }
+      }
+      await query(`DELETE FROM "curriculum_editor_content" WHERE "slot" LIKE $1`, [slotPattern]);
+    }
+  } catch {
+    // Table may not exist in some test environments
   }
   return { deletedCount: res.length };
 }
