@@ -1146,11 +1146,7 @@ export function CurriculumArchive({
                         <span className="hidden sm:inline">{`${timing} · Tamamlandı`}</span>
                       </div>
 
-                      {!(
-                        expandedReadingEntryId === entry.id &&
-                        entry.categoryId === "konu" &&
-                        entry.contentFormat !== "markdown"
-                      ) &&
+                      {!(expandedReadingEntryId === entry.id && entry.categoryId === "konu") &&
                         (entry.categoryId === "esma" ? (
                           <EsmaCardHeader entry={entry} />
                         ) : (
@@ -1470,8 +1466,7 @@ export function CurriculumArchive({
                                   {!(
                                     isFront &&
                                     expandedReadingEntryId === entry.id &&
-                                    entry.categoryId === "konu" &&
-                                    entry.contentFormat !== "markdown"
+                                    entry.categoryId === "konu"
                                   ) &&
                                     (entry.categoryId === "esma" ? (
                                       <EsmaCardHeader entry={entry} />
@@ -1612,8 +1607,7 @@ export function CurriculumArchive({
 
                                 {!(
                                   expandedReadingEntryId === currentEntry.id &&
-                                  currentEntry.categoryId === "konu" &&
-                                  currentEntry.contentFormat !== "markdown"
+                                  currentEntry.categoryId === "konu"
                                 ) &&
                                   (currentEntry.categoryId === "esma" ? (
                                     <EsmaCardHeader entry={currentEntry} />

@@ -29,6 +29,7 @@ describe("CurriculumArchive Component", () => {
           contentFormat: "markdown",
           body: "## Güncellenen bölüm\n\n**Editörün metni**",
         }}
+        isExpanded
       />
     );
     expect(html).toContain("<h2>Güncellenen bölüm</h2>");
@@ -36,7 +37,31 @@ describe("CurriculumArchive Component", () => {
     expect(html).not.toContain("Benim Büyük Sorularım");
   });
 
-  it("does not render duplicate title when entry.body starts with # entry.title", () => {
+  it("shows a topic preview and Dersi Oku action for edited Markdown lessons", () => {
+    const html = renderToString(
+      <EntryContentRenderer
+        entry={{
+          id: "g1-konu-eylul-1",
+          grade: 1,
+          categoryId: "konu",
+          month: 9,
+          week: 1,
+          year: 2026,
+          title: "Bu Eser Neden Hâlâ Okunuyor?",
+          contentFormat: "markdown",
+          body: "# Bu Eser Neden Hâlâ Okunuyor?\n\nBir kitap düşünün; yıllar sonra bile okunmaya devam ediyor.\n\n# Bu Hafta Tanıştığımız Kelimeler\n\n**Muhabbet** — Gönülden sevgi ve yakınlık.",
+        }}
+      />
+    );
+
+    expect(html).toContain("Bir kitap düşünün; yıllar sonra bile okunmaya devam ediyor.");
+    expect(html).toContain("Bu Haftanın Kavramları:");
+    expect(html).toContain("Muhabbet");
+    expect(html).toContain("Dersi Oku");
+    expect(html).toContain('title="Muhabbet: Gönülden sevgi ve yakınlık."');
+  });
+
+  it("preserves the Markdown title inside the shared expanded topic reader", () => {
     const html = renderToString(
       <EntryContentRenderer
         entry={{
@@ -50,10 +75,13 @@ describe("CurriculumArchive Component", () => {
           contentFormat: "markdown",
           body: `# Abdullah b. Abbas: İlimde Derinleşen Genç Sahabi\n\nAbdullah b. Abbas (r.a.), genç yaşta Peygamber Efendimiz'in hususi duasına mazhar olmuş bir ilim öncüsüdür.\n\n# Bana Ne Söylüyor?\n\n- Genç yaşta ilim`,
         }}
+        isExpanded
       />
     );
-    // Should NOT contain duplicated title as an h1 in the rendered markdown
-    expect(html).not.toContain("<h1>Abdullah b. Abbas: İlimde Derinleşen Genç Sahabi</h1>");
+    // The reader owns the title while expanded, so it appears once inside its Markdown body.
+    expect(html.match(/<h1>Abdullah b\. Abbas: İlimde Derinleşen Genç Sahabi<\/h1>/g)).toHaveLength(
+      1
+    );
     // Should contain the body paragraph
     expect(html).toContain("Abdullah b. Abbas (r.a.), genç yaşta");
     // Should keep legitimate section headers

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { BookOpen, Play, X } from "lucide-react";
+import { BookOpen, Info, Play, X } from "lucide-react";
 import { curriculumCategories, type CurriculumEntry } from "@/lib/curriculum";
 import { formatPeriodLabel, weeklyGroups, type CurriculumPeriod } from "@/lib/curriculum-view";
 import { EntryContentRenderer, EsmaCardHeader } from "./curriculum-entry-content";
@@ -14,8 +14,7 @@ function WeeklyEntry({ entry }: { entry: CurriculumEntry }) {
     (entry.resourceUrl?.split("?")[0].endsWith(".pdf") ? entry.resourceUrl : undefined);
   return (
     <article className="weekly-entry">
-      {entry.categoryId === "konu" &&
-      entry.contentFormat !== "markdown" ? null : entry.categoryId === "esma" ? (
+      {entry.categoryId === "konu" ? null : entry.categoryId === "esma" ? (
         <EsmaCardHeader entry={entry} />
       ) : (
         <h3 className="archive-entry-title">{entry.title}</h3>
@@ -82,9 +81,12 @@ export function CurriculumWeeklyView({
     <div className="archive-main-column weekly-view" ref={rootRef}>
       {period ? (
         <>
-          <header className="weekly-heading" aria-live="polite" aria-atomic="true">
-            <h2>{formatPeriodLabel(period)}</h2>
-            <p>Bu görünümde ilerlemeniz değişmez.</p>
+          <header className="weekly-heading" aria-live="polite">
+            <h2 className="sr-only">{formatPeriodLabel(period)}</h2>
+            <div className="weekly-status-badge">
+              <Info className="weekly-status-badge-icon" aria-hidden="true" />
+              <span>Bu görünümde ilerlemeniz değişmez.</span>
+            </div>
           </header>
           {weeklyGroups(entries, period).map((group) => {
             const category = curriculumCategories.find((c) => c.id === group.categoryId)!;

@@ -5959,21 +5959,35 @@ body:has(.landing-page),
   font-weight: 700;
 }
 .weekly-heading {
-  padding: 1.5rem 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.25rem 0 1.25rem;
 }
-.weekly-heading h2 {
-  font-size: 1.3rem;
-  font-weight: 650;
-  color: var(--ink);
+.weekly-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.28rem 0.8rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
 }
-.weekly-heading p,
+.weekly-status-badge-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: none;
+  color: var(--success);
+}
 .weekly-empty {
   color: var(--ink-soft);
   font-size: 0.875rem;
   line-height: 1.7;
-}
-.weekly-heading p {
-  margin-top: 0.35rem;
 }
 .weekly-section {
   --weekly-accent: #0d9488;

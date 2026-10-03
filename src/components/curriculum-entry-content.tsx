@@ -175,7 +175,7 @@ export function EntryContentRenderer({
   isExpanded?: boolean;
   onToggleExpand?: () => void;
 }) {
-  const isKonu = entry.categoryId === "konu" && entry.contentFormat !== "markdown";
+  const isKonu = entry.categoryId === "konu";
   const konuItem = useMemo(
     () => (isKonu ? (getKonuItem(entry.id) ?? parseKonuItemFromBody(entry)) : null),
     [isKonu, entry]

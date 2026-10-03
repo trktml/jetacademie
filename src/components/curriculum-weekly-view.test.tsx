@@ -41,6 +41,10 @@ describe("CurriculumWeeklyView", () => {
     expect(html).toContain("Erkek / Bayan");
     expect(html).toContain("Videoyu aç");
     expect(html).toContain("PDF’yi oku");
+    expect(html).toContain('class="weekly-status-badge"');
+    expect(html).toContain("Bu görünümde ilerlemeniz değişmez");
+    expect(html).toContain('class="sr-only"');
+    expect(html).not.toContain('<h2 class="weekly-heading');
     expect(html).not.toContain("<iframe");
     expect(html).not.toContain("<canvas");
     expect(html).not.toContain("Okundu işaretle");
@@ -56,5 +60,31 @@ describe("CurriculumWeeklyView", () => {
       />
     );
     expect(html).toContain("Bu sınıf için yayımlanmış içerik bulunmuyor.");
+  });
+
+  it("renders Markdown topic lessons inside the shared topic reader", () => {
+    const html = renderToString(
+      <CurriculumWeeklyView
+        entries={[
+          {
+            id: "g1-konu-eylul-1",
+            grade: 1,
+            categoryId: "konu",
+            year: 2026,
+            month: 9,
+            week: 1,
+            title: "Bu Eser Neden Hâlâ Okunuyor?",
+            contentFormat: "markdown",
+            body: "# Bu Eser Neden Hâlâ Okunuyor?\n\nBir kitap düşünün; yıllar sonra bile okunmaya devam ediyor.",
+          },
+        ]}
+        period={{ year: 2026, month: 9, week: 1 }}
+        genderSelector={null}
+      />
+    );
+
+    expect(html).toContain('class="konu-lesson-reader');
+    expect(html).toContain("Bir kitap düşünün; yıllar sonra bile okunmaya devam ediyor.");
+    expect(html).not.toContain('<h3 class="archive-entry-title">');
   });
 });
