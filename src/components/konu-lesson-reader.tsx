@@ -166,7 +166,7 @@ export function KonuLessonReader({ entry, item: explicitItem, onClose }: KonuLes
   // quotes and footnotes. Structured lessons still use the reader below.
   if (!explicitItem && !getKonuItem(entry.id)) {
     return (
-      <div className="konu-lesson-reader rounded-2xl border border-teal-200/80 bg-white/95 p-4 sm:p-6 dark:border-teal-900/40 dark:bg-[#121c24]">
+      <div className="konu-lesson-reader rounded-2xl border border-teal-200/80 bg-white/95 p-2.5 sm:p-6 dark:border-teal-900/40 dark:bg-[#121c24]">
         <div className="mb-4 flex items-center justify-between gap-3 text-sm">
           <span>{`${item.grade}. Sınıf · ${item.week}. Hafta · ${item.readingMinutes} dk okuma`}</span>
           {onClose && (
@@ -264,7 +264,7 @@ export function KonuLessonReader({ entry, item: explicitItem, onClose }: KonuLes
   return (
     <div
       ref={containerRef}
-      className="konu-lesson-reader relative flex flex-col gap-5 rounded-2xl border border-teal-200/80 bg-white/95 p-4 shadow-sm sm:p-6 dark:border-teal-900/40 dark:bg-[#121c24]"
+      className="konu-lesson-reader relative flex flex-col gap-5 rounded-2xl border border-teal-200/80 bg-white/95 p-2.5 shadow-sm sm:p-6 dark:border-teal-900/40 dark:bg-[#121c24]"
       onClick={() => setActiveTooltip(null)}
     >
       {/* Top Meta Bar & Navigation Chips */}

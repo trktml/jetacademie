@@ -5232,7 +5232,7 @@ body:has(.landing-page),
   }
 
   .archive-entry-card {
-    padding: 1.2rem 1rem 1rem;
+    padding: 1rem 0.6rem 0.75rem;
     border-radius: 10px;
     min-width: 0;
     max-width: 100%;
