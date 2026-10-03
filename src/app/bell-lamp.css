@@ -618,7 +618,7 @@
 
 .scene-edge-fade--bottom {
   bottom: -1px;
-  height: clamp(6rem, 12vw, 11rem);
+  height: clamp(3rem, 6vw, 5.5rem);
   background: linear-gradient(
     to bottom,
     transparent 0%,
@@ -675,14 +675,14 @@
 
 .hero-stage-wrap {
   position: relative;
-  min-height: 45rem;
-  padding-top: 9.5rem;
-  padding-bottom: 3rem;
+  min-height: auto;
+  padding-top: clamp(6.5rem, 11vh, 8.5rem);
+  padding-bottom: clamp(0.5rem, 1.5vh, 1rem);
 }
 
 .hero-light-particles {
   position: absolute;
-  top: 9.5rem;
+  top: clamp(6.5rem, 11vh, 8.5rem);
   left: 50%;
   z-index: 18;
   width: min(30rem, 42vw);
@@ -942,7 +942,28 @@
 
 @media (min-width: 1200px) {
   .scene-edge-fade--bottom {
-    height: 7rem;
+    height: 4.5rem;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 820px) {
+  .hero-stage-wrap {
+    padding-top: 6.75rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .hero-light-particles {
+    top: 6.75rem;
+  }
+
+  .hero-desktop-layout {
+    grid-template-columns: minmax(13.5rem, 16rem) minmax(16rem, 19.5rem) minmax(13.5rem, 16rem);
+    --hero-gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .hero-nav-card {
+    gap: 0.65rem;
+    padding-inline: 0.75rem;
   }
 }
 
