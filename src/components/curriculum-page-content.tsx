@@ -214,9 +214,11 @@ export function CurriculumPageContent({
           }
         />
       ) : (
-        <p className="weekly-empty" role="status">
-          Müfredat yükleniyor…
-        </p>
+        <div className="curriculum-loading" aria-live="polite">
+          <p className="weekly-empty" role="status">
+            Müfredat yükleniyor…
+          </p>
+        </div>
       )}
     </>
   );

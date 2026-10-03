@@ -1240,6 +1240,14 @@ body:has(.landing-page),
   color: var(--ink-soft);
 }
 
+.curriculum-loading {
+  display: grid;
+  min-height: 15rem;
+  place-items: center;
+  text-align: center;
+  width: 100%;
+}
+
 .curriculum-grade-nav {
   display: flex;
   align-items: center;
@@ -5988,6 +5996,7 @@ body:has(.landing-page),
   color: var(--ink-soft);
   font-size: 0.875rem;
   line-height: 1.7;
+  text-align: center;
 }
 .weekly-section {
   --weekly-accent: #0d9488;
