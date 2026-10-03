@@ -46,6 +46,9 @@ auth.sqlite*
 /sources/
 sources/
 
+# curriculum exports (generated on demand via CLI)
+/mufredat-docs/export/
+
 # database backups contain private application data
 /backups/
 

@@ -1,16 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { CurriculumArchive } from "@/components/curriculum-archive";
 import {
-  BELGIUM_GRADES,
-  GRADE_LABELS,
   type CurriculumEntry,
+  type CurriculumCategoryId,
   type BelgiumGrade,
 } from "@/lib/curriculum";
 import { isValidGrade, useCurriculumStore } from "@/store/use-curriculum-store";
 import { curriculumGradeQueryOptions } from "@/lib/queries/curriculum";
+
+import { CurriculumWeeklyView } from "./curriculum-weekly-view";
+import { CurriculumTopBar } from "./curriculum-top-bar";
+import {
+  availablePeriods,
+  initialWeeklyPeriod,
+  isCurriculumPeriod,
+  readCurriculumView,
+  visibleCurriculumEntries,
+  writeCurriculumView,
+  type CurriculumPeriod,
+  type CurriculumView,
+} from "@/lib/curriculum-view";
 
 interface CurriculumPageContentProps {
   initialCompletedEntryIds: string[];
@@ -33,8 +45,119 @@ export function CurriculumPageContent({
   const query = useQuery({
     ...curriculumGradeQueryOptions(selectedGrade),
     initialData: selectedGrade === initialGrade ? [...allEntries] : undefined,
-    placeholderData: keepPreviousData,
   });
+
+  const [view, setView] = useState<CurriculumView>("sequential");
+  const [period, setPeriod] = useState<CurriculumPeriod | null>(null);
+  const [initialized, setInitialized] = useState(false);
+  const context = useRef<{
+    category: CurriculumCategoryId;
+    gender: "erkek" | "bayan";
+    completedIds: string[];
+  }>({
+    category: "konu",
+    gender: initialGender ?? "erkek",
+    completedIds: initialCompletedEntryIds,
+  });
+  const [activeGender, setActiveGender] = useState<"erkek" | "bayan">(initialGender ?? "erkek");
+  const sequentialCategory = useRef<CurriculumCategoryId>("konu");
+  const onActiveContext = useCallback(
+    (category: CurriculumCategoryId, gender: "erkek" | "bayan", completedIds: string[]) => {
+      context.current = { category, gender, completedIds };
+      setActiveGender(gender);
+    },
+    []
+  );
+
+  const rememberPeriod = useCallback(
+    (next: CurriculumPeriod) => {
+      setPeriod(next);
+      useCurriculumStore.getState().setWeeklyPeriod(selectedGrade, next);
+    },
+    [selectedGrade]
+  );
+
+  useEffect(() => {
+    function sync() {
+      const url = new URL(window.location.href);
+      const gradeParam = Number(url.searchParams.get("sinif"));
+      const grade = isValidGrade(gradeParam) ? gradeParam : (initialGrade as BelgiumGrade);
+      const state = useCurriculumStore.getState();
+      const parsed = readCurriculumView(url.searchParams);
+      const nextView = parsed.view ?? (state.view === "weekly" ? "weekly" : "sequential");
+      setSelectedGrade(grade);
+      setStoreGrade(grade);
+      setView(nextView);
+      state.setView(nextView);
+      const remembered = state.weeklyPeriods?.[grade];
+      setPeriod(parsed.period ?? (isCurriculumPeriod(remembered) ? remembered : null));
+      setInitialized(true);
+    }
+    sync();
+    window.addEventListener("popstate", sync);
+    const unsubscribe = useCurriculumStore.persist.onFinishHydration(sync);
+    return () => {
+      window.removeEventListener("popstate", sync);
+      unsubscribe();
+    };
+  }, [initialGrade, setStoreGrade]);
+
+  useEffect(() => {
+    if (!initialized || view !== "weekly" || !query.data) return;
+    const entries = visibleCurriculumEntries(query.data, selectedGrade, activeGender);
+    const periods = availablePeriods(entries);
+    const exists =
+      period &&
+      periods.some((p) =>
+        period.extra !== undefined
+          ? p.extra === period.extra
+          : p.extra === undefined && p.year === period.year && p.month === period.month
+      );
+    const next = exists
+      ? period
+      : period
+        ? (periods[0] ?? null)
+        : initialWeeklyPeriod(
+            query.data,
+            context.current.category,
+            context.current.completedIds,
+            selectedGrade,
+            activeGender
+          );
+    if (next) {
+      rememberPeriod(next);
+      const url = writeCurriculumView(new URL(window.location.href), "weekly", next);
+      window.history.replaceState(null, "", url.toString());
+    }
+  }, [initialized, view, query.data, selectedGrade, activeGender, period, rememberPeriod]);
+
+  function changeView(nextView: CurriculumView) {
+    const state = useCurriculumStore.getState();
+    const remembered = state.weeklyPeriods?.[selectedGrade];
+    const nextPeriod =
+      (isCurriculumPeriod(remembered) ? remembered : null) ??
+      initialWeeklyPeriod(
+        query.data ?? [],
+        context.current.category,
+        context.current.completedIds,
+        selectedGrade,
+        context.current.gender
+      );
+    if (nextView === "weekly") sequentialCategory.current = context.current.category;
+    setView(nextView);
+    state.setView(nextView);
+    setPeriod(nextPeriod);
+    const url = writeCurriculumView(new URL(window.location.href), nextView, nextPeriod);
+    url.hash = nextView === "weekly" ? "" : sequentialCategory.current;
+    window.history.pushState(null, "", url.toString());
+  }
+
+  function changePeriod(next: CurriculumPeriod) {
+    rememberPeriod(next);
+    const url = writeCurriculumView(new URL(window.location.href), "weekly", next);
+    url.hash = "";
+    window.history.pushState(null, "", url.toString());
+  }
 
   const handleSelectGrade = useCallback(
     (grade: BelgiumGrade) => {
@@ -51,77 +174,52 @@ export function CurriculumPageContent({
     [selectedGrade, setStoreGrade]
   );
 
-  // Browser back/forward navigation sync
-  useEffect(() => {
-    function handlePopState() {
-      if (typeof window === "undefined") return;
-      const url = new URL(window.location.href);
-      const param = url.searchParams.get("sinif");
-      if (param) {
-        const num = parseInt(param, 10);
-        if (isValidGrade(num) && num !== selectedGrade) {
-          setSelectedGrade(num);
-          setStoreGrade(num);
-        }
-      }
-    }
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [selectedGrade, setStoreGrade]);
-
-  // Keyboard navigation for tablist
-  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-    event.preventDefault();
-    const currentIndex = BELGIUM_GRADES.indexOf(selectedGrade);
-    const nextIndex =
-      event.key === "ArrowRight"
-        ? (currentIndex + 1) % BELGIUM_GRADES.length
-        : (currentIndex - 1 + BELGIUM_GRADES.length) % BELGIUM_GRADES.length;
-    handleSelectGrade(BELGIUM_GRADES[nextIndex]);
-  }
+  const availablePeriodsList = query.data
+    ? availablePeriods(visibleCurriculumEntries(query.data, selectedGrade, activeGender))
+    : [];
 
   return (
     <>
-      <nav className="curriculum-grade-nav" aria-label="Sınıf Seçimi">
-        <h1 className="sr-only">{GRADE_LABELS[selectedGrade]} Müfredatı</h1>
-        <div
-          className="curriculum-grade-nav__track"
-          role="tablist"
-          aria-label="Belçika müfredat sınıfları"
-          onKeyDown={handleKeyDown}
-        >
-          {BELGIUM_GRADES.map((grade) => {
-            const isSelected = grade === selectedGrade;
-            return (
-              <button
-                key={grade}
-                type="button"
-                role="tab"
-                aria-selected={isSelected}
-                tabIndex={isSelected ? 0 : -1}
-                className={`curriculum-grade-nav__item ${isSelected ? "curriculum-grade-nav__item--active" : ""}`}
-                onClick={() => handleSelectGrade(grade)}
-              >
-                <span>{GRADE_LABELS[grade]}</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-      <CurriculumArchive
-        initialCompletedEntryIds={initialCompletedEntryIds}
-        isSignedIn={isSignedIn}
-        initialGender={initialGender}
-        allEntries={query.data ?? []}
-        initialGrade={initialGrade}
-        selectedGradeOverride={selectedGrade}
+      <CurriculumTopBar
+        selectedGrade={selectedGrade}
         onGradeChange={handleSelectGrade}
-        isGradeLoading={query.isPending && !query.data}
-        gradeLoadError={query.isError ? query.error.message : null}
-        onRetryGrade={() => void query.refetch()}
+        view={view}
+        onViewChange={changeView}
+        period={period}
+        onPeriodChange={changePeriod}
+        availablePeriods={availablePeriodsList}
       />
+      {initialized ? (
+        <CurriculumArchive
+          initialCompletedEntryIds={initialCompletedEntryIds}
+          isSignedIn={isSignedIn}
+          initialGender={initialGender}
+          allEntries={query.data ?? []}
+          initialGrade={initialGrade}
+          selectedGradeOverride={selectedGrade}
+          onGradeChange={handleSelectGrade}
+          isGradeLoading={query.isPending}
+          gradeLoadError={query.isError ? query.error.message : null}
+          onRetryGrade={() => void query.refetch()}
+          onActiveContext={onActiveContext}
+          weeklyView={
+            view === "weekly"
+              ? (gender, genderSelector) => (
+                  <CurriculumWeeklyView
+                    entries={visibleCurriculumEntries(query.data ?? [], selectedGrade, gender)}
+                    period={period}
+                    onPeriodChange={changePeriod}
+                    genderSelector={genderSelector}
+                  />
+                )
+              : undefined
+          }
+        />
+      ) : (
+        <p className="weekly-empty" role="status">
+          Müfredat yükleniyor…
+        </p>
+      )}
     </>
   );
 }

@@ -41,6 +41,30 @@ describe("useCurriculumStore", () => {
     });
   });
 
+  it("remembers weekly periods independently for each grade", () => {
+    const original = useCurriculumStore.getState();
+    try {
+      original.setView("weekly");
+      original.setWeeklyPeriod(1, { year: 2026, month: 9, week: 2 });
+      original.setWeeklyPeriod(2, { extra: 3 });
+      expect(useCurriculumStore.getState().view).toBe("weekly");
+      expect(useCurriculumStore.getState().weeklyPeriods[1]).toEqual({
+        year: 2026,
+        month: 9,
+        week: 2,
+      });
+      expect(useCurriculumStore.getState().weeklyPeriods[2]).toEqual({ extra: 3 });
+      original.setWeeklyPeriod(1, { year: 2026, month: 13, week: 1 });
+      expect(useCurriculumStore.getState().weeklyPeriods[1]).toEqual({
+        year: 2026,
+        month: 9,
+        week: 2,
+      });
+    } finally {
+      useCurriculumStore.setState({ view: original.view, weeklyPeriods: original.weeklyPeriods });
+    }
+  });
+
   it("validates grades accurately with isValidGrade", () => {
     expect(isValidGrade(1)).toBe(true);
     expect(isValidGrade(6)).toBe(true);
