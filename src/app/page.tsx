@@ -15,7 +15,6 @@ export default function Home() {
         <section className="home-quote-section" aria-label="İlham veren söz">
           <div className="home-quote-card">
             <blockquote>
-              <span className="home-quote-gem" aria-hidden="true" />
               <span className="home-quote-text">
                 &ldquo;İlim öğrenmek her Müslüman&apos;a farzdır.&rdquo;
               </span>
