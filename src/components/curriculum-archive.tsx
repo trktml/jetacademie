@@ -184,7 +184,6 @@ export function CurriculumArchive({
       setActiveHistoryCategoryId(null);
     } else if (!isWeekly && previousView.current) {
       setActiveCategoryId(sequentialCategory.current);
-      requestAnimationFrame(() => scrollCategoryIntoView(sequentialCategory.current));
     }
     previousView.current = isWeekly;
   }, [isWeekly, activeCategoryId]);

@@ -60,7 +60,6 @@ export function CurriculumPageContent({
     completedIds: initialCompletedEntryIds,
   });
   const [activeGender, setActiveGender] = useState<"erkek" | "bayan">(initialGender ?? "erkek");
-  const sequentialCategory = useRef<CurriculumCategoryId>("konu");
   const onActiveContext = useCallback(
     (category: CurriculumCategoryId, gender: "erkek" | "bayan", completedIds: string[]) => {
       context.current = { category, gender, completedIds };
@@ -143,12 +142,11 @@ export function CurriculumPageContent({
         selectedGrade,
         context.current.gender
       );
-    if (nextView === "weekly") sequentialCategory.current = context.current.category;
     setView(nextView);
     state.setView(nextView);
     setPeriod(nextPeriod);
     const url = writeCurriculumView(new URL(window.location.href), nextView, nextPeriod);
-    url.hash = nextView === "weekly" ? "" : sequentialCategory.current;
+    url.hash = "";
     window.history.pushState(null, "", url.toString());
   }
 
