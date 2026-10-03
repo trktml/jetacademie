@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BookOpen, Play, X } from "lucide-react";
 import { curriculumCategories, type CurriculumEntry } from "@/lib/curriculum";
-import { curriculumMonthNames, weeklyGroups, type CurriculumPeriod } from "@/lib/curriculum-view";
+import { formatPeriodLabel, weeklyGroups, type CurriculumPeriod } from "@/lib/curriculum-view";
 import { EntryContentRenderer, EsmaCardHeader } from "./curriculum-entry-content";
 import { InlinePdfViewer } from "./inline-pdf-viewer";
 
@@ -83,11 +83,7 @@ export function CurriculumWeeklyView({
       {period ? (
         <>
           <header className="weekly-heading" aria-live="polite" aria-atomic="true">
-            <h2>
-              {period.extra !== undefined
-                ? `Ekstra ${period.extra}`
-                : `${curriculumMonthNames[period.month - 1]} ${period.year} · ${period.week}. Hafta`}
-            </h2>
+            <h2>{formatPeriodLabel(period)}</h2>
             <p>Bu görünümde ilerlemeniz değişmez.</p>
           </header>
           {weeklyGroups(entries, period).map((group) => {

@@ -5,10 +5,10 @@ import type { CurriculumPeriod } from "@/lib/curriculum-view";
 
 describe("CurriculumTopBar", () => {
   const samplePeriods: CurriculumPeriod[] = [
-    { year: 2026, month: 9, week: 1 },
-    { year: 2026, month: 9, week: 2 },
-    { year: 2026, month: 9, week: 3 },
-    { year: 2026, month: 9, week: 4 },
+    { month: 9, week: 1 },
+    { month: 9, week: 2 },
+    { month: 9, week: 3 },
+    { month: 9, week: 4 },
   ];
 
   it("renders the grade selector, period button, and view mode toggle", () => {
@@ -18,7 +18,7 @@ describe("CurriculumTopBar", () => {
         onGradeChange={() => {}}
         view="weekly"
         onViewChange={() => {}}
-        period={{ year: 2026, month: 9, week: 1 }}
+        period={{ month: 9, week: 1 }}
         onPeriodChange={() => {}}
         availablePeriods={samplePeriods}
       />
@@ -27,7 +27,7 @@ describe("CurriculumTopBar", () => {
     // Grade button
     expect(html).toContain("2. Sınıf");
     // Period button
-    expect(html).toContain("Eylül 2026 · 1. Hafta");
+    expect(html).toContain("Eylül · 1. Hafta");
     // View mode switch
     expect(html).toContain("Sıralı");
     expect(html).toContain("Haftalık");

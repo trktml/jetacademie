@@ -5,8 +5,6 @@ import {
   Calendar,
   Check,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ChevronUp,
   GraduationCap,
   ListFilter,
@@ -14,6 +12,7 @@ import {
 } from "lucide-react";
 import { BELGIUM_GRADES, GRADE_LABELS, type BelgiumGrade } from "@/lib/curriculum";
 import {
+  academicMonthOrder,
   curriculumMonthNames,
   formatPeriodLabel,
   getWeekDateRange,
@@ -43,11 +42,9 @@ export function CurriculumTopBar({
   const [isGradeOpen, setIsGradeOpen] = useState(false);
   const [isPeriodOpen, setIsPeriodOpen] = useState(false);
 
-  // User overrides when navigating inside the popover
-  const [userNavigatedYear, setUserNavigatedYear] = useState<number | null>(null);
+  // User override when navigating inside the popover
   const [userNavigatedMonth, setUserNavigatedMonth] = useState<number | null>(null);
 
-  const browsingYear = userNavigatedYear ?? period?.year ?? 2026;
   const browsingMonth = userNavigatedMonth ?? period?.month ?? 9;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,7 +56,6 @@ export function CurriculumTopBar({
 
   function closePeriod() {
     setIsPeriodOpen(false);
-    setUserNavigatedYear(null);
     setUserNavigatedMonth(null);
   }
 
@@ -69,7 +65,6 @@ export function CurriculumTopBar({
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsGradeOpen(false);
         setIsPeriodOpen(false);
-        setUserNavigatedYear(null);
         setUserNavigatedMonth(null);
       }
     }
@@ -82,7 +77,6 @@ export function CurriculumTopBar({
         }
         if (isPeriodOpen) {
           setIsPeriodOpen(false);
-          setUserNavigatedYear(null);
           setUserNavigatedMonth(null);
           periodButtonRef.current?.focus();
         }
@@ -103,13 +97,9 @@ export function CurriculumTopBar({
   // Month select handler
   function handleSelectMonth(monthNumber: number) {
     setUserNavigatedMonth(monthNumber);
-    // If the active period is already in this month and year, keep week; otherwise default to week 1
-    const targetWeek =
-      period && period.year === browsingYear && period.month === monthNumber
-        ? (period.week ?? 1)
-        : 1;
+    // If the active period is already in this month, keep week; otherwise default to week 1
+    const targetWeek = period && period.month === monthNumber ? (period.week ?? 1) : 1;
     onPeriodChange({
-      year: browsingYear,
       month: monthNumber,
       week: targetWeek,
     });
@@ -119,7 +109,6 @@ export function CurriculumTopBar({
   // Week select handler
   function handleSelectWeek(weekNumber: number) {
     onPeriodChange({
-      year: browsingYear,
       month: browsingMonth,
       week: weekNumber,
     });
@@ -332,48 +321,21 @@ export function CurriculumTopBar({
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-12 sm:gap-5">
                     {/* Left Column: Ay Seçin (Month Grid) */}
                     <div className="sm:col-span-7">
-                      {/* Month Header with Year Nav */}
-                      <div className="mb-4 flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-slate-900 dark:text-white">
-                          <Calendar
-                            className="h-5 w-5 text-emerald-600 dark:text-emerald-400"
-                            aria-hidden="true"
-                          />
-                          <h3 className="text-base font-bold">Ay Seçin</h3>
-                        </div>
-                        {/* Year Navigation Arrows */}
-                        <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50/80 p-0.5 dark:border-slate-800 dark:bg-slate-800/80">
-                          <button
-                            type="button"
-                            aria-label="Önceki yıl"
-                            onClick={() => setUserNavigatedYear(browsingYear - 1)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 hover:bg-white hover:text-slate-900 hover:shadow-xs dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </button>
-                          <span className="px-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                            {browsingYear}
-                          </span>
-                          <button
-                            type="button"
-                            aria-label="Sonraki yıl"
-                            onClick={() => setUserNavigatedYear(browsingYear + 1)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 hover:bg-white hover:text-slate-900 hover:shadow-xs dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white"
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </button>
-                        </div>
+                      {/* Month Header */}
+                      <div className="mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+                        <Calendar
+                          className="h-5 w-5 text-emerald-600 dark:text-emerald-400"
+                          aria-hidden="true"
+                        />
+                        <h3 className="text-base font-bold">Ay Seçin</h3>
                       </div>
 
-                      {/* 3x4 Month Grid */}
+                      {/* 3x4 Month Grid (Academic Order: Eylül -> Ağustos) */}
                       <div className="grid grid-cols-3 gap-2">
-                        {curriculumMonthNames.map((monthName, idx) => {
-                          const monthNum = idx + 1;
+                        {academicMonthOrder.map((monthNum) => {
+                          const monthName = curriculumMonthNames[monthNum - 1];
                           const isSelected =
-                            browsingMonth === monthNum &&
-                            (!period || period.extra === undefined
-                              ? period?.year === browsingYear
-                              : false);
+                            browsingMonth === monthNum && (!period || period.extra === undefined);
 
                           return (
                             <button
@@ -386,9 +348,7 @@ export function CurriculumTopBar({
                                   : "bg-slate-100/80 text-slate-700 hover:bg-slate-200/70 hover:text-slate-900 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:bg-slate-700"
                               }`}
                             >
-                              <span className="truncate">
-                                {monthName} {browsingYear}
-                              </span>
+                              <span className="truncate">{monthName}</span>
                               {isSelected && (
                                 <Check className="ml-1 h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-400" />
                               )}
@@ -446,8 +406,7 @@ export function CurriculumTopBar({
                           <h3 className="text-base font-bold">Hafta Seçin</h3>
                         </div>
                         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                          {curriculumMonthNames[browsingMonth - 1]} {browsingYear} için 4 hafta
-                          bulunmaktadır.
+                          {curriculumMonthNames[browsingMonth - 1]} ayı için 4 hafta bulunmaktadır.
                         </p>
                       </div>
 
@@ -456,10 +415,9 @@ export function CurriculumTopBar({
                         {[1, 2, 3, 4].map((weekNum) => {
                           const isSelected =
                             period?.extra === undefined &&
-                            period?.year === browsingYear &&
                             period?.month === browsingMonth &&
                             period?.week === weekNum;
-                          const dateRange = getWeekDateRange(browsingYear, browsingMonth, weekNum);
+                          const dateRange = getWeekDateRange(browsingMonth, weekNum);
 
                           return (
                             <button

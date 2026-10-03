@@ -6079,11 +6079,11 @@ body:has(.landing-page),
 @keyframes popoverFadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -6px) scale(0.98);
+    transform: translateY(-6px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -6092,5 +6092,11 @@ body:has(.landing-page),
     max-height: min(82vh, 600px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .curriculum-period-popover {
+    animation: none !important;
   }
 }
