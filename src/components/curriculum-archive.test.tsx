@@ -210,7 +210,7 @@ describe("CurriculumArchive Component", () => {
     expect(videoHtml).toContain('<span class="archive-resource-badge">VIDEO</span>');
   });
 
-  it("should render sample entries with Eylül-N timing format", () => {
+  it("should render sample entries with month and week timing format", () => {
     const html = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={[]}
@@ -219,9 +219,11 @@ describe("CurriculumArchive Component", () => {
       />
     );
 
-    // Verify timing format: "Eylül-1", "Eylül-2"
-    expect(html).toContain("Eylül-1");
-    expect(html).toContain("Eylül-2");
+    // Verify timing format: "Eylül · 1. Hafta", "Eylül · 2. Hafta"
+    expect(html).toContain("Eylül · 1. Hafta");
+    expect(html).toContain("Eylül · 2. Hafta");
+    expect(html).not.toContain("Eylül-1");
+    expect(html).not.toContain("Eylül-2");
 
     // Standard 48-week curriculum tracking
     expect(html).toContain("0 / 48 tamamlandı");
@@ -301,11 +303,11 @@ describe("CurriculumArchive Component", () => {
 
     // Active folder tab
     expect(html).toContain("archive-folder-tab--active");
-    expect(html).toContain("Eylül-1 · 1. Hafta");
+    expect(html).toContain("Eylül · 1. Hafta");
 
     // Locked behind folder tab
     expect(html).toContain("archive-folder-tab--locked");
-    expect(html).toContain("Eylül-2 · 2. Hafta");
+    expect(html).toContain("Eylül · 2. Hafta");
     expect(html).not.toContain("(Kilitli Yığın)");
   });
 
@@ -548,8 +550,8 @@ describe("CurriculumArchive Component", () => {
     expect(css).toContain("width: 100%;");
 
     // Children of behind card should be display: none to avoid any scrollable layout overflow
-    expect(css).toContain(
-      ".archive-folder-stack .archive-stack-behind > :not(.archive-folder-tab) {\n  display: none;\n}"
+    expect(css).toMatch(
+      /\.archive-folder-stack\s+\.archive-stack-behind\s*>\s*:not\(\.archive-folder-tab\)\s*\{\s*display:\s*none;\s*\}/
     );
   });
 
@@ -743,8 +745,8 @@ describe("CurriculumArchive Component", () => {
     expect(html).toContain('class="archive-history-header__content"');
 
     // Mobile responsive tab label (prevents truncation on narrow screens)
-    expect(html).toContain('<span class="sm:hidden">Eylül-1</span>');
-    expect(html).toContain('<span class="hidden sm:inline">Eylül-1 · Tamamlandı</span>');
+    expect(html).toContain('<span class="sm:hidden">Eylül · 1. Hafta</span>');
+    expect(html).toContain('<span class="hidden sm:inline">Eylül · 1. Hafta · Tamamlandı</span>');
   });
 
   it("should render GradeSelector and category nav container in the capsule navigation", () => {

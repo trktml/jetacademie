@@ -1121,7 +1121,7 @@ export function CurriculumArchive({
                 {historyCompletedEntries.map((entry, index) => {
                   const timing = entry.isExtra
                     ? `Ekstra ${entry.extraOrder ?? 1}`
-                    : `${monthNames[entry.month - 1]}-${entry.week}`;
+                    : `${monthNames[entry.month - 1]} · ${entry.week}. Hafta`;
                   const isLatest = index === 0;
                   const isEntryPending = isPending && pendingEntryId === entry.id;
                   const isSpotlight = spotlightEntryId === entry.id;
@@ -1418,7 +1418,7 @@ export function CurriculumArchive({
                             .map(({ entry, entryIdx }) => {
                               const timing = entry.isExtra
                                 ? `Ekstra ${entry.extraOrder ?? 1}`
-                                : `${monthNames[entry.month - 1]}-${entry.week}`;
+                                : `${monthNames[entry.month - 1]} · ${entry.week}. Hafta`;
                               const isFront = entryIdx === selectedCompletedIndex;
                               const depth = isFront
                                 ? 0
@@ -1452,7 +1452,7 @@ export function CurriculumArchive({
                                       <span className="tab-full">
                                         {entry.isExtra
                                           ? `Ekstra ${entry.extraOrder ?? 1} · İlave`
-                                          : `${timing} · ${entry.week}. Hafta`}
+                                          : timing}
                                       </span>
                                       <span className="tab-short" aria-hidden="true">
                                         {entry.isExtra
@@ -1574,7 +1574,7 @@ export function CurriculumArchive({
                             const currentEntry = activeEntries[unlockedIndex];
                             const currentTiming = currentEntry.isExtra
                               ? `Ekstra ${currentEntry.extraOrder ?? 1}`
-                              : `${monthNames[currentEntry.month - 1]}-${currentEntry.week}`;
+                              : `${monthNames[currentEntry.month - 1]} · ${currentEntry.week}. Hafta`;
                             const isEntryPending = isPending && pendingEntryId === currentEntry.id;
 
                             return (
@@ -1594,12 +1594,12 @@ export function CurriculumArchive({
                                     <span className="tab-full">
                                       {currentEntry.isExtra
                                         ? `Ekstra ${currentEntry.extraOrder ?? 1} · İlave`
-                                        : `${currentTiming} · ${currentEntry.week}. Hafta`}
+                                        : currentTiming}
                                     </span>
                                     <span className="tab-short" aria-hidden="true">
                                       {currentEntry.isExtra
                                         ? `Ekstra ${currentEntry.extraOrder ?? 1}`
-                                        : `${currentTiming} · ${currentEntry.week}.H`}
+                                        : `${monthNames[currentEntry.month - 1]} · ${currentEntry.week}.H`}
                                     </span>
                                   </span>
                                 </div>
@@ -1746,7 +1746,7 @@ export function CurriculumArchive({
                                 {visibleLockedEntries.map((lockedEntry, offsetIdx) => {
                                   const lockedTiming = lockedEntry.isExtra
                                     ? `Ekstra ${lockedEntry.extraOrder ?? 1}`
-                                    : `${monthNames[lockedEntry.month - 1]}-${lockedEntry.week}`;
+                                    : `${monthNames[lockedEntry.month - 1]} · ${lockedEntry.week}. Hafta`;
                                   const depth = offsetIdx + 1;
                                   const isShaking = shakingEntryId === lockedEntry.id;
                                   const tabOffset = `clamp(0.6rem, calc(0.75rem + ${depth * 25}%), calc(100% - 6.5rem))`;
@@ -1781,7 +1781,7 @@ export function CurriculumArchive({
                                           <span className="tab-full">
                                             {lockedEntry.isExtra
                                               ? `Ekstra ${lockedEntry.extraOrder ?? 1} · İlave`
-                                              : `${lockedTiming} · ${lockedEntry.week}. Hafta`}
+                                              : lockedTiming}
                                           </span>
                                           <span className="tab-short" aria-hidden="true">
                                             {lockedEntry.isExtra
