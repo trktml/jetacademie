@@ -55,7 +55,7 @@ describe("weekly curriculum browsing", () => {
       ).map((e) => e.id)
     ).toEqual(["topic", "bayan"]);
   });
-  it("orders academic periods across the year boundary and extras afterward", () => {
+  it("orders academic periods across the year boundary and excludes extras for weekly view", () => {
     expect(
       availablePeriods([
         entry({ month: 1 }),
@@ -69,8 +69,6 @@ describe("weekly curriculum browsing", () => {
       { month: 9, week: 2 },
       { month: 12, week: 2 },
       { month: 1, week: 2 },
-      { extra: 1 },
-      { extra: 2 },
     ]);
   });
   it("keeps extras separate from their stored August date", () => {
@@ -113,8 +111,9 @@ describe("weekly curriculum browsing", () => {
       period: { month: 9, week: 2 },
     });
     writeCurriculumView(url, "weekly", { extra: 4 });
-    expect(readCurriculumView(url.searchParams)).toEqual({ view: "weekly", period: { extra: 4 } });
+    expect(readCurriculumView(url.searchParams)).toEqual({ view: "weekly", period: null });
     expect(url.searchParams.has("ay")).toBe(false);
+    expect(url.searchParams.has("ekstra")).toBe(false);
     writeCurriculumView(url, "sequential", null);
     expect(readCurriculumView(url.searchParams)).toEqual({ view: "sequential", period: null });
   });

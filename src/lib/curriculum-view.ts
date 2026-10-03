@@ -83,7 +83,8 @@ export function visibleCurriculumEntries(
   );
 }
 export function availablePeriods(entries: readonly CurriculumEntry[]): CurriculumPeriod[] {
-  const periods = entries.map(periodOf).filter(isCurriculumPeriod);
+  const standardEntries = entries.filter((e) => !e.isExtra);
+  const periods = standardEntries.map(periodOf).filter(isCurriculumPeriod);
   return periods
     .filter((p, i) => periods.findIndex((other) => samePeriod(p, other)) === i)
     .sort((a, b) => {
@@ -106,8 +107,7 @@ export function initialWeeklyPeriod(
   const categoryEntries = getCategoryEntries(category, visible, grade, gender);
   const next = categoryEntries.find((e) => !completedIds.includes(e.id));
   if (next && !next.isExtra) return periodOf(next);
-  if (next?.isExtra)
-    return periods.filter((p) => p.extra === undefined).at(-1) ?? periods[0] ?? null;
+  if (next?.isExtra) return periods.at(-1) ?? periods[0] ?? null;
   return periods[0] ?? null;
 }
 export function weeklyGroups(entries: readonly CurriculumEntry[], period: CurriculumPeriod) {
@@ -128,12 +128,10 @@ export function readCurriculumView(params: URLSearchParams): {
       : params.get("gorunum") === "sirali" || params.has("gecmis")
         ? "sequential"
         : null;
-  const period = params.has("ekstra")
-    ? { extra: Number(params.get("ekstra")) }
-    : {
-        month: Number(params.get("ay")),
-        week: Number(params.get("hafta")),
-      };
+  const period = {
+    month: Number(params.get("ay")),
+    week: Number(params.get("hafta")),
+  };
   return { view, period: isCurriculumPeriod(period) ? period : null };
 }
 export function writeCurriculumView(
@@ -143,12 +141,9 @@ export function writeCurriculumView(
 ) {
   for (const key of ["yil", "ay", "hafta", "ekstra", "gecmis"]) url.searchParams.delete(key);
   url.searchParams.set("gorunum", view === "weekly" ? "haftalik" : "sirali");
-  if (view === "weekly" && period) {
-    if (period.extra !== undefined) url.searchParams.set("ekstra", String(period.extra));
-    else {
-      url.searchParams.set("ay", String(period.month));
-      url.searchParams.set("hafta", String(period.week));
-    }
+  if (view === "weekly" && period && period.extra === undefined) {
+    url.searchParams.set("ay", String(period.month));
+    url.searchParams.set("hafta", String(period.week));
   }
   return url;
 }

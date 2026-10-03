@@ -1,16 +1,8 @@
 import { describe, expect, it } from "bun:test";
 import { renderToString } from "react-dom/server";
 import { CurriculumTopBar } from "./curriculum-top-bar";
-import type { CurriculumPeriod } from "@/lib/curriculum-view";
 
 describe("CurriculumTopBar", () => {
-  const samplePeriods: CurriculumPeriod[] = [
-    { month: 9, week: 1 },
-    { month: 9, week: 2 },
-    { month: 9, week: 3 },
-    { month: 9, week: 4 },
-  ];
-
   it("renders the grade selector, period button, and view mode toggle", () => {
     const html = renderToString(
       <CurriculumTopBar
@@ -20,7 +12,6 @@ describe("CurriculumTopBar", () => {
         onViewChange={() => {}}
         period={{ month: 9, week: 1 }}
         onPeriodChange={() => {}}
-        availablePeriods={samplePeriods}
       />
     );
 
@@ -45,7 +36,6 @@ describe("CurriculumTopBar", () => {
         onViewChange={() => {}}
         period={null}
         onPeriodChange={() => {}}
-        availablePeriods={samplePeriods}
       />
     );
 
@@ -55,19 +45,19 @@ describe("CurriculumTopBar", () => {
     expect(html).toContain('aria-pressed="true"');
   });
 
-  it("handles extra periods correctly", () => {
+  it("does not render extra contents selection in weekly view mode", () => {
     const html = renderToString(
       <CurriculumTopBar
         selectedGrade={1}
         onGradeChange={() => {}}
         view="weekly"
         onViewChange={() => {}}
-        period={{ extra: 2 }}
+        period={{ month: 9, week: 1 }}
         onPeriodChange={() => {}}
-        availablePeriods={[{ extra: 1 }, { extra: 2 }]}
       />
     );
 
-    expect(html).toContain("Ekstra 2");
+    expect(html).not.toContain("Ekstra İçerikler");
+    expect(html).not.toContain("Ekstra 1");
   });
 });

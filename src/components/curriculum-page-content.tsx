@@ -18,6 +18,7 @@ import {
   initialWeeklyPeriod,
   isCurriculumPeriod,
   readCurriculumView,
+  samePeriod,
   visibleCurriculumEntries,
   writeCurriculumView,
   type CurriculumPeriod,
@@ -106,23 +107,16 @@ export function CurriculumPageContent({
     const entries = visibleCurriculumEntries(query.data, selectedGrade, activeGender);
     const periods = availablePeriods(entries);
     const exists =
-      period &&
-      periods.some((p) =>
-        period.extra !== undefined
-          ? p.extra === period.extra
-          : p.extra === undefined && p.year === period.year && p.month === period.month
-      );
+      period && period.extra === undefined && periods.some((p) => samePeriod(p, period));
     const next = exists
       ? period
-      : period
-        ? (periods[0] ?? null)
-        : initialWeeklyPeriod(
-            query.data,
-            context.current.category,
-            context.current.completedIds,
-            selectedGrade,
-            activeGender
-          );
+      : initialWeeklyPeriod(
+          query.data,
+          context.current.category,
+          context.current.completedIds,
+          selectedGrade,
+          activeGender
+        );
     if (next) {
       rememberPeriod(next);
       const url = writeCurriculumView(new URL(window.location.href), "weekly", next);
@@ -134,7 +128,7 @@ export function CurriculumPageContent({
     const state = useCurriculumStore.getState();
     const remembered = state.weeklyPeriods?.[selectedGrade];
     const nextPeriod =
-      (isCurriculumPeriod(remembered) ? remembered : null) ??
+      (isCurriculumPeriod(remembered) && remembered.extra === undefined ? remembered : null) ??
       initialWeeklyPeriod(
         query.data ?? [],
         context.current.category,
@@ -172,10 +166,6 @@ export function CurriculumPageContent({
     [selectedGrade, setStoreGrade]
   );
 
-  const availablePeriodsList = query.data
-    ? availablePeriods(visibleCurriculumEntries(query.data, selectedGrade, activeGender))
-    : [];
-
   return (
     <>
       <CurriculumTopBar
@@ -185,7 +175,6 @@ export function CurriculumPageContent({
         onViewChange={changeView}
         period={period}
         onPeriodChange={changePeriod}
-        availablePeriods={availablePeriodsList}
       />
       {initialized ? (
         <CurriculumArchive
