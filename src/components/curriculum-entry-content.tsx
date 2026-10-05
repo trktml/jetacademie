@@ -30,6 +30,8 @@ export interface ParsedVocabItem {
   tr: string;
   fr?: string;
   nl?: string;
+  frWord?: string;
+  nlWord?: string;
 }
 
 export function parseEntryContent(body?: string | null): {
@@ -38,8 +40,10 @@ export function parseEntryContent(body?: string | null): {
 } {
   if (!body) return { summary: "", vocabList: [] };
 
-  const vocabMarker = "📚 **Kelimeler ve Anlamları**:";
-  if (!body.includes(vocabMarker)) {
+  const vocabMarker = body.match(
+    /(?:📚\s*)?\*\*Kelimeler ve Anlamları\*\*:|^#{1,6}\s+Kelimeler(?: ve Anlamları)?\s*$/m
+  )?.[0];
+  if (!vocabMarker) {
     return { summary: body, vocabList: [] };
   }
 
@@ -47,8 +51,24 @@ export function parseEntryContent(body?: string | null): {
   const summary = summaryPart.trim();
   const vocabList: ParsedVocabItem[] = [];
 
-  const lines = vocabPart.split("\n").filter((l) => l.trim().startsWith("•"));
-  for (const line of lines) {
+  const lines = vocabPart.split("\n");
+  for (const rawLine of lines) {
+    const translation = rawLine.match(/^\s+[-*]\s+(FR|NL):\s*\*\*([^*]+)\*\*\s*:\s*(.+)$/);
+    if (translation) {
+      const item = vocabList.at(-1);
+      if (item) {
+        if (translation[1] === "FR") {
+          item.frWord = translation[2].trim();
+          item.fr = translation[3].trim();
+        } else {
+          item.nlWord = translation[2].trim();
+          item.nl = translation[3].trim();
+        }
+      }
+      continue;
+    }
+    if (!/^(?:•|[-*])\s+/.test(rawLine)) continue;
+    const line = rawLine.replace(/^[-*]\s+/, "• ");
     const nlFrMatch = line.match(
       /•\s*\*\*(.*?)\*\*:\s*(.*?)(?:\s*\(NL:\s*(.*?)\s*\/\s*FR:\s*(.*?)\))?$/
     );
@@ -185,10 +205,10 @@ export function EntryContentRenderer({
     () =>
       isKonu
         ? { summary: "", vocabList: [] }
-        : entry.contentFormat === "markdown"
+        : entry.contentFormat === "markdown" && entry.categoryId !== "hocaefendi-dinleme"
           ? { summary: entry.body ?? "", vocabList: [] }
           : parseEntryContent(entry.body),
-    [isKonu, entry.body, entry.contentFormat]
+    [isKonu, entry.body, entry.contentFormat, entry.categoryId]
   );
   const videoId = useMemo(
     () => (renderMedia && renderVideo && !isKonu ? getYouTubeVideoId(entry.resourceUrl) : null),
@@ -261,7 +281,11 @@ export function EntryContentRenderer({
     <div className="archive-entry-rendered-content flex flex-col gap-3">
       {summary && (
         <MarkdownContent stripTitle={entry.title}>
-          {entry.contentFormat === "markdown" ? (entry.body ?? "") : summary}
+          {vocabList.length > 0
+            ? summary
+            : entry.contentFormat === "markdown"
+              ? (entry.body ?? "")
+              : summary}
         </MarkdownContent>
       )}
 
@@ -289,41 +313,78 @@ export function EntryContentRenderer({
             />
             <span>Kelimeler</span>
           </div>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <ol className="grid list-none gap-3 p-0 sm:grid-cols-2">
             {vocabList.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col gap-1.5 rounded-xl border border-rose-200/70 bg-white p-2.5 shadow-xs dark:border-rose-900/40 dark:bg-[#16202c]"
+              <li
+                key={`${item.word}-${idx}`}
+                className="min-w-0 overflow-hidden rounded-2xl border border-rose-200/70 bg-white shadow-xs dark:border-rose-900/40 dark:bg-slate-900"
               >
-                <div className="flex flex-wrap items-center justify-between gap-1.5">
-                  <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
-                    {item.word}
-                  </span>
-                  <div className="flex items-center gap-1 text-[10px] font-medium">
-                    {item.nl && (
-                      <span
-                        className="rounded border border-amber-300/70 bg-amber-100 px-1.5 py-0.5 font-semibold text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/80 dark:text-amber-200"
-                        title="Felemenkçe Karşılığı"
-                      >
-                        NL: {item.nl}
-                      </span>
-                    )}
-                    {item.fr && (
-                      <span
-                        className="rounded border border-blue-300/70 bg-blue-100 px-1.5 py-0.5 font-semibold text-blue-900 dark:border-blue-700/60 dark:bg-blue-950/80 dark:text-blue-200"
-                        title="Fransızca Karşılığı"
-                      >
-                        FR: {item.fr}
-                      </span>
-                    )}
+                <div className="p-4">
+                  <div className="mb-2 flex items-center gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-100 text-xs font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+                    >
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <h4
+                      lang="tr"
+                      className="text-base font-bold break-words text-slate-900 dark:text-slate-100"
+                    >
+                      {item.word}
+                    </h4>
                   </div>
+                  <p
+                    lang="tr"
+                    className="text-sm leading-relaxed text-slate-600 dark:text-slate-300"
+                  >
+                    {item.tr}
+                  </p>
                 </div>
-                <p className="text-[11.5px] leading-relaxed text-slate-600 dark:text-slate-300">
-                  {item.tr}
-                </p>
-              </div>
+                <dl className="space-y-3 border-t border-rose-100 bg-rose-50/40 p-4 dark:border-rose-900/40 dark:bg-rose-950/20">
+                  {(
+                    [
+                      {
+                        code: "FR",
+                        label: "Fransızca",
+                        lang: "fr",
+                        word: item.frWord,
+                        meaning: item.fr,
+                      },
+                      {
+                        code: "NL",
+                        label: "Felemenkçe",
+                        lang: "nl",
+                        word: item.nlWord,
+                        meaning: item.nl,
+                      },
+                    ] as const
+                  ).map(
+                    (translation) =>
+                      translation.meaning && (
+                        <div key={translation.code} className="min-w-0">
+                          <dt className="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                            <span className="rounded-md border border-rose-200 bg-white px-1.5 py-0.5 text-[10px] font-bold text-rose-700 dark:border-rose-800 dark:bg-slate-900 dark:text-rose-300">
+                              {`${translation.code}:`}
+                            </span>
+                            {translation.label}
+                          </dt>
+                          <dd
+                            lang={translation.lang}
+                            className="m-0 text-sm leading-relaxed break-words text-slate-700 dark:text-slate-200"
+                          >
+                            {translation.word && (
+                              <strong className="font-semibold">{translation.word}: </strong>
+                            )}
+                            {translation.meaning}
+                          </dd>
+                        </div>
+                      )
+                  )}
+                </dl>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       )}
     </div>

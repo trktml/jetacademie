@@ -56,7 +56,7 @@ export function buildBody(lesson: LessonDraft): string {
 
   if (lesson.verse) {
     opening.push(`> **${lesson.verse.arabic}**`);
-    opening.push(`> **“${lesson.verse.meal}”**¹`);
+    opening.push(`> **“${lesson.verse.meal}”**[^1]`);
   }
 
   if (lesson.subtitle) {
@@ -69,9 +69,9 @@ export function buildBody(lesson: LessonDraft): string {
       .map((paragraph) => {
         if (section.kind === "arabic") return `> **${paragraph}**`;
         if (section.kind === "quote") {
-          return `> **“${paragraph}”**${section.citation ? ` ${toSuperscript(section.citation)}` : ""}`;
+          return `> **“${paragraph}”**${section.citation ? ` [^${section.citation}]` : ""}`;
         }
-        return `${paragraph}${section.citation ? ` ${toSuperscript(section.citation)}` : ""}`;
+        return `${paragraph}${section.citation ? ` [^${section.citation}]` : ""}`;
       })
       .join("\n\n");
 
@@ -97,9 +97,7 @@ export function buildBody(lesson: LessonDraft): string {
       ].join("\n\n")
     : "";
   const allSources = lesson.verse ? [lesson.verse.source, ...lesson.sources] : lesson.sources;
-  const sources = allSources
-    .map((source, index) => `${toSuperscript(String(index + 1))} ${source}`)
-    .join("\n\n");
+  const sources = allSources.map((source, index) => `[^${index + 1}]: ${source}`).join("\n\n");
 
   return [
     ...opening,
@@ -132,19 +130,23 @@ export function parseKonuItemFromBody(entry: CurriculumEntry): KonuCurriculumIte
   let currentSection = "";
   for (const line of lines) {
     const trimmed = line.trim();
-    if (trimmed.startsWith("# Bu Hafta Tanıştığımız Kelimeler")) {
+    const heading = trimmed
+      .replace(/^#{1,6}\s+/, "")
+      .trim()
+      .toLocaleLowerCase("tr-TR");
+    if (heading === "bu hafta tanıştığımız kelimeler") {
       currentSection = "vocab";
       continue;
     }
-    if (trimmed.startsWith("# Bana Ne Söylüyor?")) {
+    if (heading === "bana ne söylüyor?") {
       currentSection = "takeaway";
       continue;
     }
-    if (trimmed.startsWith("### Düşünelim ve Konuşalım")) {
+    if (heading === "düşünelim ve konuşalım") {
       currentSection = "questions";
       continue;
     }
-    if (trimmed.startsWith("# Dipnotlar")) {
+    if (heading === "dipnotlar") {
       currentSection = "sources";
       continue;
     }
@@ -173,7 +175,7 @@ export function parseKonuItemFromBody(entry: CurriculumEntry): KonuCurriculumIte
       }
     } else if (currentSection === "sources") {
       if (trimmed.length > 0) {
-        const clean = trimmed.replace(/^[⁰¹²³⁴⁵⁶⁷⁸⁹\d\^]+\s*/, "");
+        const clean = trimmed.replace(/^\[\^\d+\]:\s*/, "").replace(/^[⁰¹²³⁴⁵⁶⁷⁸⁹\d\^]+\s*/, "");
         sources.push(clean);
       }
     } else if (!currentSection && !subtitle && trimmed && !trimmed.startsWith(">")) {

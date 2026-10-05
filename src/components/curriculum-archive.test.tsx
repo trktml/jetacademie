@@ -932,7 +932,7 @@ describe("CurriculumArchive Component", () => {
     });
   });
 
-  it("should render embedded YouTube player and vocabulary card with NL before FR badges", () => {
+  it("should render embedded YouTube player and vocabulary card with French before Dutch language rows", () => {
     const html = renderToString(
       <CurriculumArchive
         initialCompletedEntryIds={[]}
@@ -948,12 +948,12 @@ describe("CurriculumArchive Component", () => {
     // Verify Vocabulary card header
     expect(html).toContain("<span>Kelimeler</span>");
 
-    // Verify NL and FR language pill badges and verify NL appears before FR
+    // Verify NL and FR language pill badges and verify FR appears before NL
     expect(html).toContain("NL:");
     expect(html).toContain("FR:");
     const nlIndex = html.indexOf("NL:");
     const frIndex = html.indexOf("FR:");
-    expect(nlIndex).toBeLessThan(frIndex);
+    expect(frIndex).toBeLessThan(nlIndex);
 
     // Verify external watch on YouTube action link
     expect(html).toContain("YouTube&#x27;da İzle");

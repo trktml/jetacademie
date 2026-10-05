@@ -8,6 +8,14 @@ describe("Turkish curriculum vocabulary", () => {
     expect(curriculumVocabularyIssues(body)).toEqual([]);
     expect(readCurriculumVocabulary(body).turkishText).not.toContain("النِّيَّة");
   });
+  it("reads Turkish uppercase glossary and footnote headings", () => {
+    const body =
+      "<u>icazet</u> aldı.\n\n## BU HAFTA TANIŞTIĞIMIZ KELİMELER\n\n**İcazet** — Bir ilmi öğrendiğini gösteren onay.\n\n## DİPNOTLAR\n\n[^1]: Kaynak.";
+    expect(readCurriculumVocabulary(body).items).toEqual([
+      { word: "İcazet", definition: "Bir ilmi öğrendiğini gösteren onay." },
+    ]);
+    expect(curriculumVocabularyIssues(body)).toEqual([]);
+  });
   it("rejects Arabic and transliterated words supported only by Arabic or footnotes", () => {
     const body =
       "**تَعَلَّمَ**\n\nKur’ân öğrenen.\n\n# Bu Hafta Tanıştığımız Kelimeler\n\n**taallame** — Öğrendi.\n\n**تَعَلَّمَ** — Öğrendi.\n\n# Dipnotlar\n\n¹ <u>taallame</u>";

@@ -6,6 +6,7 @@ import {
   getAllKonuEntries,
   toSuperscript,
   createLesson,
+  parseKonuItemFromBody,
   type LessonDraft,
 } from "./konu-curriculum";
 
@@ -26,6 +27,24 @@ describe("konu-curriculum data and builder integrity", () => {
   it("converts numbers to superscript correctly", () => {
     expect(toSuperscript("123")).toBe("¹²³");
     expect(toSuperscript("4567890")).toBe("⁴⁵⁶⁷⁸⁹⁰");
+  });
+
+  it("parses uppercase glossary and footnote headings with linked sources", () => {
+    const item = parseKonuItemFromBody({
+      id: "g1-konu-eylul-2",
+      grade: 1,
+      categoryId: "konu",
+      month: 9,
+      week: 2,
+      year: 2026,
+      title: "Örnek ders",
+      body: "# Örnek ders\n\n## BU HAFTA TANIŞTIĞIMIZ KELİMELER\n\n**İcazet** — Bir ilmi öğrendiğini gösteren onay.\n\n# DİPNOTLAR\n\n[^1]: Kaynak bilgisi.",
+    });
+
+    expect(item?.vocab).toEqual([
+      { word: "İcazet", definition: "Bir ilmi öğrendiğini gösteren onay." },
+    ]);
+    expect(item?.sources).toEqual(["Kaynak bilgisi."]);
   });
 
   it("creates a lesson and builds formatted markdown body with opening verse and structure", () => {
@@ -75,7 +94,7 @@ describe("konu-curriculum data and builder integrity", () => {
     expect(lesson.body).toContain("# Örnek Ders Başlığı");
     expect(lesson.body).toContain("> **اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ**");
     expect(lesson.body).toContain(
-      "> **“Allah O’dur ki O’ndan başka ilah yoktur; Hayy’dır, Kayyûm’dur.”**¹"
+      "> **“Allah O’dur ki O’ndan başka ilah yoktur; Hayy’dır, Kayyûm’dur.”**[^1]"
     );
     expect(lesson.body).toContain("Giriş ve arka plan sorusu");
     expect(lesson.body).toContain("### Birinci Bölüm");
@@ -87,7 +106,7 @@ describe("konu-curriculum data and builder integrity", () => {
     expect(lesson.body).toContain("# Bu Hafta Tanıştığımız Kelimeler");
     expect(lesson.body).toContain("**Tefekkür** — Derinlemesine düşünme.");
     expect(lesson.body).toContain("# Dipnotlar");
-    expect(lesson.body).toContain("¹ Suat Yıldırım Meali, s. 42.");
-    expect(lesson.body).toContain("² Bediüzzaman Said Nursî, Sözler, s. 10.");
+    expect(lesson.body).toContain("[^1]: Suat Yıldırım Meali, s. 42.");
+    expect(lesson.body).toContain("[^2]: Bediüzzaman Said Nursî, Sözler, s. 10.");
   });
 });

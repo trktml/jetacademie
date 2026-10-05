@@ -533,6 +533,22 @@ Sözlük maddesi gibi kuru yazma.
 
 Ancak gereksiz uzun açıklamalar da yapma.
 
+### Hocaefendi Sohbetleri: üç dilde kelime listesi
+
+Dinleme kelimelerini doğrulanmış video kaydında gerçekten geçen Türkçe/Osmanlı Türkçesi ifadelerden seç; yalnız açıklama metninde bulunması yeterli değildir. Hazırlık kaydında geçtiği zaman aralığını kaydet. Her maddede videodaki kelime ve bağlama uygun sade Türkçe anlamı, ardından Fransızca kelime ve Fransızca açıklaması, ardından Felemenkçe kelime ve Felemenkçe açıklaması bulunmalıdır. Yabancı dil satırları yalnız Türkçe açıklamanın tercümesi değildir: karşılık gelen kelimeyi ayrıca belirt. Her iki dilde anlam, doğal kullanım ve öğrenci seviyesini ayrı kontrol et; karşılık kesin değilse tahminle tamamlanmış sayma.
+
+Veritabanına kaydedilen `body` içinde şu Markdown biçimini kullan (yer tutucuları gerçek, doğrulanmış içerikle değiştir):
+
+```markdown
+## Kelimeler
+
+- **Videoda geçen kelime**: Türkçe anlamı.
+  - FR: **Fransızca kelime**: Fransızca anlamı.
+  - NL: **Felemenkçe kelime**: Felemenkçe anlamı.
+```
+
+Arayüz her maddeyi Türkçe başlığı ve açıklaması olan bir kartta, altında ayrı Fransızca ve Felemenkçe satırlarıyla gösterir. Konu kategorisinin Türkçe kelime desteği biçimi korunur. Eski `(NL: ... / FR: ...)` kayıtları okunabilir; yeni üretimde yukarıdaki biçimi kullan. Eksik video doğrulaması veya dil incelemesi bölüm 18 kaydında **değerlendirme eksik** olarak belirtilir.
+
 ### Kelime seçiminin sınırı
 
 **Bu bölümün amacı öğrencinin Türkçesini geliştirmektir; Arapça kelime öğretimi değildir.** Âyet veya hadisin Arapça metninden kelime seçme; Arapça yazımlı veya Latin harfleriyle çevrilmiş bir maddeyi Türkçe anlamıyla listeye koyma. Arapça kaynaklı bir kelime Türkçede gerçekten kullanılıyor ve öğrencinin okuduğu Türkçe/Osmanlı Türkçesi metinde yer alıyorsa, yalnız o Türkçe kullanımı ve bağlamdaki anlamı üzerinden açıklanabilir. Örneğin Türkçe tercümede “öğrenen” yazıyorsa Arapça metindeki “taallame” listeye alınmaz; Türkçe anlatımda “niyet” geçiyorsa Türkçede kullanılan “niyet” açıklanabilir.

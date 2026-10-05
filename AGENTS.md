@@ -159,3 +159,7 @@ The yearly Markdown plans are authoritative for the lesson topic, question, outc
 - Write tests alongside implementation files (e.g., `feature.ts` -> `feature.test.ts`).
 - Avoid mocking React DOM unless necessary; test query functions, hooks, state stores, and validation logic directly.
 - Mock network calls with `globalThis.fetch = mock(...)` and restore the original fetch in `finally` blocks.
+
+## Listening vocabulary production
+
+For `hocaefendi-dinleme`, follow the three-language vocabulary format in `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md`: the verified word spoken in the video and its Turkish meaning, followed by a French word with a French definition and a Dutch word with a Dutch definition. Record video timestamps in preparation notes and review both translations in context. Store the nested `FR:` then `NL:` Markdown list in the database body; do not generate static lesson modules.

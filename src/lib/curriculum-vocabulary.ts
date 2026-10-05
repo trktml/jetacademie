@@ -3,9 +3,20 @@ export interface CurriculumVocabularyItem {
   readonly definition: string;
 }
 
-const vocabularyHeading =
-  /^(?:#{1,6}\s+|\*\*)(?:Bu Hafta Tanıştığımız Kelimeler|Kelime Açıklaması|Kelimeler)(?:\*\*)?\s*$/i;
+const vocabularyHeadings = new Set([
+  "bu hafta tanıştığımız kelimeler",
+  "kelime açıklaması",
+  "kelimeler",
+]);
 const arabic = /\p{Script=Arabic}/u;
+
+function normalizeHeading(line: string): string {
+  return line
+    .replace(/^#{1,6}\s+/, "")
+    .replace(/\*\*/g, "")
+    .trim()
+    .toLocaleLowerCase("tr-TR");
+}
 
 /** Vocabulary belongs to Turkish reading, never the Arabic verse or hadith. */
 export function readCurriculumVocabulary(body: string): {
@@ -20,19 +31,21 @@ export function readCurriculumVocabulary(body: string): {
   for (const line of body.split(/\r?\n/)) {
     const trimmed = line.trim();
     const label = trimmed.replace(/^#{1,6}\s+/, "").replace(/\*\*/g, "");
-    if (/^Arapça(?:\s+okunuşu|\s*\([^)]*\))?:?\s*$/i.test(label)) {
+    const normalizedLabel = label.trim().toLocaleLowerCase("tr-TR");
+    const heading = normalizeHeading(trimmed);
+    if (/^arapça(?:\s+okunuşu|\s*\([^)]*\))?:?\s*$/.test(normalizedLabel)) {
       inArabic = true;
       continue;
     }
-    if (/^(?:Türkçesi|Türkçe(?:\s+(?:tercüme|anlamı))?|Meal):?\s*$/i.test(label)) {
+    if (/^(?:türkçesi|türkçe(?:\s+(?:tercüme|anlamı))?|meal):?\s*$/.test(normalizedLabel)) {
       inArabic = false;
       continue;
     }
-    if (vocabularyHeading.test(trimmed)) {
+    if (vocabularyHeadings.has(heading)) {
       section = "vocabulary";
       continue;
     }
-    if (/^#{1,6}\s+Dipnotlar\s*$/i.test(trimmed) || /^[¹²³⁴⁵⁶⁷⁸⁹⁰]+\s/.test(trimmed)) {
+    if (heading === "dipnotlar" || /^[¹²³⁴⁵⁶⁷⁸⁹⁰]+\s/.test(trimmed)) {
       section = "sources";
       continue;
     }
