@@ -1890,6 +1890,10 @@ body:has(.landing-page),
   animation: archive-dossier-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.konu-lesson-reader section[id] {
+  scroll-margin-top: calc(6rem + env(safe-area-inset-top, 0px));
+}
+
 @keyframes archive-dossier-in {
   from {
     opacity: 0;
@@ -5020,6 +5024,10 @@ body:has(.landing-page),
     min-width: 0;
     max-width: 100%;
     width: 100%;
+    scroll-margin-top: calc(9.75rem + env(safe-area-inset-top, 0px));
+  }
+
+  .konu-lesson-reader section[id] {
     scroll-margin-top: calc(9.75rem + env(safe-area-inset-top, 0px));
   }
 

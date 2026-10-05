@@ -73,3 +73,61 @@
   border: 0;
   border-top: 1px solid #70817a40;
 }
+
+/* Footnotes & Citation anchors */
+.curriculum-markdown [id] {
+  scroll-margin-top: calc(6rem + env(safe-area-inset-top, 0px));
+}
+
+.curriculum-markdown sup {
+  display: inline-block;
+}
+
+.curriculum-markdown sup:has([id*="fnref"]),
+.curriculum-markdown [id*="fnref-"] {
+  display: inline-block;
+  scroll-margin-top: calc(6rem + env(safe-area-inset-top, 0px));
+}
+
+.curriculum-markdown .footnotes {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--line, #70817a) 40%, transparent);
+  font-size: 0.92em;
+  scroll-margin-top: calc(6rem + env(safe-area-inset-top, 0px));
+}
+
+.curriculum-markdown .footnotes ol {
+  padding-inline-start: 1.5em;
+}
+
+.curriculum-markdown .footnotes li {
+  margin-top: 0.5em;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  scroll-margin-top: calc(6rem + env(safe-area-inset-top, 0px));
+  transition:
+    background-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.curriculum-markdown .footnotes li:target {
+  background-color: color-mix(in srgb, #399679 14%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, #399679 35%, transparent);
+}
+
+.curriculum-markdown a[id*="fnref-"]:target,
+.curriculum-markdown sup:has(:target) {
+  background-color: color-mix(in srgb, #399679 25%, transparent);
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .curriculum-markdown [id],
+  .curriculum-markdown .footnotes,
+  .curriculum-markdown .footnotes li,
+  .curriculum-markdown sup:has([id*="fnref"]),
+  .curriculum-markdown [id*="fnref-"] {
+    scroll-margin-top: calc(9.75rem + env(safe-area-inset-top, 0px));
+  }
+}
