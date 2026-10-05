@@ -280,7 +280,14 @@ export function EntryContentRenderer({
   return (
     <div className="archive-entry-rendered-content flex flex-col gap-3">
       {summary && (
-        <MarkdownContent stripTitle={entry.title}>
+        <MarkdownContent
+          stripTitle={entry.title}
+          vocabulary={
+            vocabList.length
+              ? vocabList.map((item) => ({ word: item.word, definition: item.tr }))
+              : undefined
+          }
+        >
           {vocabList.length > 0
             ? summary
             : entry.contentFormat === "markdown"
@@ -305,31 +312,34 @@ export function EntryContentRenderer({
       )}
 
       {renderMedia && vocabList.length > 0 && (
-        <div className="archive-vocab-card mt-1 rounded-2xl border border-rose-200/80 bg-rose-50/40 p-3 sm:p-3.5 dark:border-rose-900/40 dark:bg-rose-950/20">
-          <div className="mb-2.5 flex items-center gap-1.5 text-xs font-bold text-rose-800 dark:text-rose-300">
+        <div className="archive-vocab-card mt-4">
+          <div className="mb-4 flex items-center gap-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
             <BookA
-              className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400"
+              className="h-9 w-9 shrink-0 rounded-xl bg-teal-100 p-2 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300"
               aria-hidden="true"
             />
             <span>Kelimeler</span>
+            <span className="ml-auto rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              {vocabList.length} kelime · 3 dil
+            </span>
           </div>
-          <ol className="grid list-none gap-3 p-0 sm:grid-cols-2">
+          <ol className="m-0 grid list-none gap-4 p-0 md:grid-cols-2">
             {vocabList.map((item, idx) => (
               <li
                 key={`${item.word}-${idx}`}
-                className="min-w-0 overflow-hidden rounded-2xl border border-rose-200/70 bg-white shadow-xs dark:border-rose-900/40 dark:bg-slate-900"
+                className="relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-[0_6px_24px_-12px_rgba(15,23,42,0.18)] dark:border-slate-700/60 dark:bg-slate-900"
               >
-                <div className="p-4">
-                  <div className="mb-2 flex items-center gap-3">
+                <div className="min-w-0 bg-gradient-to-br from-teal-50 via-teal-50/30 to-white p-5 dark:from-teal-500/10 dark:via-slate-900 dark:to-slate-900">
+                  <div className="mb-3 flex items-center gap-3">
                     <span
                       aria-hidden="true"
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-100 text-xs font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-teal-700 text-xs font-semibold text-white tabular-nums shadow-sm dark:bg-teal-400/15 dark:text-teal-200"
                     >
                       {String(idx + 1).padStart(2, "0")}
                     </span>
                     <h4
                       lang="tr"
-                      className="text-base font-bold break-words text-slate-900 dark:text-slate-100"
+                      className="text-xl font-semibold tracking-tight break-words text-slate-900 dark:text-slate-100"
                     >
                       {item.word}
                     </h4>
@@ -341,7 +351,7 @@ export function EntryContentRenderer({
                     {item.tr}
                   </p>
                 </div>
-                <dl className="space-y-3 border-t border-rose-100 bg-rose-50/40 p-4 dark:border-rose-900/40 dark:bg-rose-950/20">
+                <dl className="m-0 mt-auto grid gap-5 border-t border-teal-100/60 p-5 min-[480px]:grid-cols-2 dark:border-slate-800">
                   {(
                     [
                       {
@@ -363,18 +373,41 @@ export function EntryContentRenderer({
                     (translation) =>
                       translation.meaning && (
                         <div key={translation.code} className="min-w-0">
-                          <dt className="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-                            <span className="rounded-md border border-rose-200 bg-white px-1.5 py-0.5 text-[10px] font-bold text-rose-700 dark:border-rose-800 dark:bg-slate-900 dark:text-rose-300">
-                              {`${translation.code}:`}
-                            </span>
+                          <dt className="mb-3 flex items-center gap-2.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                            <svg
+                              viewBox="0 0 24 16"
+                              width="24"
+                              height="16"
+                              role="img"
+                              aria-label={
+                                translation.code === "FR" ? "Fransa bayrağı" : "Belçika bayrağı"
+                              }
+                              className="h-4 w-6 shrink-0 overflow-hidden rounded-[3px] shadow-sm ring-1 ring-black/10 dark:ring-white/15"
+                            >
+                              <path
+                                d="M0 0h8v16H0z"
+                                fill={translation.code === "FR" ? "#002395" : "#141414"}
+                              />
+                              <path
+                                d="M8 0h8v16H8z"
+                                fill={translation.code === "FR" ? "#ffffff" : "#FDDA24"}
+                              />
+                              <path
+                                d="M16 0h8v16h-8z"
+                                fill={translation.code === "FR" ? "#ED2939" : "#EF3340"}
+                              />
+                            </svg>
+                            <span className="sr-only">{`${translation.code}:`}</span>
                             {translation.label}
                           </dt>
                           <dd
                             lang={translation.lang}
-                            className="m-0 text-sm leading-relaxed break-words text-slate-700 dark:text-slate-200"
+                            className="m-0 text-sm leading-relaxed break-words text-slate-600 dark:text-slate-300"
                           >
                             {translation.word && (
-                              <strong className="font-semibold">{translation.word}: </strong>
+                              <strong className="mb-1.5 block font-semibold text-slate-800 dark:text-slate-100">
+                                {translation.word}
+                              </strong>
                             )}
                             {translation.meaning}
                           </dd>
