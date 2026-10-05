@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Markdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
@@ -59,10 +60,60 @@ function rehypeFootnoteAnchors(prefix: string) {
 function VocabularyTerm({ word, definition }: VocabularyItem) {
   const [open, setOpen] = useState(false);
   const tooltipId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const tooltipRef = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+
+    const updatePosition = () => {
+      const trigger = triggerRef.current;
+      const tooltip = tooltipRef.current;
+      if (!trigger || !tooltip) return;
+
+      const triggerRect = trigger.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const viewportWidth = document.documentElement.clientWidth;
+      const viewportHeight = document.documentElement.clientHeight;
+      const viewportPadding = 12;
+      const gap = 8;
+      const left = Math.max(
+        viewportPadding,
+        Math.min(
+          triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2,
+          viewportWidth - tooltipRect.width - viewportPadding
+        )
+      );
+      const spaceAbove = triggerRect.top - viewportPadding - gap;
+      const spaceBelow = viewportHeight - triggerRect.bottom - viewportPadding - gap;
+      const preferredTop =
+        tooltipRect.height <= spaceAbove || spaceAbove >= spaceBelow
+          ? triggerRect.top - tooltipRect.height - gap
+          : triggerRect.bottom + gap;
+      const top = Math.max(
+        viewportPadding,
+        Math.min(preferredTop, viewportHeight - tooltipRect.height - viewportPadding)
+      );
+
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${top}px`;
+      tooltip.style.visibility = "visible";
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open]);
 
   return (
     <span className="relative inline-block">
       <button
+        ref={triggerRef}
         type="button"
         className="inline-flex min-h-[44px] cursor-pointer items-center rounded px-1 text-inherit underline decoration-teal-500/50 underline-offset-4"
         aria-label={`${word} kelimesinin anlamı`}
@@ -80,15 +131,20 @@ function VocabularyTerm({ word, definition }: VocabularyItem) {
       >
         {word}
       </button>
-      {open && (
-        <span
-          id={tooltipId}
-          role="tooltip"
-          className="absolute bottom-full left-0 z-20 w-52 max-w-[70vw] rounded-lg border border-teal-200 bg-white p-3 text-sm font-normal text-slate-900 shadow-lg dark:border-teal-800 dark:bg-slate-900 dark:text-slate-100"
-        >
-          {definition}
-        </span>
-      )}
+      {open &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <span
+            ref={tooltipRef}
+            id={tooltipId}
+            role="tooltip"
+            className="fixed z-50 max-h-[calc(100vh-24px)] w-52 max-w-[calc(100vw-24px)] overflow-y-auto rounded-lg border border-teal-200 bg-white p-3 text-sm font-normal text-slate-900 shadow-lg dark:border-teal-800 dark:bg-slate-900 dark:text-slate-100"
+            style={{ left: 0, top: 0, visibility: "hidden" }}
+          >
+            {definition}
+          </span>,
+          document.body
+        )}
     </span>
   );
 }
