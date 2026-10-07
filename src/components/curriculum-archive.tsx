@@ -43,6 +43,9 @@ import { useReadingProgressStore } from "@/store/use-reading-progress-store";
 import { isValidGrade, useCurriculumStore } from "@/store/use-curriculum-store";
 import { GradeSelector } from "@/components/grade-selector";
 import { resolveActiveSectionId, type ActiveSectionEntry } from "@/hooks/use-active-section";
+import { authClient } from "@/lib/auth-client";
+import { getQueryClient } from "@/lib/query-client";
+import { type CurriculumProgressData } from "@/lib/queries/curriculum";
 
 import {
   EntryContentRenderer,
@@ -170,6 +173,21 @@ export function CurriculumArchive({
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [shakingEntryId, setShakingEntryId] = useState<string | null>(null);
 
+  const [prevInitialCompletedEntryIds, setPrevInitialCompletedEntryIds] =
+    useState(initialCompletedEntryIds);
+  if (initialCompletedEntryIds !== prevInitialCompletedEntryIds) {
+    setPrevInitialCompletedEntryIds(initialCompletedEntryIds);
+    setCompletedEntryIds(initialCompletedEntryIds);
+  }
+
+  const [prevInitialGender, setPrevInitialGender] = useState(initialGender);
+  if (initialGender !== prevInitialGender) {
+    setPrevInitialGender(initialGender);
+    if (initialGender !== undefined) {
+      setUserGender(initialGender);
+    }
+  }
+
   const initialHistoryCategory = useMemo(() => {
     const entry = Object.entries(initialHistoryViewCategoryIds).find(([, isOpen]) => isOpen);
     return (entry ? entry[0] : null) as CurriculumCategoryId | null;
@@ -196,6 +214,9 @@ export function CurriculumArchive({
   const [isPending, startTransition] = useTransition();
   const openAccount = useUiStore((state) => state.openAccount);
 
+  const { data: session } = authClient.useSession();
+  const effectiveSignedIn = Boolean(session?.user ?? isSignedIn);
+
   // Guest store
   const isGuest = useGuestStore((s) => s.isGuest);
   const guestCompleteEntry = useGuestStore((s) => s.completeEntry);
@@ -204,7 +225,9 @@ export function CurriculumArchive({
   const guestGender = useGuestStore((s) => s.gender);
   const guestSetGender = useGuestStore((s) => s.setGender);
 
-  const activeGender: Gender = isSignedIn ? (userGender ?? "erkek") : (guestGender ?? "erkek");
+  const activeGender: Gender = effectiveSignedIn
+    ? (userGender ?? "erkek")
+    : (guestGender ?? "erkek");
 
   useEffect(() => {
     onActiveContext?.(
@@ -298,12 +321,21 @@ export function CurriculumArchive({
   }, []);
 
   function handleGenderChange(newGender: Gender) {
-    if (isSignedIn) {
+    if (effectiveSignedIn) {
       setIsGenderUpdating(true);
       startTransition(async () => {
         try {
           await updateUserGender(newGender);
           setUserGender(newGender);
+          try {
+            const queryClient = getQueryClient();
+            queryClient.setQueryData<CurriculumProgressData>(["curriculum-progress"], (old) => {
+              if (!old) return old;
+              return { ...old, gender: newGender };
+            });
+          } catch {
+            // cache update failover
+          }
           setSelectedCompletedIndexes((prev) => ({ ...prev, ilmihal: 0 }));
           setSelectedJumpEntryId("");
           showToast(
@@ -735,7 +767,7 @@ export function CurriculumArchive({
   }
 
   function completeEntry(entryId: string, timingLabel: string, categoryId: CurriculumCategoryId) {
-    if (!isSignedIn && !isGuest) {
+    if (!effectiveSignedIn && !isGuest) {
       openAccount();
       return;
     }
@@ -757,6 +789,18 @@ export function CurriculumArchive({
       try {
         await markEntryAsRead(entryId);
         setCompletedEntryIds((ids) => [...new Set([...ids, entryId])]);
+        try {
+          const queryClient = getQueryClient();
+          queryClient.setQueryData<CurriculumProgressData>(["curriculum-progress"], (old) => {
+            if (!old) return old;
+            return {
+              ...old,
+              completedEntryIds: [...new Set([...old.completedEntryIds, entryId])],
+            };
+          });
+        } catch {
+          // cache update failover
+        }
         triggerUndoCountdown(entryId, timingLabel, categoryId);
         setTimeout(() => {
           scrollToCategory(categoryId);
@@ -774,7 +818,7 @@ export function CurriculumArchive({
   }
 
   function unmarkEntry(entryId: string, timingLabel: string) {
-    if (!isSignedIn && !isGuest) {
+    if (!effectiveSignedIn && !isGuest) {
       openAccount();
       return;
     }
@@ -792,6 +836,18 @@ export function CurriculumArchive({
       try {
         await unmarkEntryAsRead(entryId);
         setCompletedEntryIds((ids) => ids.filter((id) => id !== entryId));
+        try {
+          const queryClient = getQueryClient();
+          queryClient.setQueryData<CurriculumProgressData>(["curriculum-progress"], (old) => {
+            if (!old) return old;
+            return {
+              ...old,
+              completedEntryIds: old.completedEntryIds.filter((id) => id !== entryId),
+            };
+          });
+        } catch {
+          // cache update failover
+        }
         showToast(`${timingLabel} içeriği okunmadı olarak güncellendi.`, "success", 3500);
       } catch (error) {
         showToast(error instanceof Error ? error.message : "İşlem geri alınamadı.", "error", 4000);
@@ -905,7 +961,7 @@ export function CurriculumArchive({
             onGenderChange={handleGenderChange}
             onSelectGuest={handleSelectGuestGender}
             onOpenAccount={openAccount}
-            isSignedIn={isSignedIn}
+            isSignedIn={effectiveSignedIn}
             isGuest={isGuest}
             isPending={isGenderUpdating || isPending}
           />
@@ -993,7 +1049,7 @@ export function CurriculumArchive({
                   onGenderChange={handleGenderChange}
                   onSelectGuest={handleSelectGuestGender}
                   onOpenAccount={openAccount}
-                  isSignedIn={isSignedIn}
+                  isSignedIn={effectiveSignedIn}
                   isGuest={isGuest}
                   isPending={isGenderUpdating || isPending}
                 />
@@ -1364,7 +1420,7 @@ export function CurriculumArchive({
                         onGenderChange={handleGenderChange}
                         onSelectGuest={handleSelectGuestGender}
                         onOpenAccount={openAccount}
-                        isSignedIn={isSignedIn}
+                        isSignedIn={effectiveSignedIn}
                         isGuest={isGuest}
                         isPending={isGenderUpdating || isPending}
                       />

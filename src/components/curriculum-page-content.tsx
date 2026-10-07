@@ -9,7 +9,10 @@ import {
   type BelgiumGrade,
 } from "@/lib/curriculum";
 import { isValidGrade, useCurriculumStore } from "@/store/use-curriculum-store";
-import { curriculumGradeQueryOptions } from "@/lib/queries/curriculum";
+import {
+  curriculumGradeQueryOptions,
+  curriculumProgressQueryOptions,
+} from "@/lib/queries/curriculum";
 
 import { CurriculumWeeklyView } from "./curriculum-weekly-view";
 import { CurriculumTopBar } from "./curriculum-top-bar";
@@ -48,6 +51,20 @@ export function CurriculumPageContent({
     initialData: selectedGrade === initialGrade ? [...allEntries] : undefined,
   });
 
+  const progressQuery = useQuery({
+    ...curriculumProgressQueryOptions(),
+    initialData: {
+      isSignedIn,
+      completedEntryIds: initialCompletedEntryIds,
+      gender: initialGender,
+    },
+  });
+
+  const currentCompletedEntryIds =
+    progressQuery.data?.completedEntryIds ?? initialCompletedEntryIds;
+  const currentSignedIn = progressQuery.data?.isSignedIn ?? isSignedIn;
+  const currentGender = progressQuery.data?.gender ?? initialGender;
+
   const [view, setView] = useState<CurriculumView>("sequential");
   const [period, setPeriod] = useState<CurriculumPeriod | null>(null);
   const [initialized, setInitialized] = useState(false);
@@ -61,6 +78,19 @@ export function CurriculumPageContent({
     completedIds: initialCompletedEntryIds,
   });
   const [activeGender, setActiveGender] = useState<"erkek" | "bayan">(initialGender ?? "erkek");
+  const [prevGender, setPrevGender] = useState(currentGender);
+  if (currentGender && currentGender !== prevGender) {
+    setPrevGender(currentGender);
+    setActiveGender(currentGender);
+  }
+
+  useEffect(() => {
+    context.current.completedIds = currentCompletedEntryIds;
+    if (currentGender) {
+      context.current.gender = currentGender;
+    }
+  }, [currentCompletedEntryIds, currentGender]);
+
   const onActiveContext = useCallback(
     (category: CurriculumCategoryId, gender: "erkek" | "bayan", completedIds: string[]) => {
       context.current = { category, gender, completedIds };
@@ -166,6 +196,35 @@ export function CurriculumPageContent({
     [selectedGrade, setStoreGrade]
   );
 
+  const prevSignedIn = useRef(currentSignedIn);
+  useEffect(() => {
+    if (!prevSignedIn.current && currentSignedIn && query.data) {
+      const next = initialWeeklyPeriod(
+        query.data,
+        context.current.category,
+        currentCompletedEntryIds,
+        selectedGrade,
+        activeGender
+      );
+      if (next) {
+        rememberPeriod(next);
+        if (view === "weekly") {
+          const url = writeCurriculumView(new URL(window.location.href), "weekly", next);
+          window.history.replaceState(null, "", url.toString());
+        }
+      }
+    }
+    prevSignedIn.current = currentSignedIn;
+  }, [
+    currentSignedIn,
+    query.data,
+    currentCompletedEntryIds,
+    selectedGrade,
+    activeGender,
+    view,
+    rememberPeriod,
+  ]);
+
   return (
     <>
       <CurriculumTopBar
@@ -178,9 +237,9 @@ export function CurriculumPageContent({
       />
       {initialized ? (
         <CurriculumArchive
-          initialCompletedEntryIds={initialCompletedEntryIds}
-          isSignedIn={isSignedIn}
-          initialGender={initialGender}
+          initialCompletedEntryIds={currentCompletedEntryIds}
+          isSignedIn={currentSignedIn}
+          initialGender={currentGender}
           allEntries={query.data ?? []}
           initialGrade={initialGrade}
           selectedGradeOverride={selectedGrade}

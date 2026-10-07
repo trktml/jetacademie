@@ -2,11 +2,21 @@
 
 import { ShieldCheck, Smartphone, LogIn } from "lucide-react";
 import { useGuestStore } from "@/store/use-guest-store";
+import { authClient } from "@/lib/auth-client";
 
-export function ProgressStatusNote({ isSignedIn }: { isSignedIn: boolean }) {
-  const isGuest = useGuestStore((s) => s.isGuest);
+export function ProgressStatusNote({
+  isSignedIn,
+  isGuest: isGuestProp,
+}: {
+  isSignedIn: boolean;
+  isGuest?: boolean;
+}) {
+  const storeGuest = useGuestStore((s) => s.isGuest);
+  const isGuest = isGuestProp ?? storeGuest;
+  const { data: session } = authClient.useSession();
+  const effectiveSignedIn = Boolean(session?.user ?? isSignedIn);
 
-  if (isSignedIn) {
+  if (effectiveSignedIn) {
     return (
       <div className="secure-note">
         <ShieldCheck aria-hidden="true" />

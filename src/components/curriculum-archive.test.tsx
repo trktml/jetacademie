@@ -1034,4 +1034,19 @@ Ders metni.
       'data-active="true" aria-current="true" aria-label="Hocaefendi Sohbetleri"'
     );
   });
+
+  it("should show updated completed count and unlock the subsequent lesson when initialCompletedEntryIds is provided", () => {
+    const htmlWithCompleted = renderToString(
+      <CurriculumArchive
+        initialCompletedEntryIds={["adab-i-muaseret-eylul-1"]}
+        isSignedIn={true}
+        initialCategoryId="adab-i-muaseret"
+        initialGrade={1}
+      />
+    );
+
+    expect(htmlWithCompleted).toContain("1 / 30 tamamlandı");
+    // Next week (Eylül · 2. Hafta) should now be active
+    expect(htmlWithCompleted).toContain("Eylül · 2. Hafta");
+  });
 });

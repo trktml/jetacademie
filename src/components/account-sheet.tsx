@@ -27,6 +27,7 @@ import {
 import { useUiStore } from "@/store/use-ui-store";
 import { useGuestStore } from "@/store/use-guest-store";
 import { migrateGuestProgress } from "@/app/mufredat/migrate-guest-progress";
+import { getQueryClient } from "@/lib/query-client";
 
 export function AccountSheet() {
   const router = useRouter();
@@ -113,9 +114,17 @@ export function AccountSheet() {
           // Aktarım başarısız olsa da kayıt başarılı
         }
       }
-      if (isGuest) disableGuest();
 
       await refetchSession();
+      try {
+        const queryClient = getQueryClient();
+        await queryClient.refetchQueries({ queryKey: ["curriculum-progress"] });
+      } catch {
+        // Query refetch failover
+      }
+
+      if (isGuest) disableGuest();
+
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Kayıt işlemi tamamlanamadı.");
@@ -157,9 +166,17 @@ export function AccountSheet() {
           // Aktarım başarısız olsa da giriş başarılı
         }
       }
-      if (isGuest) disableGuest();
 
       await refetchSession();
+      try {
+        const queryClient = getQueryClient();
+        await queryClient.refetchQueries({ queryKey: ["curriculum-progress"] });
+      } catch {
+        // Query refetch failover
+      }
+
+      if (isGuest) disableGuest();
+
       resetForm();
       setOpen(false);
       router.refresh();
@@ -228,6 +245,12 @@ export function AccountSheet() {
       }
 
       await refetchSession();
+      try {
+        const queryClient = getQueryClient();
+        await queryClient.refetchQueries({ queryKey: ["curriculum-progress"] });
+      } catch {
+        // Query refetch failover
+      }
       resetForm();
       setOpen(false);
       router.refresh();
@@ -242,6 +265,12 @@ export function AccountSheet() {
     setIsSubmitting(true);
     try {
       await authClient.signOut();
+      try {
+        const queryClient = getQueryClient();
+        await queryClient.refetchQueries({ queryKey: ["curriculum-progress"] });
+      } catch {
+        // Query refetch failover
+      }
       resetForm();
       setOpen(false);
       router.refresh();

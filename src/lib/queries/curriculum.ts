@@ -16,3 +16,25 @@ export function curriculumGradeQueryOptions(grade: number) {
     staleTime: 5 * 60 * 1000,
   });
 }
+
+export interface CurriculumProgressData {
+  isSignedIn: boolean;
+  completedEntryIds: string[];
+  gender: "erkek" | "bayan" | null;
+}
+
+export async function fetchCurriculumProgress(): Promise<CurriculumProgressData> {
+  const response = await fetch("/api/curriculum/progress");
+  if (!response.ok) {
+    throw new Error("İlerleme bilgisi yüklenemedi.");
+  }
+  return response.json();
+}
+
+export function curriculumProgressQueryOptions() {
+  return queryOptions({
+    queryKey: ["curriculum-progress"],
+    queryFn: fetchCurriculumProgress,
+    staleTime: 30 * 1000,
+  });
+}
