@@ -8,6 +8,8 @@ import {
   Check,
   CheckCircle2,
   Copy,
+  Eye,
+  EyeOff,
   KeyRound,
   LogIn,
   LogOut,
@@ -42,9 +44,11 @@ export function AccountSheet() {
   const [mode, setMode] = useState<"signIn" | "signUp">("signUp");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [deletePassword, setDeletePassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,9 +72,11 @@ export function AccountSheet() {
 
   function resetForm() {
     setPassword("");
+    setConfirmPassword("");
     setCurrentPassword("");
     setDeletePassword("");
     setNewPassword("");
+    setConfirmNewPassword("");
     setMessage(null);
     setSuccessMessage(null);
     setShowDeleteConfirm(false);
@@ -82,6 +88,11 @@ export function AccountSheet() {
     event.preventDefault();
     setMessage(null);
     setSuccessMessage(null);
+
+    if (password !== confirmPassword) {
+      setMessage("Şifreler eşleşmiyor.");
+      return;
+    }
 
     const result = anonymousSignUpSchema.safeParse({ password });
     if (!result.success) {
@@ -105,6 +116,7 @@ export function AccountSheet() {
 
       setAssignedUsername(data.username);
       setPassword("");
+      setConfirmPassword("");
 
       // Misafir ilerlemesini ve tercihlerini yeni hesaba aktar
       if (isGuest && (guestCompletedIds.length > 0 || guestGender)) {
@@ -192,6 +204,11 @@ export function AccountSheet() {
     setMessage(null);
     setSuccessMessage(null);
 
+    if (newPassword !== confirmNewPassword) {
+      setMessage("Yeni şifreler eşleşmiyor.");
+      return;
+    }
+
     const result = changePasswordSchema.safeParse({ currentPassword, newPassword });
     if (!result.success) {
       setMessage(result.error.issues[0]?.message ?? "Geçersiz şifre.");
@@ -214,6 +231,7 @@ export function AccountSheet() {
 
       setSuccessMessage("Şifreniz başarıyla güncellendi.");
       setNewPassword("");
+      setConfirmNewPassword("");
       setCurrentPassword("");
       setShowChangePassword(false);
       await refetchSession();
@@ -392,9 +410,15 @@ export function AccountSheet() {
                 </button>
               </div>
 
-              {message && <p className="form-message mt-3">{message}</p>}
+              {message && (
+                <p className="form-message mt-3" role="alert">
+                  {message}
+                </p>
+              )}
               {successMessage && (
-                <p className="form-message form-message--success mt-3">{successMessage}</p>
+                <p className="form-message form-message--success mt-3" role="status">
+                  {successMessage}
+                </p>
               )}
 
               <div className="account-actions-card">
@@ -418,23 +442,38 @@ export function AccountSheet() {
                     </h3>
                     <label>
                       <span>Mevcut Şifre</span>
-                      <input
-                        type="password"
+                      <PasswordInput
                         value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        onChange={setCurrentPassword}
+                        name="currentPassword"
                         autoComplete="current-password"
+                        maxLength={128}
                         required
                       />
                     </label>
                     <label>
                       <span>Yeni Şifre (en az 4 karakter)</span>
-                      <input
-                        type="password"
+                      <PasswordInput
                         value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
+                        onChange={setNewPassword}
+                        name="newPassword"
                         placeholder="En az 4 karakter"
+                        minLength={4}
                         maxLength={128}
                         autoComplete="new-password"
+                        required
+                      />
+                    </label>
+                    <label>
+                      <span>Yeni Şifreyi Tekrar Girin</span>
+                      <PasswordInput
+                        value={confirmNewPassword}
+                        onChange={setConfirmNewPassword}
+                        name="confirmNewPassword"
+                        placeholder="Yeni şifrenizi tekrar girin"
+                        maxLength={128}
+                        autoComplete="new-password"
+                        required
                       />
                     </label>
                     <div className="flex gap-2">
@@ -452,6 +491,7 @@ export function AccountSheet() {
                           setShowChangePassword(false);
                           setCurrentPassword("");
                           setNewPassword("");
+                          setConfirmNewPassword("");
                         }}
                       >
                         Vazgeç
@@ -484,11 +524,12 @@ export function AccountSheet() {
                     </p>
                     <label className="auth-form">
                       <span>Onay için şifreniz</span>
-                      <input
-                        type="password"
+                      <PasswordInput
                         value={deletePassword}
-                        onChange={(e) => setDeletePassword(e.target.value)}
+                        onChange={setDeletePassword}
+                        name="password"
                         autoComplete="current-password"
+                        maxLength={128}
                         required
                       />
                     </label>
@@ -548,7 +589,11 @@ export function AccountSheet() {
                 </button>
               </div>
 
-              {message && <p className="form-message mt-3">{message}</p>}
+              {message && (
+                <p className="form-message mt-3" role="alert">
+                  {message}
+                </p>
+              )}
 
               <div className="account-actions-card">
                 {!showGuestLogoutConfirm ? (
@@ -626,22 +671,41 @@ export function AccountSheet() {
                   <div className="auth-info-card">
                     <ShieldCheck aria-hidden="true" />
                     <span>
-                      <strong>Tamamen Anonim:</strong> Ad, soyad veya e-posta istenmez. Sadece şifre
-                      belirlersiniz, kullanıcı adınız otomatik atanır.
+                      <strong>Tamamen Anonim:</strong> Ad, soyad veya e-posta istenmez. Kullanıcı
+                      adınız otomatik atanır. E-posta olmadığı için şifre sıfırlama yapılamaz;
+                      bilgilerinizi güvenli bir yerde saklayın.
                     </span>
                   </div>
                   <label>
                     <span>Şifreniz (en az 4 karakter)</span>
-                    <input
-                      type="password"
+                    <PasswordInput
                       value={password}
-                      onChange={(event) => setPassword(event.target.value)}
+                      onChange={setPassword}
+                      name="password"
                       placeholder="En az 4 karakter"
+                      minLength={4}
                       maxLength={128}
+                      required
                       autoComplete="new-password"
                     />
                   </label>
-                  {message && <p className="form-message">{message}</p>}
+                  <label>
+                    <span>Şifrenizi Tekrar Girin</span>
+                    <PasswordInput
+                      value={confirmPassword}
+                      onChange={setConfirmPassword}
+                      name="confirmPassword"
+                      placeholder="Şifrenizi tekrar girin"
+                      maxLength={128}
+                      required
+                      autoComplete="new-password"
+                    />
+                  </label>
+                  {message && (
+                    <p className="form-message" role="alert">
+                      {message}
+                    </p>
+                  )}
                   <button className="primary-button" type="submit" disabled={isSubmitting}>
                     {isSubmitting ? "Kaydediliyor…" : "Kayıt Ol ve Kullanıcı Adı Al"}
                   </button>
@@ -652,6 +716,7 @@ export function AccountSheet() {
                     <span>Kullanıcı Adı</span>
                     <input
                       type="text"
+                      name="username"
                       value={username}
                       onChange={(event) => setUsername(event.target.value)}
                       placeholder="ör. user1"
@@ -661,15 +726,21 @@ export function AccountSheet() {
                   </label>
                   <label>
                     <span>Şifre</span>
-                    <input
-                      type="password"
+                    <PasswordInput
                       value={password}
-                      onChange={(event) => setPassword(event.target.value)}
+                      onChange={setPassword}
+                      name="password"
                       placeholder="Şifreniz"
                       autoComplete="current-password"
+                      maxLength={128}
+                      required
                     />
                   </label>
-                  {message && <p className="form-message">{message}</p>}
+                  {message && (
+                    <p className="form-message" role="alert">
+                      {message}
+                    </p>
+                  )}
                   <button className="primary-button" type="submit" disabled={isSubmitting}>
                     {isSubmitting ? "Giriş yapılıyor…" : "Giriş Yap"}
                   </button>
@@ -699,5 +770,55 @@ export function AccountSheet() {
         </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>
+  );
+}
+
+type PasswordInputProps = {
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete: "current-password" | "new-password";
+  name: string;
+  placeholder?: string;
+  minLength?: number;
+  maxLength?: number;
+  required?: boolean;
+};
+
+function PasswordInput({
+  value,
+  onChange,
+  name,
+  autoComplete,
+  placeholder,
+  minLength,
+  maxLength,
+  required,
+}: PasswordInputProps) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div className="password-input">
+      <input
+        type={isVisible ? "text" : "password"}
+        name={name}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        autoComplete={autoComplete}
+        placeholder={placeholder}
+        minLength={minLength}
+        maxLength={maxLength}
+        required={required}
+      />
+      <button
+        type="button"
+        className="password-input__toggle"
+        onClick={() => setIsVisible((visible) => !visible)}
+        aria-label={isVisible ? "Şifreyi gizle" : "Şifreyi göster"}
+        aria-pressed={isVisible}
+        title={isVisible ? "Şifreyi gizle" : "Şifreyi göster"}
+      >
+        {isVisible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+      </button>
+    </div>
   );
 }

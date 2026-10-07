@@ -4548,6 +4548,8 @@ body:has(.landing-page),
   display: flex;
   max-height: 90dvh;
   flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0.8rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
   border: 1px solid var(--line);
   border-bottom: 0;
@@ -4692,6 +4694,46 @@ body:has(.landing-page),
   color: var(--ink);
   font-size: 1rem;
   outline: none;
+}
+
+.password-input {
+  position: relative;
+}
+
+.auth-form .password-input input {
+  width: 100%;
+  padding-right: 3.25rem;
+}
+
+.password-input__toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.2rem;
+  display: grid;
+  width: 44px;
+  min-height: 44px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.password-input__toggle:hover {
+  background: var(--surface-muted);
+  color: var(--ink);
+}
+
+.password-input__toggle:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+.password-input__toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .auth-form input:focus {
