@@ -112,6 +112,14 @@ bun run curriculum export --week 3
 
 # Delete a week's two content categories (adab, ilmihal, and esma are never deleted):
 bun run curriculum delete --week 3
+
+# Create a full local snapshot backup (weekly packages, database tables JSON, SQL restore script, Markdown):
+bun run curriculum backup
+
+# Preview or restore from local backup (--week N for a single week or omit for all):
+bun run curriculum restore --dry-run
+bun run curriculum restore --week 1
+bun run curriculum restore
 ```
 
 The application runs by default at `http://localhost:3000`. Refer to `.env.example` for environment variables.

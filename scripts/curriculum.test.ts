@@ -53,4 +53,25 @@ describe("curriculum CLI parseArgs", () => {
     expect(options.week).toBe("4");
     expect(options.out).toBe("./my-exports");
   });
+
+  it("parses backup command with out dir", () => {
+    const { command, options } = parseArgs(["backup", "--out", "./my-backups"]);
+    expect(command).toBe("backup");
+    expect(options.out).toBe("./my-backups");
+  });
+
+  it("parses restore command with options", () => {
+    const { command, options } = parseArgs([
+      "restore",
+      "--dir",
+      "./backups/test",
+      "--week",
+      "2",
+      "--dry-run",
+    ]);
+    expect(command).toBe("restore");
+    expect(options.dir).toBe("./backups/test");
+    expect(options.week).toBe("2");
+    expect(options["dry-run"]).toBe(true);
+  });
 });

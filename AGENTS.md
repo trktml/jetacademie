@@ -150,6 +150,8 @@ The yearly Markdown plans are authoritative for the lesson topic, question, outc
 | Curriculum Publish     | `bun run curriculum publish --week N`    |
 | Curriculum Export      | `bun run curriculum export --week N`     |
 | Curriculum Delete Week | `bun run curriculum delete --week N`     |
+| Curriculum Backup      | `bun run curriculum backup`              |
+| Curriculum Restore     | `bun run curriculum restore`             |
 
 ---
 

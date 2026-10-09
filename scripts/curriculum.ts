@@ -15,6 +15,7 @@ import {
   WEEKLY_CONTENT_CATEGORIES,
   type WeeklyPackage,
 } from "../src/lib/validations/curriculum-entry";
+import { createCurriculumBackup, restoreCurriculumBackup } from "./curriculum-backup";
 
 function printHelp() {
   console.log(`
@@ -29,6 +30,8 @@ KOMUTLAR:
   publish --week <N>            Belirtilen haftanın taslak kayıtlarını yayına alır (isDraft = 0)
   export --week <N> [seçenekler] Belirtilen haftanın kayıtlarını Markdown olarak dışa aktarır
   delete --week <N>             Belirtilen haftanın içerik kayıtlarını siler (adab, ilmihal, esma hariç)
+  backup [seçenekler]           Tüm haftalık içerikleri, snapshot JSON ve SQL olarak yerele yedekler
+  restore [seçenekler]          Yedekten veritabanına geri yükler
 
 SEÇENEKLER (save):
   --week, -w <1-36>             Hafta numarası (zorunlu)
@@ -39,8 +42,20 @@ SEÇENEKLER (export):
   --week, -w <1-36>             Hafta numarası
   --out, -o <dizin>             Çıktı dizini (varsayılan: mufredat-docs/export/hafta-XX)
 
+SEÇENEKLER (backup):
+  --out, -o <dizin>             Özel çıktı dizini (varsayılan: backups/curriculum-backup-<tarih>)
+
+SEÇENEKLER (restore):
+  --dir, -d <dizin>             Yedek dizini (varsayılan: son alınan yedek)
+  --from, -f <dizin>            --dir ile aynı
+  --week, -w <1-36>             Sadece belirtilen haftayı geri yükler
+  --dry-run                     Veritabanına yazmadan simüle eder
+
 ÖRNEKLER:
   bun scripts/curriculum.ts list
+  bun scripts/curriculum.ts backup
+  bun scripts/curriculum.ts restore --dry-run
+  bun scripts/curriculum.ts restore --week 1
   bun scripts/curriculum.ts save --week 3 --file hafta-3.json
   bun scripts/curriculum.ts publish --week 3
   bun scripts/curriculum.ts export --week 3
@@ -351,6 +366,29 @@ async function handleDelete(options: Record<string, string | boolean>) {
   );
 }
 
+async function handleBackup(options: Record<string, string | boolean>) {
+  const outDir = (options.out as string) || (options.o as string);
+  await createCurriculumBackup({ outDir });
+}
+
+async function handleRestore(options: Record<string, string | boolean>) {
+  const backupDir =
+    (options.dir as string) ||
+    (options.d as string) ||
+    (options.from as string) ||
+    (options.f as string);
+  const weekVal = options.week || options.w;
+  let weekNumber: number | undefined;
+  if (weekVal && typeof weekVal === "string") {
+    weekNumber = Number(weekVal);
+    if (!Number.isInteger(weekNumber) || weekNumber < 1 || weekNumber > 36) {
+      throw new Error(`Geçersiz hafta numarası: ${weekVal}. 1 ile 36 arasında olmalıdır.`);
+    }
+  }
+  const dryRun = Boolean(options.dryRun || options["dry-run"]);
+  await restoreCurriculumBackup({ backupDir, weekNumber, dryRun });
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const { command, options } = parseArgs(args);
@@ -376,6 +414,12 @@ async function main() {
         break;
       case "delete":
         await handleDelete(options);
+        break;
+      case "backup":
+        await handleBackup(options);
+        break;
+      case "restore":
+        await handleRestore(options);
         break;
       default:
         console.error(`Bilinmeyen komut: '${command}'`);
