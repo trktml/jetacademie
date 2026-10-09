@@ -3,7 +3,12 @@ import { join, resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { format, resolveConfig } from "prettier";
 import { getPool, isPostgres, query } from "../src/lib/db";
-import { getCurriculumEntriesFromDb, type CurriculumEntryRow } from "../src/lib/curriculum-db";
+import {
+  ensureCurriculumEntriesTable,
+  getCurriculumEntriesFromDb,
+  type CurriculumEntryRow,
+} from "../src/lib/curriculum-db";
+import { ensureEditorSchema } from "../src/lib/editor/schema";
 import {
   weekNumberToSlot,
   WEEKLY_CONTENT_CATEGORIES,
@@ -57,7 +62,8 @@ function escapeSqlString(val: unknown): string {
 function escapeSqlNumber(val: unknown): string {
   if (val === null || val === undefined) return "NULL";
   if (typeof val === "boolean") return val ? "1" : "0";
-  return String(val);
+  const num = Number(val);
+  return Number.isFinite(num) ? String(num) : "NULL";
 }
 
 export async function createCurriculumBackup(options?: {
@@ -79,14 +85,18 @@ export async function createCurriculumBackup(options?: {
   console.log(`📦 Müfredat yedeği başlatılıyor...`);
   console.log(`📁 Hedef dizin: ${targetDir}`);
 
+  await ensureCurriculumEntriesTable();
+  await ensureEditorSchema();
+
   // 1. Fetch tables
   console.log(`🔍 Veritabanı tabloları sorgulanıyor...`);
 
+  const categoryPlaceholders = WEEKLY_CONTENT_CATEGORIES.map((_, i) => `$${i + 1}`).join(", ");
   const weeklyEntries = await query<CurriculumEntryRow>(
     `SELECT * FROM "curriculum_entries"
-     WHERE "categoryId" = ANY($1::text[])
+     WHERE "categoryId" IN (${categoryPlaceholders})
      ORDER BY "month", "week", "grade", "categoryId"`,
-    [[...WEEKLY_CONTENT_CATEGORIES]]
+    [...WEEKLY_CONTENT_CATEGORIES]
   );
 
   const allEntries = await query<CurriculumEntryRow>(
@@ -384,12 +394,13 @@ psql "$DATABASE_URL" -f "${join(targetDir, "database/restore.sql")}"
   try {
     await rm(latestLink, { recursive: true, force: true });
     await mkdir(baseBackupsDir, { recursive: true });
-    // Write a pointer JSON or link
-    await writeFile(
-      join(baseBackupsDir, "curriculum-backup-latest.json"),
-      JSON.stringify({ latestDir: targetDir, timestamp }, null, 2),
-      "utf-8"
-    );
+    if (!options?.outDir || targetDir.startsWith(baseBackupsDir)) {
+      await writeFile(
+        join(baseBackupsDir, "curriculum-backup-latest.json"),
+        JSON.stringify({ latestDir: targetDir, timestamp }, null, 2),
+        "utf-8"
+      );
+    }
   } catch {
     // Ignore symlink/pointer errors if file system does not support
   }
@@ -415,7 +426,12 @@ export async function restoreCurriculumBackup(options: {
     if (await pointerFile.exists()) {
       try {
         const ptr = await pointerFile.json();
-        if (ptr?.latestDir) targetDir = ptr.latestDir;
+        if (ptr?.latestDir) {
+          const testManifest = Bun.file(join(ptr.latestDir, "manifest.json"));
+          if (await testManifest.exists()) {
+            targetDir = ptr.latestDir;
+          }
+        }
       } catch {
         // ignore
       }
@@ -423,14 +439,19 @@ export async function restoreCurriculumBackup(options: {
   }
 
   if (!targetDir) {
-    // Find latest backup folder by timestamp
+    // Find latest backup folder by timestamp that has a valid manifest
     const entries = await readdir(baseBackupsDir).catch(() => [] as string[]);
     const backupDirs = entries
       .filter((name) => name.startsWith("curriculum-backup-20"))
       .sort()
       .reverse();
-    if (backupDirs.length > 0) {
-      targetDir = join(baseBackupsDir, backupDirs[0]);
+    for (const dirName of backupDirs) {
+      const candidateDir = join(baseBackupsDir, dirName);
+      const manifestFile = Bun.file(join(candidateDir, "manifest.json"));
+      if (await manifestFile.exists()) {
+        targetDir = candidateDir;
+        break;
+      }
     }
   }
 
@@ -502,7 +523,7 @@ export async function restoreCurriculumBackup(options: {
   totalEditorToRestore = editorToRestore.length;
 
   console.log(`📋 Planlanan geri yükleme özeti:`);
-  console.log(` - Hedef haftalar: ${targetWeeks.map((w) => `Hafta ${w}`).join(", ")}`);
+  console.log(` - Hedef haftalar: ${targetWeeks.map((w) => `Hafta ${w}`).join(", ") || "Yok"}`);
   console.log(` - curriculum_entries: ${totalEntriesToRestore} kayıt`);
   console.log(` - curriculum_editor_content: ${totalEditorToRestore} kayıt`);
 
@@ -515,6 +536,9 @@ export async function restoreCurriculumBackup(options: {
     };
   }
 
+  await ensureCurriculumEntriesTable();
+  await ensureEditorSchema();
+
   // Execute restore in database transaction
   const pool = getPool();
   if (isPostgres && pool) {
@@ -523,19 +547,23 @@ export async function restoreCurriculumBackup(options: {
       await client.query("BEGIN");
 
       // Temporarily bypass exclusion guard
+      const catPlaceholders = WEEKLY_CONTENT_CATEGORIES.map((_, i) => `$${i + 1}`).join(", ");
       await client.query(
-        'DELETE FROM "curriculum_seed_exclusions" WHERE "categoryId" = ANY($1::text[])',
-        [[...WEEKLY_CONTENT_CATEGORIES]]
+        `DELETE FROM "curriculum_seed_exclusions" WHERE "categoryId" IN (${catPlaceholders})`,
+        [...WEEKLY_CONTENT_CATEGORIES]
       );
 
       for (const w of targetWeeks) {
         const slot = weekNumberToSlot(w);
 
         // Delete existing weekly records for this week
+        const catPlaceholdersOffset = WEEKLY_CONTENT_CATEGORIES.map((_, i) => `$${i + 3}`).join(
+          ", "
+        );
         await client.query(
           `DELETE FROM "curriculum_entries"
-           WHERE "month" = $1 AND "week" = $2 AND "categoryId" = ANY($3::text[])`,
-          [slot.month, slot.week, [...WEEKLY_CONTENT_CATEGORIES]]
+           WHERE "month" = $1 AND "week" = $2 AND "categoryId" IN (${catPlaceholdersOffset})`,
+          [slot.month, slot.week, ...WEEKLY_CONTENT_CATEGORIES]
         );
 
         // Delete editor overrides for this week slot
