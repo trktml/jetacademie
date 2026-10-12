@@ -232,6 +232,13 @@ async function handleSave(options: Record<string, string | boolean>) {
         );
       }
 
+      // Clear any stale editor overrides for these entries so the newly saved entries take effect
+      const entryIds = pkg.entries.map((e) => e.id);
+      await client.query(
+        'DELETE FROM "curriculum_editor_content" WHERE "entryId" = ANY($1::text[])',
+        [entryIds]
+      );
+
       // Restore exclusions
       for (const row of exclusions.rows) {
         await client.query(
