@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useId } from "react";
-import { ChevronDown, ChevronUp, Heart, BookOpen, Search, X } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ChevronDown, ChevronUp, Heart, BookOpen, Search, X } from "lucide-react";
 import type { PlanUnit, PlanWeek } from "@/lib/data/curriculum-plans";
+import { weeklyCurriculumHref } from "@/lib/curriculum-view";
 
 interface TargetUnitsAccordionProps {
   units: readonly PlanUnit[];
+  grade: number;
 }
 
 export const SCHOOL_MONTHS: readonly string[] = [
@@ -19,6 +22,18 @@ export const SCHOOL_MONTHS: readonly string[] = [
   "Nisan",
   "Mayıs",
 ];
+
+export const SCHOOL_MONTH_NUMBERS: readonly number[] = [9, 10, 11, 12, 1, 2, 3, 4, 5];
+
+export function weekCurriculumPeriod(
+  unitNumber: number,
+  weekNumber: number
+): { month: number; week: number } {
+  return {
+    month: SCHOOL_MONTH_NUMBERS[unitNumber - 1] ?? 9,
+    week: ((weekNumber - 1) % 4) + 1,
+  };
+}
 
 export function getUnitMonth(unitNumber: number): string {
   return SCHOOL_MONTHS[unitNumber - 1] ?? `${unitNumber}. Ay`;
@@ -39,7 +54,7 @@ export function formatUnitTitle(title: string): string {
     .join(" ");
 }
 
-export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
+export function TargetUnitsAccordion({ units, grade }: TargetUnitsAccordionProps) {
   // First unit open by default
   const [openUnits, setOpenUnits] = useState<Record<number, boolean>>({ 1: true });
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
@@ -260,7 +275,12 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
                 >
                   <div className="target-unit-card__weeks-grid">
                     {unit.weeks.map((week) => (
-                      <WeekCard key={week.weekNumber} week={week} month={month} />
+                      <WeekCard
+                        key={week.weekNumber}
+                        week={week}
+                        unitNumber={unit.unitNumber}
+                        grade={grade}
+                      />
                     ))}
                   </div>
                 </div>
@@ -273,11 +293,26 @@ export function TargetUnitsAccordion({ units }: TargetUnitsAccordionProps) {
   );
 }
 
-function WeekCard({ week, month }: { week: PlanWeek; month: string }) {
-  const weekInMonth = ((week.weekNumber - 1) % 4) + 1;
+function WeekCard({
+  week,
+  unitNumber,
+  grade,
+}: {
+  week: PlanWeek;
+  unitNumber: number;
+  grade: number;
+}) {
+  const month = getUnitMonth(unitNumber);
+  const { month: monthNumber, week: weekInMonth } = weekCurriculumPeriod(
+    unitNumber,
+    week.weekNumber
+  );
+  const href = weeklyCurriculumHref(grade, { month: monthNumber, week: weekInMonth });
 
   return (
-    <article
+    <Link
+      href={href}
+      aria-label={`${week.weekNumber}. Hafta: ${week.topic} — müfredatta aç`}
       className={`target-week-card ${
         week.isFamilyRespectHighlight ? "target-week-card--family" : ""
       }`}
@@ -309,6 +344,12 @@ function WeekCard({ week, month }: { week: PlanWeek; month: string }) {
           <span className="target-week-card__source">{week.primarySource}</span>
         </div>
       )}
-    </article>
+
+      {/* Curriculum Link Hint */}
+      <span className="target-week-card__open">
+        <span>Müfredatta aç</span>
+        <ArrowRight className="h-3 w-3" aria-hidden="true" />
+      </span>
+    </Link>
   );
 }

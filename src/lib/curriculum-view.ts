@@ -147,3 +147,11 @@ export function writeCurriculumView(
   }
   return url;
 }
+export function weeklyCurriculumHref(
+  grade: number,
+  period: { month: number; week: number }
+): string {
+  const url = new URL(`/mufredat?sinif=${grade}`, "https://jetacademie.local");
+  writeCurriculumView(url, "weekly", period);
+  return `${url.pathname}?${url.searchParams.toString()}`;
+}

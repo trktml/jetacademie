@@ -59,7 +59,7 @@ export function TargetsView({ initialGrade = 1 }: TargetsViewProps) {
         <TargetOutcomeCard plan={currentPlan} />
 
         {/* 36 Haftalık Müfredat Akışı */}
-        <TargetUnitsAccordion units={currentPlan.units} />
+        <TargetUnitsAccordion units={currentPlan.units} grade={currentPlan.grade} />
 
         {/* Minimalist Curriculum Link Bridge */}
         <div className="targets-curriculum-bridge">

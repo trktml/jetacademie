@@ -10,6 +10,7 @@ import {
   readCurriculumView,
   samePeriod,
   visibleCurriculumEntries,
+  weeklyCurriculumHref,
   weeklyGroups,
   writeCurriculumView,
 } from "./curriculum-view";
@@ -116,6 +117,14 @@ describe("weekly curriculum browsing", () => {
     expect(url.searchParams.has("ekstra")).toBe(false);
     writeCurriculumView(url, "sequential", null);
     expect(readCurriculumView(url.searchParams)).toEqual({ view: "sequential", period: null });
+  });
+  it("builds shareable weekly links for a grade and period", () => {
+    expect(weeklyCurriculumHref(1, { month: 9, week: 4 })).toBe(
+      "/mufredat?sinif=1&gorunum=haftalik&ay=9&hafta=4"
+    );
+    expect(weeklyCurriculumHref(3, { month: 1, week: 2 })).toBe(
+      "/mufredat?sinif=3&gorunum=haftalik&ay=1&hafta=2"
+    );
   });
   it("rejects invalid periods and gives explicit history its sequential view", () => {
     for (const value of [

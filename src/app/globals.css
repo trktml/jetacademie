@@ -4396,6 +4396,9 @@ body:has(.landing-page),
   border-radius: var(--radius-sm);
   background: var(--surface);
   border: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
@@ -4405,6 +4408,11 @@ body:has(.landing-page),
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
   border-color: var(--line-strong);
+}
+
+.target-week-card:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
 }
 
 .target-week-card--family {
@@ -4480,6 +4488,22 @@ body:has(.landing-page),
   color: var(--ink-faint);
   line-height: 1.35;
   overflow-wrap: anywhere;
+}
+
+.target-week-card__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: auto;
+  padding-top: 0.15rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.target-week-card:hover .target-week-card__open {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* --- Curriculum Bridge Banner --- */

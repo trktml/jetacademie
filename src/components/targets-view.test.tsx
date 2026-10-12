@@ -4,7 +4,7 @@ import { renderToString } from "react-dom/server";
 import { getAllGradePlans, getGradePlan } from "@/lib/data/curriculum-plans";
 import { TargetsProgressionLadder } from "./targets-progression-ladder";
 import { TargetOutcomeCard } from "./target-outcome-card";
-import { TargetUnitsAccordion } from "./target-units-accordion";
+import { TargetUnitsAccordion, weekCurriculumPeriod } from "./target-units-accordion";
 import { TargetsView } from "./targets-view";
 
 describe("Targets UI Components (SSR & Rendering)", () => {
@@ -48,7 +48,9 @@ describe("Targets UI Components (SSR & Rendering)", () => {
 
   describe("TargetUnitsAccordion", () => {
     it("renders all 9 units, months (Eylül to Mayıs), and first unit open by default", () => {
-      const html = renderToString(<TargetUnitsAccordion units={planM1.units} />);
+      const html = renderToString(
+        <TargetUnitsAccordion units={planM1.units} grade={planM1.grade} />
+      );
 
       expect(html).toContain("36 Haftalık Müfredat Planı");
       expect(html).toContain("Eylül");
@@ -72,6 +74,25 @@ describe("Targets UI Components (SSR & Rendering)", () => {
       expect(html).toContain('data-1p-ignore="true"');
       expect(html).toContain('data-bwignore="true"');
       expect(html).toContain('autoComplete="off"');
+    });
+
+    it("links each week card to its weekly curriculum period", () => {
+      const html = renderToString(
+        <TargetUnitsAccordion units={planM4.units} grade={planM4.grade} />
+      ).replaceAll("&amp;", "&");
+
+      // Unit 1 is open by default: weeks 1-4 map to Eylül 1-4.
+      expect(html).toContain('href="/mufredat?sinif=4&gorunum=haftalik&ay=9&hafta=1"');
+      expect(html).toContain('href="/mufredat?sinif=4&gorunum=haftalik&ay=9&hafta=4"');
+      expect(html).toContain("Müfredatta aç");
+    });
+
+    it("maps plan weeks to curriculum months (Eylül – Mayıs)", () => {
+      expect(weekCurriculumPeriod(1, 1)).toEqual({ month: 9, week: 1 });
+      expect(weekCurriculumPeriod(1, 4)).toEqual({ month: 9, week: 4 });
+      expect(weekCurriculumPeriod(2, 5)).toEqual({ month: 10, week: 1 });
+      expect(weekCurriculumPeriod(5, 17)).toEqual({ month: 1, week: 1 });
+      expect(weekCurriculumPeriod(9, 36)).toEqual({ month: 5, week: 4 });
     });
   });
 
