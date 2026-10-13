@@ -1,15 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import {
-  Calendar,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  GraduationCap,
-  ListFilter,
-  Monitor,
-} from "lucide-react";
+import { Calendar, Check, ChevronDown, ChevronUp, GraduationCap, Monitor } from "lucide-react";
 import { BELGIUM_GRADES, GRADE_LABELS, type BelgiumGrade } from "@/lib/curriculum";
 import {
   academicMonthOrder,
@@ -117,7 +109,7 @@ export function CurriculumTopBar({
       ref={containerRef}
       data-open={isGradeOpen || (view === "weekly" && isPeriodOpen)}
       className={`curriculum-topbar-wrapper relative mx-auto mb-6 w-full ${
-        view === "weekly" ? "max-w-4xl" : "max-w-fit"
+        view === "weekly" ? "max-w-4xl md:max-w-fit" : "max-w-fit"
       } px-2 sm:px-4 ${isGradeOpen || (view === "weekly" && isPeriodOpen) ? "z-60" : "z-25"}`}
     >
       {/* Backdrop overlay on mobile for easier dismiss */}
@@ -259,7 +251,7 @@ export function CurriculumTopBar({
         {/* Middle Section: Period Picker Button (Only in Weekly view) */}
         {view === "weekly" && (
           <>
-            <div className="relative flex-1">
+            <div className="relative flex-1 md:flex-none">
               <button
                 ref={periodButtonRef}
                 type="button"
@@ -297,28 +289,21 @@ export function CurriculumTopBar({
                 )}
               </button>
 
-              {/* 2-Column Period Popover Card */}
+              {/* Responsive month and week picker */}
               {isPeriodOpen && (
                 <div
                   id={periodMenuId}
                   role="dialog"
                   aria-label="Ay ve Hafta Seçimi"
-                  className="curriculum-period-popover absolute top-[calc(100%+0.65rem)] left-1/2 z-60 w-[min(94vw,700px)] -translate-x-1/2 overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_20px_50px_rgba(0,0,0,0.18)] sm:p-6 dark:border-slate-800 dark:bg-slate-900"
+                  className="curriculum-period-popover absolute top-[calc(100%+0.65rem)] left-1/2 z-60 w-[min(94vw,700px)] -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-3 shadow-[0_20px_50px_rgba(0,0,0,0.18)] md:w-[660px] md:p-4 dark:border-slate-800 dark:bg-slate-900"
                 >
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-12 sm:gap-5">
-                    {/* Left Column: Ay Seçin (Month Grid) */}
-                    <div className="sm:col-span-7">
-                      {/* Month Header */}
-                      <div className="mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-                        <Calendar
-                          className="h-5 w-5 text-emerald-600 dark:text-emerald-400"
-                          aria-hidden="true"
-                        />
-                        <h3 className="text-base font-bold">Ay Seçin</h3>
-                      </div>
+                  <div className="flex flex-col gap-3 md:gap-4">
+                    {/* Months in academic order: Eylül -> Ağustos */}
+                    <div>
+                      <h3 className="sr-only">Ay Seçin</h3>
 
-                      {/* 3x4 Month Grid (Academic Order: Eylül -> Ağustos) */}
-                      <div className="grid grid-cols-3 gap-2">
+                      {/* Two compact month rows on mobile; one row on desktop */}
+                      <div className="grid grid-cols-4 gap-1 min-[360px]:grid-cols-6 md:flex">
                         {academicMonthOrder.map((monthNum) => {
                           const monthName = curriculumMonthNames[monthNum - 1];
                           const isSelected = browsingMonth === monthNum;
@@ -327,16 +312,21 @@ export function CurriculumTopBar({
                             <button
                               key={monthName}
                               type="button"
+                              aria-label={monthName}
+                              aria-pressed={isSelected}
                               onClick={() => handleSelectMonth(monthNum)}
-                              className={`flex min-h-[44px] items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-all ${
+                              className={`flex min-h-[44px] min-w-[44px] items-center justify-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium transition-all md:flex-1 md:gap-1 md:px-2 ${
                                 isSelected
                                   ? "bg-emerald-100 font-semibold text-emerald-900 ring-1 ring-emerald-500/40 dark:bg-emerald-950 dark:text-emerald-300"
                                   : "bg-slate-100/80 text-slate-700 hover:bg-slate-200/70 hover:text-slate-900 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:bg-slate-700"
                               }`}
                             >
-                              <span className="truncate">{monthName}</span>
+                              <span>{monthName.slice(0, 3)}</span>
                               {isSelected && (
-                                <Check className="ml-1 h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-400" />
+                                <Check
+                                  className="h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-400"
+                                  aria-hidden="true"
+                                />
                               )}
                             </button>
                           );
@@ -344,43 +334,34 @@ export function CurriculumTopBar({
                       </div>
                     </div>
 
-                    {/* Vertical Divider (Desktop only) */}
-                    <div
-                      className="hidden h-full w-px bg-slate-100 sm:col-span-1 sm:block dark:bg-slate-800"
-                      aria-hidden="true"
-                    />
+                    {/* Compact week grid, separated from the months */}
+                    <div className="border-t border-slate-100 pt-3 md:pt-4 dark:border-slate-800">
+                      <h3 className="sr-only">Hafta Seçin</h3>
 
-                    {/* Right Column: Hafta Seçin (Week List) */}
-                    <div className="border-t border-slate-100 pt-4 sm:col-span-4 sm:border-t-0 sm:pt-0 dark:border-slate-800">
-                      {/* Week Header */}
-                      <div className="mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-                        <ListFilter
-                          className="h-5 w-5 text-emerald-600 dark:text-emerald-400"
-                          aria-hidden="true"
-                        />
-                        <h3 className="text-base font-bold">Hafta Seçin</h3>
-                      </div>
-
-                      {/* Week Cards List */}
-                      <div className="flex flex-col gap-2">
+                      <div className="grid grid-cols-2 gap-2 md:flex">
                         {[1, 2, 3, 4].map((weekNum) => {
                           const isSelected =
                             period?.month === browsingMonth && period?.week === weekNum;
                           const dateRange = getWeekDateRange(browsingMonth, weekNum);
+                          const shortDateRange = dateRange.replace(
+                            curriculumMonthNames[browsingMonth - 1],
+                            curriculumMonthNames[browsingMonth - 1].slice(0, 3)
+                          );
 
                           return (
                             <button
                               key={weekNum}
                               type="button"
+                              aria-pressed={isSelected}
                               onClick={() => handleSelectWeek(weekNum)}
-                              className={`group flex min-h-[46px] w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-xs transition-all ${
+                              className={`group flex min-h-[44px] w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs transition-all md:min-h-[44px] md:w-auto md:flex-1 md:justify-center md:gap-1 md:px-1.5 md:py-2 ${
                                 isSelected
                                   ? "bg-emerald-100/90 font-semibold text-emerald-950 ring-1 ring-emerald-500/40 dark:bg-emerald-950/70 dark:text-emerald-200"
                                   : "bg-slate-100/70 text-slate-700 hover:bg-slate-200/70 hover:text-slate-900 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:bg-slate-700"
                               }`}
                             >
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                                <span className="font-bold text-slate-900 dark:text-white">
+                              <div className="flex flex-col md:shrink-0 md:flex-row md:items-center md:gap-1">
+                                <span className="font-bold whitespace-nowrap text-slate-900 dark:text-white">
                                   {weekNum}. Hafta
                                 </span>
                                 <span
@@ -390,11 +371,19 @@ export function CurriculumTopBar({
                                       : "text-slate-500 dark:text-slate-400"
                                   }`}
                                 >
-                                  {dateRange}
+                                  <span className="whitespace-nowrap md:hidden">
+                                    {shortDateRange}
+                                  </span>
+                                  <span className="hidden whitespace-nowrap md:inline">
+                                    ({shortDateRange})
+                                  </span>
                                 </span>
                               </div>
                               {isSelected && (
-                                <Check className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" />
+                                <Check
+                                  className="h-4 w-4 shrink-0 text-emerald-700 md:order-first dark:text-emerald-400"
+                                  aria-hidden="true"
+                                />
                               )}
                             </button>
                           );
