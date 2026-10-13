@@ -17,6 +17,7 @@ import {
 } from "@/lib/data/ilmihal-curriculum";
 import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
 import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
+import { getTefekkurEntriesForGrade } from "@/lib/data/tefekkur-curriculum";
 import { getEditorOverrideById, mergeEditorContent } from "@/lib/editor/content";
 import { WEEKLY_CONTENT_CATEGORIES, weekNumberToSlot } from "@/lib/validations/curriculum-entry";
 import { curriculumVocabularyIssues } from "@/lib/curriculum-vocabulary";
@@ -626,6 +627,38 @@ export async function syncKonuCurriculumIfOutdated(): Promise<void> {
   }
 }
 
+export async function syncTefekkurCurriculumIfOutdated(): Promise<void> {
+  await ensureCurriculumEntriesTable();
+  await syncCategoryIfOutdated("tefekkur", 36, () => {
+    const now = new Date().toISOString();
+    const batch: CurriculumEntryRow[] = [];
+    for (let grade = 1; grade <= 6; grade++) {
+      const entries = getTefekkurEntriesForGrade(grade);
+      for (const entry of entries) {
+        batch.push({
+          id: entry.id,
+          grade,
+          categoryId: "tefekkur",
+          gender: null,
+          month: entry.month,
+          week: entry.week,
+          year: entry.year,
+          isExtra: entry.isExtra ? 1 : 0,
+          extraOrder: entry.extraOrder ?? null,
+          title: entry.title,
+          body: entry.body ?? null,
+          resourceUrl: entry.resourceUrl ?? null,
+          pdfUrl: null,
+          pageCount: null,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+    }
+    return batch;
+  });
+}
+
 let seedPromise: Promise<void> | null = null;
 
 export function seedCurriculumDatabase(force = false): Promise<void> {
@@ -655,6 +688,7 @@ async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
     await syncEsmaCurriculumIfOutdated();
     await syncHocaefendiCurriculumIfOutdated();
     await syncKonuCurriculumIfOutdated();
+    await syncTefekkurCurriculumIfOutdated();
     return;
   }
 
@@ -788,6 +822,28 @@ async function seedCurriculumDatabaseOnce(force: boolean): Promise<void> {
         updatedAt: now,
       });
     }
+
+    const gradeTefekkurEntries = getTefekkurEntriesForGrade(grade);
+    for (const entry of gradeTefekkurEntries) {
+      seedBatch.push({
+        id: entry.id,
+        grade,
+        categoryId: "tefekkur",
+        gender: null,
+        month: entry.month,
+        week: entry.week,
+        year: entry.year,
+        isExtra: entry.isExtra ? 1 : 0,
+        extraOrder: entry.extraOrder ?? null,
+        title: entry.title,
+        body: entry.body ?? null,
+        resourceUrl: entry.resourceUrl ?? null,
+        pdfUrl: null,
+        pageCount: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
   }
 
   // 2e. İlmihal for all 6 grades and both genders (774 entries)
@@ -834,13 +890,15 @@ export function getFallbackEntries(grade?: number, gender?: Gender): CurriculumE
           ...getIlmihalEntriesForGrade(grade, "erkek"),
           ...getIlmihalEntriesForGrade(grade, "bayan"),
         ];
+    const tefekkur = getTefekkurEntriesForGrade(grade);
     const others = curriculumEntries
       .filter(
         (e) =>
           e.categoryId !== "adab-i-muaseret" &&
           e.categoryId !== "ilmihal" &&
           e.categoryId !== "esma" &&
-          e.categoryId !== "hocaefendi-dinleme"
+          e.categoryId !== "hocaefendi-dinleme" &&
+          e.categoryId !== "tefekkur"
       )
       .map((e) => ({ ...e, grade, id: grade === 1 ? e.id : `g${grade}-${e.id}` }));
     return resolveAllCurriculumEntries([
@@ -848,6 +906,7 @@ export function getFallbackEntries(grade?: number, gender?: Gender): CurriculumE
       ...adab,
       ...esma,
       ...hocaefendi,
+      ...tefekkur,
       ...ilmihal,
     ]).map(withGradeScopedId);
   }

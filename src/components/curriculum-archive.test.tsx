@@ -180,9 +180,9 @@ describe("CurriculumArchive Component", () => {
       <CurriculumArchive initialCompletedEntryIds={[]} isSignedIn={false} />
     );
 
-    // Separators between 5 categories should be exactly 4
+    // Separators between 6 categories should be exactly 5
     const separatorCount = (html.match(/class="archive-category-separator"/g) || []).length;
-    expect(separatorCount).toBe(4);
+    expect(separatorCount).toBe(5);
 
     expect(html).toContain(
       'class="archive-category-separator" role="separator" aria-hidden="true"'

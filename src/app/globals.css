@@ -6114,6 +6114,10 @@ body:has(.landing-page),
   --weekly-accent: #059669;
 }
 
+.weekly-section[data-accent="sky"] {
+  --weekly-accent: #0284c7;
+}
+
 .weekly-section-heading {
   display: flex;
   gap: 0.6rem;

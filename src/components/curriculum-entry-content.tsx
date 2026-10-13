@@ -297,7 +297,11 @@ export function EntryContentRenderer({
       )}
 
       {videoId && (
-        <div className="archive-video-wrapper my-1 overflow-hidden rounded-2xl border border-rose-500/20 bg-black/5 shadow-xs transition-shadow hover:shadow-md">
+        <div
+          className={`archive-video-wrapper my-1 overflow-hidden rounded-2xl border ${
+            entry.categoryId === "tefekkur" ? "border-sky-500/25" : "border-rose-500/20"
+          } bg-black/5 shadow-xs transition-shadow hover:shadow-md`}
+        >
           <div className="relative aspect-video w-full">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`}

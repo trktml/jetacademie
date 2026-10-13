@@ -29,13 +29,14 @@ describe("curriculum", () => {
     }
   });
 
-  it("contains all five active curriculum categories", () => {
+  it("contains all active curriculum categories", () => {
     expect(curriculumCategories.map((category) => category.label)).toEqual([
       "Haftanın Konusu",
       "Hocaefendi Sohbetleri",
       "İlmihal",
       "Adab-ı Muaşeret",
       "Esmâü'l-Hüsnâ",
+      "Kâinat ve Tefekkür",
     ]);
   });
 
@@ -46,15 +47,17 @@ describe("curriculum", () => {
       "İlmihal",
       "Adab",
       "Esmâ",
+      "Tefekkür",
     ]);
   });
 
-  it("retains the five active categories and their seeded entries", () => {
-    expect(curriculumEntries.length).toBe(189);
+  it("retains the active categories and their seeded entries", () => {
+    expect(curriculumEntries.length).toBe(195);
 
     expect(getCategoryEntries("esma").length).toBe(55);
     expect(getCategoryEntries("adab-i-muaseret").length).toBe(30);
     expect(getCategoryEntries("hocaefendi-dinleme").length).toBe(48);
+    expect(getCategoryEntries("tefekkur").length).toBe(6);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "erkek").length).toBe(28);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "bayan").length).toBe(28);
 
@@ -63,7 +66,8 @@ describe("curriculum", () => {
         category.id === "esma" ||
         category.id === "adab-i-muaseret" ||
         category.id === "hocaefendi-dinleme" ||
-        category.id === "ilmihal"
+        category.id === "ilmihal" ||
+        category.id === "tefekkur"
       )
         continue;
       const entries = getCategoryEntries(category.id);

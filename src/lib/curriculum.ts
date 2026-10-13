@@ -1,4 +1,4 @@
-import { BookHeart, HandHeart, Layers, Video, type LucideIcon } from "lucide-react";
+import { BookHeart, Compass, HandHeart, Layers, Video, type LucideIcon } from "lucide-react";
 import { EsmaIcon } from "@/components/icons/esma-icon";
 
 export const curriculumCategoryIds = [
@@ -7,6 +7,7 @@ export const curriculumCategoryIds = [
   "ilmihal",
   "adab-i-muaseret",
   "esma",
+  "tefekkur",
 ] as const;
 
 export type CurriculumCategoryId = (typeof curriculumCategoryIds)[number];
@@ -61,6 +62,14 @@ export const curriculumCategories: readonly CurriculumCategory[] = [
     shortLabel: "Esmâ",
     icon: EsmaIcon,
     accent: "emerald",
+  },
+  {
+    id: "tefekkur",
+    label: "Kâinat ve Tefekkür",
+    shortLabel: "Tefekkür",
+    icon: Compass,
+    accent: "sky",
+    resourceType: "video",
   },
 ] as const;
 

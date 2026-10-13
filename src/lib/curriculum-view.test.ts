@@ -35,7 +35,7 @@ describe("weekly curriculum browsing", () => {
       entry({ id: "draft", isDraft: true }),
     ];
     const groups = weeklyGroups(entries, { month: 9, week: 2 });
-    expect(groups).toHaveLength(5);
+    expect(groups).toHaveLength(6);
     expect(groups[0].entries.map((e) => e.id)).toEqual(["topic"]);
     expect(groups[1].entries.map((e) => e.id)).toEqual(["talk"]);
     expect(groups[2].entries).toEqual([]);

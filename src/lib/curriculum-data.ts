@@ -4,6 +4,7 @@ import { getEsmaEntriesForGrade } from "@/lib/data/esma-curriculum";
 import { getHocaefendiEntriesForGrade } from "@/lib/data/hocaefendi-curriculum";
 import { getIlmihalEntriesForGrade } from "@/lib/data/ilmihal-curriculum";
 import { getKonuEntriesForGrade } from "@/lib/data/konu-curriculum";
+import { getTefekkurEntriesForGrade } from "@/lib/data/tefekkur-curriculum";
 
 export const curriculumEntries: readonly CurriculumEntry[] = [
   ...getHocaefendiEntriesForGrade(1),
@@ -12,4 +13,5 @@ export const curriculumEntries: readonly CurriculumEntry[] = [
   ...getIlmihalEntriesForGrade(1, "bayan"),
   ...getAdabEntriesForGrade(1),
   ...getEsmaEntriesForGrade(1),
+  ...getTefekkurEntriesForGrade(1),
 ];
