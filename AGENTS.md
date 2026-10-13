@@ -8,57 +8,57 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# JetAcademie Agent & LLM Guidance
+# JetAcademie Ajan & LLM Rehberi
 
-This repository is **JetAcademie**, a full-stack Next.js 16 application with Bun, Tailwind CSS v4, Zustand v5, TanStack Query v5, Zod v4, Better-Auth (PostgreSQL via pg.Pool), Prettier, and Docker/Dokploy.
+Bu depo; Bun, Tailwind CSS v4, Zustand v5, TanStack Query v5, Zod v4, Better-Auth (pg.Pool üzerinden PostgreSQL), Prettier ve Docker/Dokploy ile geliştirilmiş bir full-stack Next.js 16 uygulaması olan **JetAcademie**'dir.
 
-This guide provides authoritative rules and conventions for AI coding agents working on this project.
+Bu kılavuz, bu projede çalışan yapay zeka kodlama ajanları için bağlayıcı kurallar ve standartlar sağlar.
 
 ---
 
-## ⚡ Non-Negotiable Core Rules
+## ⚡ Tartışmasız Temel Kurallar
 
-1. **Bun Runtime Only**: Use Bun for JavaScript/TypeScript commands (e.g. `bun install`, `bun dev`, `bun run test`, `bun run build`). Never execute `npm`, `yarn`, or `pnpm`.
-2. **Preserve Next.js Auto-Block**: The `<!-- BEGIN:nextjs-agent-rules -->` block above must NEVER be deleted or modified.
-3. **Quality Verification Loop**: Before declaring any coding task complete, execute and verify:
-   - `bun run test` (runs the package script with `DATABASE_URL=:memory:`; all unit tests must pass)
-   - `bun run lint` (Zero ESLint errors or warnings)
-   - `bun run format:check` (Prettier compliance; run `bun run format` to auto-fix)
-   - `bun run build` (Next.js type-checking and standalone build must succeed)
-4. **Git Commit Format**: Suggest or use Conventional Commits:
+1. **Yalnızca Bun Çalışma Zamanı**: JavaScript/TypeScript komutları için Bun kullanın (örn. `bun install`, `bun dev`, `bun run test`, `bun run build`). Asla `npm`, `yarn` veya `pnpm` çalıştırmayın.
+2. **Next.js Otomatik Bloğunu Koruyun**: Yukarıdaki `<!-- BEGIN:nextjs-agent-rules -->` bloğu ASLA silinmemeli veya değiştirilmemelidir.
+3. **Kalite Doğrulama Döngüsü**: Herhangi bir kodlama görevini tamamlandı ilan etmeden önce şunları çalıştırın ve doğrulayın:
+   - `bun run test` (`DATABASE_URL=:memory:` ile paket betiğini çalıştırır; tüm birim testleri geçmelidir)
+   - `bun run lint` (Sıfır ESLint hatası veya uyarısı)
+   - `bun run format:check` (Prettier uyumluluğu; otomatik düzeltmek için `bun run format` çalıştırın)
+   - `bun run build` (Next.js tip kontrolü ve standalone derleme başarılı olmalıdır)
+4. **Git Commit Formatı**: Conventional Commits formatını önerin veya kullanın:
    - Format: `type(scope): description`
-   - Examples: `feat(query): add tanstack query provider and demo`, `fix(auth): handle invalid credentials error`
-5. **Curriculum Writing**: Before creating or revising student-facing curriculum content, read `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` and the relevant grade's canonical `M1_Yillik_Plan.md`–`M6_Yillik_Plan.md` (see `mufredat-docs/planlar/README.md`). Apply its source and category-specific editorial checks to each entry; passing code tests alone does not establish content quality. Follow the single workflow at the start of that guide: plan and learner profile, source verification, representative lesson, writing, separate source and language reviews, corrections, and publication assessment. Reading enjoyment and a concrete reason to continue require evidence from the opening, middle, and ending. The guide allows developed openings, connected scenes, purposeful repetition, creative display titles, and flexible Topic closings. Weeks 1–4 prioritize introduction and curiosity: Topic lessons do not require a verse, direct quotations, or a behavior task; separate category requirements and source verification still apply. Sources enter where needed in the narrative; a verse retains Arabic → translation → footnote order. Section 10 defines grade/month/language expectations; section 18 defines the required per-entry evidence record and acceptance outcomes (suitable / revision required / review incomplete, recorded under the guide’s original labels). Known issues or missing required reviews must be resolved before content is considered ready for publication. M1 means approximately age 12–13, not primary-school grade 1; age alone never establishes Turkish reading ability. The `mufredat-kaynak-arama` skill helps find passages, but search snippets must be checked against the original source. Hadith citations, including hadith-based reports in other categories, use bibliographic footnotes without external verification links or a hadith-site `resourceUrl` (writing guide section 19.8); research URLs may remain in private preparation records. Siyer, Sahabe, Ayet, and Hadis are no longer separate categories; use verified passages and events only when they support the Topic narrative, within its single flow. Weekly packages contain 12 entries (six grades × `konu` and `hocaefendi-dinleme`). For 36-week curriculum packages, the database is the single source of truth (`isDraft: 1` for review/draft, `isDraft: 0` for live). Do not generate static lesson code modules or commit student-facing lesson Markdown files into git. Canonical annual plans and writing guidance are maintained as tracked Markdown documents. Validate and stage batches via `bun run curriculum save --week N --file <path>`, publish with `bun run curriculum publish --week N`, and export on demand with `bun run curriculum export --week N`. Preserved categories (`adab-i-muaseret`, `ilmihal`, `esma`) are never touched or deleted.
+   - Örnekler: `feat(query): add tanstack query provider and demo`, `fix(auth): handle invalid credentials error`
+5. **Müfredat Yazımı**: Öğrencilere yönelik müfredat içeriği oluşturmadan veya revize etmeden önce `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` dosyasını ve ilgili sınıfın kanonik `M1_Yillik_Plan.md`–`M6_Yillik_Plan.md` planlarını okuyun (bkz. `mufredat-docs/planlar/README.md`). Her kayda kaynak ve kategoriye özel editoryal kontrollerini uygulayın; tek başına kod testlerinden geçmek içerik kalitesini kanıtlamaz. Bu kılavuzun başındaki tek iş akışını izleyin: plan ve öğrenen profili, kaynak doğrulama, temsilci ders, yazım, ayrı kaynak ve dil incelemeleri, düzeltmeler ve yayın değerlendirmesi. Okuma zevki ve devam etmek için somut bir neden; giriş, gelişme ve sonuçtan kanıt gerektirir. Kılavuz; gelişmiş girişlere, birbiriyle bağlantılı sahnelere, amaçlı tekrarlara, yaratıcı başlıklandırmaya ve esnek Konu kapanışlarına izin verir. 1–4. haftalar giriş ve meraka öncelik verir: Konu dersleri ayet, doğrudan alıntı veya davranış görevi gerektirmez; ayrı kategori gereksinimleri ve kaynak doğrulama yine de geçerlidir. Kaynaklar anlatımda ihtiyaç duyulan yerde yer alır; bir ayet Arapça → meal → dipnot sırasını korur. Bölüm 10 sınıf/ay/dil beklentilerini tanımlar; bölüm 18 kayıt başına gerekli kanıt kaydını ve kabul sonuçlarını (kılavuzun orijinal etiketleri altında kaydedilen: uygun / düzeltme gerekli / değerlendirme eksik) tanımlar. İçeriğin yayına hazır kabul edilmesi için bilinen sorunların veya eksik zorunlu incelemelerin çözülmesi gerekir. M1 yaklaşık 12–13 yaş anlamına gelir, ilkokul 1. sınıf değildir; tek başına yaş Türkçe okuma becerisini belirlemez. `mufredat-kaynak-arama` becerisi pasajları bulmaya yardımcı olur, ancak arama parçacıkları orijinal kaynağa karşı kontrol edilmelidir. Diğer kategorilerdeki hadise dayalı rivayetler de dahil olmak üzere hadis alıntıları, harici doğrulama bağlantıları veya bir hadis sitesi `resourceUrl`'i olmadan bibliyografik dipnotlar kullanır (yazım kılavuzu bölüm 19.8); araştırma URL'leri özel hazırlık kayıtlarında kalabilir. Siyer, Sahabe, Ayet ve Hadis artık ayrı kategoriler değildir; doğrulanmış pasajları ve olayları yalnızca Konu anlatımını desteklediklerinde, tek bir akış içinde kullanın. Haftalık paketler 12 kayıt içerir (altı sınıf × `konu` ve `hocaefendi-dinleme`). 36 haftalık müfredat paketleri için tek doğruluk kaynağı veritabanıdır (inceleme/taslak için `isDraft: 1`, canlı için `isDraft: 0`). Statik ders kod modülleri oluşturmayın veya öğrencilere yönelik ders Markdown dosyalarını git'e commitlemeyin. Kanonik yıllık planlar ve yazım yönergeleri takip edilen Markdown belgeleri olarak sürdürülür. Grupları `bun run curriculum save --week N --file <path>` ile doğrulayın ve aşamalandırın, `bun run curriculum publish --week N` ile yayınlayın ve gerektiğinde `bun run curriculum export --week N` ile dışa aktarın. Korunan kategorilere (`adab-i-muaseret`, `ilmihal`, `esma`) asla dokunulmaz veya bunlar silinmez.
 
-6. **Documentation Language**: Maintain `README.md` and `AGENTS.md` in English. Keep the website interface, student-facing curriculum, original quotations, and content-format labels in their existing languages; documentation translation does not authorize translating application content. Preserve commands, paths, identifiers, and the Next.js auto-generated block.
+6. **Dokümantasyon Dili**: `README.md` ve `AGENTS.md` dosyalarını Türkçe olarak sürdürün. Web sitesi arayüzünü, öğrencilere yönelik müfredatı, orijinal alıntıları ve içerik format etiketlerini mevcut dillerinde koruyun; dokümantasyon çevirisi uygulama içeriğini çevirme yetkisi vermez. Komutları, dosya yollarını, tanımlayıcıları ve Next.js tarafından otomatik oluşturulan bloğu koruyun.
 
 ---
 
-## 🏛️ Architecture & State Management Strategy
+## 🏛️ Mimari & Durum Yönetimi Stratejisi
 
-### 1. Client State vs. Server State Separation
+### 1. İstemci Durumu ve Sunucu Durumunun Ayrılması (Client State vs. Server State)
 
-- **Local client state (Zustand)**:
-  - Use `src/store/*.ts` for UI state and locally persisted preferences or guest progress, as in `use-ui-store.ts`, `use-curriculum-store.ts`, and `use-guest-store.ts`.
-  - Do not copy authenticated server data into a Zustand store as a second cache.
-- **Remote data (TanStack Query v5 and Server Components)**:
-  - Fetch initial server data in Server Components where appropriate. Use TanStack Query for client fetching and caching, as in `src/lib/queries/curriculum.ts` and `src/components/curriculum-page-content.tsx`.
-  - Existing mutations such as curriculum progress use server actions in `src/app/mufredat/actions.ts`; preserve that flow when extending it.
-  - `<QueryProvider>` is configured in `src/app/layout.tsx`. Access the QueryClient with `getQueryClient()` from `@/lib/query-client` and prefer `queryOptions(...)` for reusable queries.
+- **Yerel istemci durumu (Zustand)**:
+  - `use-ui-store.ts`, `use-curriculum-store.ts` ve `use-guest-store.ts` dosyalarında olduğu gibi kullanıcı arayüzü durumu ve yerel olarak kalıcı kılınan tercihler veya misafir ilerlemesi için `src/store/*.ts` kullanın.
+  - Kimliği doğrulanmış sunucu verilerini ikinci bir önbellek olarak Zustand deposuna kopyalamayın.
+- **Uzak veri (TanStack Query v5 ve Sunucu Bileşenleri)**:
+  - Uygun olan yerlerde Sunucu Bileşenlerinde (Server Components) başlangıç sunucu verilerini getirin. `src/lib/queries/curriculum.ts` ve `src/components/curriculum-page-content.tsx` dosyalarında olduğu gibi istemci tarafı getirme ve önbelleğe alma için TanStack Query kullanın.
+  - Müfredat ilerlemesi gibi mevcut mutasyonlar `src/app/mufredat/actions.ts` içindeki sunucu eylemlerini (server actions) kullanır; bunu genişletirken bu akışı koruyun.
+  - `<QueryProvider>` bileşeni `src/app/layout.tsx` içinde yapılandırılmıştır. QueryClient'a `@/lib/query-client` içindeki `getQueryClient()` ile erişin ve yeniden kullanılabilir sorgular için `queryOptions(...)` tercih edin.
 
-### 2. TanStack Query SSR Singleton Pattern
+### 2. TanStack Query SSR Singleton Deseni
 
-In Next.js App Router, QueryClient instances must be managed cleanly:
+Next.js App Router'da QueryClient örnekleri temiz bir şekilde yönetilmelidir:
 
-- **On the Server**: A new `QueryClient` is instantiated per request to prevent cross-request data leaks.
-- **In the Browser**: A singleton `QueryClient` is reused across re-renders and React Suspense boundaries.
-- **Implementation**: Handled automatically via `getQueryClient()` in `src/lib/query-client.ts`:
+- **Sunucuda**: İstekler arası veri sızıntılarını önlemek için istek başına yeni bir `QueryClient` örneği oluşturulur.
+- **Tarayıcıda**: Yeniden oluşturmalar (re-renders) ve React Suspense sınırları boyunca tek bir örnek (singleton `QueryClient`) yeniden kullanılır.
+- **Uygulama**: `src/lib/query-client.ts` içindeki `getQueryClient()` aracılığıyla otomatik olarak işlenir:
   ```ts
   import { getQueryClient } from "@/lib/query-client";
-  // Always use getQueryClient() rather than 'new QueryClient()' in components
+  // Bileşenlerde 'new QueryClient()' yerine her zaman getQueryClient() kullanın
   ```
-- **DevTools**: `<ReactQueryDevtools initialIsOpen={false} />` is included in `src/providers/query-provider.tsx`.
-- **Server Component Prefetching**: When prefetching queries in React Server Components, dehydrate the query client and wrap the client tree in `<HydrationBoundary>`:
+- **Geliştirici Araçları (DevTools)**: `<ReactQueryDevtools initialIsOpen={false} />`, `src/providers/query-provider.tsx` dosyasına dahil edilmiştir.
+- **Sunucu Bileşeni Önceden Getirme (Prefetching)**: React Sunucu Bileşenlerinde sorguları önceden getirirken, sorgu istemcisini dehydrate edin ve istemci ağacını `<HydrationBoundary>` ile sarın:
   ```tsx
   import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
   import { getQueryClient } from "@/lib/query-client";
@@ -75,93 +75,93 @@ In Next.js App Router, QueryClient instances must be managed cleanly:
     );
   }
   ```
-- **Isomorphic Fetching**: A server-side `fetch` needs an absolute URL; `src/lib/queries/health.ts` shows a `getBaseUrl()` example. Server Components may instead call server data functions directly, as `src/app/mufredat/page.tsx` does.
+- **İzomorfik Veri Getirme (Isomorphic Fetching)**: Sunucu tarafındaki bir `fetch`, mutlak bir URL'ye ihtiyaç duyar; `src/lib/queries/health.ts` bir `getBaseUrl()` örneği gösterir. Sunucu Bileşenleri bunun yerine `src/app/mufredat/page.tsx` dosyasının yaptığı gibi sunucu veri fonksiyonlarını doğrudan çağırabilir.
 
-### 3. Validation (Zod v4)
+### 3. Doğrulama (Zod v4)
 
-- Keep Zod schemas organized in `src/lib/validations/`.
-- Infer TypeScript types directly from schemas:
+- Zod şemalarını `src/lib/validations/` altında düzenli tutun.
+- TypeScript türlerini doğrudan şemalardan çıkarın (infer):
   ```ts
   export const mySchema = z.object({ ... });
   export type MyInput = z.infer<typeof mySchema>;
   ```
 
-### 4. Authentication & Database (Better-Auth + PostgreSQL)
+### 4. Kimlik Doğrulama & Veritabanı (Better-Auth + PostgreSQL)
 
-- Database manager: `src/lib/db.ts` (manages `pg.Pool`, async queries, parameter mapping, and in-memory test fallback).
-- Server instance: `src/lib/auth.ts` (configured with Better-Auth PostgreSQL adapter and universal schema DDL).
-- React client: `src/lib/auth-client.ts` (`authClient`, `useSession`, `signIn`, `signUp`, `signOut`).
-- Route handler: `src/app/api/auth/[...all]/route.ts`.
-- Production DB: PostgreSQL 16 Alpine via `docker-compose.yml` (`db` service with `pgdata` volume).
-- Remote Deployment: Tailscale deploy script (`scripts/deploy.sh`) and Tailscale Serve HTTPS (`docs/tailscale.md`).
-- Test DB: In-memory SQLite via `bun:sqlite`; the `bun run test` script sets `DATABASE_URL=:memory:` and test mode resolves to it. Use the package script for the full test suite.
+- Veritabanı yöneticisi: `src/lib/db.ts` (`pg.Pool`, asenkron sorgular, parametre eşleme ve bellek içi test yedeğini yönetir).
+- Sunucu örneği: `src/lib/auth.ts` (Better-Auth PostgreSQL adaptörü ve evrensel şema DDL ile yapılandırılmıştır).
+- React istemcisi: `src/lib/auth-client.ts` (`authClient`, `useSession`, `signIn`, `signUp`, `signOut`).
+- Rota işleyicisi: `src/app/api/auth/[...all]/route.ts`.
+- Üretim Veritabanı: `docker-compose.yml` üzerinden PostgreSQL 16 Alpine (`pgdata` hacmine sahip `db` servisi).
+- Uzaktan Dağıtım: Tailscale dağıtım betiği (`scripts/deploy.sh`) ve Tailscale Serve HTTPS (`docs/tailscale.md`).
+- Test Veritabanı: `bun:sqlite` aracılığıyla bellek içi SQLite; `bun run test` betiği `DATABASE_URL=:memory:` olarak ayarlar ve test modu buna yönlendirir. Test paketinin tamamı için paket betiğini kullanın.
 
-### 5. Next.js 16 & React 19 Specifics
+### 5. Next.js 16 & React 19 İncelikleri
 
-- Page & Layout route props (`params`, `searchParams`) are asynchronous `Promise` objects. Always `await` them.
-- Root layout utilizes Next.js 16 `LayoutProps<"/">`.
-- Default to React Server Components. Add `"use client"` only when components require browser hooks (`useState`, `useQuery`, `useCounterStore`, event handlers).
+- Sayfa ve Düzen rota özellikleri (`params`, `searchParams`) asenkron `Promise` nesneleridir. Bunları her zaman `await` edin.
+- Kök düzen (root layout), Next.js 16 `LayoutProps<"/">` kullanır.
+- Varsayılan olarak React Sunucu Bileşenlerini (RSC) kullanın. Yalnızca bileşenler tarayıcı hook'larına (`useState`, `useQuery`, `useCounterStore`, olay işleyicileri) ihtiyaç duyduğunda `"use client"` ekleyin.
 
-### 6. Mobile-First PWA & Accessibility Standards
+### 6. Mobil Öncelikli PWA & Erişilebilirlik Standartları
 
-- **Viewport Configuration**: Export `viewport: Viewport` from `src/app/layout.tsx` using `viewportFit: "cover"` and `interactiveWidget: "resizes-content"`.
-- **Safe Area Insets**: Use Tailwind v4 custom utilities (`pt-safe`, `pb-safe`, `pl-safe`, `pr-safe`, `px-safe`) for fixed headers, bottom sheets, and navigation bars.
-- **Touch Target Minimum**: Every button, tab, and clickable control must satisfy the 44x44px target size (`min-h-[44px]` or `min-w-[44px]`).
-- **iOS Zoom Prevention**: Keep input font size at or above 16px on mobile screens (< 768px).
-- **Vaul Sheets**: `src/components/account-sheet.tsx` uses `vaul`; follow its responsive and accessible patterns when extending sheets.
-- **Shared UI State**: `src/store/use-ui-store.ts` manages the account sheet. Use a shared store only when state must be coordinated across components.
-
----
-
-## 📂 Project Map
-
-Use this short map to find the current code; inspect the directory for the exact files before editing.
-
-| Area                                | Current location                                                                                                           |
-| :---------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
-| App Router pages and APIs           | `src/app/` (`mufredat`, `hedefler`, `duzenle`, `api/auth`, `api/curriculum`, `api/editor`)                                 |
-| Shared interface                    | `src/components/` (`curriculum-archive.tsx`, `curriculum-page-content.tsx`, `account-sheet.tsx`, `konu-lesson-reader.tsx`) |
-| Authentication and database         | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/lib/db.ts`, `src/lib/curriculum-db.ts`, `src/lib/editor/`                |
-| Curriculum and annual plans in code | `src/lib/data/`, especially `curriculum-plans.ts` and `konu-curriculum.ts`                                                 |
-| Client state and remote queries     | `src/store/`, `src/lib/queries/`, `src/lib/query-client.ts`, `src/providers/query-provider.tsx`                            |
-| Source plans and writing guidance   | `mufredat-docs/planlar/M1_Yillik_Plan.md` through `M6_Yillik_Plan.md`, `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md`    |
-| Source research                     | `.agents/skills/mufredat-kaynak-arama/SKILL.md`, `scripts/search-sources.ts`, `scripts/index-sources.py`, local `sources/` |
-| Content export/import               | `scripts/` (import/export scripts when curriculum batches are prepared)                                                    |
-| Deployment                          | `Dockerfile`, `docker-compose.yml`, `scripts/deploy.sh`, `docs/tailscale.md`                                               |
-
-The yearly Markdown plans are authoritative for the lesson topic, question, outcomes, and primary source. Read `mufredat-docs/planlar/README.md` for document precedence. The original DOCX files were removed after migration verification; use Markdown for current plans. `src/lib/data/curriculum-plans.ts` is a partial application representation; compare it with the relevant Markdown plan before changing curriculum content and keep it aligned when plan fields change. Source PDFs and generated exports can be local or ignored, so check their presence instead of assuming they are committed.
+- **Görünüm Alanı Yapılandırması (Viewport)**: `viewportFit: "cover"` ve `interactiveWidget: "resizes-content"` kullanarak `src/app/layout.tsx` dosyasından `viewport: Viewport` dışa aktarın.
+- **Güvenli Alan Dolguları (Safe Area Insets)**: Sabit üstbilgiler, alt sayfalar ve gezinme çubukları için Tailwind v4 özel yardımcı sınıflarını (`pt-safe`, `pb-safe`, `pl-safe`, `pr-safe`, `px-safe`) kullanın.
+- **Minimum Dokunma Hedefi**: Her buton, sekme ve tıklanabilir denetim 44x44px hedef boyutunu (`min-h-[44px]` veya `min-w-[44px]`) karşılamalıdır.
+- **iOS Yakınlaştırma Önleme**: Mobil ekranlarda (< 768px) girdi yazı tipi boyutunu 16px veya üzerinde tutun.
+- **Vaul Alt Sayfaları (Sheets)**: `src/components/account-sheet.tsx` dosyası `vaul` kullanır; sayfaları genişletirken duyarlı ve erişilebilir desenlerini takip edin.
+- **Paylaşılan UI Durumu**: `src/store/use-ui-store.ts` hesap sayfasını yönetir. Paylaşılan bir depoyu yalnızca durumun bileşenler arasında koordine edilmesi gerektiğinde kullanın.
 
 ---
 
-## 🛠️ Essential Command Reference
+## 📂 Proje Haritası
 
-| Task                   | Command                                  |
-| :--------------------- | :--------------------------------------- |
-| Start Dev Server       | `bun dev`                                |
-| Run Test Suite         | `bun run test`                           |
-| Run Specific Test      | `bun test src/lib/query-client.test.ts`  |
-| Lint Code              | `bun run lint`                           |
-| Check Code Formatting  | `bun run format:check`                   |
-| Auto-fix Formatting    | `bun run format`                         |
-| Production Build       | `bun run build`                          |
-| Better-Auth Migration  | `bun run db:migrate`                     |
-| Curriculum Status      | `bun run curriculum list`                |
-| Curriculum Save Batch  | `bun run curriculum save --week N -f ..` |
-| Curriculum Publish     | `bun run curriculum publish --week N`    |
-| Curriculum Export      | `bun run curriculum export --week N`     |
-| Curriculum Delete Week | `bun run curriculum delete --week N`     |
-| Curriculum Backup      | `bun run curriculum backup`              |
-| Curriculum Restore     | `bun run curriculum restore`             |
+Mevcut kodu bulmak için bu kısa haritayı kullanın; düzenlemeden önce kesin dosyalar için dizini inceleyin.
+
+| Alan                               | Mevcut konum                                                                                                               |
+| :--------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| App Router sayfaları ve API'leri   | `src/app/` (`mufredat`, `hedefler`, `duzenle`, `api/auth`, `api/curriculum`, `api/editor`)                                 |
+| Paylaşılan arayüz                  | `src/components/` (`curriculum-archive.tsx`, `curriculum-page-content.tsx`, `account-sheet.tsx`, `konu-lesson-reader.tsx`) |
+| Kimlik doğrulama ve veritabanı     | `src/lib/auth.ts`, `src/lib/auth-client.ts`, `src/lib/db.ts`, `src/lib/curriculum-db.ts`, `src/lib/editor/`                |
+| Koddaki müfredat ve yıllık planlar | `src/lib/data/`, özellikle `curriculum-plans.ts` ve `konu-curriculum.ts`                                                   |
+| İstemci durumu ve uzak sorgular    | `src/store/`, `src/lib/queries/`, `src/lib/query-client.ts`, `src/providers/query-provider.tsx`                            |
+| Kaynak planlar ve yazım kılavuzu   | `mufredat-docs/planlar/M1_Yillik_Plan.md` - `M6_Yillik_Plan.md`, `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md`          |
+| Kaynak araştırması                 | `.agents/skills/mufredat-kaynak-arama/SKILL.md`, `scripts/search-sources.ts`, `scripts/index-sources.py`, yerel `sources/` |
+| İçerik dışa/içe aktarma            | `scripts/` (müfredat paketleri hazırlandığında içe/dışa aktarma betikleri)                                                 |
+| Dağıtım                            | `Dockerfile`, `docker-compose.yml`, `scripts/deploy.sh`, `docs/tailscale.md`                                               |
+
+Yıllık Markdown planları ders konusu, soru, kazanımlar ve birincil kaynak açısından yetkilidir ve bağlayıcıdır. Belge önceliği için `mufredat-docs/planlar/README.md` dosyasını okuyun. Orijinal DOCX dosyaları migrasyon doğrulamasından sonra kaldırılmıştır; mevcut planlar için Markdown kullanın. `src/lib/data/curriculum-plans.ts` kısmi bir uygulama temsilidir; müfredat içeriğini değiştirmeden önce ilgili Markdown planıyla karşılaştırın ve plan alanları değiştiğinde uyumlu tutun. Kaynak PDF'ler ve oluşturulan dışa aktarımlar yerel olabilir veya git tarafından yok sayılabilir, bu nedenle commited olduklarını varsaymak yerine varlıklarını kontrol edin.
 
 ---
 
-## 🧪 Testing Guidelines for Agents
+## 🛠️ Temel Komut Referansı
 
-- Use `bun:test` (`describe`, `expect`, `it`, `mock`).
-- Write tests alongside implementation files (e.g., `feature.ts` -> `feature.test.ts`).
-- Avoid mocking React DOM unless necessary; test query functions, hooks, state stores, and validation logic directly.
-- Mock network calls with `globalThis.fetch = mock(...)` and restore the original fetch in `finally` blocks.
+| Görev                          | Komut                                    |
+| :----------------------------- | :--------------------------------------- |
+| Geliştirme Sunucusunu Başlatma | `bun dev`                                |
+| Test Paketini Çalıştırma       | `bun run test`                           |
+| Belirli Bir Testi Çalıştırma   | `bun test src/lib/query-client.test.ts`  |
+| Kodu Lint Etme                 | `bun run lint`                           |
+| Kod Formatını Kontrol Etme     | `bun run format:check`                   |
+| Formatı Otomatik Düzeltme      | `bun run format`                         |
+| Üretim Derlemesi Alma          | `bun run build`                          |
+| Better-Auth Migrasyonu         | `bun run db:migrate`                     |
+| Müfredat Durumu                | `bun run curriculum list`                |
+| Müfredat Paketini Kaydetme     | `bun run curriculum save --week N -f ..` |
+| Müfredatı Yayınlama            | `bun run curriculum publish --week N`    |
+| Müfredatı Dışa Aktarma         | `bun run curriculum export --week N`     |
+| Müfredat Haftasını Silme       | `bun run curriculum delete --week N`     |
+| Müfredatı Yedekleme            | `bun run curriculum backup`              |
+| Müfredatı Geri Yükleme         | `bun run curriculum restore`             |
 
-## Listening vocabulary production
+---
 
-For `hocaefendi-dinleme`, follow the three-language vocabulary format in `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md`: the verified word spoken in the video and its Turkish meaning, followed by a French word with a French definition and a Dutch word with a Dutch definition. Record video timestamps in preparation notes and review both translations in context. Store the nested `FR:` then `NL:` Markdown list in the database body; do not generate static lesson modules.
+## 🧪 Ajanlar İçin Test Yönergeleri
+
+- `bun:test` kullanın (`describe`, `expect`, `it`, `mock`).
+- Testleri uygulama dosyalarının yanına yazın (örn. `feature.ts` -> `feature.test.ts`).
+- Gerekli olmadıkça React DOM'u taklit etmekten (mock) kaçının; sorgu fonksiyonlarını, hook'ları, durum depolarını ve doğrulama mantığını doğrudan test edin.
+- Ağ çağrılarını `globalThis.fetch = mock(...)` ile taklit edin ve orijinal fetch'i `finally` bloklarında geri yükleyin.
+
+## Dinleme Kelime Hazinesi Üretimi
+
+`hocaefendi-dinleme` için `mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md` dosyasındaki üç dilli kelime formatını izleyin: videoda konuşulan doğrulanmış kelime ve Türkçe anlamı, ardından Fransızca tanımıyla birlikte Fransızca bir kelime ve Felemenkçe tanımıyla birlikte Felemenkçe bir kelime. Video zaman damgalarını hazırlık notlarına kaydedin ve her iki çeviriyi de bağlam içinde inceleyin. İç içe `FR:` ardından `NL:` Markdown listesini veritabanı gövdesinde saklayın; statik ders modülleri oluşturmayın.
