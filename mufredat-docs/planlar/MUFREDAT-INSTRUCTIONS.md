@@ -413,6 +413,15 @@ Bu kontrol, her yeni üretimde ve revizyonda Konu ve dinleme içerikleri için z
 
 Profil belirleme, örnek ders ve kontrol sırası belgenin başındaki üretim akışında tanımlıdır. Her içerik için bölüm 18'deki kayıt ve sonuç ölçüsünü uygula; sınıf tablosu, ilk ay ölçüleri ve iki dil taraması bu değerlendirmede kullanılır.
 
+### Sınıflar arası tam bağımsızlık ve müstakil ders ilkesi
+
+Haftalık müfredat paketleri (M1–M6) üretilirken veya revize edilirken her sınıfın ders metni kendi içinde eksiksiz ve bağımsız bir bütün olarak ele alınır:
+
+1. **Müstakil Ders:** Aynı haftanın konusu olsa bile her sınıfın (M1–M6) dersi, o sınıfın hedef yaş grubuna (M1 için ~12–13 yaştan M6 için ~17–18 yaşa), pedagojik düzeyine ve yıllık plan kazanımına özel olarak sıfırdan planlanan bağımsız bir derstir.
+2. **Dizi / Devam Metni Yasağı:** Sınıflar arası metinler asla bir yazı dizisinin birbirini takip eden kısımları gibi kurgulanamaz. Örneğin 1. sınıfta konunun 1. maddesini, 2. sınıfta 2. maddesini işlemek gibi bölümlendirmeler KESİNLİKLE YASAKTIR. Metinlerde "önceki sınıfta gördüğümüz gibi", "1. sınıftaki konunun devamı olarak", "bir önceki maddede ele aldığımız konunun ikinci kısmı" gibi sınıflar arası ardışıklık veya dizi çağrışımı yapan hiçbir ifade bulunamaz.
+3. **Farklı Öğrenci Profili:** 1. sınıf öğrencisi ile 2. sınıf öğrencisi farklı yaşlarda ve farklı sınıflarda bireylerdir; 2. sınıf öğrencisi o hafta 1. sınıf metnini okumamıştır ve okumayacaktır. Dolayısıyla her ders, o yaştaki öğrencinin karşısına tek başına çıktığında hiçbir eksiklik hissettirmeyecek şekilde giriş, merak unsuru, sahneler, düşünme alanı ve kapanışıyla kendi içinde tam ve tutarlı bir bütünlük taşımalıdır.
+4. **İç Tutarlılık ve Yaşa Uygunluk:** Her sınıfın metni, o yaşın gerektirdiği düşünme derinliğini ve yıllık planın ana sorusunu kendi akışı içinde bağımsızca planlamalı; anlatımı ve pratik çıkarımları kendi içinde tutarlı olmalıdır.
+
 ### Dinleme içeriğinin dil seviyesi
 
 Dinleme kartında yönlendirme kadar kaydın kendi dilini de değerlendir; yalnız kartı sadeleştirmek ağır bir kaydı yaşa uygun hâle getirmez. Erişilebilen kayıttan anlaşılır, anlam bütünlüğü olan bir bölüm seç; süre aralığını ancak dinleyerek doğruladıysan belirt. Kaydın kendisi değerlendirilemediyse bu eksikliği bölüm 18'de kaydet ve kartı yaşa uygunluğu doğrulanmış diye sunma.
