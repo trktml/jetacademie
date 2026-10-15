@@ -45,9 +45,11 @@ auth.sqlite*
 # local curriculum sources (not committed to git)
 /sources/
 sources/
+/mufredat-docs/hocaefendi-kitap/
 
 # curriculum exports (generated on demand via CLI)
 /mufredat-docs/export/
+/exports/
 
 # database backups contain private application data
 /backups/
