@@ -629,7 +629,22 @@ export async function syncKonuCurriculumIfOutdated(): Promise<void> {
 
 export async function syncTefekkurCurriculumIfOutdated(): Promise<void> {
   await ensureCurriculumEntriesTable();
-  await syncCategoryIfOutdated("tefekkur", 36, () => {
+  try {
+    const exclusion = await queryOne<{ categoryId: string }>(
+      `SELECT "categoryId" FROM "curriculum_seed_exclusions" WHERE "categoryId" = $1`,
+      ["tefekkur"]
+    );
+    if (exclusion) return;
+
+    const row = await queryOne<{ c: number | string; updatedCount: number | string }>(
+      `SELECT COUNT(*) as c, COUNT(CASE WHEN "body" LIKE '%Proton, nötron ve elektron%' THEN 1 END) as "updatedCount" FROM "curriculum_entries" WHERE "categoryId" = $1`,
+      ["tefekkur"]
+    );
+
+    if (row && Number(row.c) === 216 && Number(row.updatedCount) >= 1) {
+      return;
+    }
+
     const now = new Date().toISOString();
     const batch: CurriculumEntryRow[] = [];
     for (let grade = 1; grade <= 6; grade++) {
@@ -655,8 +670,12 @@ export async function syncTefekkurCurriculumIfOutdated(): Promise<void> {
         });
       }
     }
-    return batch;
-  });
+
+    await execute(`DELETE FROM "curriculum_entries" WHERE "categoryId" = $1`, ["tefekkur"]);
+    await bulkUpsertCurriculumEntries(batch);
+  } catch (err) {
+    console.error("Failed to sync category tefekkur:", err);
+  }
 }
 
 let seedPromise: Promise<void> | null = null;

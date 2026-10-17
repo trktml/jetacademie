@@ -52,12 +52,12 @@ describe("curriculum", () => {
   });
 
   it("retains the active categories and their seeded entries", () => {
-    expect(curriculumEntries.length).toBe(195);
+    expect(curriculumEntries.length).toBe(225);
 
     expect(getCategoryEntries("esma").length).toBe(55);
     expect(getCategoryEntries("adab-i-muaseret").length).toBe(30);
     expect(getCategoryEntries("hocaefendi-dinleme").length).toBe(48);
-    expect(getCategoryEntries("tefekkur").length).toBe(6);
+    expect(getCategoryEntries("tefekkur").length).toBe(36);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "erkek").length).toBe(28);
     expect(getCategoryEntries("ilmihal", curriculumEntries, 1, "bayan").length).toBe(28);
 

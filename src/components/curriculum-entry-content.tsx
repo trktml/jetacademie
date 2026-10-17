@@ -11,14 +11,17 @@ export function getYouTubeVideoId(url?: string | null): string | null {
   try {
     const parsed = new URL(url);
     if (parsed.hostname.includes("youtube.com")) {
-      return parsed.searchParams.get("v");
+      const v = parsed.searchParams.get("v");
+      if (v) return v;
+      const shortsMatch = parsed.pathname.match(/\/shorts\/([\w-]{11})/);
+      if (shortsMatch) return shortsMatch[1];
     }
     if (parsed.hostname.includes("youtu.be")) {
       return parsed.pathname.slice(1);
     }
   } catch {
     const match = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/
+      /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/
     );
     return match ? match[1] : null;
   }
