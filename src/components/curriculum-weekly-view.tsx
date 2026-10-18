@@ -1,17 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { BookOpen, Info, Play, X } from "lucide-react";
+import { BookOpen, Info, X } from "lucide-react";
 import { curriculumCategories, type CurriculumEntry } from "@/lib/curriculum";
 import { formatPeriodLabel, weeklyGroups, type CurriculumPeriod } from "@/lib/curriculum-view";
 import { EntryContentRenderer, EsmaCardHeader } from "./curriculum-entry-content";
 import { InlinePdfViewer } from "./inline-pdf-viewer";
 
 function WeeklyEntry({ entry }: { entry: CurriculumEntry }) {
-  const [mediaOpen, setMediaOpen] = useState(false);
+  const [pdfOpen, setPdfOpen] = useState(false);
   const pdfUrl =
     entry.pdfUrl ??
     (entry.resourceUrl?.split("?")[0].endsWith(".pdf") ? entry.resourceUrl : undefined);
+
   return (
     <article className="weekly-entry">
       {entry.categoryId === "konu" ? null : entry.categoryId === "esma" ? (
@@ -19,30 +20,28 @@ function WeeklyEntry({ entry }: { entry: CurriculumEntry }) {
       ) : (
         <h3 className="archive-entry-title">{entry.title}</h3>
       )}
-      <EntryContentRenderer entry={entry} isExpanded renderVideo={mediaOpen && !pdfUrl} />
-      {(pdfUrl || entry.resourceUrl) && (
+      <EntryContentRenderer entry={entry} isExpanded renderVideo={!pdfUrl} />
+      {pdfUrl && (
         <div className="weekly-media">
           <button
             type="button"
             className="weekly-media-button"
-            aria-expanded={mediaOpen}
-            onClick={() => setMediaOpen(!mediaOpen)}
+            aria-expanded={pdfOpen}
+            onClick={() => setPdfOpen(!pdfOpen)}
           >
-            {mediaOpen ? (
+            {pdfOpen ? (
               <X size={18} aria-hidden="true" />
-            ) : pdfUrl ? (
-              <BookOpen size={18} aria-hidden="true" />
             ) : (
-              <Play size={18} aria-hidden="true" />
+              <BookOpen size={18} aria-hidden="true" />
             )}
-            {mediaOpen ? "Kapat" : pdfUrl ? "PDF’yi oku" : "Videoyu aç"}
+            {pdfOpen ? "Kapat" : "PDF’yi oku"}
           </button>
-          {mediaOpen && pdfUrl && (
+          {pdfOpen && (
             <InlinePdfViewer
               pdfUrl={pdfUrl}
               title={entry.title}
               entryId={entry.id}
-              onClose={() => setMediaOpen(false)}
+              onClose={() => setPdfOpen(false)}
             />
           )}
         </div>

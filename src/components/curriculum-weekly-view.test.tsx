@@ -4,7 +4,7 @@ import { CurriculumWeeklyView } from "./curriculum-weekly-view";
 import type { CurriculumEntry } from "@/lib/curriculum";
 
 describe("CurriculumWeeklyView", () => {
-  it("renders full authored content, all five sections and no completion controls or eagerly loaded media", () => {
+  it("renders full authored content, all five sections, an open video and no completion controls", () => {
     const entry: CurriculumEntry = {
       id: "weekly",
       grade: 1,
@@ -24,6 +24,7 @@ describe("CurriculumWeeklyView", () => {
             ...entry,
             id: "video",
             categoryId: "hocaefendi-dinleme",
+            body: "## Video dersi\n\n**Video içerik**",
             resourceUrl: "https://www.youtube.com/watch?v=abcdefghijk",
           },
           { ...entry, id: "pdf", categoryId: "ilmihal", pdfUrl: "/lesson.pdf" },
@@ -39,13 +40,14 @@ describe("CurriculumWeeklyView", () => {
     expect(html).toContain("weekly-title-adab-i-muaseret");
     expect(html).toContain("Bu hafta için yayımlanmış içerik bulunmuyor.");
     expect(html).toContain("Erkek / Bayan");
-    expect(html).toContain("Videoyu aç");
+    expect(html).toContain("youtube-nocookie.com/embed/");
+    expect(html).not.toContain("Videoyu aç");
     expect(html).toContain("PDF’yi oku");
     expect(html).toContain('class="weekly-status-badge"');
     expect(html).toContain("Bu görünümde ilerlemeniz değişmez");
     expect(html).toContain('class="sr-only"');
     expect(html).not.toContain('<h2 class="weekly-heading');
-    expect(html).not.toContain("<iframe");
+    expect(html.indexOf("youtube-nocookie.com/embed/")).toBeLessThan(html.indexOf("Video dersi"));
     expect(html).not.toContain("<canvas");
     expect(html).not.toContain("Okundu işaretle");
     expect(html).not.toContain("Kilitli");

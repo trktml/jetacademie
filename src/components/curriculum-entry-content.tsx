@@ -217,6 +217,24 @@ export function EntryContentRenderer({
     () => (renderMedia && renderVideo && !isKonu ? getYouTubeVideoId(entry.resourceUrl) : null),
     [entry.resourceUrl, renderMedia, renderVideo, isKonu]
   );
+  const video = videoId ? (
+    <div
+      className={`archive-video-wrapper my-1 overflow-hidden rounded-2xl border ${
+        entry.categoryId === "tefekkur" ? "border-sky-500/25" : "border-rose-500/20"
+      } bg-black/5 shadow-xs transition-shadow hover:shadow-md`}
+    >
+      <div className="relative aspect-video w-full">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`}
+          title={entry.title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+          className="absolute inset-0 h-full w-full rounded-2xl border-0"
+        />
+      </div>
+    </div>
+  ) : null;
 
   if (isKonu) {
     if (isExpanded) {
@@ -282,6 +300,8 @@ export function EntryContentRenderer({
 
   return (
     <div className="archive-entry-rendered-content flex flex-col gap-3">
+      {video}
+
       {summary && (
         <MarkdownContent
           stripTitle={entry.title}
@@ -297,25 +317,6 @@ export function EntryContentRenderer({
               ? (entry.body ?? "")
               : summary}
         </MarkdownContent>
-      )}
-
-      {videoId && (
-        <div
-          className={`archive-video-wrapper my-1 overflow-hidden rounded-2xl border ${
-            entry.categoryId === "tefekkur" ? "border-sky-500/25" : "border-rose-500/20"
-          } bg-black/5 shadow-xs transition-shadow hover:shadow-md`}
-        >
-          <div className="relative aspect-video w-full">
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`}
-              title={entry.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="lazy"
-              className="absolute inset-0 h-full w-full rounded-2xl border-0"
-            />
-          </div>
-        </div>
       )}
 
       {renderMedia && vocabList.length > 0 && (

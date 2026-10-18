@@ -21,5 +21,5 @@ Kanalda yeni short paylaşıldığında indirmek için yt-dlp kullanılır:
     yt-dlp --skip-download --write-auto-subs --write-subs --sub-langs tr       --sub-format vtt/srv1 --write-info-json       --extractor-args "youtube:player_client=web_embedded,youtube:lang=tr"       -o "/tmp/kisa_meta/%(id)s.%(ext)s"       "https://www.youtube.com/shorts/<VIDEO_ID>"
 
 Ardından her `.tr.vtt` dosyasındaki yürüyen altyazı tekrarı ayıklanarak düz metne çevrilir ve
- `index.*` dosyaları güncellenir. Türkçe altyazısı olmayan videolar için `en-orig`, sonra `en`
+`index.*` dosyaları güncellenir. Türkçe altyazısı olmayan videolar için `en-orig`, sonra `en`
 denenir; hiç altyazısı olmayanlar index dosyalarında "Transkript yok" durumuyla işaretlenir.

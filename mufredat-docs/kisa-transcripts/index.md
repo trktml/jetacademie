@@ -4,6 +4,7 @@
 - **Toplam Video:** 1744
 - **İndirilen Transkript Sayısı:** 1717
 
+<!-- prettier-ignore -->
 |   # | TXT Dosyası | Video Başlığı | YouTube Linki | Video ID | Tarih | Dil | Altyazı Türü |
 | --: | ----------- | ------------- | ------------- | -------- | ----- | --- | ------------ |
 | 1 | 0001_Peygamber_Efendimiz'i_Biz_mi_Gölgeliyoruz.txt | Peygamber Efendimiz'i Biz mi Gölgeliyoruz | https://www.youtube.com/shorts/TMdy__whGhM | TMdy__whGhM | 2026-10-18 | tr | otomatik |

@@ -60,4 +60,29 @@ describe("listening vocabulary", () => {
     expect(html).toContain('aria-label="Belçika bayrağı"');
     expect(html.indexOf("Fransızca")).toBeLessThan(html.indexOf("Felemenkçe"));
   });
+
+  it("places the video before the lesson content and vocabulary", () => {
+    const html = renderToString(
+      <EntryContentRenderer
+        entry={
+          {
+            id: "g1-hocaefendi-dinleme-eylul-3",
+            grade: 1,
+            categoryId: "hocaefendi-dinleme",
+            title: "Dinleme",
+            month: 9,
+            week: 3,
+            year: 2026,
+            resourceUrl: "https://www.youtube.com/watch?v=abcdefghijk",
+            contentFormat: "markdown",
+            body: "Sohbet açıklaması.\n\n## Kelimeler\n\n- **Sabır**: Dayanma.",
+          } as CurriculumEntry
+        }
+      />
+    );
+
+    const videoIndex = html.indexOf("youtube-nocookie.com/embed/");
+    expect(videoIndex).toBeLessThan(html.indexOf("Sohbet açıklaması."));
+    expect(videoIndex).toBeLessThan(html.indexOf("<span>Kelimeler</span>"));
+  });
 });
