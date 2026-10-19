@@ -68,8 +68,22 @@ bun run sources:index
 
 # Terminalden arama yapın:
 bun run sources:search -- -q "ihlas" -n 5
+
+# Türkçe karakterler, büyük/küçük harf ve şapkalı yazımlar eşlenir:
+bun run sources:search -- -q "isik"
+
+# Tam ifade: kelime sırası korunur; ek/kök genişletmesi yapılmaz:
+bun run sources:search -- -q "ihlas ve samimiyet" --exact
+
+# Normal sorgunun içinde de tam ifade kullanılabilir:
+bun run sources:search -- -q '"ihlas ve samimiyet" iman'
+
 bun run sources:search -- --read "Lemalar" --page 160
 ```
+
+Normal aramada bütün terimler birlikte bulunamazsa motor herhangi bir terimle eşleşen sonuçlara geçer ve bunları **Genişletilmiş sonuçlar** olarak etiketler. `--json` çıktısındaki `expanded`, `matchMode` (`all`, `phrase`, `expanded`) ve `effectiveQuery` alanları eşleşme biçimini açıklar. Tam ifade içeren sorgular otomatik genişletilmez; tam ifade, noktalama ve Türkçe yazım normalizasyonundan sonra ardışık kelimeleri eşleştirir.
+
+Sıralama, asıl metindeki eşleşmelere öncelik verir; içindekiler sayfaları ve aynı eserin sayfa başı/sonunda tekrar eden satırların etkisi azaltılır. Sonuç parçacıkları özgün yazımı korur. Normalize edilmiş arama indeksi ilk aramada mevcut pasajlardan otomatik oluşturulur; bu ilk hazırlık sonraki aramalardan daha uzun sürebilir. Pasajlar değiştiğinde yeniden hazırlanır. Kaynak PDF'leri veya `--read` ile okunan özgün metinler bu işlemle değiştirilmez.
 
 ### Müfredat Yazımı ve Kalite Kılavuzu
 

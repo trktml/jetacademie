@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Fast Sources Search CLI for JetAcademie Curriculum & AI Agents
- * Performs sub-10ms full-text searches across Pırlantalar, Risaleler, and local sources
- * without spending any AI tokens or bloating LLM context.
+ * Searches extracted source text locally and returns short, original-text passages.
  *
  * Usage:
  *   bun scripts/search-sources.ts -q "ihlas" -n 5
@@ -16,6 +15,7 @@
 import { Database } from "bun:sqlite";
 import path from "node:path";
 import fs from "node:fs";
+import { ensureSearchIndex, normalizeSearchText } from "./source-search-index";
 
 // Resolve SQLite Database path
 function resolveDbPath(): string {
@@ -58,18 +58,7 @@ const TURKISH_STOP_WORDS = new Set([
 ]);
 
 export function foldTurkish(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/ı/g, "i")
-    .replace(/İ/g, "i")
-    .replace(/ğ/g, "g")
-    .replace(/ü/g, "u")
-    .replace(/ş/g, "s")
-    .replace(/ö/g, "o")
-    .replace(/ç/g, "c")
-    .replace(/[^a-z0-9]/g, "");
+  return normalizeSearchText(str).replace(/[^a-z0-9]/g, "");
 }
 
 export function resolveBookTitle(db: Database, inputTitle: string): string | null {
@@ -98,9 +87,17 @@ export function resolveBookTitle(db: Database, inputTitle: string): string | nul
 }
 
 function getTurkishStems(word: string): string[] {
-  const w = word.toLowerCase();
-  if (w.length < 5) return [word];
+  const w = normalizeSearchText(word);
+  if (w.length < 5) return [w];
   const suffixes = [
+    "larimizin",
+    "lerimizin",
+    "larinizin",
+    "lerinizin",
+    "larimiz",
+    "lerimiz",
+    "lariniz",
+    "leriniz",
     "lerin",
     "ların",
     "lerden",
@@ -153,48 +150,118 @@ function getTurkishStems(word: string): string[] {
     "le",
     "yla",
     "yle",
-  ];
-  const stems = new Set([word]);
+    "ı",
+    "i",
+    "u",
+    "ü",
+  ]
+    .map(normalizeSearchText)
+    .sort((a, b) => b.length - a.length);
+  const stems = new Set([w]);
   for (const suf of suffixes) {
-    if (w.endsWith(suf) && w.length - suf.length >= 3) {
-      stems.add(word.slice(0, word.length - suf.length));
+    if (w.endsWith(suf) && w.length - suf.length >= 4) {
+      const stem = w.slice(0, -suf.length);
+      stems.add(stem);
+      // Common consonant softening: ışığın -> ışık, kitabı -> kitap.
+      const hardConsonant = new Map([
+        ["b", "p"],
+        ["g", "k"],
+        ["d", "t"],
+      ]).get(stem.at(-1)!);
+      if (hardConsonant) {
+        stems.add(stem.slice(0, -1) + hardConsonant);
+      }
       break;
     }
   }
   return Array.from(stems);
 }
 
-export function sanitizeFtsQuery(rawQuery: string, operator: "AND" | "OR" = "AND"): string {
-  const trimmed = rawQuery.trim();
-  if (!trimmed) return "";
+interface SearchTerm {
+  words: string[];
+  phrase: boolean;
+}
 
-  const rawWords = trimmed
-    .replace(/[^\p{L}\p{N}\s_*-]/gu, " ")
-    .split(/\s+/)
-    .map((w) => w.trim())
-    .filter(Boolean);
+function searchTerms(rawQuery: string, exact = false): SearchTerm[] {
+  const tokenize = (text: string) => normalizeSearchText(text).match(/[\p{L}\p{N}]+/gu) ?? [];
+  if (exact) {
+    const words = tokenize(rawQuery);
+    return words.length ? [{ words, phrase: true }] : [];
+  }
+  const terms: SearchTerm[] = [];
+  for (const match of rawQuery.normalize("NFC").matchAll(/"([^"]*)"|“([^”]*)”|([^\s"“”]+)/gu)) {
+    const quoted = match[1] ?? match[2];
+    const words = tokenize(quoted ?? match[3]);
+    if (quoted !== undefined) {
+      if (words.length) terms.push({ words, phrase: true });
+    } else {
+      terms.push(...words.map((word) => ({ words: [word], phrase: false })));
+    }
+  }
+  if (terms.length <= 1) return terms;
+  const filtered = terms.filter((term) => term.phrase || !TURKISH_STOP_WORDS.has(term.words[0]));
+  return filtered.length ? filtered : terms;
+}
 
-  if (rawWords.length === 0) return "";
-
-  const words =
-    rawWords.length > 1
-      ? rawWords.filter((w) => !TURKISH_STOP_WORDS.has(w.toLowerCase()))
-      : rawWords;
-
-  const effective = words.length > 0 ? words : rawWords;
-
-  return effective
-    .map((w) => {
-      const stems = getTurkishStems(w);
-      if (stems.length > 1) {
-        const variants = stems.map((s) => `"${s.replace(/"/g, '""')}"*`).join(" OR ");
-        return `(${variants})`;
-      }
-      const clean = w.replace(/"/g, '""');
-      if (clean.endsWith("*")) return `"${clean.slice(0, -1)}"*`;
-      return `"${clean}"*`;
+export function sanitizeFtsQuery(
+  rawQuery: string,
+  operator: "AND" | "OR" = "AND",
+  exact = false
+): string {
+  return searchTerms(rawQuery, exact)
+    .map((term) => {
+      if (term.phrase) return `"${term.words.join(" ")}"`;
+      const variants = getTurkishStems(term.words[0]).map((word) => `"${word}"*`);
+      return variants.length > 1 ? `(${variants.join(" OR ")})` : variants[0];
     })
     .join(` ${operator} `);
+}
+
+/** Highlight normalized matches while returning the source's original spelling. */
+function originalSnippet(content: string, terms: SearchTerm[], fallback?: string): string {
+  const tokens = [...content.matchAll(/[\p{L}\p{N}\p{M}]+/gu)];
+  if (!tokens.length) return fallback ? originalSnippet(fallback, terms) : content.slice(0, 240);
+  const normalized = tokens.map((token) => normalizeSearchText(token[0]));
+  const hits = new Set<number>();
+  for (const term of terms) {
+    if (term.phrase) {
+      for (let i = 0; i <= tokens.length - term.words.length; i++) {
+        if (term.words.every((word, j) => normalized[i + j] === word)) {
+          term.words.forEach((_, j) => hits.add(i + j));
+        }
+      }
+    } else {
+      const stems = getTurkishStems(term.words[0]);
+      normalized.forEach((word, i) => {
+        if (stems.some((stem) => word.startsWith(stem))) hits.add(i);
+      });
+    }
+  }
+  if (!hits.size && fallback) return originalSnippet(fallback, terms);
+  const width = 32;
+  let best = 0;
+  let bestHits = -1;
+  for (const hit of hits) {
+    const start = Math.max(0, hit - 6);
+    const count = [...hits].filter((i) => i >= start && i < start + width).length;
+    if (count > bestHits) {
+      best = start;
+      bestHits = count;
+    }
+  }
+  const end = Math.min(tokens.length, best + width);
+  const startChar = tokens[best].index!;
+  const endChar = end < tokens.length ? tokens[end].index! : content.length;
+  let snippet = "";
+  let cursor = startChar;
+  for (let i = best; i < end; i++) {
+    if (!hits.has(i)) continue;
+    const token = tokens[i];
+    snippet += content.slice(cursor, token.index) + `**${token[0]}**`;
+    cursor = token.index! + token[0].length;
+  }
+  snippet += content.slice(cursor, endChar);
+  return `${best ? "..." : ""}${snippet.trim()}${end < tokens.length ? "..." : ""}`;
 }
 
 interface ChunkRow {
@@ -216,6 +283,7 @@ interface ParsedArgs {
   stats: boolean;
   json: boolean;
   help: boolean;
+  exact: boolean;
 }
 
 function parseCliArgs(): ParsedArgs {
@@ -226,6 +294,7 @@ function parseCliArgs(): ParsedArgs {
     stats: false,
     json: false,
     help: false,
+    exact: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -248,6 +317,8 @@ function parseCliArgs(): ParsedArgs {
       result.stats = true;
     } else if (arg === "--json") {
       result.json = true;
+    } else if (arg === "--exact") {
+      result.exact = true;
     } else if (arg === "-h" || arg === "--help") {
       result.help = true;
     } else if (!result.query && !arg.startsWith("-")) {
@@ -267,6 +338,8 @@ Kullanım:
 
 Arama Seçenekleri:
   -q, --query <metin>     Aranacak kelime veya kavram (örn: "ihlas hakikati")
+  --exact                 Tüm sorguyu kelime sırası korunmuş tam ifade olarak arar
+                          Sorgu içinde çift tırnak da kullanılabilir: '"ihlas ve samimiyet"'
   -c, --category <kat>    Kategori filtresi (pirlanta, risale veya all)
   -b, --book <başlık>     Kitap adına göre filtre (örn: "Sözler", "İrşad Ekseni")
   -n, --limit <sayı>      Gösterilecek sonuç sayısı (varsayılan: 5, maks: 50)
@@ -424,16 +497,34 @@ function main() {
   }
 
   const startTime = performance.now();
-  let ftsQuery = sanitizeFtsQuery(opts.query, "AND");
+  const terms = searchTerms(opts.query, opts.exact);
+  const hasPhrase = terms.some((term) => term.phrase);
+  let ftsQuery = sanitizeFtsQuery(opts.query, "AND", opts.exact);
 
   if (!ftsQuery) {
-    console.log(`\n⚠️  Geçerli bir arama terimi giriniz.\n`);
+    if (opts.json) {
+      console.log(
+        JSON.stringify({
+          query: opts.query,
+          total: 0,
+          results: [],
+          expanded: false,
+          matchMode: "all",
+          effectiveQuery: "",
+          executionTimeMs: 0,
+        })
+      );
+    } else {
+      console.log(`\n⚠️  Geçerli bir arama terimi giriniz.\n`);
+    }
     db.close();
     process.exit(0);
   }
 
+  ensureSearchIndex(db);
+
   // Build filter criteria
-  const whereClauses: string[] = ["corpus_fts MATCH ?"];
+  const whereClauses: string[] = ["source_search_fts MATCH ?"];
   const params: (string | number)[] = [ftsQuery];
 
   if (opts.category && opts.category !== "all") {
@@ -461,21 +552,23 @@ function main() {
 
   // Count total matches
   const countRow = db
-    .query(`SELECT COUNT(*) as count FROM corpus_fts WHERE ${whereSql}`)
+    .query(`SELECT COUNT(*) as count FROM source_search_fts WHERE ${whereSql}`)
     .get(...params) as { count: number };
   let total = countRow?.count ?? 0;
+  let expanded = false;
 
   // Fallback to OR if multi-word query had 0 results
-  if (total === 0 && opts.query.trim().split(/\s+/).length > 1) {
+  if (total === 0 && !hasPhrase && terms.length > 1) {
     const orQuery = sanitizeFtsQuery(opts.query, "OR");
     if (orQuery && orQuery !== ftsQuery) {
       params[0] = orQuery;
       const orCount = db
-        .query(`SELECT COUNT(*) as count FROM corpus_fts WHERE ${whereSql}`)
+        .query(`SELECT COUNT(*) as count FROM source_search_fts WHERE ${whereSql}`)
         .get(...params) as { count: number };
       if (orCount && orCount.count > 0) {
         ftsQuery = orQuery;
         total = orCount.count;
+        expanded = true;
       }
     }
   }
@@ -487,6 +580,9 @@ function main() {
           query: opts.query,
           total: 0,
           results: [],
+          expanded,
+          matchMode: hasPhrase ? "phrase" : "all",
+          effectiveQuery: ftsQuery,
           executionTimeMs: Math.round(performance.now() - startTime),
         })
       );
@@ -500,7 +596,8 @@ function main() {
     process.exit(0);
   }
 
-  // Query top ranked results with highlighting snippet
+  // A full-text column keeps headers discoverable, with much less influence than body text.
+  // Negative BM25 scores move closer to zero when contents pages are downweighted.
   const resultsSql = `
     SELECT 
       chunk_id as id,
@@ -508,10 +605,12 @@ function main() {
       book_title as bookTitle,
       file_path as filePath,
       CAST(page_number AS INTEGER) as pageNumber,
-      snippet(corpus_fts, 0, '**', '**', '...', 22) as snippet
-    FROM corpus_fts
+      body_start as bodyStart,
+      body_end as bodyEnd
+    FROM source_search_fts
     WHERE ${whereSql}
-    ORDER BY rank
+    ORDER BY bm25(source_search_fts, 1.0, 0.05) * CASE WHEN is_contents = 1 THEN 0.05 ELSE 1.0 END,
+      file_path, CAST(page_number AS INTEGER), chunk_id
     LIMIT ? OFFSET ?
   `;
 
@@ -522,8 +621,14 @@ function main() {
     bookTitle: string;
     filePath: string;
     pageNumber: number;
-    snippet: string;
+    bodyStart: number;
+    bodyEnd: number;
   }[];
+  const getContent = db.query("SELECT content FROM corpus_chunks WHERE id = ?");
+  const results = rows.map(({ bodyStart, bodyEnd, ...row }) => {
+    const { content } = getContent.get(row.id) as { content: string };
+    return { ...row, snippet: originalSnippet(content.slice(bodyStart, bodyEnd), terms, content) };
+  });
 
   const executionTimeMs = Math.round(performance.now() - startTime);
 
@@ -537,7 +642,10 @@ function main() {
           limit: opts.limit,
           offset: opts.offset,
           executionTimeMs,
-          results: rows,
+          expanded,
+          matchMode: expanded ? "expanded" : hasPhrase ? "phrase" : "all",
+          effectiveQuery: ftsQuery,
+          results,
         },
         null,
         2
@@ -547,8 +655,15 @@ function main() {
     console.log(
       `\n🎯 Arama: "${opts.query}" | Toplam: ${total} sonuç | Süre: ${executionTimeMs}ms\n`
     );
+    if (expanded) {
+      console.log(
+        "⚠️  Genişletilmiş sonuçlar: tüm terimleri birlikte karşılayan pasaj bulunamadı. Aşağıdaki pasajlar terimlerden en az birini içerir.\n"
+      );
+    } else if (hasPhrase) {
+      console.log("🔎 Tam ifade: tırnak içindeki kelimelerin sırası ve bütünlüğü korunur.\n");
+    }
 
-    rows.forEach((r, idx) => {
+    results.forEach((r, idx) => {
       const num = opts.offset + idx + 1;
       const cleanSnippet = r.snippet.replace(/\n+/g, " ").trim();
       console.log(
@@ -562,8 +677,16 @@ function main() {
     });
 
     if (total > opts.limit) {
+      const filters = [
+        opts.exact ? "--exact" : "",
+        opts.book ? `-b ${JSON.stringify(opts.book)}` : "",
+        opts.category ? `-c ${opts.category}` : "",
+        opts.page ? `--page ${opts.page}` : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
       console.log(
-        `💡 Daha fazla sonuç için: bun scripts/search-sources.ts -q "${opts.query}" -n ${opts.limit} -o ${opts.offset + opts.limit}\n`
+        `💡 Daha fazla sonuç için: bun scripts/search-sources.ts -q ${JSON.stringify(opts.query)} ${filters} -n ${opts.limit} -o ${opts.offset + opts.limit}\n`
       );
     }
   }
