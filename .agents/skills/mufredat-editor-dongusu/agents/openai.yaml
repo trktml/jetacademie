@@ -1,0 +1,4 @@
+interface:
+  display_name: "Müfredat Editör Döngüsü"
+  short_description: "Metni eleştir, düzelt ve yeniden okuyarak olgunlaştır"
+  default_prompt: "$mufredat-editor-dongusu ile bu müfredat metnini kanıtlı inceleme ve düzeltme döngüsünden geçirip taslağı olgunlaştır."

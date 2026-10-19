@@ -77,6 +77,57 @@ describe("curriculum CLI parseArgs", () => {
   });
 });
 
+describe("curriculum category draft CLI", () => {
+  it("saves six validated topic drafts and rejects publishing them through save", async () => {
+    const pkg = {
+      weekNumber: 5,
+      entries: Array.from({ length: 6 }, (_, index) => ({
+        id: `g${index + 1}-konu-ekim-1`,
+        grade: index + 1,
+        categoryId: "konu",
+        month: 10,
+        week: 1,
+        year: 2026,
+        title: "Kategori taslağı",
+        body: "# Başlık\n\n# Bana Ne Söylüyor?\n\n# Bu Hafta Tanıştığımız Kelimeler",
+      })),
+    };
+    for (const publish of [false, true]) {
+      const child = Bun.spawn(
+        [
+          process.execPath,
+          "scripts/curriculum.ts",
+          "save",
+          "--week",
+          "5",
+          "--category",
+          "konu",
+          ...(publish ? ["--publish"] : []),
+        ],
+        {
+          cwd: resolve(import.meta.dir, ".."),
+          env: { ...process.env, DATABASE_URL: ":memory:" },
+          stdin: new Blob([JSON.stringify(pkg)]),
+          stdout: "pipe",
+          stderr: "pipe",
+        }
+      );
+      const [stdout, stderr, code] = await Promise.all([
+        new Response(child.stdout).text(),
+        new Response(child.stderr).text(),
+        child.exited,
+      ]);
+      if (publish) {
+        expect(code).toBe(1);
+        expect(stderr).toContain("Tek kategori yalnız taslak kaydedilebilir");
+      } else {
+        expect(code).toBe(0);
+        expect(stdout).toContain("6 kayıt, Statü: Taslak");
+      }
+    }
+  });
+});
+
 describe("curriculum backup and restore operations", () => {
   const tmpBackupDir = `./tmp-test-backup-${Date.now()}`;
 

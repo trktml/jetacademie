@@ -32,6 +32,8 @@ Bu kılavuz, bu projede çalışan yapay zeka kodlama ajanları için bağlayıc
 
 6. **Dokümantasyon Dili**: `README.md` ve `AGENTS.md` dosyalarını Türkçe olarak sürdürün. Web sitesi arayüzünü, öğrencilere yönelik müfredatı, orijinal alıntıları ve içerik format etiketlerini mevcut dillerinde koruyun; dokümantasyon çevirisi uygulama içeriğini çevirme yetkisi vermez. Komutları, dosya yollarını, tanımlayıcıları ve Next.js tarafından otomatik oluşturulan bloğu koruyun.
 
+7. **Özerk Müfredat Editör Döngüsü**: Öğrenci müfredatı üretirken veya revize ederken [mufredat-editor-dongusu](.agents/skills/mufredat-editor-dongusu/SKILL.md) becerisini ve yazım kılavuzunun 18.6 bölümünü uygulayın. İlk taslaktan sonra kullanıcının ayrıca “kontrol et”, “kopuk yerleri düzelt” veya “çocuklara göre yeniden oku” demesini beklemeyin. Metinden kanıtlı eleştiri → somut düzeltme önerisi → uygulama → yeniden okuma döngüsünü yetkili kapsam içinde tamamlayın. İyi çalışan anlatıyı koruyun; açık sorun veya zorunlu inceleme eksikliğini gizleyerek uygun sonucu vermeyin. Açıkça yalnız rapor veya metne dokunmadan inceleme istenmişse metni değiştirmeyin; yayın yetkisini mevcut kullanıcı talebinden ayrı değerlendirin.
+
 ---
 
 ## 🏛️ Mimari & Durum Yönetimi Stratejisi
@@ -180,3 +182,4 @@ Haftalık müfredat paketleri (M1–M6) üretilirken veya revize edilirken her s
    - 2. sınıftaki bir öğrenci, o hafta 1. sınıf metnini okumamıştır ve okumayacaktır.
    - Her ders, ilgili sınıftaki öğrencinin önüne tek başına geldiğinde hiçbir eksiklik hissettirmeyecek şekilde; merak uyandıran girişi, sahneleri, tefekkür soruları ve kapanışıyla kendi içinde tam, tutarlı ve tatmin edici bir bütünlük taşımalıdır.
 4. **İç Tutarlılık ve Yaşa Uygunluk**: Her sınıfın yazısı o yaşın gerektirdiği düşünme derinliğini, kendi ana sorusunu ve yıllık plan hedefini kendi akışı içinde bağımsızca planlamalı; anlatımı ve pratik çıkarımları kendi içinde tutarlı olmalıdır.
+5. **Kaynağı Önceden Okuma Şartı Yoktur**: Öğrencinin ilgili Risale veya Pırlanta bölümünü okuduğu, dinlediği ya da yanında açık tuttuğu varsayılmaz. Ders, kaynağın nasıl ilerlediğini anlatmakla yetinmeden, haftanın meselesini ve seçilen gerekçeyi kendi içinde eksiksiz anlatmalıdır. Doğrulanmış alıntılar gerekli bağlam ve anlam desteğiyle korunur; kaynak adı veya dipnot eksik açıklamanın yerine geçmez. Yazım kılavuzunun 1. bölümündeki kaynak kapalı okuma kontrolünü her derse uygula; “kim ne yapıyor, örnek neyi gösteriyor, sonuca neden varılıyor?” sorularının cevabı yalnız öğrenci metninden çıkmalıdır. Kaynakla çalışma kazanımı olan haftalarda da incelenecek pasaj ve bağlam dersin içinde verilir.

@@ -79,7 +79,11 @@ Metinler hem bağımsız okumayı hem de bir rehberle tartışmayı desteklemeli
 
 Her üretim görevi, kılavuzun başındaki tek iş akışını takip eder: **plan ve öğrenen profili → kaynak doğrulama → temsilci ders → yazım → bağımsız kaynak ve dil incelemeleri → düzeltmeler → yayın değerlendirmesi**. Bölüm 9 merak ve üslubu; bölüm 10 sınıf, ay ve dil beklentilerini; bölüm 11 düşünce çizgisini; bölüm 18 ise kayıt bazında kanıt kayıtlarını ve kabulü yönetir. Açıklamalar M1–M6 boyunca sade kalır; yaş, Türkçe okuma becerisini belirlemez veya daha uzun alıntıları haklı çıkarmaz. Dinleme kaydının kendi dili dahil olmak üzere her sınıfı ve kategoriyi ayrı ayrı inceleyin.
 
+[Müfredat editör döngüsü](.agents/skills/mufredat-editor-dongusu/SKILL.md), her üretim ve revizyonda bu kontrolleri ayrıca istenmesini beklemeden yürütür: **metinden kanıtlı eleştiri → somut öneri → düzeltme → yeniden okuma → iyileşmeyi doğrulama**. Ayrıntılı yöntem ve bitirme ölçüsü yazım kılavuzunun 18.6 bölümündedir. İyi çalışan anlatı korunur; yalnız söyleyiş değiştirmek için sonsuz düzeltme yapılmaz. Kısa kullanım örnekleri: `6. haftanın Konu metinlerini üret.` veya `$mufredat-editor-dongusu ile 6. haftanın Konu taslaklarını olgunlaştır.` Her iki durumda da kapsam içindeki düzeltmeler aynı görevde tamamlanır. Açıkça yalnız rapor veya metne dokunmadan inceleme istenmişse metin değiştirilmez; yapılamayan zorunlu kontroller açıkça bildirilir ve yayın yetkisi ayrıca mevcut kullanıcı talebinden değerlendirilir.
+
 Haftalık müfredat üretilirken her sınıfın (M1–M6) metni, ilgili yaş düzeyine özel **tamamen müstakil ve bağımsız** bir ders olarak kaleme alınır. Sınıflar arası metinler asla bir yazı dizisinin birbirini izleyen parçaları gibi kurgulanamaz (örn. 1. sınıfta 1. madde, 2. sınıfta 2. madde gibi bölümlendirmeler veya sınıflar arası ardışıklık atıfları kesinlikle yasaktır). 1. sınıftaki öğrenci (~12–13 yaş) ile 2. sınıftaki öğrenci (~13–14 yaş) farklı bireylerdir; her ders, o yaştaki öğrencinin önüne tek başına geldiğinde eksiksiz bir giriş, merak unsuru, derinlik ve kapanış bütünlüğü sunmalıdır.
+
+Öğrencinin kaynak Risale veya Pırlanta bölümünü önceden okuduğu varsayılmaz. Konu dersi, kaynağın akışını yorumlamakla yetinmeden meseleyi, gerekli bağlamı ve seçilen gerekçeyi kendi içinde anlatır. Kaynak adı ve dipnot, eksik açıklamayı başka bir sayfaya erteleme yolu değildir; özgün alıntılar ise anlam desteğiyle korunur. [Yazım kılavuzunun](mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md) 1. bölümündeki kaynak kapalı okuma kontrolü her derse uygulanır ve 18. bölümde kanıtıyla kaydedilir. Bu ölçü bütün sınıflar ve haftalar için geçerlidir.
 
 Zengin Konu anlatımları durumu hayal etmek, her kaynağın katkısını anlamak ve gelişen düşünceyi takip etmek için yeterli bağlamı sağlar; kaynak sayıları ve metin uzunluğu kalite hedefi değildir. Sıcak, akıcı, anlaşılır imgelere sahip, ilgili yerlerde doğrulanmış mekan ve insan detayları içeren ve doğal cümle ritmine sahip bir nesir tercih edin. Sade dil edebi niteliklerini koruyabilir. Kısaltma yaparken gerekli bağlamı ve açıklamaları koruyun. Revizyon sırasında eski ve yeni metni karşılaştırın; etkili girişleri, atmosferi, insan emeğini, ritmi ve okumaya devam etme çağrılarını koruyun; desteklenmeyen ayrıntıları mümkün olduğunda doğrulanmış alternatiflerle düzeltin. Etkili bir anlatıyı kaybedip kuru bir özete dönüşen bir revizyon, bölüm 18 kapsamında daha fazla çalışma gerektirir.
 
@@ -103,6 +107,9 @@ bun run curriculum list
 
 # Yapay zeka tarafından oluşturulan haftalık bir paketi doğrulayın ve veritabanı taslağı olarak kaydedin:
 bun run curriculum save --week 3 --file hafta-3.json
+
+# Yalnız bir kategorinin altı sınıfını taslak kaydedin; diğer kategoriye dokunmaz:
+bun run curriculum save --week 5 --category konu --file hafta-5-konu.json
 
 # Taslak oluşturmak yerine doğrudan kaydedin ve yayınlayın:
 bun run curriculum save --week 3 --file hafta-3.json --publish

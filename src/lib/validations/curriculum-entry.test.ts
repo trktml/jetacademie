@@ -3,6 +3,7 @@ import {
   weekNumberToSlot,
   slotToWeekNumber,
   weeklyPackageSchema,
+  weeklyCategoryPackageSchema,
   WEEKLY_CONTENT_CATEGORIES,
   type WeeklyEntryInput,
 } from "./curriculum-entry";
@@ -113,5 +114,39 @@ describe("curriculum-entry validations and slot mapping", () => {
     });
 
     expect(res.success).toBe(false);
+  });
+
+  it("validates six topic drafts without accepting an incomplete weekly package", () => {
+    const entries: WeeklyEntryInput[] = Array.from({ length: 6 }, (_, index) => ({
+      id: `g${index + 1}-konu-ekim-1`,
+      grade: index + 1,
+      categoryId: "konu",
+      month: 10,
+      week: 1,
+      year: 2026,
+      title: "Haftanın konusu",
+      body: "# Başlık\n\n# Bana Ne Söylüyor?\n\n# Bu Hafta Tanıştığımız Kelimeler",
+      isDraft: true,
+    }));
+    const schema = weeklyCategoryPackageSchema("konu");
+    expect(schema.safeParse({ weekNumber: 5, entries }).success).toBe(true);
+    expect(weeklyPackageSchema.safeParse({ weekNumber: 5, entries }).success).toBe(false);
+
+    const invalidEntries = [
+      entries.slice(0, 5),
+      [...entries.slice(0, 5), entries[0]],
+      entries.map((entry, index) =>
+        index === 0
+          ? { ...entry, id: "g1-hocaefendi-dinleme-ekim-1", categoryId: "hocaefendi-dinleme" }
+          : entry
+      ),
+      entries.map((entry, index) => (index === 0 ? { ...entry, month: 9 } : entry)),
+      entries.map((entry, index) =>
+        index === 0 ? { ...entry, body: `${entry.body}\n\n**olmayan** — Eksik eşleşme.` } : entry
+      ),
+    ];
+    for (const invalid of invalidEntries) {
+      expect(schema.safeParse({ weekNumber: 5, entries: invalid }).success).toBe(false);
+    }
   });
 });

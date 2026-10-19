@@ -12,7 +12,9 @@ import { getPool, isPostgres, closeDatabase } from "../src/lib/db";
 import {
   weekNumberToSlot,
   weeklyPackageSchema,
+  weeklyCategoryPackageSchema,
   WEEKLY_CONTENT_CATEGORIES,
+  type WeeklyContentCategory,
   type WeeklyPackage,
 } from "../src/lib/validations/curriculum-entry";
 import { createCurriculumBackup, restoreCurriculumBackup } from "./curriculum-backup";
@@ -26,7 +28,7 @@ KULLANIM:
 
 KOMUTLAR:
   list                          36 haftanın durumunu (boş, taslak, yayında) listeler
-  save --week <N> [seçenekler]   Haftalık 12 kaydı doğrular ve veritabanına taslak olarak kaydeder
+  save --week <N> [seçenekler]   Haftalık paketi veya tek kategoriyi doğrular ve taslak kaydeder
   publish --week <N>            Belirtilen haftanın taslak kayıtlarını yayına alır (isDraft = 0)
   export --week <N> [seçenekler] Belirtilen haftanın kayıtlarını Markdown olarak dışa aktarır
   delete --week <N>             Belirtilen haftanın içerik kayıtlarını siler (adab, ilmihal, esma hariç)
@@ -36,6 +38,7 @@ KOMUTLAR:
 SEÇENEKLER (save):
   --week, -w <1-36>             Hafta numarası (zorunlu)
   --file, -f <dosya>            Girdi JSON dosyası yolu (varsayılan: stdin)
+  --category <kategori>         Yalnız konu veya hocaefendi-dinleme için 6 taslak kaydeder
   --publish                     Taslak yerine doğrudan yayında statüsünde kaydeder
 
 SEÇENEKLER (export):
@@ -57,6 +60,7 @@ SEÇENEKLER (restore):
   bun scripts/curriculum.ts restore --dry-run
   bun scripts/curriculum.ts restore --week 1
   bun scripts/curriculum.ts save --week 3 --file hafta-3.json
+  bun scripts/curriculum.ts save --week 5 --category konu --file hafta-5-konu.json
   bun scripts/curriculum.ts publish --week 3
   bun scripts/curriculum.ts export --week 3
   bun scripts/curriculum.ts delete --week 3
@@ -139,6 +143,19 @@ async function handleList() {
 }
 
 async function handleSave(options: Record<string, string | boolean>) {
+  const categoryOption = options.category;
+  if (
+    categoryOption !== undefined &&
+    !WEEKLY_CONTENT_CATEGORIES.includes(categoryOption as WeeklyContentCategory)
+  ) {
+    throw new Error("--category yalnız konu veya hocaefendi-dinleme olabilir.");
+  }
+  const category = categoryOption as WeeklyContentCategory | undefined;
+  if (category && options.publish) {
+    throw new Error(
+      "Tek kategori yalnız taslak kaydedilebilir; yayın için haftalık paketi tamamlayın."
+    );
+  }
   const weekVal = options.week || options.w;
   if (!weekVal || typeof weekVal !== "string") {
     throw new Error("Lütfen hafta numarasını belirtin: --week <1-36>");
@@ -168,7 +185,8 @@ async function handleSave(options: Record<string, string | boolean>) {
   }
 
   const parsed = JSON.parse(rawJson);
-  const validated = weeklyPackageSchema.safeParse(parsed);
+  const schema = category ? weeklyCategoryPackageSchema(category) : weeklyPackageSchema;
+  const validated = schema.safeParse(parsed);
 
   if (!validated.success) {
     console.error("\n❌ Şema doğrulama hataları:");
@@ -189,7 +207,7 @@ async function handleSave(options: Record<string, string | boolean>) {
   const isDraftVal = !shouldPublish;
 
   console.log(
-    `\n⏳ Hafta ${weekNumber} için 12 kayıt veritabanına aktarılıyor (isDraft: ${isDraftVal})...`
+    `\n⏳ Hafta ${weekNumber} için ${pkg.entries.length} kayıt veritabanına aktarılıyor (isDraft: ${isDraftVal})...`
   );
 
   const pool = getPool();
@@ -201,7 +219,7 @@ async function handleSave(options: Record<string, string | boolean>) {
       // Temporarily bypass the seed guard trigger inside this transaction
       const exclusions = await client.query(
         'DELETE FROM "curriculum_seed_exclusions" WHERE "categoryId" = ANY($1::text[]) RETURNING *',
-        [[...WEEKLY_CONTENT_CATEGORIES]]
+        [category ? [category] : [...WEEKLY_CONTENT_CATEGORIES]]
       );
 
       for (const entry of pkg.entries) {
@@ -284,7 +302,7 @@ async function handleSave(options: Record<string, string | boolean>) {
   }
 
   console.log(
-    `✅ Hafta ${weekNumber} başarıyla kaydedildi! (12 kayıt, Statü: ${isDraftVal ? "Taslak" : "Yayında"})\n`
+    `✅ Hafta ${weekNumber} başarıyla kaydedildi! (${pkg.entries.length} kayıt, Statü: ${isDraftVal ? "Taslak" : "Yayında"})\n`
   );
 }
 

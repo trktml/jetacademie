@@ -54,86 +54,101 @@ export const weeklyEntryInputSchema = z.object({
 
 export type WeeklyEntryInput = z.infer<typeof weeklyEntryInputSchema>;
 
-export const weeklyPackageSchema = z
-  .object({
-    weekNumber: z.number().int().min(1).max(36),
-    entries: z.array(weeklyEntryInputSchema),
-  })
-  .superRefine((val, ctx) => {
-    const slot = weekNumberToSlot(val.weekNumber);
+function createWeeklyPackageSchema(categories: readonly WeeklyContentCategory[]) {
+  return z
+    .object({
+      weekNumber: z.number().int().min(1).max(36),
+      entries: z.array(weeklyEntryInputSchema),
+    })
+    .superRefine((val, ctx) => {
+      const slot = weekNumberToSlot(val.weekNumber);
 
-    if (val.entries.length !== 6 * WEEKLY_CONTENT_CATEGORIES.length) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `Haftalık paket tam ${6 * WEEKLY_CONTENT_CATEGORIES.length} kayıt içermelidir (6 sınıf × ${WEEKLY_CONTENT_CATEGORIES.length} kategori). Alınan kayıt sayısı: ${val.entries.length}`,
-      });
-      return;
-    }
-
-    const seenIds = new Set<string>();
-
-    for (let grade = 1; grade <= 6; grade++) {
-      const gradeEntries = val.entries.filter((e) => e.grade === grade);
-      if (gradeEntries.length !== WEEKLY_CONTENT_CATEGORIES.length) {
+      if (val.entries.length !== 6 * categories.length) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `${grade}. sınıf için tam ${WEEKLY_CONTENT_CATEGORIES.length} kategori bulunmalıdır. Mevcut: ${gradeEntries.length}`,
+          message: `Haftalık paket tam ${6 * categories.length} kayıt içermelidir (6 sınıf × ${categories.length} kategori). Alınan kayıt sayısı: ${val.entries.length}`,
         });
+        return;
       }
 
-      for (const cat of WEEKLY_CONTENT_CATEGORIES) {
-        const catEntry = gradeEntries.find((e) => e.categoryId === cat);
-        if (!catEntry) {
+      const seenIds = new Set<string>();
+
+      for (let grade = 1; grade <= 6; grade++) {
+        const gradeEntries = val.entries.filter((e) => e.grade === grade);
+        if (gradeEntries.length !== categories.length) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `${grade}. sınıf için '${cat}' kategorisi eksik.`,
+            message: `${grade}. sınıf için tam ${categories.length} kategori bulunmalıdır. Mevcut: ${gradeEntries.length}`,
           });
         }
-      }
-    }
 
-    for (const entry of val.entries) {
-      for (const message of curriculumVocabularyIssues(entry.body)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${entry.id}: ${message}` });
-      }
-      if (seenIds.has(entry.id)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Mükerrer kayıt ID tespit edildi: ${entry.id}`,
-        });
-      }
-      seenIds.add(entry.id);
-
-      const expectedId = `g${entry.grade}-${entry.categoryId}-${slot.monthSlug}-${slot.week}`;
-      if (entry.id !== expectedId) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Geçersiz ID: '${entry.id}'. Beklenen standart ID: '${expectedId}'`,
-        });
+        for (const cat of categories) {
+          const catEntry = gradeEntries.find((e) => e.categoryId === cat);
+          if (!catEntry) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `${grade}. sınıf için '${cat}' kategorisi eksik.`,
+            });
+          }
+        }
       }
 
-      if (entry.month !== slot.month || entry.week !== slot.week) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `${entry.id} kaydının ay/hafta bilgisi (${entry.month}/${entry.week}) ${val.weekNumber}. hafta slotu ile (${slot.month}/${slot.week}) uyuşmuyor.`,
-        });
-      }
-
-      if (entry.categoryId === "konu") {
-        if (!entry.body.includes("# Bana Ne Söylüyor?")) {
+      for (const entry of val.entries) {
+        if (!categories.includes(entry.categoryId)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `${entry.id} konu dersinde '# Bana Ne Söylüyor?' bölümü bulunamadı.`,
+            message: `${entry.id}: '${entry.categoryId}' seçilen kategori kapsamının dışında.`,
           });
         }
-        if (!entry.body.includes("# Bu Hafta Tanıştığımız Kelimeler")) {
+        for (const message of curriculumVocabularyIssues(entry.body)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${entry.id}: ${message}` });
+        }
+        if (seenIds.has(entry.id)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `${entry.id} konu dersinde '# Bu Hafta Tanıştığımız Kelimeler' bölümü bulunamadı.`,
+            message: `Mükerrer kayıt ID tespit edildi: ${entry.id}`,
           });
         }
+        seenIds.add(entry.id);
+
+        const expectedId = `g${entry.grade}-${entry.categoryId}-${slot.monthSlug}-${slot.week}`;
+        if (entry.id !== expectedId) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Geçersiz ID: '${entry.id}'. Beklenen standart ID: '${expectedId}'`,
+          });
+        }
+
+        if (entry.month !== slot.month || entry.week !== slot.week) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `${entry.id} kaydının ay/hafta bilgisi (${entry.month}/${entry.week}) ${val.weekNumber}. hafta slotu ile (${slot.month}/${slot.week}) uyuşmuyor.`,
+          });
+        }
+
+        if (entry.categoryId === "konu") {
+          if (!entry.body.includes("# Bana Ne Söylüyor?")) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `${entry.id} konu dersinde '# Bana Ne Söylüyor?' bölümü bulunamadı.`,
+            });
+          }
+          if (!entry.body.includes("# Bu Hafta Tanıştığımız Kelimeler")) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `${entry.id} konu dersinde '# Bu Hafta Tanıştığımız Kelimeler' bölümü bulunamadı.`,
+            });
+          }
+        }
       }
-    }
-  });
+    });
+}
+
+export const weeklyPackageSchema = createWeeklyPackageSchema(WEEKLY_CONTENT_CATEGORIES);
+
+/** A category draft still requires one valid entry for each of the six grades. */
+export function weeklyCategoryPackageSchema(category: WeeklyContentCategory) {
+  return createWeeklyPackageSchema([category]);
+}
 
 export type WeeklyPackage = z.infer<typeof weeklyPackageSchema>;
