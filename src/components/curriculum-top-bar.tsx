@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Calendar, Check, ChevronDown, ChevronUp, GraduationCap, Monitor } from "lucide-react";
+import { Calendar, Check, ChevronDown, ChevronUp, GraduationCap } from "lucide-react";
 import { BELGIUM_GRADES, GRADE_LABELS, type BelgiumGrade } from "@/lib/curriculum";
 import {
   academicMonthOrder,
@@ -405,7 +405,6 @@ export function CurriculumTopBar({
 
         {/* Right Section: View Mode Switcher (Desktop) */}
         <div className="hidden items-center gap-2 sm:flex">
-          <Monitor className="h-4.5 w-4.5 text-slate-600 dark:text-slate-400" aria-hidden="true" />
           <div
             className="flex items-center rounded-full bg-slate-100 p-0.5 dark:bg-slate-800"
             role="group"

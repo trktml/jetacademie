@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 import { getCompletedEntryIds } from "@/lib/curriculum-progress";
 import { getCurriculumEntriesFromDb, getUserGenderFromDb } from "@/lib/curriculum-db";
 import { CurriculumPageContent } from "@/components/curriculum-page-content";
-import { ProgressStatusNote } from "@/components/progress-status-note";
 import { CurriculumGradeEntry } from "@/components/curriculum-grade-entry";
 import { parseCurriculumGrade } from "@/lib/curriculum";
 
@@ -39,10 +38,6 @@ export default async function CurriculumPage(props: CurriculumPageProps) {
 
   return (
     <main className="curriculum-page page-shell archive-page-shell">
-      <header className="page-heading">
-        <ProgressStatusNote isSignedIn={Boolean(session?.user)} />
-      </header>
-
       <CurriculumPageContent
         initialCompletedEntryIds={completedEntryIds}
         isSignedIn={Boolean(session?.user)}
