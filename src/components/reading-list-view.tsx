@@ -396,7 +396,7 @@ function MobileView() {
 
 export function ReadingListView() {
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-6xl space-y-7">
       <PageHeader title="Müfredat Kitapları" />
 
       {/* Desktop Tablo */}

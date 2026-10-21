@@ -23,7 +23,7 @@ export function CampaignsView() {
   }, [lightboxCampaign]);
 
   return (
-    <div className="campaigns-view mx-auto max-w-5xl space-y-8 px-4 py-6 sm:px-6">
+    <div className="campaigns-view mx-auto max-w-5xl space-y-7">
       <PageHeader title="Dönemsel Kampanyalar" />
 
       {/* Posters Gallery */}
