@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getAllGradePlans, getGradePlan } from "@/lib/data/curriculum-plans";
+import { PageHeader } from "@/components/page-header";
 import { TargetsProgressionLadder } from "@/components/targets-progression-ladder";
 import { TargetOutcomeCard } from "@/components/target-outcome-card";
 import { TargetUnitsAccordion } from "@/components/target-units-accordion";
@@ -33,13 +34,7 @@ export function TargetsView({ initialGrade = 1 }: TargetsViewProps) {
 
   return (
     <div className="targets-view" suppressHydrationWarning>
-      {/* Clean Minimalist Hero Header */}
-      <header className="targets-view__hero">
-        <h1 className="targets-view__hero-title">Hedefler ve Yıllık Planlar</h1>
-        <p className="targets-view__hero-subtitle">
-          M1–M6 yıllık planlarından hedefler ve haftalık yol haritası.
-        </p>
-      </header>
+      <PageHeader title="Hedefler ve Yıllık Planlar" />
 
       {/* 6-Year Progression Ladder */}
       <TargetsProgressionLadder

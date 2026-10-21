@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { BookOpen, ChevronDown, Sparkles } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 import {
   GRADES,
   GRADE_DETAILS,
@@ -396,12 +397,7 @@ function MobileView() {
 export function ReadingListView() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-6 sm:px-6">
-      {/* Hero Header */}
-      <header className="space-y-3 pt-2 pb-4 text-center">
-        <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 sm:text-3xl lg:text-4xl dark:text-white">
-          Müfredat Kitapları
-        </h1>
-      </header>
+      <PageHeader title="Müfredat Kitapları" />
 
       {/* Desktop Tablo */}
       <DesktopTable />

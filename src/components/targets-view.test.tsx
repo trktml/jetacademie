@@ -101,6 +101,9 @@ describe("Targets UI Components (SSR & Rendering)", () => {
       const html = renderToString(<TargetsView initialGrade={1} />);
 
       expect(html).toContain("Hedefler ve Yıllık Planlar");
+      expect(html).toContain("page-header");
+      expect(html).toContain("text-center");
+      expect(html).not.toContain("M1–M6 yıllık planlarından hedefler ve haftalık yol haritası.");
       expect(html).toContain(planM1.yearEndOutcome);
       expect(html).toContain("/mufredat?sinif=1");
     });

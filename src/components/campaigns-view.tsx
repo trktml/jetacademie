@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Download, Maximize2, X } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 import { CampaignAnnouncement, getAllCampaignAnnouncements } from "@/lib/data/campaigns";
 
 export function CampaignsView() {
@@ -23,12 +24,7 @@ export function CampaignsView() {
 
   return (
     <div className="campaigns-view mx-auto max-w-5xl space-y-8 px-4 py-6 sm:px-6">
-      {/* Page Header */}
-      <header className="space-y-3 pt-2 pb-2 text-center">
-        <h1 className="text-3xl font-black tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-          Dönemsel Kampanyalar
-        </h1>
-      </header>
+      <PageHeader title="Dönemsel Kampanyalar" />
 
       {/* Posters Gallery */}
       <div
