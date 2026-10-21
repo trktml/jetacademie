@@ -43,8 +43,8 @@ describe("CurriculumWeeklyView", () => {
     expect(html).toContain("youtube-nocookie.com/embed/");
     expect(html).not.toContain("Videoyu aç");
     expect(html).toContain("PDF’yi oku");
-    expect(html).toContain('class="weekly-status-badge"');
-    expect(html).toContain("Bu görünümde ilerlemeniz değişmez");
+    expect(html).not.toContain("weekly-status-badge");
+    expect(html).not.toContain("Bu görünümde ilerlemeniz değişmez");
     expect(html).toContain('class="sr-only"');
     expect(html).not.toContain('<h2 class="weekly-heading');
     expect(html.indexOf("youtube-nocookie.com/embed/")).toBeLessThan(html.indexOf("Video dersi"));

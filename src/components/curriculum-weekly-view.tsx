@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { BookOpen, Info, X } from "lucide-react";
+import { BookOpen, X } from "lucide-react";
 import { curriculumCategories, type CurriculumEntry } from "@/lib/curriculum";
 import { formatPeriodLabel, weeklyGroups, type CurriculumPeriod } from "@/lib/curriculum-view";
 import { EntryContentRenderer, EsmaCardHeader } from "./curriculum-entry-content";
@@ -80,13 +80,9 @@ export function CurriculumWeeklyView({
     <div className="archive-main-column weekly-view" ref={rootRef}>
       {period ? (
         <>
-          <header className="weekly-heading" aria-live="polite">
-            <h2 className="sr-only">{formatPeriodLabel(period)}</h2>
-            <div className="weekly-status-badge">
-              <Info className="weekly-status-badge-icon" aria-hidden="true" />
-              <span>Bu görünümde ilerlemeniz değişmez.</span>
-            </div>
-          </header>
+          <h2 className="sr-only" aria-live="polite">
+            {formatPeriodLabel(period)}
+          </h2>
           {weeklyGroups(entries, period).map((group) => {
             const category = curriculumCategories.find((c) => c.id === group.categoryId)!;
             const Icon = category.icon;

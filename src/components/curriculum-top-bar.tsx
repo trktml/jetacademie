@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Calendar, Check, ChevronDown, ChevronUp, GraduationCap } from "lucide-react";
+import { Calendar, Check, ChevronDown, GraduationCap } from "lucide-react";
 import { BELGIUM_GRADES, GRADE_LABELS, type BelgiumGrade } from "@/lib/curriculum";
 import {
   academicMonthOrder,
@@ -263,10 +263,10 @@ export function CurriculumTopBar({
                   setIsPeriodOpen(!isPeriodOpen);
                   if (isGradeOpen) setIsGradeOpen(false);
                 }}
-                className={`flex min-h-[44px] w-full items-center justify-between gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all sm:justify-center sm:px-4 sm:py-1.5 ${
+                className={`flex min-h-[44px] w-full items-center justify-between gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all sm:justify-center ${
                   isPeriodOpen
-                    ? "border-2 border-emerald-500 bg-emerald-50/40 text-emerald-950 shadow-sm dark:border-emerald-500 dark:bg-emerald-950/30 dark:text-emerald-200"
-                    : "border border-slate-200/80 bg-white/70 text-slate-800 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200 dark:hover:bg-slate-800"
+                    ? "bg-slate-100 text-slate-900 ring-2 ring-emerald-500/30 dark:bg-slate-800 dark:text-white"
+                    : "bg-slate-100/60 text-slate-700 hover:bg-slate-100/80 sm:bg-transparent dark:bg-slate-800/50 dark:text-slate-200 dark:hover:bg-slate-800 sm:dark:bg-transparent"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -276,17 +276,12 @@ export function CurriculumTopBar({
                   />
                   <span className="font-semibold tracking-tight">{formatPeriodLabel(period)}</span>
                 </div>
-                {isPeriodOpen ? (
-                  <ChevronUp
-                    className="h-4 w-4 text-emerald-600 dark:text-emerald-400"
-                    aria-hidden="true"
-                  />
-                ) : (
-                  <ChevronDown
-                    className="h-4 w-4 text-slate-400 dark:text-slate-500"
-                    aria-hidden="true"
-                  />
-                )}
+                <ChevronDown
+                  className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                    isPeriodOpen ? "rotate-180 text-slate-700 dark:text-slate-200" : ""
+                  }`}
+                  aria-hidden="true"
+                />
               </button>
 
               {/* Responsive month and week picker */}
