@@ -221,6 +221,12 @@ body:has(.landing-page),
   background: var(--brand-soft);
 }
 
+@media (min-width: 768px) {
+  .scroll-to-top {
+    right: max(calc(16px + env(safe-area-inset-right, 0px)), calc((100% - 76rem) / 2 + 16px));
+  }
+}
+
 .site-header {
   position: sticky;
   top: 0;
