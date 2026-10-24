@@ -196,6 +196,31 @@ body:has(.landing-page),
   padding-bottom: clamp(2rem, 4vw, 3rem);
 }
 
+.scroll-to-top {
+  position: fixed;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--brand-strong);
+  box-shadow: var(--shadow-md);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.scroll-to-top:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
 .site-header {
   position: sticky;
   top: 0;
@@ -3552,7 +3577,7 @@ body:has(.landing-page),
 /* Arşiv Bildirim Toast */
 .archive-toast {
   position: fixed;
-  bottom: 2rem;
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   right: 2rem;
   z-index: 60;
   display: flex;
@@ -5384,7 +5409,7 @@ body:has(.landing-page),
   .archive-toast {
     left: 0.75rem;
     right: 0.75rem;
-    bottom: calc(4.8rem + env(safe-area-inset-bottom, 0px));
+    bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
     max-width: none;
     text-align: left;
   }
