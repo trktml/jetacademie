@@ -2,6 +2,34 @@ import { describe, expect, it, mock } from "bun:test";
 import React from "react";
 import { renderToString } from "react-dom/server";
 
+let drawerAutoFocus = false;
+let renderDrawerContent = false;
+let drawerContent: {
+  onOpenAutoFocus: () => void;
+  onCloseAutoFocus: (event: { preventDefault: () => void }) => void;
+};
+mock.module("vaul", () => {
+  const Slot = ({ children }: { children?: React.ReactNode }) => <>{children}</>;
+  return {
+    Drawer: {
+      Root: ({ children, autoFocus }: { children?: React.ReactNode; autoFocus: boolean }) => {
+        drawerAutoFocus = autoFocus;
+        return renderDrawerContent ? <>{children}</> : null;
+      },
+      Portal: Slot,
+      Overlay: () => null,
+      Handle: () => null,
+      Title: Slot,
+      Description: Slot,
+      Close: Slot,
+      Content: ({ children, ...props }: { children?: React.ReactNode } & typeof drawerContent) => {
+        drawerContent = props;
+        return <>{children}</>;
+      },
+    },
+  };
+});
+
 // Mock next/navigation
 let currentPathname = "/";
 mock.module("next/navigation", () => ({
@@ -136,5 +164,34 @@ describe("AppHeader Component", () => {
 
     expect(html).toContain('value="/hedefler"');
     expect(html).toContain("Hedefler");
+  });
+
+  it("opens the sign-in form and restores focus to the opener", () => {
+    currentPathname = "/";
+    mockSessionData = null;
+    renderDrawerContent = true;
+    const html = renderToString(<AppHeader />);
+
+    expect(html).toContain('name="username"');
+    expect(html).not.toContain('name="confirmPassword"');
+    expect(drawerAutoFocus).toBe(true);
+
+    const focus = mock(() => {});
+    const preventDefault = mock(() => {});
+    const originalDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
+    Object.defineProperty(globalThis, "document", {
+      configurable: true,
+      value: { activeElement: { isConnected: true, focus } },
+    });
+    try {
+      drawerContent.onOpenAutoFocus();
+      drawerContent.onCloseAutoFocus({ preventDefault });
+      expect(preventDefault).toHaveBeenCalledTimes(1);
+      expect(focus).toHaveBeenCalledTimes(1);
+    } finally {
+      if (originalDocument) Object.defineProperty(globalThis, "document", originalDocument);
+      else Reflect.deleteProperty(globalThis, "document");
+      renderDrawerContent = false;
+    }
   });
 });

@@ -175,6 +175,10 @@ body:has(.landing-page),
   background: #000;
 }
 
+:root:has(.landing-page) {
+  min-width: 0;
+}
+
 @media (min-width: 901px) and (min-height: 680px) {
   body:has(.landing-page) {
     overflow-y: hidden;
@@ -543,6 +547,11 @@ body:has(.landing-page),
 
 .theme-switcher:active {
   transform: scale(0.96);
+}
+
+.theme-switcher:has(select:focus-visible) {
+  outline: 3px solid var(--brand-strong);
+  outline-offset: 3px;
 }
 
 .theme-switcher svg {
@@ -5450,13 +5459,6 @@ body:has(.landing-page),
   .archive-toast-close-button {
     min-width: 44px;
     min-height: 44px;
-  }
-}
-
-@media (max-width: 380px) {
-  .hero-mobile-nav {
-    grid-template-columns: 1fr;
-    max-width: 20rem;
   }
 }
 

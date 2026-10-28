@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Drawer } from "vaul";
 import {
@@ -41,7 +41,8 @@ export function AccountSheet() {
     refetch: refetchSession,
   } = authClient.useSession();
 
-  const [mode, setMode] = useState<"signIn" | "signUp">("signUp");
+  const [mode, setMode] = useState<"signIn" | "signUp">("signIn");
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -311,6 +312,7 @@ export function AccountSheet() {
   return (
     <Drawer.Root
       open={isOpen}
+      autoFocus
       onOpenChange={(open) => {
         setOpen(open);
         if (!open) {
@@ -321,7 +323,17 @@ export function AccountSheet() {
     >
       <Drawer.Portal>
         <Drawer.Overlay className="sheet-overlay" />
-        <Drawer.Content className="account-sheet">
+        <Drawer.Content
+          className="account-sheet"
+          onOpenAutoFocus={() => {
+            returnFocusRef.current = document.activeElement as HTMLElement | null;
+            setMode("signIn");
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            if (returnFocusRef.current?.isConnected) returnFocusRef.current.focus();
+          }}
+        >
           <Drawer.Handle className="sheet-handle" />
           <div className="sheet-heading">
             <div>
