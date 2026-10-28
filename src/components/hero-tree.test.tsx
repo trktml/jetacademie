@@ -22,11 +22,11 @@ describe("HeroTree Component", () => {
     expect(html).toContain('href="/kampanyalar"');
   });
 
-  it("should render the titles including responsive multi-line for Müfredat Kitapları", () => {
+  it("should render the navigation titles", () => {
     const html = renderToString(<HeroTree />);
 
     expect(html).toContain("Müfredat");
-    expect(html).toContain("Kitapları");
+    expect(html).toContain("Modül Kitapları");
     expect(html).toContain("Hedefler");
     expect(html).toContain("Kampanyalar");
   });

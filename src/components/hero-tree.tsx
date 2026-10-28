@@ -19,7 +19,7 @@ const navigationItems = [
   {
     id: "mufredat-kitaplari",
     href: "/mufredat-kitaplari",
-    title: "Müfredat Kitapları",
+    title: "Modül Kitapları",
     icon: Library,
     side: "left" as const,
   },
