@@ -33,6 +33,8 @@ export async function POST(request: Request) {
     editorConfig();
     const denied = checkEditorMutation(request);
     if (denied) return denied;
+    const input = editorLoginSchema.safeParse(await readEditorJson(request, 2048));
+    if (!input.success) return editorResponse({ error: "Kullanıcı adı veya şifre hatalı." }, 400);
     if (!(await reserveEditorLogin())) {
       const response = editorResponse(
         { error: "Çok fazla giriş denemesi. 15 dakika sonra tekrar deneyin." },
@@ -41,8 +43,6 @@ export async function POST(request: Request) {
       response.headers.set("Retry-After", "900");
       return response;
     }
-    const input = editorLoginSchema.safeParse(await readEditorJson(request, 2048));
-    if (!input.success) return editorResponse({ error: "Kullanıcı adı veya şifre hatalı." }, 400);
     if (!(await verifyEditorCredentials(input.data.username, input.data.password)))
       return editorResponse({ error: "Kullanıcı adı veya şifre hatalı." }, 401);
     const previous = getEditorToken(request);

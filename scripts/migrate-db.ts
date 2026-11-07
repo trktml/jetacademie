@@ -1,4 +1,4 @@
-import { ensureDatabaseSchema } from "../src/lib/auth";
+import { ensureDatabaseSchema } from "../src/lib/database-schema";
 import { closeDatabase } from "../src/lib/db";
 import { ensureEditorSchema } from "../src/lib/editor/schema";
 

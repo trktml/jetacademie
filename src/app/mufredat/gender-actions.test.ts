@@ -19,11 +19,11 @@ mock.module("@/lib/curriculum-db", () => ({
 }));
 
 mock.module("@/lib/auth", () => ({
-  auth: {
+  getAuth: () => ({
     api: {
       getSession: async () => (mockUser ? { user: mockUser } : null),
     },
-  },
+  }),
 }));
 
 import { getUserGender, updateUserGender } from "./gender-actions";

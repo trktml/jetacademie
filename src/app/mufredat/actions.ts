@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { canCompleteEntry, canUnmarkEntry, getCategoryEntries } from "@/lib/curriculum";
 import { curriculumEntries } from "@/lib/curriculum-data";
 import { getCurriculumEntriesFromDb, getCurriculumEntryByIdFromDb } from "@/lib/curriculum-db";
@@ -19,7 +19,7 @@ export async function markEntryAsRead(entryId: string) {
   const parsedEntryId = entryIdSchema.safeParse(entryId);
   if (!parsedEntryId.success) throw new Error("Geçersiz dosya.");
 
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("İlerlemenizi kaydetmek için giriş yapın.");
 
   const entry =
@@ -43,7 +43,7 @@ export async function unmarkEntryAsRead(entryId: string) {
   const parsedEntryId = entryIdSchema.safeParse(entryId);
   if (!parsedEntryId.success) throw new Error("Geçersiz dosya.");
 
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("İlerlemenizi güncellemek için giriş yapın.");
 
   const entry =

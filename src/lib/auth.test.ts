@@ -1,10 +1,16 @@
-import { describe, expect, it } from "bun:test";
-import { activeDbPath, auth, db, dbPath, initializeDatabase, resolveDatabasePath } from "./auth";
+import { beforeAll, describe, expect, it } from "bun:test";
+import { getAuth } from "./auth";
+import { getSqlite, resolveDatabaseUrl } from "./db";
+import { ensureDatabaseSchema } from "./database-schema";
 import { GET, POST } from "@/app/api/auth/[...all]/route";
 import { GET as healthGET } from "@/app/api/health/route";
 
+const db = getSqlite()!;
+beforeAll(ensureDatabaseSchema);
+
 describe("Better Auth Server Setup", () => {
   it("should have auth instance initialized with handler and api", () => {
+    const auth = getAuth();
     expect(auth).toBeDefined();
     expect(typeof auth.handler).toBe("function");
     expect(auth.api).toBeDefined();
@@ -34,11 +40,11 @@ describe("Better Auth Server Setup", () => {
 
   it("should successfully sign up a new user and persist in sqlite", async () => {
     const email = `user_${Date.now()}@example.com`;
-    const res = await auth.api.signUpEmail({
+    const res = await getAuth().api.signUpEmail({
       body: {
         name: "Test User",
         email,
-        password: "1234",
+        password: "test-password-1234",
       },
     });
 
@@ -51,18 +57,18 @@ describe("Better Auth Server Setup", () => {
 
   it("should successfully sign in an existing user", async () => {
     const email = `signin_${Date.now()}@example.com`;
-    await auth.api.signUpEmail({
+    await getAuth().api.signUpEmail({
       body: {
         name: "Sign In User",
         email,
-        password: "1234",
+        password: "test-password-1234",
       },
     });
 
-    const signInRes = await auth.api.signInEmail({
+    const signInRes = await getAuth().api.signInEmail({
       body: {
         email,
-        password: "1234",
+        password: "test-password-1234",
       },
     });
 
@@ -73,16 +79,16 @@ describe("Better Auth Server Setup", () => {
 
   it("should reject sign in with invalid password", async () => {
     const email = `fail_${Date.now()}@example.com`;
-    await auth.api.signUpEmail({
+    await getAuth().api.signUpEmail({
       body: {
         name: "Fail User",
         email,
-        password: "1234",
+        password: "test-password-1234",
       },
     });
 
     try {
-      await auth.api.signInEmail({
+      await getAuth().api.signInEmail({
         body: {
           email,
           password: "0000",
@@ -105,11 +111,56 @@ describe("Better Auth Server Setup", () => {
       body: JSON.stringify({
         name: "Route User",
         email: "route@example.com",
-        password: "1234",
+        password: "test-password-1234",
       }),
     });
     const postRes = await POST(postReq);
     expect(postRes.status).toBe(404);
+  });
+
+  it("exposes only the public session shape and renews it only through a same-origin POST", async () => {
+    const signup = await getAuth().api.signUpEmail({
+      body: {
+        name: "Session Test",
+        email: "session-minimal@example.com",
+        password: "test-password-1234",
+      },
+      asResponse: true,
+    });
+    const cookies = signup.headers
+      .getSetCookie()
+      .map((cookie) => cookie.split(";", 1)[0])
+      .join("; ");
+    const { token } = (await signup.json()) as { token: string };
+    const expiresAt = new Date(Date.now() + 60_000).toISOString();
+    db.query('UPDATE "session" SET "expiresAt" = ? WHERE "token" = ?').run(expiresAt, token);
+    const url = "http://localhost:3000/api/auth/get-session";
+    const response = await GET(new Request(url, { headers: { Cookie: cookies } }));
+    expect(response.headers.get("Cache-Control")).toContain("no-store");
+    const data = await response.json();
+    expect(data).toEqual({
+      user: { id: expect.any(String), name: "Session Test" },
+      session: { expiresAt },
+      needsRefresh: true,
+    });
+    expect(response.headers.getSetCookie()).toEqual([]);
+    expect(
+      (await POST(new Request(url, { method: "POST", headers: { Cookie: cookies } }))).status
+    ).toBe(403);
+    const refreshed = await POST(
+      new Request(url, {
+        method: "POST",
+        headers: { Cookie: cookies, Origin: "http://localhost:3000" },
+      })
+    );
+    expect(refreshed.status).toBe(200);
+    expect(refreshed.headers.getSetCookie().length).toBeGreaterThan(0);
+    const refreshedData = await refreshed.json();
+    expect(refreshedData).toEqual({
+      user: data.user,
+      session: { expiresAt: expect.any(String) },
+    });
+    expect(Date.parse(refreshedData.session.expiresAt)).toBeGreaterThan(Date.parse(expiresAt));
   });
 
   it("should return ok status from the health check endpoint", async () => {
@@ -120,61 +171,51 @@ describe("Better Auth Server Setup", () => {
     expect(data.timestamp).toBeDefined();
   });
 
-  describe("resolveDatabasePath & test database isolation", () => {
+  describe("resolveDatabaseUrl & test database isolation", () => {
     it("should default to :memory: in test mode when DATABASE_URL is unset", () => {
-      expect(resolveDatabasePath(undefined, "test")).toBe(":memory:");
+      expect(resolveDatabaseUrl(undefined, "test")).toBe(":memory:");
     });
 
     it("should safely redirect auth.sqlite to :memory: in test mode", () => {
-      expect(resolveDatabasePath("auth.sqlite", "test")).toBe(":memory:");
+      expect(resolveDatabaseUrl("auth.sqlite", "test")).toBe(":memory:");
     });
 
     it("should preserve custom sqlite path when explicitly provided in test mode", () => {
-      expect(resolveDatabasePath("custom-test.sqlite", "test")).toBe("custom-test.sqlite");
+      expect(resolveDatabaseUrl("custom-test.sqlite", "test")).toBe("custom-test.sqlite");
     });
 
     it("should default to PostgreSQL URL in development mode when unset", () => {
       const expected =
         process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/jetacademie";
-      expect(resolveDatabasePath(undefined, "development", undefined)).toBe(expected);
+      expect(resolveDatabaseUrl(undefined, "development", undefined)).toBe(expected);
     });
 
     it("should reject production database URLs with default credentials", () => {
       expect(() =>
-        resolveDatabasePath("postgres://postgres:postgres@localhost:5432/jetacademie", "production")
+        resolveDatabaseUrl("postgres://postgres:postgres@localhost:5432/jetacademie", "production")
       ).toThrow();
       expect(() =>
-        resolveDatabasePath(
+        resolveDatabaseUrl(
           "postgres://jetacademie:change-me-in-production@db:5432/jetacademie",
           "production"
         )
       ).toThrow();
     });
 
-    it("should honor production DATABASE_URL", () => {
-      expect(resolveDatabasePath("/app/data/auth.sqlite", "production", undefined)).toBe(
-        "/app/data/auth.sqlite"
-      );
+    it("requires PostgreSQL in production and rejects local fallback storage", () => {
+      expect(() => resolveDatabaseUrl("/app/data/auth.sqlite", "production", undefined)).toThrow();
+      expect(
+        resolveDatabaseUrl(
+          "postgres://jet:strong-test-password@db:5432/jet",
+          "production",
+          undefined
+        )
+      ).toBe("postgres://jet:strong-test-password@db:5432/jet");
     });
 
-    it("should initialize test db with :memory:", () => {
-      expect(dbPath).toBe(":memory:");
-      expect(activeDbPath).toBe(":memory:");
-    });
-
-    it("should initialize Database and apply pragmas", () => {
-      const result = initializeDatabase(":memory:");
-      expect(result.db).toBeDefined();
-      expect(result.activePath).toBe(":memory:");
-      result.db.close();
-    });
-
-    it("should fallback to /tmp/auth.sqlite when primary path is invalid/unwritable", () => {
-      // /proc/cannot-write-here/db.sqlite or /dev/null/invalid-dir/db.sqlite will fail
-      const result = initializeDatabase("/proc/cannot-write-here/invalid.sqlite");
-      expect(result.db).toBeDefined();
-      expect(result.activePath).toBe("/tmp/auth.sqlite");
-      result.db.close();
+    it("enables foreign keys on the in-memory SQLite driver", () => {
+      expect(resolveDatabaseUrl()).toBe(":memory:");
+      expect(db.query("PRAGMA foreign_keys").get()).toEqual({ foreign_keys: 1 });
     });
   });
 });

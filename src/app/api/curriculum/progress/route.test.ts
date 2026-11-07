@@ -9,11 +9,11 @@ mock.module("next/headers", () => ({
 }));
 
 mock.module("@/lib/auth", () => ({
-  auth: {
+  getAuth: () => ({
     api: {
       getSession: async () => (mockSessionUser ? { user: mockSessionUser } : null),
     },
-  },
+  }),
 }));
 
 mock.module("@/lib/curriculum-progress", () => ({

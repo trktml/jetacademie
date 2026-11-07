@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { Database } from "bun:sqlite";
 import { Pool } from "pg";
-import { SCHEMA_SQL } from "../src/lib/auth";
+import { SCHEMA_SQL } from "../src/lib/database-schema";
 import type { CurriculumEntryRow } from "../src/lib/curriculum-db";
 
 interface UserRow {

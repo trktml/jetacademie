@@ -1,20 +1,13 @@
-/** Resolve the public origin seen by the browser when Next.js runs behind a reverse proxy. */
-export function getRequestOrigin(request: Request): string | null {
-  const host =
-    request.headers.get("x-forwarded-host") ||
-    request.headers.get("host") ||
-    new URL(request.url).host;
-  const forwardedProtocol = request.headers.get("x-forwarded-proto");
-  const protocol = forwardedProtocol || new URL(request.url).protocol.replace(":", "");
+import { configuredAppOrigin } from "@/lib/auth-configuration";
 
-  if (!host || !/^[a-z0-9.:-]+$/i.test(host) || !/^(http|https)$/.test(protocol)) {
-    return null;
-  }
+/** Reverse-proxy headers do not grant an origin permission to mutate state. */
+export function hasTrustedRequestOrigin(request: Request): boolean {
+  return hasTrustedOriginHeaders(request.headers);
+}
 
-  try {
-    const url = new URL(`${protocol}://${host}`);
-    return url.protocol === "http:" || url.protocol === "https:" ? url.origin : null;
-  } catch {
-    return null;
-  }
+export function hasTrustedOriginHeaders(headers: Pick<Headers, "get">): boolean {
+  return (
+    headers.get("sec-fetch-site") !== "cross-site" &&
+    headers.get("origin") === configuredAppOrigin()
+  );
 }

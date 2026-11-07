@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import {
+  MIN_PASSWORD_LENGTH,
   anonymousSignInSchema,
   anonymousSignUpSchema,
   changePasswordSchema,
@@ -464,13 +465,13 @@ export function AccountSheet() {
                       />
                     </label>
                     <label>
-                      <span>Yeni Şifre (en az 4 karakter)</span>
+                      <span>Yeni Şifre (en az {MIN_PASSWORD_LENGTH} karakter)</span>
                       <PasswordInput
                         value={newPassword}
                         onChange={setNewPassword}
                         name="newPassword"
-                        placeholder="En az 4 karakter"
-                        minLength={4}
+                        placeholder={`En az ${MIN_PASSWORD_LENGTH} karakter`}
+                        minLength={MIN_PASSWORD_LENGTH}
                         maxLength={128}
                         autoComplete="new-password"
                         required
@@ -689,13 +690,13 @@ export function AccountSheet() {
                     </span>
                   </div>
                   <label>
-                    <span>Şifreniz (en az 4 karakter)</span>
+                    <span>Şifreniz (en az {MIN_PASSWORD_LENGTH} karakter)</span>
                     <PasswordInput
                       value={password}
                       onChange={setPassword}
                       name="password"
-                      placeholder="En az 4 karakter"
-                      minLength={4}
+                      placeholder={`En az ${MIN_PASSWORD_LENGTH} karakter`}
+                      minLength={MIN_PASSWORD_LENGTH}
                       maxLength={128}
                       required
                       autoComplete="new-password"

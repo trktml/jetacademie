@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { getCompletedEntryIds, saveCompletedEntry } from "@/lib/curriculum-progress";
 import {
   getCurriculumEntriesFromDb,
@@ -26,7 +26,7 @@ export async function migrateGuestProgress(
     throw new Error("Geçersiz ilerleme verisi.");
   }
 
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error("Oturum bulunamadı.");
 
   // Cinsiyet tercihini aktar (henüz ayarlanmamışsa)

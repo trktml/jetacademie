@@ -1,4 +1,5 @@
-import { Pool, type PoolConfig } from "pg";
+import { Pool, type PoolClient, type PoolConfig } from "pg";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { Database } from "bun:sqlite";
 
 /**
@@ -22,8 +23,11 @@ export function resolveDatabaseUrl(
 
   if (nodeEnv === "production") {
     if (!url) throw new Error("Production requires DATABASE_URL.");
+    if (!/^postgres(?:ql)?:\/\//.test(url)) {
+      throw new Error("Production requires a PostgreSQL DATABASE_URL.");
+    }
     if (url.startsWith("postgres")) {
-      const password = new URL(url).password;
+      const password = decodeURIComponent(new URL(url).password);
       if (!password || password === "postgres" || password === "change-me-in-production") {
         throw new Error("Production requires a non-default database password.");
       }
@@ -33,37 +37,45 @@ export function resolveDatabaseUrl(
   return url || "postgres://postgres:postgres@localhost:5432/jetacademie";
 }
 
-export const activeDatabaseUrl = resolveDatabaseUrl();
-export const isPostgres =
-  activeDatabaseUrl.startsWith("postgres://") || activeDatabaseUrl.startsWith("postgresql://");
+function poolSize(value = process.env.PG_POOL_MAX || "20"): number {
+  const size = Number(value);
+  if (!Number.isInteger(size) || size < 1 || size > 100)
+    throw new Error("PG_POOL_MAX must be an integer between 1 and 100.");
+  return size;
+}
 
-let poolInstance: Pool | null = null;
-let sqliteInstance: Database | null = null;
+type Driver = { kind: "postgres"; pool: Pool } | { kind: "sqlite"; database: Database };
+let driver: Driver | undefined;
 
-if (isPostgres) {
-  const config: PoolConfig = {
-    connectionString: activeDatabaseUrl,
-    max: parseInt(process.env.PG_POOL_MAX || "20", 10),
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
-  };
-  poolInstance = new Pool(config);
-
-  poolInstance.on("error", (err) => {
-    console.error("[db] Unexpected PostgreSQL pool error:", err);
-  });
-} else {
-  // Test isolation / SQLite in-memory fallback
-  sqliteInstance = new Database(activeDatabaseUrl === ":memory:" ? ":memory:" : activeDatabaseUrl);
-  sqliteInstance.exec("PRAGMA foreign_keys = ON;");
+function getDriver(): Driver {
+  if (driver) return driver;
+  const url = resolveDatabaseUrl();
+  if (/^postgres(?:ql)?:\/\//.test(url)) {
+    const config: PoolConfig = {
+      connectionString: url,
+      max: poolSize(),
+      statement_timeout: 15000,
+      idle_in_transaction_session_timeout: 15000,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    };
+    const pool = new Pool(config);
+    pool.on("error", (error) => console.error("[db] Unexpected PostgreSQL pool error:", error));
+    return (driver = { kind: "postgres", pool });
+  }
+  const database = new Database(url);
+  database.exec("PRAGMA foreign_keys = ON");
+  return (driver = { kind: "sqlite", database });
 }
 
 export function getPool(): Pool | null {
-  return poolInstance;
+  const current = getDriver();
+  return current.kind === "postgres" ? current.pool : null;
 }
 
 export function getSqlite(): Database | null {
-  return sqliteInstance;
+  const current = getDriver();
+  return current.kind === "sqlite" ? current.database : null;
 }
 
 /**
@@ -74,31 +86,118 @@ function translatePgToSqlite(
   sql: string,
   params: unknown[] = []
 ): { sql: string; params: unknown[] } {
-  const sqliteSql = sql.replace(/\$(\d+)/g, "?");
-  const sqliteParams = params.map((p) => {
+  const sqliteParams: unknown[] = [];
+  const sqliteSql = sql.replace(
+    /'(?:''|[^'])*'|"(?:""|[^"])*"|--[^\n]*|\/\*[\s\S]*?\*\/|\$\$[\s\S]*?\$\$|\$([a-zA-Z_]\w*)\$[\s\S]*?\$\1\$|\$(\d+)/g,
+    (match, _tag: string, index: string) => {
+      if (!index) return match;
+      const p = params[Number(index) - 1];
+      if (Number(index) < 1 || Number(index) > params.length)
+        throw new Error("Missing SQL parameter");
+      sqliteParams.push(
+        p instanceof Date ? p.toISOString() : typeof p === "boolean" ? Number(p) : p
+      );
+      return "?";
+    }
+  );
+  /* Map by placeholder occurrence, so $2, $1, $2 matches PostgreSQL semantics. */
+  return { sql: sqliteSql, params: sqliteParams };
+}
+
+type TransactionContext = { client?: PoolClient; active: boolean };
+const transactions = new AsyncLocalStorage<TransactionContext>();
+let sqliteQueue: Promise<void> = Promise.resolve();
+
+async function withSqliteLock<T>(work: () => Promise<T>): Promise<T> {
+  const previous = sqliteQueue;
+  let release!: () => void;
+  sqliteQueue = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await previous;
+  try {
+    return await work();
+  } finally {
+    release();
+  }
+}
+
+/** All database helpers in work share one connection and commit or roll back together. */
+export async function transaction<T>(work: () => Promise<T>): Promise<T> {
+  if (transactions.getStore()?.active) throw new Error("Nested transactions are not supported");
+  const run = async (client?: PoolClient) => {
+    const context: TransactionContext = { client, active: true };
+    return transactions.run(context, async () => {
+      let begun = false;
+      let broken = false;
+      try {
+        await execute("BEGIN");
+        begun = true;
+        const result = await work();
+        await execute("COMMIT");
+        return result;
+      } catch (error) {
+        if (begun) {
+          try {
+            await execute("ROLLBACK");
+          } catch (rollbackError) {
+            broken = true;
+            throw new AggregateError(
+              [error, rollbackError],
+              "Database transaction and rollback failed"
+            );
+          }
+        }
+        throw error;
+      } finally {
+        context.active = false;
+        client?.release(broken);
+      }
+    });
+  };
+  const pool = getPool();
+  if (pool) return run(await pool.connect());
+  return withSqliteLock(() => run());
+}
+
+/** Read several tables from one consistent snapshot in either driver. */
+export function readOnlyTransaction<T>(work: () => Promise<T>): Promise<T> {
+  return transaction(async () => {
+    if (getPool()) await execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY");
+    return work();
+  });
+}
+
+function transactionContext(): TransactionContext | undefined {
+  const context = transactions.getStore();
+  if (context && !context.active) throw new Error("Database transaction has already ended");
+  return context;
+}
+
+function sqliteBindings(params: unknown[]): (string | number | boolean | null)[] {
+  return params.map((p) => {
     if (typeof p === "boolean") return p ? 1 : 0;
     if (p instanceof Date) return p.toISOString();
     return p;
-  });
-  return { sql: sqliteSql, params: sqliteParams };
+  }) as (string | number | boolean | null)[];
 }
 
 /**
  * Executes a query and returns an array of result rows.
  */
 export async function query<T = unknown>(sqlText: string, params: unknown[] = []): Promise<T[]> {
-  if (isPostgres && poolInstance) {
-    const res = await poolInstance.query(sqlText, params);
+  const context = transactionContext();
+  const current = getDriver();
+  if (current.kind === "postgres") {
+    const res = await (context?.client ?? current.pool).query(sqlText, params);
     return res.rows as T[];
   }
 
-  if (sqliteInstance) {
+  const read = async () => {
     const { sql, params: mappedParams } = translatePgToSqlite(sqlText, params);
-    const stmt = sqliteInstance.query(sql);
-    return stmt.all(...(mappedParams as (string | number | boolean | null)[])) as T[];
-  }
-
-  throw new Error("No database client initialized");
+    return current.database.query(sql).all(...sqliteBindings(mappedParams)) as T[];
+  };
+  return context ? read() : withSqliteLock(read);
 }
 
 /**
@@ -116,34 +215,31 @@ export async function queryOne<T = unknown>(
  * Executes a command (INSERT, UPDATE, DELETE, DDL) and returns the number of affected rows.
  */
 export async function execute(sqlText: string, params: unknown[] = []): Promise<number> {
-  if (isPostgres && poolInstance) {
-    const res = await poolInstance.query(sqlText, params);
+  const context = transactionContext();
+  const current = getDriver();
+  if (current.kind === "postgres") {
+    const res = await (context?.client ?? current.pool).query(sqlText, params);
     return res.rowCount ?? 0;
   }
 
-  if (sqliteInstance) {
+  const write = async () => {
     const { sql, params: mappedParams } = translatePgToSqlite(sqlText, params);
-    if (mappedParams.length > 0) {
-      sqliteInstance.query(sql).run(...(mappedParams as (string | number | boolean | null)[]));
-    } else {
-      sqliteInstance.exec(sql);
-    }
-    return 1;
-  }
-
-  throw new Error("No database client initialized");
+    if (mappedParams.length > 0)
+      return current.database.query(sql).run(...sqliteBindings(mappedParams)).changes;
+    const countChanges = () =>
+      current.database.query<{ count: number }, []>("SELECT total_changes() AS count").get()!.count;
+    const before = countChanges();
+    current.database.exec(sql);
+    return countChanges() - before;
+  };
+  return context ? write() : withSqliteLock(write);
 }
 
 /**
  * Closes the active database connection pool (useful for tests or graceful shutdown).
  */
 export async function closeDatabase(): Promise<void> {
-  if (poolInstance) {
-    await poolInstance.end();
-    poolInstance = null;
-  }
-  if (sqliteInstance) {
-    sqliteInstance.close();
-    sqliteInstance = null;
-  }
+  if (driver?.kind === "postgres") await driver.pool.end();
+  else driver?.database.close();
+  driver = undefined;
 }

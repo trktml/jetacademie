@@ -1,5 +1,6 @@
+import { authLimitResponse, reserveAuthAttempt } from "@/lib/auth-rate-limit";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { deleteAccountSchema } from "@/lib/validations/auth";
 import {
   mutationErrorResponse,
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
   const rejected = validateMutationRequest(req);
   if (rejected) return rejected;
   try {
-    const session = await auth.api.getSession({ headers: req.headers });
+    const session = await getAuth().api.getSession({ headers: req.headers });
 
     if (!session?.user) {
       return NextResponse.json({ error: "Oturum açmanız gerekiyor." }, { status: 401 });
@@ -22,7 +23,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Şifrenizi girin." }, { status: 400 });
     }
 
-    const deleted = await auth.api.deleteUser({
+    if (!(await reserveAuthAttempt("account-reauth", session.user.id, 5)))
+      return authLimitResponse();
+
+    const deleted = await getAuth().api.deleteUser({
       body: parsed.data,
       headers: req.headers,
       asResponse: true,

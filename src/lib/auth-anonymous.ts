@@ -13,7 +13,7 @@ export function normalizeUsername(input: string): string {
 
 /**
  * Converts a username to a synthetic internal email address.
- * No personal data is stored, ensuring 100% GDPR compliance.
+ * Registration does not ask for a personal email address.
  */
 export function usernameToSyntheticEmail(username: string): string {
   const normalized = normalizeUsername(username);

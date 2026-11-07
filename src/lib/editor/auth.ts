@@ -77,12 +77,13 @@ export async function reserveEditorLogin(): Promise<boolean> {
     `
     INSERT INTO "curriculum_editor_attempts" ("key", "attempts", "startedAt") VALUES ('login', 1, $1)
     ON CONFLICT ("key") DO UPDATE SET
-      "attempts" = CASE WHEN "curriculum_editor_attempts"."startedAt" <= $2 THEN 1 ELSE CASE WHEN "curriculum_editor_attempts"."attempts" < 11 THEN "curriculum_editor_attempts"."attempts" + 1 ELSE 11 END END,
-      "startedAt" = CASE WHEN "curriculum_editor_attempts"."startedAt" <= $3 THEN $4 ELSE "curriculum_editor_attempts"."startedAt" END
+      "attempts" = CASE WHEN "curriculum_editor_attempts"."startedAt" <= $2 THEN 1 ELSE "curriculum_editor_attempts"."attempts" + 1 END,
+      "startedAt" = CASE WHEN "curriculum_editor_attempts"."startedAt" <= $2 THEN $1 ELSE "curriculum_editor_attempts"."startedAt" END
+    WHERE "curriculum_editor_attempts"."startedAt" <= $2 OR "curriculum_editor_attempts"."attempts" < 10
     RETURNING "attempts"`,
-    [now, cutoff, cutoff, now]
+    [now, cutoff]
   );
-  return Number(row?.attempts ?? 11) <= 10;
+  return row !== null;
 }
 
 export function editorCsrf(token: string): string {

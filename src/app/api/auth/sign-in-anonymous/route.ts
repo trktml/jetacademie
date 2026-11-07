@@ -1,10 +1,12 @@
+import { copyResponseCookies, privateJson } from "@/lib/http";
 import { NextResponse } from "next/server";
 import { normalizeUsername, usernameToSyntheticEmail } from "@/lib/auth-anonymous";
 import { anonymousSignInSchema } from "@/lib/validations/auth";
-import { clearLoginAttempts, reserveLoginAttempt } from "@/lib/auth-login-limit";
+import { clearLoginAttempts, runLoginAttempt } from "@/lib/auth-login-limit";
 import {
   dispatchAuthRequest,
   mutationErrorResponse,
+  readAuthResponseUserId,
   readMutationJson,
   validateMutationRequest,
 } from "@/lib/mutation-security";
@@ -26,36 +28,23 @@ export async function POST(req: Request) {
     const normalizedUsername = normalizeUsername(parseResult.data.username);
     const email = usernameToSyntheticEmail(normalizedUsername);
 
-    const attempt = await reserveLoginAttempt(email);
-    if (!attempt.allowed) {
-      return NextResponse.json(
-        { error: "Çok fazla deneme. 15 dakika sonra tekrar deneyin." },
-        { status: 429 }
+    return await runLoginAttempt(email, async () => {
+      const signInResponse = await dispatchAuthRequest(req, "sign-in/email", {
+        email,
+        password: parseResult.data.password,
+      });
+      if (!signInResponse.ok) {
+        return privateJson(
+          { error: "Kullanıcı adı veya şifre hatalı." },
+          signInResponse.status === 429 ? 429 : 401
+        );
+      }
+      const userId = await readAuthResponseUserId(signInResponse);
+      await clearLoginAttempts(email);
+      return copyResponseCookies(
+        signInResponse,
+        privateJson({ success: true, username: normalizedUsername, userId })
       );
-    }
-
-    const signInResponse = await dispatchAuthRequest(req, "sign-in/email", {
-      email,
-      password: parseResult.data.password,
-    });
-
-    if (signInResponse.status !== 200) {
-      return NextResponse.json(
-        { error: "Kullanıcı adı veya şifre hatalı." },
-        { status: signInResponse.status === 429 ? 429 : 401 }
-      );
-    }
-
-    if (attempt.userId) await clearLoginAttempts(attempt.userId);
-
-    const responseHeaders = new Headers();
-    for (const cookie of signInResponse.headers.getSetCookie())
-      responseHeaders.append("set-cookie", cookie);
-    responseHeaders.set("content-type", "application/json");
-
-    return new Response(JSON.stringify({ success: true, username: normalizedUsername }), {
-      status: 200,
-      headers: responseHeaders,
     });
   } catch (error) {
     return mutationErrorResponse(error, "Giriş işlemi başarısız oldu.");

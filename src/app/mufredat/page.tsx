@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { getCompletedEntryIds } from "@/lib/curriculum-progress";
 import { getCurriculumEntriesFromDb, getUserGenderFromDb } from "@/lib/curriculum-db";
 import { CurriculumPageContent } from "@/components/curriculum-page-content";
@@ -29,7 +29,7 @@ export default async function CurriculumPage(props: CurriculumPageProps) {
   }
 
   const entriesPromise = getCurriculumEntriesFromDb(initialGrade);
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getAuth().api.getSession({ headers: await headers() });
   const [entries, completedEntryIds, initialGender] = await Promise.all([
     entriesPromise,
     session?.user ? getCompletedEntryIds(session.user.id) : Promise.resolve([]),

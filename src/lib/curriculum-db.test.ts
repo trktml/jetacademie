@@ -16,8 +16,9 @@ import {
   getCurriculumWeekSummaries,
 } from "./curriculum-db";
 import { BELGIUM_GRADES } from "./curriculum";
-import { db } from "./auth";
-import { execute, query, queryOne } from "./db";
+import { execute, getSqlite, query, queryOne } from "./db";
+
+const db = getSqlite()!;
 
 describe("Curriculum SQLite Database Module", () => {
   it("should ensure table exists and seed data without errors", async () => {

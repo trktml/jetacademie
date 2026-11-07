@@ -1,16 +1,36 @@
 /** Checks browser mutation requests before they reach custom authentication routes. */
-import { auth } from "@/lib/auth";
-import { getRequestOrigin } from "@/lib/request-origin";
+import { getAuth } from "@/lib/auth";
+import { hasTrustedRequestOrigin } from "@/lib/request-origin";
+import { configuredAppOrigin } from "@/lib/auth-configuration";
+import { z } from "zod";
+import {
+  isJsonRequest,
+  privateJson,
+  readBoundedJson,
+  RequestBodyTimeoutError,
+  RequestBodyTooLargeError,
+} from "@/lib/http";
+
+const authUserResponseSchema = z.object({ user: z.object({ id: z.string().min(1) }) });
+
+/** Keep only the authenticated identity; the internal response also contains session secrets. */
+export async function readAuthResponseUserId(response: Response): Promise<string> {
+  return authUserResponseSchema.parse(await response.json()).user.id;
+}
 
 export function dispatchAuthRequest(
   request: Request,
   path: string,
   body: unknown
 ): Promise<Response> {
-  const headers = new Headers(request.headers);
-  headers.delete("content-length");
-  return auth.handler(
-    new Request(new URL(`/api/auth/${path}`, request.url), {
+  const headers = new Headers();
+  for (const name of ["cookie", "origin", "sec-fetch-site", "sec-fetch-mode", "sec-fetch-dest"]) {
+    const value = request.headers.get(name);
+    if (value) headers.set(name, value);
+  }
+  headers.set("content-type", "application/json");
+  return getAuth().handler(
+    new Request(new URL(`/api/auth/${path}`, configuredAppOrigin()), {
       method: "POST",
       headers,
       body: JSON.stringify(body),
@@ -19,56 +39,35 @@ export function dispatchAuthRequest(
 }
 
 export function validateMutationRequest(request: Request): Response | null {
-  const contentType = request.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
-  if (contentType !== "application/json") {
-    return Response.json({ error: "JSON içerik gerekli." }, { status: 415 });
+  if (!isJsonRequest(request)) {
+    return privateJson({ error: "JSON içerik gerekli." }, 415);
   }
 
-  const site = request.headers.get("sec-fetch-site");
-  if (site === "cross-site") {
-    return Response.json({ error: "İstek reddedildi." }, { status: 403 });
-  }
-
-  const origin = request.headers.get("origin");
-  if (!origin || origin !== getRequestOrigin(request)) {
-    return Response.json({ error: "İstek reddedildi." }, { status: 403 });
+  if (!hasTrustedRequestOrigin(request)) {
+    return privateJson({ error: "İstek reddedildi." }, 403);
   }
 
   const length = Number(request.headers.get("content-length"));
   if (length > 8192) {
-    return Response.json({ error: "İstek çok büyük." }, { status: 413 });
+    return privateJson({ error: "İstek çok büyük." }, 413);
   }
   return null;
 }
 
-export async function readMutationJson(request: Request): Promise<unknown> {
-  const reader = request.body?.getReader();
-  if (!reader) return null;
-  const decoder = new TextDecoder();
-  let body = "";
-  let bytes = 0;
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    bytes += value.byteLength;
-    if (bytes > 8192) {
-      await reader.cancel();
-      throw new Error("REQUEST_TOO_LARGE");
-    }
-    body += decoder.decode(value, { stream: true });
-  }
-  body += decoder.decode();
-  try {
-    return JSON.parse(body) as unknown;
-  } catch {
-    return null;
-  }
+export function readMutationJson(request: Request): Promise<unknown> {
+  return readBoundedJson(request, 8192);
 }
 
 export function mutationErrorResponse(error: unknown, message: string): Response {
-  if (error instanceof Error && error.message === "REQUEST_TOO_LARGE") {
-    return Response.json({ error: "İstek çok büyük." }, { status: 413 });
+  if (error instanceof RequestBodyTooLargeError) {
+    return privateJson({ error: "İstek çok büyük." }, 413);
   }
-  console.error("[mutation] Request failed:", error);
-  return Response.json({ error: message }, { status: 500 });
+  if (error instanceof RequestBodyTimeoutError) {
+    return privateJson({ error: "İstek zaman aşımına uğradı." }, 408);
+  }
+  console.error(
+    "[mutation] Request failed:",
+    error instanceof Error ? error.name : "Unknown error"
+  );
+  return privateJson({ error: message }, 500);
 }

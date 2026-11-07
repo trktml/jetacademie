@@ -3,12 +3,13 @@ import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { format, resolveConfig } from "prettier";
 import {
+  ensureCurriculumEntriesTable,
   getCurriculumEntriesFromDb,
   getCurriculumWeekSummaries,
   publishCurriculumWeek,
   deleteCurriculumWeek,
 } from "../src/lib/curriculum-db";
-import { getPool, isPostgres, closeDatabase } from "../src/lib/db";
+import { getPool, closeDatabase } from "../src/lib/db";
 import {
   weekNumberToSlot,
   weeklyPackageSchema,
@@ -210,8 +211,9 @@ async function handleSave(options: Record<string, string | boolean>) {
     `\n⏳ Hafta ${weekNumber} için ${pkg.entries.length} kayıt veritabanına aktarılıyor (isDraft: ${isDraftVal})...`
   );
 
+  await ensureCurriculumEntriesTable();
   const pool = getPool();
-  if (isPostgres && pool) {
+  if (pool) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");

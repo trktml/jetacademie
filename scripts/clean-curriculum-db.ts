@@ -1,6 +1,6 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { query, execute, closeDatabase, isPostgres } from "../src/lib/db";
+import { query, execute, closeDatabase, getPool } from "../src/lib/db";
 
 const KEPT_CATEGORIES = ["adab-i-muaseret", "ilmihal", "esma"] as const;
 const EXCLUDED_CATEGORIES = [
@@ -17,7 +17,7 @@ async function runCleanup() {
   console.log("JetAcademie - PostgreSQL Curriculum Database Cleanup");
   console.log("==================================================");
 
-  if (!isPostgres) {
+  if (!getPool()) {
     throw new Error(
       "This script is configured to run exclusively on PostgreSQL. Check your DATABASE_URL in .env."
     );

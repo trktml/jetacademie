@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { chmod } from "node:fs/promises";
+import { open, rename, rm } from "node:fs/promises";
 import { hashEditorPassword } from "../src/lib/editor/auth";
 
 const envFile = Bun.file(".env");
@@ -26,8 +26,19 @@ for (const [key, value] of Object.entries(values)) {
     ? updated.replace(pattern, `${key}=${value}`)
     : `${updated.trimEnd()}\n${key}=${value}\n`;
 }
-await Bun.write(".env", updated);
-await chmod(".env", 0o600);
+const temporary = `.env.editor-${randomBytes(8).toString("hex")}`;
+const file = await open(temporary, "wx", 0o600);
+try {
+  try {
+    await file.writeFile(updated);
+    await file.sync();
+  } finally {
+    await file.close();
+  }
+  await rename(temporary, ".env");
+} finally {
+  await rm(temporary, { force: true });
+}
 console.log(
   `Editor configured in ignored .env.\nUsername: ${username}\nPassword: ${password}\nAddress: ${origin}/duzenle\nStore the password securely; .env contains only its scrypt hash. Production needs the generated editor secrets and its external HTTPS origin.`
 );

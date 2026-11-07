@@ -11,18 +11,11 @@ mock.module("next/cache", () => ({
 }));
 
 mock.module("@/lib/auth", () => ({
-  auth: {
+  getAuth: () => ({
     api: {
       getSession: async () => (mockUser ? { user: mockUser } : null),
     },
-  },
-  db: {
-    query: () => ({
-      all: () => [],
-      run: () => {},
-      get: () => null,
-    }),
-  },
+  }),
 }));
 
 let completedStore = new Set<string>();

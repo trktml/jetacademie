@@ -1,199 +1,33 @@
 import { betterAuth } from "better-auth";
-import { getRequestOrigin } from "@/lib/request-origin";
-import { Database } from "bun:sqlite";
-import {
-  activeDatabaseUrl,
-  execute,
-  getPool,
-  getSqlite,
-  isPostgres,
-  resolveDatabaseUrl,
-} from "./db";
+import { authConfiguration } from "@/lib/auth-configuration";
+import { MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/validations/auth";
+import { getPool, getSqlite } from "./db";
 
-export { isPostgres, activeDatabaseUrl };
-
-export const SCHEMA_SQL = `
-  CREATE TABLE IF NOT EXISTS "user" (
-    "id" text not null primary key,
-    "name" text not null,
-    "email" text not null unique,
-    "emailVerified" boolean not null default false,
-    "image" text,
-    "createdAt" timestamp not null default current_timestamp,
-    "updatedAt" timestamp not null default current_timestamp
-  );
-
-  CREATE TABLE IF NOT EXISTS "session" (
-    "id" text not null primary key,
-    "expiresAt" timestamp not null,
-    "token" text not null unique,
-    "createdAt" timestamp not null default current_timestamp,
-    "updatedAt" timestamp not null default current_timestamp,
-    "ipAddress" text,
-    "userAgent" text,
-    "userId" text not null references "user" ("id") on delete cascade
-  );
-
-  CREATE TABLE IF NOT EXISTS "account" (
-    "id" text not null primary key,
-    "accountId" text not null,
-    "providerId" text not null,
-    "userId" text not null references "user" ("id") on delete cascade,
-    "accessToken" text,
-    "refreshToken" text,
-    "idToken" text,
-    "accessTokenExpiresAt" timestamp,
-    "refreshTokenExpiresAt" timestamp,
-    "scope" text,
-    "password" text,
-    "createdAt" timestamp not null default current_timestamp,
-    "updatedAt" timestamp not null default current_timestamp
-  );
-
-  CREATE TABLE IF NOT EXISTS "verification" (
-    "id" text not null primary key,
-    "identifier" text not null,
-    "value" text not null,
-    "expiresAt" timestamp not null,
-    "createdAt" timestamp not null default current_timestamp,
-    "updatedAt" timestamp not null default current_timestamp
-  );
-
-  CREATE INDEX IF NOT EXISTS "session_userId_idx" on "session" ("userId");
-  CREATE INDEX IF NOT EXISTS "account_userId_idx" on "account" ("userId");
-  CREATE INDEX IF NOT EXISTS "verification_identifier_idx" on "verification" ("identifier");
-
-  CREATE TABLE IF NOT EXISTS "auth_login_attempts" (
-    "userId" text not null primary key references "user" ("id") on delete cascade,
-    "attempts" integer not null,
-    "windowStartedAt" bigint not null
-  );
-
-  CREATE TABLE IF NOT EXISTS "curriculum_progress" (
-    "userId" text not null references "user" ("id") on delete cascade,
-    "entryId" text not null,
-    "completedAt" timestamp not null default current_timestamp,
-    primary key ("userId", "entryId")
-  );
-
-  CREATE INDEX IF NOT EXISTS "curriculum_progress_userId_completedAt_idx"
-    on "curriculum_progress" ("userId", "completedAt");
-
-  CREATE TABLE IF NOT EXISTS "user_preferences" (
-    "userId" text not null primary key references "user" ("id") on delete cascade,
-    "gender" text not null check ("gender" in ('erkek', 'bayan')),
-    "createdAt" timestamp not null default current_timestamp,
-    "updatedAt" timestamp not null default current_timestamp
-  );
-
-  CREATE TABLE IF NOT EXISTS "curriculum_entries" (
-    "id" text not null primary key,
-    "grade" integer not null default 1,
-    "categoryId" text not null,
-    "gender" text,
-    "month" integer,
-    "week" integer,
-    "year" integer default 2026,
-    "isExtra" integer not null default 0,
-    "extraOrder" integer,
-    "isDraft" integer not null default 0,
-    "title" text not null,
-    "body" text,
-    "resourceUrl" text,
-    "pdfUrl" text,
-    "pageCount" integer,
-    "createdAt" timestamp not null default current_timestamp,
-    "updatedAt" timestamp not null default current_timestamp
-  );
-
-  CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_idx"
-    on "curriculum_entries" ("grade", "categoryId", "isExtra", "month", "week");
-  CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_gender_idx"
-    on "curriculum_entries" ("grade", "categoryId", "gender", "isExtra", "month", "week");
-  CREATE INDEX IF NOT EXISTS "curriculum_entries_draft_idx"
-    on "curriculum_entries" ("isDraft");
-`;
-
-// In-memory test environment initialization
-if (!isPostgres) {
-  const sqlite = getSqlite();
-  if (sqlite) {
-    sqlite.exec(SCHEMA_SQL);
-  }
-}
-
-let schemaInitialized = false;
-let schemaPromise: Promise<void> | null = null;
-export async function ensureDatabaseSchema(): Promise<void> {
-  if (schemaInitialized) return;
-  schemaPromise ??= execute(SCHEMA_SQL)
-    .then(() => {
-      schemaInitialized = true;
-    })
-    .catch((err: unknown) => {
-      console.error("[auth] Failed to initialize database schema:", err);
-      throw err;
-    })
-    .finally(() => {
-      schemaPromise = null;
-    });
-  await schemaPromise;
-}
-
-// Database instance exported for tests & legacy compatibility
-export const db = getSqlite() ?? (getPool() as unknown as Database);
-export const dbPath = activeDatabaseUrl;
-export const activeDbPath = activeDatabaseUrl;
-
-export function resolveDatabasePath(
-  envDatabaseUrl = process.env.DATABASE_URL,
-  nodeEnv = process.env.NODE_ENV,
-  bunEnv = process.env.BUN_ENV
-): string {
-  return resolveDatabaseUrl(envDatabaseUrl, nodeEnv, bunEnv);
-}
-
-export function initializeDatabase(targetPath: string): { db: Database; activePath: string } {
-  try {
-    const instance = new Database(targetPath);
-    return { db: instance, activePath: targetPath };
-  } catch {
-    const fallback = new Database("/tmp/auth.sqlite");
-    return { db: fallback, activePath: "/tmp/auth.sqlite" };
-  }
-}
-
-export const auth = betterAuth({
-  database: isPostgres
-    ? (getPool() as NonNullable<ReturnType<typeof getPool>>)
-    : (getSqlite() as NonNullable<ReturnType<typeof getSqlite>>),
-  secret: getAuthSecret(),
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-  trustedOrigins: (request) => {
-    const origin = request ? getRequestOrigin(request) : null;
-    return origin ? [origin] : [];
-  },
-  emailAndPassword: {
-    enabled: true,
-    minPasswordLength: 4,
-    maxPasswordLength: 128,
-  },
-  user: {
-    deleteUser: {
+function createAuth() {
+  const configuration = authConfiguration();
+  const database = getPool() ?? getSqlite();
+  if (!database) throw new Error("Missing database driver.");
+  return betterAuth({
+    database,
+    ...configuration,
+    // The public routes reserve their own shared budgets; proxy IP headers are not trusted.
+    advanced: { ipAddress: { disableIpTracking: true } },
+    session: { deferSessionRefresh: true },
+    emailAndPassword: {
       enabled: true,
+      minPasswordLength: MIN_PASSWORD_LENGTH,
+      maxPasswordLength: MAX_PASSWORD_LENGTH,
     },
-  },
-});
+    user: {
+      deleteUser: {
+        enabled: true,
+      },
+    },
+  });
+}
 
-function getAuthSecret(): string {
-  const secret = process.env.BETTER_AUTH_SECRET;
-  if (
-    process.env.NODE_ENV === "production" &&
-    (!secret ||
-      secret.length < 32 ||
-      secret === "development-secret-must-be-at-least-32-characters-long")
-  ) {
-    throw new Error("Production requires a unique BETTER_AUTH_SECRET of at least 32 characters.");
-  }
-  return secret || "development-secret-must-be-at-least-32-characters-long";
+let auth: ReturnType<typeof createAuth> | undefined;
+
+export function getAuth() {
+  return (auth ??= createAuth());
 }

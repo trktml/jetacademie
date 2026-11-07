@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { getUserGenderFromDb, setUserGenderInDb } from "@/lib/curriculum-db";
 import { type Gender } from "@/lib/data/ilmihal-curriculum";
 
@@ -11,7 +11,7 @@ export async function updateUserGender(gender: Gender) {
     throw new Error("Geçersiz cinsiyet tercihi.");
   }
 
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session?.user) {
     throw new Error("Tercihinizi kaydetmek için giriş yapın.");
   }
@@ -22,7 +22,7 @@ export async function updateUserGender(gender: Gender) {
 }
 
 export async function getUserGender(): Promise<Gender | null> {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session?.user) return null;
   return await getUserGenderFromDb(session.user.id);
 }

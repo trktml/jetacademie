@@ -1,5 +1,5 @@
-import { ensureDatabaseSchema } from "@/lib/auth";
-import { execute, getPool, getSqlite, isPostgres, query, queryOne } from "@/lib/db";
+import { ensureDatabaseSchema } from "@/lib/database-schema";
+import { execute, getPool, getSqlite, query, queryOne } from "@/lib/db";
 import {
   isCurriculumCategoryId,
   resolveAllCurriculumEntries,
@@ -200,7 +200,7 @@ export async function ensureCurriculumEntriesTable(): Promise<void> {
         [categoryId, new Date().toISOString()]
       );
     }
-    if (isPostgres) await ensurePostgresCurriculumSeedGuard();
+    if (getPool()) await ensurePostgresCurriculumSeedGuard();
     await migrateLegacyGradeOneCurriculumEntryIds();
     tableEnsured = true;
   } catch (err) {
@@ -226,7 +226,7 @@ export async function excludeAndDeleteCurriculumCategoriesFromSeed(
   if (uniqueCategoryIds.length === 0) return;
 
   await ensureCurriculumEntriesTable();
-  if (isPostgres) await ensurePostgresCurriculumSeedGuard();
+  if (getPool()) await ensurePostgresCurriculumSeedGuard();
 
   const createdAt = new Date().toISOString();
   for (const categoryId of uniqueCategoryIds) {
@@ -1027,7 +1027,7 @@ export async function publishCurriculumWeek(
   };
 
   const pool = getPool();
-  if (isPostgres && pool) {
+  if (pool) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");

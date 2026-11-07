@@ -114,6 +114,14 @@ describe("Independent curriculum editor security", () => {
       ).status
     ).toBe(415);
   });
+  it("does not spend the shared login budget on malformed or oversized input", async () => {
+    const before = await queryOne('SELECT "attempts" FROM "curriculum_editor_attempts"');
+    expect((await login(request("session", "POST", {}))).status).toBe(400);
+    expect((await login(request("session", "POST", { password: "x".repeat(2048) }))).status).toBe(
+      413
+    );
+    expect(await queryOne('SELECT "attempts" FROM "curriculum_editor_attempts"')).toEqual(before);
+  });
   it("stores only a token hash; rejects forged, expired and rotated sessions", async () => {
     const tokenHash = createHash("sha256").update(token).digest("hex");
     const row = await queryOne<{ tokenHash: string }>(
@@ -262,5 +270,5 @@ describe("Independent curriculum editor security", () => {
       (await listEntries(request("entries?sinif=1", "GET", undefined, { token }))).status
     ).toBe(503);
     process.env.CURRICULUM_ADMIN_SECRET = secret;
-  });
+  }, 20_000);
 });

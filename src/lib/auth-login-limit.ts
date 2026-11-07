@@ -1,41 +1,26 @@
-import { ensureDatabaseSchema } from "@/lib/auth";
-import { execute, queryOne } from "@/lib/db";
+import { authLimitResponse, clearAuthAttempts, reserveAuthAttempt } from "@/lib/auth-rate-limit";
+import { privateJson } from "@/lib/http";
 
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 5;
+const MAX_CONCURRENT_LOGINS = 8;
+const activeLogins = new Set<string>();
 
-/** Reserves an attempt atomically across app instances for an existing account. */
-export async function reserveLoginAttempt(
-  email: string
-): Promise<{ allowed: boolean; userId: string | null }> {
-  await ensureDatabaseSchema();
-  const user = await queryOne<{ id: string }>(`SELECT "id" FROM "user" WHERE "email" = $1`, [
-    email,
-  ]);
-  if (!user) return { allowed: true, userId: null };
-
-  const now = Date.now();
-  const cutoff = now - WINDOW_MS;
-  const row = await queryOne<{ attempts: number }>(
-    `INSERT INTO "auth_login_attempts" ("userId", "attempts", "windowStartedAt")
-     VALUES ($1, 1, $2)
-     ON CONFLICT ("userId") DO UPDATE SET
-       "attempts" = CASE
-         WHEN "auth_login_attempts"."windowStartedAt" <= $3 THEN 1
-         WHEN "auth_login_attempts"."attempts" >= $4 THEN $5
-         ELSE "auth_login_attempts"."attempts" + 1
-       END,
-       "windowStartedAt" = CASE
-         WHEN "auth_login_attempts"."windowStartedAt" <= $6 THEN $7
-         ELSE "auth_login_attempts"."windowStartedAt"
-       END
-     RETURNING "attempts"`,
-    [user.id, now, cutoff, MAX_ATTEMPTS + 1, MAX_ATTEMPTS + 1, cutoff, now]
-  );
-
-  return { allowed: (row?.attempts ?? MAX_ATTEMPTS + 1) <= MAX_ATTEMPTS, userId: user.id };
+/** Bound work per server without a shared quota that can lock unrelated accounts. */
+export async function runLoginAttempt(email: string, login: () => Promise<Response>) {
+  if (activeLogins.has(email) || activeLogins.size >= MAX_CONCURRENT_LOGINS) {
+    const response = privateJson({ error: "Giriş işlemi yoğun. Tekrar deneyin." }, 503);
+    response.headers.set("Retry-After", "1");
+    return response;
+  }
+  activeLogins.add(email);
+  try {
+    // Apply the same per-username budget to existing and nonexistent accounts.
+    if (!(await reserveAuthAttempt("login", email, 5))) return authLimitResponse();
+    return await login();
+  } finally {
+    activeLogins.delete(email);
+  }
 }
 
-export async function clearLoginAttempts(userId: string): Promise<void> {
-  await execute(`DELETE FROM "auth_login_attempts" WHERE "userId" = $1`, [userId]);
+export function clearLoginAttempts(email: string): Promise<void> {
+  return clearAuthAttempts("login", email);
 }

@@ -2,7 +2,7 @@ import { mkdir, writeFile, readdir, rm } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { format, resolveConfig } from "prettier";
-import { getPool, isPostgres, query } from "../src/lib/db";
+import { getPool, query } from "../src/lib/db";
 import {
   ensureCurriculumEntriesTable,
   getCurriculumEntriesFromDb,
@@ -541,7 +541,7 @@ export async function restoreCurriculumBackup(options: {
 
   // Execute restore in database transaction
   const pool = getPool();
-  if (isPostgres && pool) {
+  if (pool) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");

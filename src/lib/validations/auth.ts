@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-const passwordSchema = z.string().min(4, "Şifre en az 4 karakter olmalıdır").max(128);
+export const MIN_PASSWORD_LENGTH = 15;
+export const MAX_PASSWORD_LENGTH = 128;
+
+const passwordSchema = z
+  .string()
+  .min(MIN_PASSWORD_LENGTH, `Şifre en az ${MIN_PASSWORD_LENGTH} karakter olmalıdır`)
+  .max(MAX_PASSWORD_LENGTH);
 
 export const anonymousSignUpSchema = z.object({
   password: passwordSchema,

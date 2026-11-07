@@ -9,26 +9,31 @@ import {
 
 describe("Anonymous Auth Zod Schemas", () => {
   describe("anonymousSignUpSchema", () => {
-    it("should accept passwords of at least four characters", () => {
-      for (const password of ["0427", "12345", "12a!", "long-password"]) {
+    it("should accept passwords of at least fifteen characters", () => {
+      for (const password of [
+        "a".repeat(15),
+        "a long password phrase",
+        "mot-de-passe-français",
+        "a".repeat(128),
+      ]) {
         expect(anonymousSignUpSchema.safeParse({ password }).success).toBe(true);
       }
     });
 
-    it("should reject passwords shorter than four characters", () => {
+    it("should reject passwords shorter than fifteen characters", () => {
       const invalidData = {
-        password: "123",
+        password: "a".repeat(14),
       };
       const result = anonymousSignUpSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Şifre en az 4 karakter olmalıdır");
+        expect(result.error.issues[0].message).toBe("Şifre en az 15 karakter olmalıdır");
       }
       expect(anonymousSignUpSchema.safeParse({ password: "a".repeat(129) }).success).toBe(false);
     });
 
     it("should work via signUpSchema alias", () => {
-      expect(signUpSchema.safeParse({ password: "1234" }).success).toBe(true);
+      expect(signUpSchema.safeParse({ password: "test-password-1234" }).success).toBe(true);
     });
   });
 
@@ -80,8 +85,8 @@ describe("Anonymous Auth Zod Schemas", () => {
   });
 
   describe("changePasswordSchema", () => {
-    it("should accept new passwords of at least four characters", () => {
-      for (const newPassword of ["1234", "12a!", "long-password"]) {
+    it("should accept new passwords of at least fifteen characters", () => {
+      for (const newPassword of ["a".repeat(15), "a long password phrase", "a".repeat(128)]) {
         expect(
           changePasswordSchema.safeParse({ currentPassword: "oldpassword123", newPassword }).success
         ).toBe(true);
@@ -91,12 +96,12 @@ describe("Anonymous Auth Zod Schemas", () => {
     it("should reject short new password", () => {
       const invalidData = {
         currentPassword: "oldpassword123",
-        newPassword: "123",
+        newPassword: "a".repeat(14),
       };
       const result = changePasswordSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Şifre en az 4 karakter olmalıdır");
+        expect(result.error.issues[0].message).toBe("Şifre en az 15 karakter olmalıdır");
       }
     });
 
