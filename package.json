@@ -19,14 +19,14 @@
     "editor:setup": "bun scripts/setup-curriculum-editor.ts"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.102.8",
-    "@uiw/react-md-editor": "^4.1.2",
-    "better-auth": "^1.7.4",
-    "lucide-react": "^1.45.0",
-    "motion": "^13.2.0",
-    "next": "16.3.5",
-    "pdfjs-dist": "^6.3.289",
-    "pg": "^8.23.0",
+    "@tanstack/react-query": "^5.105.3",
+    "@uiw/react-md-editor": "^4.2.3",
+    "better-auth": "^1.7.16",
+    "lucide-react": "^1.68.0",
+    "motion": "^13.5.1",
+    "next": "16.4.5",
+    "pdfjs-dist": "^6.5.438",
+    "pg": "^8.23.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-markdown": "^10.1.0",
@@ -34,27 +34,27 @@
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "vaul": "^1.1.2",
-    "zod": "^4.6.2",
-    "zustand": "^5.0.15"
+    "zod": "^4.6.7",
+    "zustand": "^5.0.16"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@tanstack/react-query-devtools": "^5.102.8",
-    "@types/bun": "^1.4.2",
-    "@types/node": "^20",
+    "@tailwindcss/postcss": "^4.3.4",
+    "@tanstack/react-query-devtools": "^5.105.3",
+    "@types/bun": "^1.4.4",
+    "@types/node": "^20.19.43",
     "@types/pg": "^8.23.1",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "drizzle-orm": "^0.45.2",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "drizzle-orm": "^0.45.4",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.5",
     "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "tailwindcss": "^4.3.4",
+    "typescript": "^5.9.3"
   },
-  "packageManager": "bun@1.3.14",
+  "packageManager": "bun@1.4.4",
   "ignoreScripts": [
     "sharp",
     "unrs-resolver"
@@ -62,5 +62,8 @@
   "trustedDependencies": [
     "sharp",
     "unrs-resolver"
-  ]
+  ],
+  "overrides": {
+    "minimatch": "^11.0.4"
+  }
 }
