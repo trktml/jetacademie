@@ -166,6 +166,8 @@ bun run build
 
 Üretim derlemesi için veritabanı bağlantısı veya kimlik doğrulama sırrı gerekmez. Sunucu açılırken üretim ayarları doğrulanır ve veritabanı şeması hazırlanır. GitHub Actions aynı kontrolleri PostgreSQL 16 servisi, `bun audit` ve Git geçmişi için Gitleaks ile çalıştırır. Eylemler commit SHA'sına, sır tarama aracı sürüm ve SHA-256 özetine sabitlenmiştir. Dependabot, paketler, konteynerler ve Actions için haftalık güncelleme önerileri oluşturur. Yerel ortam, CI ve Docker Bun 1.4.4 sürümünü kullanır.
 
+`dev`, `build` ve `start` betikleri Next.js'i `bun --bun` ile başlatır. Böylece CI makinesinde Node.js kurulu olsa bile Next.js ve derleme alt süreçleri `bun:sqlite` modülüne erişebilir.
+
 ## Veritabanı & Veri Migrasyonu
 
 - **Birincil Veritabanı**: PostgreSQL 16 (`src/lib/db.ts` içindeki `pg.Pool` bağlantı havuzu aracılığıyla bağlanır).
