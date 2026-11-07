@@ -18,6 +18,34 @@ describe("request trust boundaries", () => {
     expect(validateMutationRequest(request)?.status).toBe(403);
   });
 
+  it("accepts an explicitly configured alias through the proxy without trusting other hosts", () => {
+    const previous = process.env.AUTH_TRUSTED_ORIGINS;
+    const alias = "https://jetacademie.be";
+    const request = (origin: string, site = "same-origin") =>
+      new Request("http://web:3000/api/auth/sign-in-anonymous", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: origin,
+          "Sec-Fetch-Site": site,
+          "X-Forwarded-Host": new URL(origin).host,
+          "X-Forwarded-Proto": "https",
+        },
+        body: "{}",
+      });
+    try {
+      process.env.AUTH_TRUSTED_ORIGINS = "";
+      expect(validateMutationRequest(request(alias))?.status).toBe(403);
+      process.env.AUTH_TRUSTED_ORIGINS = alias;
+      expect(validateMutationRequest(request(alias))).toBeNull();
+      expect(validateMutationRequest(request(alias, "cross-site"))?.status).toBe(403);
+      expect(validateMutationRequest(request(`${alias}.evil.example`))?.status).toBe(403);
+    } finally {
+      if (previous === undefined) delete process.env.AUTH_TRUSTED_ORIGINS;
+      else process.env.AUTH_TRUSTED_ORIGINS = previous;
+    }
+  });
+
   it("rejects missing origins, cross-site requests and non-JSON bodies", () => {
     const make = (headers: Record<string, string>) =>
       new Request("http://localhost:3000", { method: "POST", headers, body: "{}" });
@@ -79,13 +107,24 @@ describe("request trust boundaries", () => {
       BETTER_AUTH_SECRET: "random-test-secret-with-more-than-32-characters",
     };
     expect(authConfiguration(env).trustedOrigins).toEqual(["https://jetacademie.be"]);
+    expect(
+      authConfiguration({
+        ...env,
+        AUTH_TRUSTED_ORIGINS: "https://jet.hizmetod.com/, https://jetacademie.be",
+      })
+    ).toMatchObject({
+      baseURL: "https://jetacademie.be",
+      trustedOrigins: ["https://jetacademie.be", "https://jet.hizmetod.com"],
+    });
     for (const url of [
       "http://jetacademie.be",
       "https://jetacademie.be/path",
       "https://user:pass@jetacademie.be",
       "https://jetacademie.be?x=1",
+      "https://*.jetacademie.be",
     ]) {
       expect(() => configuredAppOrigin({ ...env, BETTER_AUTH_URL: url })).toThrow();
+      expect(() => authConfiguration({ ...env, AUTH_TRUSTED_ORIGINS: url })).toThrow();
     }
     expect(() =>
       authConfiguration({

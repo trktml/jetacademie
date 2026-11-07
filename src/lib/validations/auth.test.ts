@@ -9,9 +9,9 @@ import {
 
 describe("Anonymous Auth Zod Schemas", () => {
   describe("anonymousSignUpSchema", () => {
-    it("should accept passwords of at least fifteen characters", () => {
+    it("should accept passwords of at least four characters", () => {
       for (const password of [
-        "a".repeat(15),
+        "1234",
         "a long password phrase",
         "mot-de-passe-français",
         "a".repeat(128),
@@ -20,14 +20,14 @@ describe("Anonymous Auth Zod Schemas", () => {
       }
     });
 
-    it("should reject passwords shorter than fifteen characters", () => {
+    it("should reject passwords shorter than four characters", () => {
       const invalidData = {
-        password: "a".repeat(14),
+        password: "123",
       };
       const result = anonymousSignUpSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Şifre en az 15 karakter olmalıdır");
+        expect(result.error.issues[0].message).toBe("Şifre en az 4 karakter olmalıdır");
       }
       expect(anonymousSignUpSchema.safeParse({ password: "a".repeat(129) }).success).toBe(false);
     });
@@ -85,8 +85,8 @@ describe("Anonymous Auth Zod Schemas", () => {
   });
 
   describe("changePasswordSchema", () => {
-    it("should accept new passwords of at least fifteen characters", () => {
-      for (const newPassword of ["a".repeat(15), "a long password phrase", "a".repeat(128)]) {
+    it("should accept new passwords of at least four characters", () => {
+      for (const newPassword of ["abcd", "a long password phrase", "a".repeat(128)]) {
         expect(
           changePasswordSchema.safeParse({ currentPassword: "oldpassword123", newPassword }).success
         ).toBe(true);
@@ -96,12 +96,12 @@ describe("Anonymous Auth Zod Schemas", () => {
     it("should reject short new password", () => {
       const invalidData = {
         currentPassword: "oldpassword123",
-        newPassword: "a".repeat(14),
+        newPassword: "abc",
       };
       const result = changePasswordSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Şifre en az 15 karakter olmalıdır");
+        expect(result.error.issues[0].message).toBe("Şifre en az 4 karakter olmalıdır");
       }
     });
 
