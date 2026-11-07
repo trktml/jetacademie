@@ -168,6 +168,8 @@ bun run build
 
 `dev`, `build` ve `start` betikleri Next.js'i `bun --bun` ile başlatır. Böylece CI makinesinde Node.js kurulu olsa bile Next.js ve derleme alt süreçleri `bun:sqlite` modülüne erişebilir.
 
+TypeScript 6, Bun türlerini `tsconfig.json` içindeki `types` alanından yükler. TypeScript 7.0, `typescript-eslint` için gereken JavaScript API'sini sunmadığından Dependabot bu sürüm serisini atlar.
+
 ## Veritabanı & Veri Migrasyonu
 
 - **Birincil Veritabanı**: PostgreSQL 16 (`src/lib/db.ts` içindeki `pg.Pool` bağlantı havuzu aracılığıyla bağlanır).
