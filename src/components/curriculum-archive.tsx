@@ -22,10 +22,9 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { curriculumCategories } from "./curriculum-category";
 import {
-  curriculumCategories,
   getCategoryEntries,
-  getCategoryShortLabel,
   getUnlockedEntryIndex,
   type BelgiumGrade,
   type CurriculumCategoryId,
@@ -901,7 +900,7 @@ export function CurriculumArchive({
               const Icon = item.icon;
               const currentActiveId = (!weeklyView && activeHistoryCategoryId) || activeCategoryId;
               const isActive = item.id === currentActiveId;
-              const shortLabel = getCategoryShortLabel(item.id);
+              const shortLabel = item.shortLabel;
 
               return (
                 <button

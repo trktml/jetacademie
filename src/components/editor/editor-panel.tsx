@@ -1,6 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { curriculumCategories } from "@/components/curriculum-category";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -9,27 +9,24 @@ import {
   ChevronLeft,
   ChevronRight,
   Circle,
-  FilePenLine,
-  LockKeyhole,
   LogOut,
   Plus,
-  Save,
   ShieldCheck,
 } from "lucide-react";
 import {
-  curriculumCategories,
-  type CurriculumCategoryId,
-  type CurriculumEntry,
-} from "@/lib/curriculum";
-import { MarkdownContent } from "@/components/markdown-content";
-import type { EditorRecord } from "@/lib/editor/content";
+  EditorRequestError,
+  filled,
+  matchLocation,
+  getEditorEntries,
+  logoutEditor,
+  type EditorLocation,
+} from "@/lib/editor-client";
+import { EntryEditor } from "./entry-editor";
+import { EditorLoginForm } from "./editor-login-form";
+import type { EditorRecord } from "@/lib/editor/types";
 import "./editor.css";
 import "@uiw/react-md-editor/markdown-editor.css";
 
-const MarkdownEditor = dynamic(() => import("./markdown-editor"), {
-  ssr: false,
-  loading: () => <div className="editor-loading">Editör hazırlanıyor…</div>,
-});
 const months = [
   { id: 9, name: "Eylül" },
   { id: 10, name: "Ekim" },
@@ -44,50 +41,6 @@ const months = [
   { id: 7, name: "Temmuz" },
   { id: 8, name: "Ağustos" },
 ];
-interface Location {
-  grade: number;
-  month: number;
-  week: number;
-  categoryId: CurriculumCategoryId;
-  gender: "erkek" | "bayan";
-  extraOrder?: number;
-}
-class EditorRequestError extends Error {
-  constructor(
-    message: string,
-    public status: number
-  ) {
-    super(message);
-  }
-}
-async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api/editor/${path}`, {
-    ...init,
-    cache: "no-store",
-    credentials: "same-origin",
-  });
-  const data = await response.json();
-  if (!response.ok)
-    throw new EditorRequestError(data.error ?? "İşlem tamamlanamadı.", response.status);
-  return data as T;
-}
-const filled = (entry?: CurriculumEntry) =>
-  !!(entry?.body?.trim() || entry?.resourceUrl || entry?.pdfUrl);
-function matchLocation(
-  record: EditorRecord,
-  location: Location,
-  categoryId = location.categoryId
-): boolean {
-  const entry = record.entry;
-  return (
-    entry.categoryId === categoryId &&
-    (categoryId !== "ilmihal" || entry.gender === location.gender) &&
-    (location.extraOrder
-      ? !!entry.isExtra && entry.extraOrder === location.extraOrder
-      : !entry.isExtra && entry.month === location.month && entry.week === location.week)
-  );
-}
-
 export function EditorPanel({
   initialCsrf,
   unavailable,
@@ -96,7 +49,7 @@ export function EditorPanel({
   unavailable: boolean;
 }) {
   const [csrf, setCsrf] = useState(initialCsrf);
-  const [location, setLocation] = useState<Location>({
+  const [location, setLocation] = useState<EditorLocation>({
     grade: 1,
     month: 9,
     week: 1,
@@ -104,14 +57,15 @@ export function EditorPanel({
     gender: "erkek",
   });
   const [dirty, setDirty] = useState(false);
+  const [editorGeneration, setEditorGeneration] = useState(0);
   const [saving, setSaving] = useState(false);
   const [pending, setPending] = useState<(() => void) | null>(null);
   const [notice, setNotice] = useState("");
   const queryClient = useQueryClient();
   const entriesQuery = useQuery({
     queryKey: ["editor-entries", location.grade],
-    queryFn: () => api<EditorRecord[]>(`entries?sinif=${location.grade}`),
-    enabled: !!csrf,
+    queryFn: ({ signal }) => getEditorEntries(location.grade, signal),
+    enabled: !!csrf && !dirty,
     staleTime: 0,
     retry: false,
     refetchOnWindowFocus: false,
@@ -128,7 +82,7 @@ export function EditorPanel({
     setNotice("");
     next();
   }
-  function select(next: Location) {
+  function select(next: EditorLocation) {
     if (
       next.grade === location.grade &&
       next.month === location.month &&
@@ -144,13 +98,9 @@ export function EditorPanel({
     });
   }
   const logout = useMutation({
-    mutationFn: () =>
-      api("session", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json", "X-Editor-CSRF": csrf ?? "" },
-        body: "{}",
-      }),
-    onSuccess: () => {
+    mutationFn: () => logoutEditor(csrf ?? ""),
+    onSuccess: async () => {
+      await queryClient.cancelQueries({ queryKey: ["editor-entries"] });
       setDirty(false);
       setCsrf(null);
       queryClient.removeQueries({ queryKey: ["editor-entries"] });
@@ -184,7 +134,7 @@ export function EditorPanel({
   }
   if (!csrf || expired)
     return (
-      <LoginForm
+      <EditorLoginForm
         unavailable={unavailable}
         onLogin={(token) => {
           setDirty(false);
@@ -259,7 +209,7 @@ export function EditorPanel({
             <span>
               <i /> Boş
             </span>
-            <small>Rakamlar: dolu kategori / 9</small>
+            <small>Rakamlar: dolu kategori / {curriculumCategories.length}</small>
           </div>
           <nav className="editor-months" aria-label="Aylar ve haftalar">
             {months.map((month) => (
@@ -286,7 +236,9 @@ export function EditorPanel({
                         onClick={() => select(target)}
                       >
                         <span>{week}. hafta</span>
-                        <small>{entriesQuery.isPending ? "…" : `${count}/9`}</small>
+                        <small>
+                          {entriesQuery.isPending ? "…" : `${count}/${curriculumCategories.length}`}
+                        </small>
                       </button>
                     );
                   })}
@@ -381,7 +333,7 @@ export function EditorPanel({
           )}
           {entriesQuery.isPending ? (
             <div className="editor-loading">Haftalık içerikler yükleniyor…</div>
-          ) : entriesQuery.isError ? (
+          ) : entriesQuery.isError && !entriesQuery.data ? (
             <div className="editor-error" role="alert">
               {entriesQuery.error.message}
               <button className="editor-button" onClick={() => entriesQuery.refetch()}>
@@ -390,7 +342,7 @@ export function EditorPanel({
             </div>
           ) : (
             <EntryEditor
-              key={`${location.grade}:${location.month}:${location.week}:${location.categoryId}:${location.gender}:${location.extraOrder ?? 0}:${current?.revision ?? 0}`}
+              key={`${location.grade}:${location.month}:${location.week}:${location.categoryId}:${location.gender}:${location.extraOrder ?? 0}:${editorGeneration}`}
               location={location}
               record={current}
               csrf={csrf}
@@ -401,7 +353,11 @@ export function EditorPanel({
               }}
               onSaved={(record) => {
                 setDirty(false);
-                setNotice("Kaydedildi. İçerik müfredatta yayında.");
+                setNotice(
+                  record.entry.isDraft
+                    ? "Kaydedildi. İçerik taslak olarak korundu."
+                    : "Kaydedildi. İçerik müfredatta yayında."
+                );
                 queryClient.setQueryData<EditorRecord[]>(
                   ["editor-entries", location.grade],
                   (previous = []) => [
@@ -414,7 +370,10 @@ export function EditorPanel({
               onReload={() =>
                 navigate(() => {
                   setDirty(false);
-                  entriesQuery.refetch();
+                  void entriesQuery.refetch().then((result) => {
+                    if (result.isSuccess) setEditorGeneration((value) => value + 1);
+                    else setNotice(result.error?.message ?? "İçerik yüklenemedi.");
+                  });
                 })
               }
             />
@@ -459,279 +418,5 @@ function UnsavedDialog({ onCancel, onDiscard }: { onCancel: () => void; onDiscar
         </button>
       </div>
     </dialog>
-  );
-}
-
-function LoginForm({
-  unavailable,
-  onLogin,
-}: {
-  unavailable: boolean;
-  onLogin: (csrf: string) => void;
-}) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const login = useMutation({
-    mutationFn: () =>
-      api<{ csrf: string }>("session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      }),
-    onSuccess: (result) => {
-      setPassword("");
-      onLogin(result.csrf);
-    },
-  });
-  return (
-    <main className="editor-login-page" data-color-mode="light">
-      <section className="editor-login-card">
-        <div className="editor-brand-icon">
-          <LockKeyhole size={26} />
-        </div>
-        <span className="editor-eyebrow">JETACADEMIE · İÇERİK EDİTÖRÜ</span>
-        <h1>Müfredat düzenleme</h1>
-        <p>Haftalık içerikleri hazırlamak için özel hesabınızla giriş yapın.</p>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            login.mutate();
-          }}
-        >
-          <label className="editor-field">
-            Kullanıcı adı
-            <input
-              autoComplete="username"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              maxLength={80}
-              required
-              autoCapitalize="none"
-              spellCheck={false}
-            />
-          </label>
-          <label className="editor-field">
-            Şifre
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              maxLength={128}
-              required
-            />
-          </label>
-          {(login.error || unavailable) && (
-            <p className="editor-error" role="alert">
-              {login.error?.message ?? "Düzenleme hesabı sunucuda yapılandırılmamış."}
-            </p>
-          )}
-          <button className="editor-button primary" disabled={login.isPending || unavailable}>
-            {login.isPending ? "Giriş yapılıyor…" : "Çalışma alanına gir"}
-            <ChevronRight size={18} />
-          </button>
-        </form>
-        <div className="editor-login-footer">
-          <ShieldCheck size={16} /> Yalnızca müfredat düzenleme erişimi
-        </div>
-      </section>
-    </main>
-  );
-}
-
-function EntryEditor({
-  location,
-  record,
-  csrf,
-  onDirty,
-  onSaved,
-  onReload,
-  onSaving,
-}: {
-  location: Location;
-  record?: EditorRecord;
-  csrf: string;
-  onDirty: () => void;
-  onSaved: (record: EditorRecord) => void;
-  onReload: () => void;
-  onSaving: (saving: boolean) => void;
-}) {
-  const [title, setTitle] = useState(record?.entry.title ?? "");
-  const [body, setBody] = useState(record?.entry.body ?? "");
-  const [resourceUrl, setResourceUrl] = useState(
-    record?.entry.resourceUrl ?? record?.entry.pdfUrl ?? ""
-  );
-  const [dirty, setDirty] = useState(false);
-  const [tab, setTab] = useState<"edit" | "preview">("edit");
-  const category = curriculumCategories.find((cat) => cat.id === location.categoryId)!;
-  const save = useMutation({
-    onMutate: () => onSaving(true),
-    onSettled: () => onSaving(false),
-    mutationFn: () =>
-      api<EditorRecord>("entries", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "X-Editor-CSRF": csrf },
-        body: JSON.stringify({
-          ...location,
-          gender: location.categoryId === "ilmihal" ? location.gender : undefined,
-          title,
-          body,
-          resourceUrl,
-          revision: record?.revision ?? 0,
-        }),
-      }),
-    onSuccess: (result) => {
-      setDirty(false);
-      onSaved(result);
-    },
-  });
-  useEffect(() => {
-    if (!dirty) return;
-    const beforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-    };
-    window.addEventListener("beforeunload", beforeUnload);
-    return () => window.removeEventListener("beforeunload", beforeUnload);
-  }, [dirty]);
-  function changed() {
-    setDirty(true);
-    onDirty();
-  }
-  return (
-    <form
-      className="editor-content-card"
-      onSubmit={(event) => {
-        event.preventDefault();
-        save.mutate();
-      }}
-    >
-      <header className="editor-content-heading">
-        <div>
-          <span className={`editor-content-status ${filled(record?.entry) ? "is-filled" : ""}`}>
-            {filled(record?.entry) ? <Check size={13} /> : <Plus size={13} />}
-            {filled(record?.entry) ? "İçerik var" : "Yeni içerik"}
-          </span>
-          <h3>{category.label}</h3>
-        </div>
-        <button
-          className="editor-button primary"
-          disabled={save.isPending || !title.trim() || !body.trim() || !dirty}
-        >
-          <Save size={17} />
-          {save.isPending ? "Kaydediliyor…" : "Kaydet ve yayınla"}
-        </button>
-      </header>
-      {!record && (
-        <p className="editor-empty-hint">
-          <FilePenLine size={18} /> Bu alan boş. Başlığı ve haftalık metni ekleyerek başlayın.
-        </p>
-      )}
-      <label className="editor-field">
-        İçerik başlığı
-        <input
-          value={title}
-          maxLength={200}
-          required
-          onChange={(event) => {
-            setTitle(event.target.value);
-            changed();
-          }}
-          placeholder="Bu hafta ne anlatılacak?"
-          disabled={save.isPending}
-        />
-      </label>
-      <div className="editor-writing-heading">
-        <div className="editor-tabs">
-          <button
-            type="button"
-            aria-pressed={tab === "edit"}
-            className={tab === "edit" ? "active" : ""}
-            onClick={() => setTab("edit")}
-          >
-            Yazı düzenle
-          </button>
-          <button
-            type="button"
-            aria-pressed={tab === "preview"}
-            className={tab === "preview" ? "active" : ""}
-            onClick={() => setTab("preview")}
-          >
-            Önizleme
-          </button>
-        </div>
-        <small>Markdown · {body.length.toLocaleString("tr-TR")} karakter</small>
-      </div>
-      <div className={save.isPending ? "editor-writing disabled" : "editor-writing"}>
-        {tab === "edit" ? (
-          <MarkdownEditor
-            value={body}
-            onChange={(value) => {
-              setBody(value);
-              changed();
-            }}
-          />
-        ) : (
-          <div className="editor-preview">
-            {body ? (
-              <MarkdownContent>{body}</MarkdownContent>
-            ) : (
-              <p>Önizleme için bir metin yazın.</p>
-            )}
-          </div>
-        )}
-      </div>
-      <p className="editor-help">
-        Araç çubuğuyla başlık, kalın yazı, alıntı, liste ve bağlantı ekleyebilirsiniz. Arapça
-        metinler kendi yazı yönünde gösterilir.
-      </p>
-      <label className="editor-field">
-        Kaynak bağlantısı <span>(isteğe bağlı)</span>
-        <input
-          type="text"
-          value={resourceUrl}
-          maxLength={2048}
-          placeholder="https://… veya /curriculum/…/hafta-01.pdf"
-          onChange={(event) => {
-            setResourceUrl(event.target.value);
-            changed();
-          }}
-          disabled={save.isPending}
-        />
-      </label>
-      {save.error && (
-        <div className="editor-error" role="alert">
-          {save.error.message}
-          {save.error instanceof EditorRequestError && save.error.status === 409 && (
-            <button type="button" className="editor-button" onClick={onReload}>
-              Güncel içeriği yükle
-            </button>
-          )}
-          {save.error instanceof EditorRequestError && save.error.status === 401 && (
-            <button
-              type="button"
-              className="editor-button"
-              onClick={() => window.location.reload()}
-            >
-              Tekrar giriş yap
-            </button>
-          )}
-        </div>
-      )}
-      <footer className="editor-content-footer">
-        <span>
-          {dirty
-            ? "Kaydedilmemiş değişiklikler"
-            : record?.updatedAt
-              ? `Son kayıt: ${new Date(record.updatedAt).toLocaleString("tr-TR")}`
-              : "Değişiklikler kaydettiğinizde yayınlanır."}
-        </span>
-        <span>
-          {location.categoryId === "ilmihal"
-            ? `${location.gender === "erkek" ? "Erkek" : "Bayan"} · `
-            : ""}
-          M{location.grade} · {category.shortLabel}
-        </span>
-      </footer>
-    </form>
   );
 }

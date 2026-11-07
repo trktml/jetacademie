@@ -1,8 +1,9 @@
 "use client";
 
+import { curriculumCategories } from "@/components/curriculum-category";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BookOpen, X } from "lucide-react";
-import { curriculumCategories, type CurriculumEntry } from "@/lib/curriculum";
+import { type CurriculumEntry } from "@/lib/curriculum";
 import { formatPeriodLabel, weeklyGroups, type CurriculumPeriod } from "@/lib/curriculum-view";
 import { EntryContentRenderer, EsmaCardHeader } from "./curriculum-entry-content";
 import { InlinePdfViewer } from "./inline-pdf-viewer";

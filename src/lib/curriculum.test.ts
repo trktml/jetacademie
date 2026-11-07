@@ -1,8 +1,8 @@
+import { curriculumCategories } from "@/components/curriculum-category";
 import { describe, expect, it } from "bun:test";
 import {
   canCompleteEntry,
   canUnmarkEntry,
-  curriculumCategories,
   getCategoryEntries as getCategoryEntriesWithData,
   getUnlockedEntryIndex,
   makeEntryId,

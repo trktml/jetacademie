@@ -1,6 +1,3 @@
-import { BookHeart, Compass, HandHeart, Layers, Video, type LucideIcon } from "lucide-react";
-import { EsmaIcon } from "@/components/icons/esma-icon";
-
 export const curriculumCategoryIds = [
   "konu",
   "hocaefendi-dinleme",
@@ -14,68 +11,6 @@ export type CurriculumCategoryId = (typeof curriculumCategoryIds)[number];
 
 export function isCurriculumCategoryId(value: unknown): value is CurriculumCategoryId {
   return typeof value === "string" && curriculumCategoryIds.some((id) => id === value);
-}
-
-export interface CurriculumCategory {
-  readonly id: CurriculumCategoryId;
-  readonly label: string;
-  readonly shortLabel: string;
-  readonly icon: LucideIcon;
-  readonly accent: string;
-  readonly resourceType?: "pdf" | "audio" | "video";
-}
-
-export const curriculumCategories: readonly CurriculumCategory[] = [
-  {
-    id: "konu",
-    label: "Haftanın Konusu",
-    shortLabel: "Konu",
-    icon: Layers,
-    accent: "teal",
-  },
-  {
-    id: "hocaefendi-dinleme",
-    label: "Hocaefendi Sohbetleri",
-    shortLabel: "Sohbet",
-    icon: Video,
-    accent: "rose",
-    resourceType: "video",
-  },
-  {
-    id: "ilmihal",
-    label: "İlmihal",
-    shortLabel: "İlmihal",
-    icon: BookHeart,
-    accent: "lime",
-    resourceType: "pdf",
-  },
-  {
-    id: "adab-i-muaseret",
-    label: "Adab-ı Muaşeret",
-    shortLabel: "Adab",
-    icon: HandHeart,
-    accent: "orange",
-  },
-  {
-    id: "esma",
-    label: "Esmâü'l-Hüsnâ",
-    shortLabel: "Esmâ",
-    icon: EsmaIcon,
-    accent: "emerald",
-  },
-  {
-    id: "tefekkur",
-    label: "Kâinat ve Tefekkür",
-    shortLabel: "Tefekkür",
-    icon: Compass,
-    accent: "sky",
-    resourceType: "video",
-  },
-] as const;
-
-export function getCategoryShortLabel(categoryId: CurriculumCategoryId): string {
-  const category = curriculumCategories.find((item) => item.id === categoryId);
-  return category?.shortLabel || category?.label || "";
 }
 
 export const BELGIUM_GRADES = [1, 2, 3, 4, 5, 6] as const;
