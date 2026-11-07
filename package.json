@@ -6,7 +6,7 @@
     "dev": "bun run assets:pdf && next dev",
     "build": "bun run assets:pdf && next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "BETTER_AUTH_URL=http://localhost:3000 NEXT_PUBLIC_APP_URL=http://localhost:3000 DATABASE_URL=\":memory:\" bun test",
@@ -17,7 +17,9 @@
     "sources:index": "python3 scripts/index-sources.py",
     "sources:search": "bun scripts/search-sources.ts",
     "editor:setup": "bun scripts/setup-curriculum-editor.ts",
-    "assets:pdf": "bun scripts/prepare-pdf-assets.ts"
+    "assets:pdf": "bun scripts/prepare-pdf-assets.ts",
+    "check": "bun run test && bun run lint && bun run format:check && bun run build",
+    "test:postgres": "bun scripts/verify-postgres.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.105.3",
