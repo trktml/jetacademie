@@ -63,3 +63,6 @@ next-env.d.ts
 
 # scratch
 /scratch/
+
+# Generated from the locked PDF.js package before dev/build
+/public/pdfjs/

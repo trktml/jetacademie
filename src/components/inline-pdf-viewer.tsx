@@ -12,7 +12,7 @@ export interface InlinePdfViewerProps {
   initialPage?: number;
 }
 
-import type { PDFDocumentProxy } from "pdfjs-dist";
+import type { PDFDocumentLoadingTask, PDFDocumentProxy } from "pdfjs-dist";
 
 interface RenderTask {
   cancel: () => void;
@@ -65,20 +65,25 @@ export function InlinePdfViewer({
     if (!pdfUrl) return;
 
     let isMounted = true;
+    let loadingTask: PDFDocumentLoadingTask | undefined;
 
     async function loadPdf() {
       setIsLoading(true);
       setErrorMessage(null);
       try {
         const pdfjs = await import("pdfjs-dist");
+        if (!isMounted) return;
         if (typeof window !== "undefined" && pdfjs.GlobalWorkerOptions) {
-          pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+          pdfjs.GlobalWorkerOptions.workerSrc = `/pdfjs/${pdfjs.version}/pdf.worker.min.mjs`;
         }
 
-        const loadingTask = pdfjs.getDocument({
+        loadingTask = pdfjs.getDocument({
           url: pdfUrl,
-          cMapUrl: "https://unpkg.com/pdfjs-dist@5.4.394/cmaps/",
+          maxImageSize: 32_000_000,
+          cMapUrl: `/pdfjs/${pdfjs.version}/cmaps/`,
           cMapPacked: true,
+          standardFontDataUrl: `/pdfjs/${pdfjs.version}/standard_fonts/`,
+          wasmUrl: `/pdfjs/${pdfjs.version}/wasm/`,
         });
 
         const doc = (await loadingTask.promise) as unknown as PDFDocumentProxy;
@@ -100,10 +105,10 @@ export function InlinePdfViewer({
 
     return () => {
       isMounted = false;
-      if (pdfDocRef.current) {
-        pdfDocRef.current.cleanup?.();
-        pdfDocRef.current = null;
-      }
+      renderTaskRef.current?.cancel();
+      renderTaskRef.current = null;
+      pdfDocRef.current = null;
+      void loadingTask?.destroy().catch(() => {});
     };
   }, [pdfUrl]);
 
@@ -128,13 +133,20 @@ export function InlinePdfViewer({
       const containerWidth = containerRef.current?.clientWidth || 560;
       const unscaledViewport = page.getViewport({ scale: 1 });
       const targetWidth = Math.max(260, Math.min(containerWidth, 680));
-      const scale = Math.max(0.7, +(targetWidth / unscaledViewport.width).toFixed(2));
+      const scale = Math.min(
+        Math.max(0.7, +(targetWidth / unscaledViewport.width).toFixed(2)),
+        4096 / Math.max(unscaledViewport.width, unscaledViewport.height)
+      );
 
       const viewport = page.getViewport({ scale });
-      const pixelRatio = window.devicePixelRatio || 1;
+      const pixelRatio = Math.min(
+        window.devicePixelRatio || 1,
+        4096 / Math.max(viewport.width, viewport.height),
+        Math.sqrt(8_000_000 / (viewport.width * viewport.height))
+      );
 
-      canvas.width = Math.floor(viewport.width * pixelRatio);
-      canvas.height = Math.floor(viewport.height * pixelRatio);
+      canvas.width = Math.max(1, Math.floor(viewport.width * pixelRatio));
+      canvas.height = Math.max(1, Math.floor(viewport.height * pixelRatio));
       canvas.style.width = `${Math.floor(viewport.width)}px`;
       canvas.style.height = `${Math.floor(viewport.height)}px`;
 

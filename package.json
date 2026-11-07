@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "bun run assets:pdf && next dev",
+    "build": "bun run assets:pdf && next build",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
@@ -16,7 +16,8 @@
     "db:clean-curriculum": "bun scripts/clean-curriculum-db.ts",
     "sources:index": "python3 scripts/index-sources.py",
     "sources:search": "bun scripts/search-sources.ts",
-    "editor:setup": "bun scripts/setup-curriculum-editor.ts"
+    "editor:setup": "bun scripts/setup-curriculum-editor.ts",
+    "assets:pdf": "bun scripts/prepare-pdf-assets.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.105.3",

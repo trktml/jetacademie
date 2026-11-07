@@ -10,3 +10,5 @@ bun.lockb
 .DS_Store
 .env*
 !.env.example
+
+public/pdfjs
