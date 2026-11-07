@@ -123,21 +123,22 @@ def index_pdf_file(conn: sqlite3.Connection, pdf_path: Path, category: str, forc
     rel_path = str(pdf_path.relative_to(ROOT_DIR))
     book_title = extract_book_title(pdf_path)
     clean_stem = re.sub(r'[^a-zA-Z0-9_]', '', pdf_path.stem.lower())[:24]
-    doc_hash = hashlib.sha1(rel_path.encode("utf-8")).hexdigest()[:10]
+    doc_hash = hashlib.sha256(rel_path.encode("utf-8")).hexdigest()[:32]
     doc_id = f"{category}_{clean_stem}_{doc_hash}"
 
     c = conn.cursor()
     # Fast check: skip if already indexed unless force is requested
-    if not force:
-        existing = c.execute("SELECT id FROM corpus_documents WHERE file_path = ?", (rel_path,)).fetchone()
-        if existing:
-            return 0
+    existing = c.execute("SELECT id FROM corpus_documents WHERE file_path = ?", (rel_path,)).fetchone()
+    if existing and not force:
+        return 0
 
     try:
         reader = pypdf.PdfReader(str(pdf_path))
         num_pages = len(reader.pages)
     except Exception as e:
         print(f"  [ERROR] Cannot read PDF {pdf_path.name}: {e}")
+        if existing:
+            return 0
         # Record unreadable PDF with 0 pages so it is skipped immediately on future runs
         c.execute("""
         INSERT OR REPLACE INTO corpus_documents (id, category, book_title, file_path, total_pages)
@@ -219,7 +220,7 @@ def index_text_file(conn: sqlite3.Connection, text_path: Path, category: str, fo
     rel_path = str(text_path.relative_to(ROOT_DIR))
     book_title = extract_book_title(text_path)
     clean_stem = re.sub(r'[^a-zA-Z0-9_]', '', text_path.stem.lower())[:24]
-    doc_hash = hashlib.sha1(rel_path.encode("utf-8")).hexdigest()[:10]
+    doc_hash = hashlib.sha256(rel_path.encode("utf-8")).hexdigest()[:32]
     doc_id = f"{category}_{clean_stem}_{doc_hash}"
 
     try:
