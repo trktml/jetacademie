@@ -12,6 +12,8 @@ Betiği çalıştırmadan önce dağıtılacak sürümü Git'e kaydedin. Betik y
 
 İlk dağıtımda betik Tailscale HTTPS adresini bulabiliyorsa `.env` dosyasını `0600` izinleriyle oluşturur ve ayrı veritabanı yönetici/uygulama parolaları üretir. Özel alan adı için uzak `.env` dosyasını önceden hazırlayıp `BETTER_AUTH_URL` ve `NEXT_PUBLIC_APP_URL` değerlerini aynı HTTPS kaynağına ayarlayın. Örnek için [`.env.example`](../.env.example) dosyasına bakın. Mevcut kurulumun sırları değiştirilmez. Betik, Compose hizmetleri sağlıklı olmadan başarılı sonuç vermez.
 
+Aynı uygulamaya birden fazla adresten erişiliyorsa kurallı adresi koruyun ve diğer adresleri `AUTH_TRUSTED_ORIGINS` değişkenine virgülle ayırarak yazın. Üretimde her değer şema ve alan adı içeren tam bir HTTPS kaynağı olmalıdır; yol ve joker karakter kullanmayın. Ayarı dağıttıktan sonra her adresten girişi doğrulayın. İzin listesinde bulunmayan bir adresten gelen giriş isteği `403` ile reddedilir.
+
 Sunucuda HTTPS yönlendirmesini açın:
 
 ```bash
