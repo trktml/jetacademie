@@ -4,6 +4,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # TypeScript 7.0, typescript-eslint'in kullandığı JavaScript API'sini sunmuyor.
+      - dependency-name: typescript
+        versions: [">=7.0.0 <7.1.0"]
     groups:
       next:
         patterns: [next, eslint-config-next]
