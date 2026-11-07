@@ -1,83 +1,51 @@
-# Tailscale ile Uzak Sunucuya Dağıtım ve Yönetim Rehberi
+# Tailscale ve Docker ile dağıtım
 
-Bu rehber, **JetAcademie** projesini Tailscale ağı üzerindeki `100.80.51.7` uzak sunucunuza kolayca deploy etmeniz, HTTPS ile güvenli çalıştırmanız ve PostgreSQL veritabanını Tailscale üzerinden güvenle yönetmeniz için hazırlanmıştır.
+JetAcademie'nin web servisi varsayılan olarak ana makinenin yalnızca `127.0.0.1:3001` adresine bağlanır. Tailscale Serve veya yerel bir HTTPS ters proxy bu adrese bağlanabilir. PostgreSQL için varsayılan Compose yapılandırmasında ana makine portu yoktur; web konteyneri veritabanına Compose ağı üzerinden `db:5432` adresinde ulaşır.
 
----
-
-## 🌐 1. Genel Bakış ve Güvenlik Yapılandırması (Tailscale İzolasyonu)
-
-- **Uzak Sunucu Tailscale IP**: `100.80.51.7`
-- **Mevcut Host Port Çakışması Koruması**:
-  Sunucunuzda halihazırda `5432` portunda çalışan bir PostgreSQL veritabanı bulunduğu için, JetAcademie'nin PostgreSQL konteyneri ana makinede **`5433`** portuna yönlendirilmiştir (`PG_HOST_PORT=5433`).
-- **Yüksek Güvenlik & Salt Tailscale IP Kısıtlaması (`PG_BIND_IP`)**:
-  PostgreSQL portu genel internete (`0.0.0.0`) **ASLA** açılmaz! Port yönlendirmesi doğrudan ve yalnızca Tailscale IP adresine bağlanır (`100.80.51.7:5433:5432`).
-  - Dış dünyadan (WAN / genel internet) gelen istekler port 5433'e kesinlikle ulaşamaz; işletim sistemi soketi yalnızca Tailscale arayüzünde dinler.
-  - Sadece ve sadece Tailscale ağınızda kimliği doğrulanmış makineler `100.80.51.7:5433` üzerinden veritabanına erişebilir.
-  - Konteyner içi ağ: `web` servisi `db:5432` ile doğrudan Docker iç ağı üzerinden görüşür.
-  - Mevcut PostgreSQL veritabanınız (`5432`) **kesinlikle etkilenmez ve çakışma yaşanmaz**.
-- Web servisi varsayılan olarak `127.0.0.1:3001` üzerinde dinler; Tailscale Serve veya yerel ters vekil üzerinden erişilir.
-
----
-
-## 🚀 2. Uzak Sunucuya Tek Komutla Deploy
-
-Yerel terminalinizden projeyi `100.80.51.7` sunucunuza deploy etmek için:
+## Dağıtım
 
 ```bash
-# Otomatik olarak 100.80.51.7 hedefine deploy eder:
-./scripts/deploy.sh
-
-# Veya kullanıcı adınızla (örn: root veya ubuntu):
-./scripts/deploy.sh root@100.80.51.7
-# veya
-./scripts/deploy.sh ubuntu@100.80.51.7
+./scripts/deploy.sh ubuntu@100.80.51.7 /opt/jetacademie
 ```
 
-### Betik Neler Yapar?
+Betiği çalıştırmadan önce dağıtılacak sürümü Git'e kaydedin. Betik yalnızca `HEAD` içindeki uygulama dosyalarını gönderir. Yerel ortam dosyaları, yedekler, dışa aktarımlar ve araştırma kaynakları aktarılmaz. Uzakta yalnız `src/`, `public/` ve `scripts/` içindeki eski dosyalar eşitlenir; dağıtım kökündeki `.env` ve yedekler korunur. Önceki dağıtım betikleri kullanıldıysa sunucuda kalmış eski yerel kopyaları ayrıca kontrol edin.
 
-1. `100.80.51.7` sunucusuna SSH bağlantısını doğrular.
-2. Kodları `/opt/jetacademie` dizinine senkronize eder.
-3. Uzak sunucuda `.env` dosyasını otomatik oluşturur, `PG_HOST_PORT=5433` ayarını yapar ve güçlü parolalar üretir.
-4. `docker compose up -d --build` çalıştırarak hem Postgres 16'yı hem de web uygulamasını ayağa kaldırır.
+İlk dağıtımda betik Tailscale HTTPS adresini bulabiliyorsa `.env` dosyasını `0600` izinleriyle oluşturur ve ayrı veritabanı yönetici/uygulama parolaları üretir. Özel alan adı için uzak `.env` dosyasını önceden hazırlayıp `BETTER_AUTH_URL` ve `NEXT_PUBLIC_APP_URL` değerlerini aynı HTTPS kaynağına ayarlayın. Örnek için [`.env.example`](../.env.example) dosyasına bakın. Mevcut kurulumun sırları değiştirilmez. Betik, Compose hizmetleri sağlıklı olmadan başarılı sonuç vermez.
 
----
-
-## 🔒 3. Web Arayüzüne Erişim ve Otomatik HTTPS
-
-### Tailscale Serve ile HTTPS
-
-Uzak sunucuya SSH ile bağlanıp tek komutla SSL sertifikalı alan adı elde edebilirsiniz:
+Sunucuda HTTPS yönlendirmesini açın:
 
 ```bash
 tailscale serve --bg 3001
+tailscale serve status
 ```
 
-Bu komut sonrası uygulamanız `https://<sunucu-adi>.<tailnet-adi>.ts.net` adresinde güvenli şekilde yayına geçer.
-Sunucudaki `.env` dosyasında `BETTER_AUTH_URL` ve `NEXT_PUBLIC_APP_URL` değerlerini bu HTTPS adresine ayarlayın. Uygulama portunu Tailscale IP üzerinden doğrudan açmanız gerekiyorsa `HOST_BIND_IP` değerini bilinçli olarak değiştirin ve ağ erişimini sınırlandırın.
+Tailnet erişim kurallarında yalnız gerekli kullanıcı ve cihazlara izin verin. Dokploy kullanıyorsanız proxy'yi web konteynerine yönlendirin ve veritabanı konteynerini proxy ağına katmayın. Ters proxy, istemcinin gönderdiği yönlendirme başlıklarını temizlemeli, gerçek genel `Host` veya `X-Forwarded-Host` değerini ayarlamalı ve giriş, kayıt ve editör uçlarına istemci başına istek sınırı uygulamalıdır. Yönetim ağı varsa `/duzenle` ve `/api/editor/*` için proxy erişimini o ağla sınırlayın. İstek gövdesi ve bağlantı zaman aşımı sınırlarını da proxy üzerinde ayarlayın.
 
----
+`POST /api/auth/sign-in-anonymous` için istemci sınırını proxy'nin doğruladığı bağlantı adresine göre uygulayın. Uygulama kullanıcı adı başına giriş denemelerini ve örnek başına eşzamanlı işi sınırlar; farklı kullanıcı adları deneyen istemciler için trafik sınırını ters proxy uygular.
 
-## 📦 4. SQLite'tan Uzak PostgreSQL'e Veri Aktarımı (Migration)
+## Veritabanına yönetim erişimi
 
-Deploy tamamlandıktan sonra, yerel makinenizdeki `auth.sqlite` verilerini Tailscale üzerinden uzak PostgreSQL'e aktarabilirsiniz:
+Sunucudaki Compose dizininde doğrudan `docker compose exec db psql -U jetacademie -d jetacademie` çalıştırabilirsiniz. Harici bir istemci gerekiyorsa sunucuda isteğe bağlı döngü portunu açın:
 
 ```bash
-# Sunucunuzdaki .env içindeki POSTGRES_PASSWORD değerini kullanarak:
-DATABASE_URL="postgres://jetacademie:SIFRE@100.80.51.7:5433/jetacademie" bun scripts/migrate-sqlite-to-pg.ts
+docker compose -f docker-compose.yml -f docker-compose.db-tunnel.yml up -d db
 ```
 
-> **Not:** Veritabanı parolasını terminal çıktısına veya dağıtım günlüklerine yazdırmayın. Uzak `.env` dosyasını yalnızca yetkili hesaplarla erişilebilir tutun.
-
----
-
-## 💾 5. Yedekleme ve Geri Yükleme
-
-Uzak sunucuda:
+Kendi bilgisayarınızdan SSH tüneli oluşturun:
 
 ```bash
-# Yedek alma:
+ssh -N -L 127.0.0.1:5433:127.0.0.1:5433 ubuntu@100.80.51.7
+```
+
+İstemciyi `127.0.0.1:5433` adresine bağlayın. İşiniz bitince tüneli kapatıp sunucuda yalnız temel dosyayla `docker compose -f docker-compose.yml up -d db` çalıştırın. Eski `PG_BIND_IP` ayarı kullanılmaz; önceki Tailnet PostgreSQL adresini kullanan istemciler SSH tüneline geçmelidir.
+
+Boş bir PostgreSQL hacminde `POSTGRES_APP_PASSWORD` tanımlanırsa başlangıç betiği `jetacademie_app` rolünü açar; bu rol uygulamanın tablolarını oluşturabilir, ancak süper kullanıcı değildir ve rol veya veritabanı oluşturamaz. Web'e verilen `APP_DATABASE_URL` bu rolü kullanmalıdır. Önceden başlatılmış hacimlerde başlangıç betiği yeniden çalışmaz. Mevcut kurulum ayrı role geçirilecekse önce yedek alın, rolü ve şema izinlerini oluşturun, uygulamaya ait mevcut tabloların sahipliğini aktarın ve yeni URL ile ayrı ortamda doğrulayın. Eski kurulumlar bu geçiş yapılana kadar mevcut bağlantılarıyla çalışır.
+
+## Yedekleme
+
+```bash
 ./scripts/backup-db.sh
-
-# Geri yükleme:
-./scripts/restore-db.sh ./backups/jetacademie_backup_*.sql
+./scripts/restore-db.sh ./backups/jetacademie_backup_YYYYMMDD_HHMMSS.sql
 ```
+
+Yedek özel izinlerle oluşturulur ve tamamlanmadan hedef adla yayımlanmaz. Parola hash'leri ve öğrenci verileri içerebileceği için yedeği erişimi kısıtlı, tercihen şifreli bir konumda saklayın. Uygulama ve editör oturumları ile geçici doğrulama kayıtları yeni yedeklere alınmaz. Geri yükleme için güvenilen bir SQL yedeği ve boş hedef veritabanı kullanın; betik hata durumunda işlemi geri alır, başarılı olduğunda eski oturumları iptal eder. Ayrı uygulama rolü bulunan yeni kurulumlarda yeni yedekler bu role ait tablolar olarak geri yüklenir. Eski SQL yedekleri önceki tablo sahibini belirten komutlar içerebilir; rol geçişinden önce bunları ayrı bir hedefte eski rolle doğrulayın. Compose dışındaki bir hedef için `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER` ve gerekirse `PGPASSFILE` kullanın.
