@@ -6,7 +6,7 @@ import {
   getCurriculumEntriesFromDb,
   getCurriculumEntryByIdFromDb,
   migrateLegacyGradeOneCurriculumEntryIds,
-  syncKonuCurriculumIfOutdated,
+  migrateLegacyKonuProgress,
   getUserGenderFromDb,
   seedCurriculumDatabase,
   setUserGenderInDb,
@@ -17,6 +17,7 @@ import {
 } from "./curriculum-db";
 import { BELGIUM_GRADES } from "./curriculum";
 import { execute, getSqlite, query, queryOne } from "./db";
+import { WEEKLY_CONTENT_CATEGORIES } from "./validations/curriculum-entry";
 
 const db = getSqlite()!;
 
@@ -104,7 +105,7 @@ describe("Curriculum SQLite Database Module", () => {
     ).run(migrationUserId, legacyEntryId, now);
 
     try {
-      await syncKonuCurriculumIfOutdated();
+      await migrateLegacyKonuProgress();
 
       const legacyEntry = await queryOne<{ id: string }>(
         `SELECT "id" FROM "curriculum_entries" WHERE "id" = $1`,
@@ -357,8 +358,34 @@ describe("Curriculum SQLite Database Module", () => {
     }
   });
 
+  it("preserves database drafts and deletions when the bundled seed runs again", async () => {
+    const draftId = "g6-hocaefendi-dinleme-agustos-3";
+    const deletedId = "g6-hocaefendi-dinleme-agustos-4";
+    const originals = await query<import("./curriculum-db").CurriculumEntryRow>(
+      'SELECT * FROM "curriculum_entries" WHERE "id" IN ($1, $2)',
+      [draftId, deletedId]
+    );
+    expect(originals).toHaveLength(2);
+    try {
+      await execute('UPDATE "curriculum_entries" SET "isDraft" = 1 WHERE "id" = $1', [draftId]);
+      await execute('DELETE FROM "curriculum_entries" WHERE "id" = $1', [deletedId]);
+      await seedCurriculumDatabase(true);
+      expect(await getCurriculumEntryByIdFromDb(draftId)).toBeNull();
+      expect(await getCurriculumEntryByIdFromDb(deletedId)).toBeNull();
+      expect(
+        await queryOne('SELECT "isDraft" FROM "curriculum_entries" WHERE "id" = $1', [draftId])
+      ).toEqual({ isDraft: 1 });
+    } finally {
+      await bulkUpsertCurriculumEntries(originals);
+    }
+  });
+
   it("should keep excluded categories empty across regular and forced seeding", async () => {
     const categoryId = "hocaefendi-dinleme" as const;
+    const original = await query<import("./curriculum-db").CurriculumEntryRow>(
+      'SELECT * FROM "curriculum_entries" WHERE "categoryId" = $1',
+      [categoryId]
+    );
     await excludeAndDeleteCurriculumCategoriesFromSeed([categoryId]);
 
     try {
@@ -373,7 +400,7 @@ describe("Curriculum SQLite Database Module", () => {
       expect(await getCurriculumEntryByIdFromDb("hocaefendi-dinleme-eylul-1")).toBeNull();
     } finally {
       await allowCurriculumCategoriesToSeed([categoryId]);
-      await seedCurriculumDatabase(true);
+      await bulkUpsertCurriculumEntries(original);
     }
   });
 });
@@ -392,36 +419,35 @@ describe("Curriculum editor week locations", () => {
 });
 
 describe("Curriculum week management and draft lifecycle", () => {
-  it("validates the entire draft batch before publishing and preserves other categories", async () => {
-    await ensureCurriculumEntriesTable();
-    const ids = [
-      "g1-vocabulary-publish-valid",
-      "g1-vocabulary-publish-invalid",
-      "g1-vocabulary-publish-preserved",
-    ];
-    const base = {
-      grade: 1 as const,
+  const testEntries = BELGIUM_GRADES.flatMap((grade) =>
+    WEEKLY_CONTENT_CATEGORIES.map((categoryId) => ({
+      id: `g${grade}-${categoryId}-mayis-3`,
+      grade,
+      categoryId,
       month: 5,
       week: 3,
       year: 2027,
-      title: "Vocabulary test",
+      title: "Week 35 fixture",
+      body: "Test Body Week 35",
       isDraft: true,
-    };
+    }))
+  );
+
+  it("validates the entire draft batch before publishing and preserves other categories", async () => {
+    await deleteCurriculumWeek(35);
+    const ids = [testEntries[0].id, testEntries[1].id, "g1-vocabulary-publish-preserved"];
     try {
       await bulkUpsertCurriculumEntries([
         {
-          ...base,
-          id: ids[0],
-          categoryId: "konu",
+          ...testEntries[0],
           body: "<u>niyet</u> önemlidir.\n\n## Kelime Açıklaması\n\n**niyet** — Amaç.",
         },
         {
-          ...base,
-          id: ids[1],
-          categoryId: "hocaefendi-dinleme",
+          ...testEntries[1],
           body: "**تَعَلَّمَ**\n\nÖğrendi.\n\n## Kelime Açıklaması\n\n**taallame** — Öğrendi.",
         },
-        { ...base, id: ids[2], categoryId: "adab-i-muaseret", body: "Korunan içerik." },
+        ...testEntries.slice(2),
+        { ...testEntries[0], id: ids[2], categoryId: "adab-i-muaseret", body: "Korunan içerik." },
       ]);
       await expect(publishCurriculumWeek(35)).rejects.toThrow("'taallame' Türkçe metinde");
       const before = await query<{ id: string; isDraft: number }>(
@@ -443,7 +469,8 @@ describe("Curriculum week management and draft lifecycle", () => {
       expect(after.find((row) => row.id === ids[1])?.isDraft).toBe(0);
       expect(after.find((row) => row.id === ids[2])?.isDraft).toBe(1);
     } finally {
-      await execute('DELETE FROM "curriculum_entries" WHERE "id" IN ($1, $2, $3)', ids);
+      await deleteCurriculumWeek(35);
+      await execute('DELETE FROM "curriculum_entries" WHERE "id" = $1', [ids[2]]);
     }
   });
   it("supports saving drafts, listing summaries, publishing, and deleting weekly content", async () => {
@@ -451,31 +478,6 @@ describe("Curriculum week management and draft lifecycle", () => {
 
     // Clean up week 35 (mayis-3) first to start from known state
     await deleteCurriculumWeek(35);
-
-    const testEntries = [
-      {
-        id: "g1-konu-mayis-3",
-        grade: 1 as const,
-        categoryId: "konu" as const,
-        month: 5,
-        week: 3,
-        year: 2027,
-        title: "Test Konu Week 35",
-        body: "Test Body Week 35",
-        isDraft: true,
-      },
-      {
-        id: "g1-hocaefendi-dinleme-mayis-3",
-        grade: 1 as const,
-        categoryId: "hocaefendi-dinleme" as const,
-        month: 5,
-        week: 3,
-        year: 2027,
-        title: "Test Sohbet Week 35",
-        body: "Test Sohbet Body",
-        isDraft: true,
-      },
-    ];
 
     try {
       // 1. Bulk upsert as draft
@@ -493,20 +495,20 @@ describe("Curriculum week management and draft lifecycle", () => {
       expect(summaries.length).toBe(36);
       const week35 = summaries.find((s) => s.weekNumber === 35);
       expect(week35).toBeDefined();
-      expect(week35?.totalEntries).toBe(2);
-      expect(week35?.draftEntries).toBe(2);
+      expect(week35?.totalEntries).toBe(12);
+      expect(week35?.draftEntries).toBe(12);
       expect(week35?.publishedEntries).toBe(0);
       expect(week35?.status).toBe("draft");
 
       // 4. Publish week 35
       const pubResult = await publishCurriculumWeek(35);
-      expect(pubResult.publishedCount).toBe(2);
+      expect(pubResult.publishedCount).toBe(12);
 
       const summariesAfterPub = await getCurriculumWeekSummaries();
       const week35AfterPub = summariesAfterPub.find((s) => s.weekNumber === 35);
-      expect(week35AfterPub?.totalEntries).toBe(2);
+      expect(week35AfterPub?.totalEntries).toBe(12);
       expect(week35AfterPub?.draftEntries).toBe(0);
-      expect(week35AfterPub?.publishedEntries).toBe(2);
+      expect(week35AfterPub?.publishedEntries).toBe(12);
       expect(week35AfterPub?.status).toBe("published");
 
       // Default getCurriculumEntriesFromDb now includes them
@@ -515,7 +517,7 @@ describe("Curriculum week management and draft lifecycle", () => {
 
       // 5. Delete week 35
       const delResult = await deleteCurriculumWeek(35);
-      expect(delResult.deletedCount).toBe(2);
+      expect(delResult.deletedCount).toBe(12);
 
       const summariesAfterDel = await getCurriculumWeekSummaries();
       const week35AfterDel = summariesAfterDel.find((s) => s.weekNumber === 35);

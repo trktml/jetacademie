@@ -10,7 +10,7 @@ import {
   seedCurriculumDatabase,
 } from "./curriculum-db";
 import { execute, queryOne } from "./db";
-import { getEditorOverrideById, getEditorOverrides } from "./editor/content";
+import { getEditorOverrides } from "./editor/content";
 import { ensureEditorSchema } from "./editor/schema";
 import { editorEntrySchema } from "./editor/validation";
 import { weeklyEntryInputSchema } from "./validations/curriculum-entry";
@@ -95,7 +95,6 @@ describe("retired curriculum categories", () => {
       await seedCurriculumDatabase(true);
       for (const id of ids) {
         expect(await getCurriculumEntryByIdFromDb(id)).toBeNull();
-        expect(await getEditorOverrideById(id)).toBeNull();
       }
       expect((await getEditorOverrides()).some(({ entry }) => ids.includes(entry.id))).toBe(false);
       for (const includeDrafts of [false, true]) {

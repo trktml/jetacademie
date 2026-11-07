@@ -6,26 +6,32 @@ import { KonuLessonReader } from "@/components/konu-lesson-reader";
 import { MarkdownContent } from "@/components/markdown-content";
 import { getKonuItem, parseKonuItemFromBody } from "@/lib/data/konu-curriculum";
 import { getEsmaArabic } from "@/lib/data/esma-curriculum";
-export function getYouTubeVideoId(url?: string | null): string | null {
-  if (!url) return null;
+export function getYouTubeVideoId(value?: string | null): string | null {
+  if (!value) return null;
   try {
-    const parsed = new URL(url);
-    if (parsed.hostname.includes("youtube.com")) {
-      const v = parsed.searchParams.get("v");
-      if (v) return v;
-      const shortsMatch = parsed.pathname.match(/\/shorts\/([\w-]{11})/);
-      if (shortsMatch) return shortsMatch[1];
+    const url = new URL(value);
+    if (url.protocol !== "https:" || url.username || url.password) return null;
+    let id: string | null = null;
+    if (["youtu.be", "www.youtu.be"].includes(url.hostname)) {
+      id = url.pathname.slice(1);
+    } else if (
+      [
+        "youtube.com",
+        "www.youtube.com",
+        "m.youtube.com",
+        "youtube-nocookie.com",
+        "www.youtube-nocookie.com",
+      ].includes(url.hostname)
+    ) {
+      id =
+        url.pathname === "/watch"
+          ? url.searchParams.get("v")
+          : (url.pathname.match(/^\/(?:shorts|embed|v)\/([\w-]{11})\/?$/)?.[1] ?? null);
     }
-    if (parsed.hostname.includes("youtu.be")) {
-      return parsed.pathname.slice(1);
-    }
+    return id && /^[\w-]{11}$/.test(id) ? id : null;
   } catch {
-    const match = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/
-    );
-    return match ? match[1] : null;
+    return null;
   }
-  return null;
 }
 
 export interface ParsedVocabItem {

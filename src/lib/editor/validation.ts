@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { curriculumCategoryIds } from "@/lib/curriculum";
+import { curriculumResourceUrl } from "@/lib/curriculum-resource-url";
 import { curriculumVocabularyIssues } from "@/lib/curriculum-vocabulary";
 import { WEEKLY_CONTENT_CATEGORIES } from "@/lib/validations/curriculum-entry";
 
@@ -9,16 +10,10 @@ export const editorLoginSchema = z
 const safeResource = z
   .string()
   .max(2048)
-  .refine((value) => {
-    if (!value) return true;
-    if (/^\/(?!\/)[a-zA-Z0-9/_ .%-]+\.pdf$/.test(value)) return true;
-    try {
-      const url = new URL(value);
-      return url.protocol === "https:" && !url.username && !url.password;
-    } catch {
-      return false;
-    }
-  }, "HTTPS bağlantısı veya yerel PDF yolu kullanın.");
+  .refine(
+    (value) => !value || Boolean(curriculumResourceUrl(value)),
+    "HTTPS bağlantısı veya /curriculum/ altında yerel PDF yolu kullanın."
+  );
 export const editorEntrySchema = z
   .object({
     grade: z.number().int().min(1).max(6),

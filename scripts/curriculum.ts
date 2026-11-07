@@ -3,13 +3,13 @@ import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { format, resolveConfig } from "prettier";
 import {
-  ensureCurriculumEntriesTable,
   getCurriculumEntriesFromDb,
   getCurriculumWeekSummaries,
   publishCurriculumWeek,
   deleteCurriculumWeek,
+  saveWeeklyCurriculumPackage,
 } from "../src/lib/curriculum-db";
-import { getPool, closeDatabase } from "../src/lib/db";
+import { closeDatabase } from "../src/lib/db";
 import {
   weekNumberToSlot,
   weeklyPackageSchema,
@@ -28,9 +28,9 @@ KULLANIM:
   bun scripts/curriculum.ts <komut> [seçenekler]
 
 KOMUTLAR:
-  list                          36 haftanın durumunu (boş, taslak, yayında) listeler
+  list                          36 haftanın durumunu (boş, taslak, kısmi, yayında) listeler
   save --week <N> [seçenekler]   Haftalık paketi veya tek kategoriyi doğrular ve taslak kaydeder
-  publish --week <N>            Belirtilen haftanın taslak kayıtlarını yayına alır (isDraft = 0)
+  publish --week <N>            Hafta 12 kayıtla tamamlandığında taslakları yayına alır
   export --week <N> [seçenekler] Belirtilen haftanın kayıtlarını Markdown olarak dışa aktarır
   delete --week <N>             Belirtilen haftanın içerik kayıtlarını siler (adab, ilmihal, esma hariç)
   backup [seçenekler]           Tüm haftalık içerikleri, snapshot JSON ve SQL olarak yerele yedekler
@@ -211,97 +211,7 @@ async function handleSave(options: Record<string, string | boolean>) {
     `\n⏳ Hafta ${weekNumber} için ${pkg.entries.length} kayıt veritabanına aktarılıyor (isDraft: ${isDraftVal})...`
   );
 
-  await ensureCurriculumEntriesTable();
-  const pool = getPool();
-  if (pool) {
-    const client = await pool.connect();
-    try {
-      await client.query("BEGIN");
-
-      // Temporarily bypass the seed guard trigger inside this transaction
-      const exclusions = await client.query(
-        'DELETE FROM "curriculum_seed_exclusions" WHERE "categoryId" = ANY($1::text[]) RETURNING *',
-        [category ? [category] : [...WEEKLY_CONTENT_CATEGORIES]]
-      );
-
-      for (const entry of pkg.entries) {
-        await client.query(
-          `INSERT INTO "curriculum_entries" (
-            "id", "grade", "categoryId", "gender", "month", "week", "year",
-            "isExtra", "extraOrder", "isDraft", "title", "body", "resourceUrl",
-            "pdfUrl", "pageCount", "createdAt", "updatedAt"
-          ) VALUES ($1,$2,$3,NULL,$4,$5,$6,0,NULL,$7,$8,$9,$10,NULL,NULL,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
-          ON CONFLICT ("id") DO UPDATE SET
-            "title" = EXCLUDED."title",
-            "body" = EXCLUDED."body",
-            "resourceUrl" = EXCLUDED."resourceUrl",
-            "isDraft" = EXCLUDED."isDraft",
-            "updatedAt" = CURRENT_TIMESTAMP`,
-          [
-            entry.id,
-            entry.grade,
-            entry.categoryId,
-            entry.month,
-            entry.week,
-            entry.year,
-            isDraftVal ? 1 : 0,
-            entry.title,
-            entry.body,
-            entry.resourceUrl ?? null,
-          ]
-        );
-      }
-
-      // Clear any stale editor overrides for these entries so the newly saved entries take effect
-      const entryIds = pkg.entries.map((e) => e.id);
-      await client.query(
-        'DELETE FROM "curriculum_editor_content" WHERE "entryId" = ANY($1::text[])',
-        [entryIds]
-      );
-
-      // Restore exclusions
-      for (const row of exclusions.rows) {
-        await client.query(
-          `INSERT INTO "curriculum_seed_exclusions" ("categoryId", "createdAt")
-           VALUES ($1, $2)
-           ON CONFLICT ("categoryId") DO NOTHING`,
-          [row.categoryId, row.createdAt]
-        );
-      }
-
-      await client.query("COMMIT");
-    } catch (err) {
-      await client.query("ROLLBACK");
-      throw err;
-    } finally {
-      client.release();
-    }
-  } else {
-    // In-memory test SQLite fallback
-    const { bulkUpsertCurriculumEntries } = await import("../src/lib/curriculum-db");
-    const now = new Date().toISOString();
-    await bulkUpsertCurriculumEntries(
-      pkg.entries.map((e) => ({
-        id: e.id,
-        grade: e.grade,
-        categoryId: e.categoryId,
-        gender: null,
-        month: e.month,
-        week: e.week,
-        year: e.year,
-        isExtra: 0,
-        extraOrder: null,
-        isDraft: isDraftVal ? 1 : 0,
-        title: e.title,
-        body: e.body,
-        resourceUrl: e.resourceUrl ?? null,
-        pdfUrl: null,
-        pageCount: null,
-        createdAt: now,
-        updatedAt: now,
-      }))
-    );
-  }
+  await saveWeeklyCurriculumPackage(pkg, { category, publish: shouldPublish });
 
   console.log(
     `✅ Hafta ${weekNumber} başarıyla kaydedildi! (${pkg.entries.length} kayıt, Statü: ${isDraftVal ? "Taslak" : "Yayında"})\n`

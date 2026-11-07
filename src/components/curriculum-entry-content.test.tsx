@@ -1,7 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import { renderToString } from "react-dom/server";
 import type { CurriculumEntry } from "@/lib/curriculum";
-import { EntryContentRenderer, parseEntryContent } from "./curriculum-entry-content";
+import {
+  EntryContentRenderer,
+  getYouTubeVideoId,
+  parseEntryContent,
+} from "./curriculum-entry-content";
 
 describe("listening vocabulary", () => {
   it("keeps translated words separate from their definitions", () => {
@@ -84,5 +88,26 @@ describe("listening vocabulary", () => {
     const videoIndex = html.indexOf("youtube-nocookie.com/embed/");
     expect(videoIndex).toBeLessThan(html.indexOf("Sohbet açıklaması."));
     expect(videoIndex).toBeLessThan(html.indexOf("<span>Kelimeler</span>"));
+  });
+});
+
+describe("video resource validation", () => {
+  it("only embeds exact YouTube hosts and valid video IDs", () => {
+    for (const url of [
+      "https://youtube.com/watch?v=abcdefghijk",
+      "https://youtu.be/abcdefghijk",
+      "https://www.youtube.com/shorts/abcdefghijk",
+      "https://www.youtube-nocookie.com/embed/abcdefghijk",
+    ])
+      expect(getYouTubeVideoId(url)).toBe("abcdefghijk");
+    for (const url of [
+      "https://evil-youtube.com/watch?v=abcdefghijk",
+      "https://youtube.com.evil.example/watch?v=abcdefghijk",
+      "https://youtube.com/watch?v=../redirect",
+      "javascript:alert(1)",
+      "https://user:pass@youtube.com/watch?v=abcdefghijk",
+      "not-a-url",
+    ])
+      expect(getYouTubeVideoId(url)).toBeNull();
   });
 });

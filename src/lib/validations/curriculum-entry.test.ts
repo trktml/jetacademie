@@ -9,6 +9,19 @@ import {
 } from "./curriculum-entry";
 
 describe("curriculum-entry validations and slot mapping", () => {
+  it("rejects non-finite, fractional and out-of-range week slots", () => {
+    for (const value of [NaN, Infinity, 1.5, 0, 49])
+      expect(() => weekNumberToSlot(value)).toThrow();
+    for (const [month, week] of [
+      [0, 1],
+      [13, 1],
+      [9, 0],
+      [9, 5],
+      [9, NaN],
+      [2.5, 1],
+    ])
+      expect(() => slotToWeekNumber(month, week)).toThrow();
+  });
   it("maps week numbers 1..36 to correct month and week", () => {
     expect(weekNumberToSlot(1)).toEqual({
       weekNumber: 1,

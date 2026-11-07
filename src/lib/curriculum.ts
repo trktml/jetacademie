@@ -99,6 +99,10 @@ export const TOTAL_CURRICULUM_MONTHS = 12;
 export const WEEKS_PER_MONTH = 4;
 export const TOTAL_CURRICULUM_WEEKS = TOTAL_CURRICULUM_MONTHS * WEEKS_PER_MONTH; // 48 weeks
 
+export function curriculumYearForPeriod(month: number, isExtra = false): number {
+  return month >= 9 && !isExtra ? 2026 : 2027;
+}
+
 export interface CurriculumEntry {
   id: string;
   grade?: number;

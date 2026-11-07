@@ -1,6 +1,10 @@
-import { resolve } from "node:path";
-import { describe, expect, it } from "bun:test";
+import { join, resolve } from "node:path";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { parseArgs } from "./curriculum";
+import { execute, queryOne } from "../src/lib/db";
+import { ensureCurriculumEntriesTable } from "../src/lib/curriculum/schema";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 
 describe("curriculum CLI parseArgs", () => {
   it("returns help when no args or --help is passed", () => {
@@ -129,7 +133,40 @@ describe("curriculum category draft CLI", () => {
 });
 
 describe("curriculum backup and restore operations", () => {
-  const tmpBackupDir = `./tmp-test-backup-${Date.now()}`;
+  let tmpBackupDir: string;
+  const weeklyId = "g6-konu-mayis-4";
+  const protectedId = "g6-esma-mayis-4";
+  const weeklySlot = "6:konu:all:5-4";
+  const protectedSlot = "6:esma:all:5-4";
+
+  function insertEditor(slot: string, id: string, categoryId: string, title: string) {
+    return execute(
+      `INSERT INTO "curriculum_editor_content" ("slot", "grade", "entryId", "entry", "revision", "updatedAt")
+       VALUES ($1, 6, $2, $3, 1, '2026-01-01')`,
+      [slot, id, JSON.stringify({ id, categoryId, grade: 6, month: 5, week: 4, year: 2027, title })]
+    );
+  }
+
+  beforeAll(async () => {
+    tmpBackupDir = await mkdtemp(join(tmpdir(), "jet-restore-test-"));
+    await ensureCurriculumEntriesTable();
+    await execute(
+      `INSERT INTO "curriculum_entries" ("id", "grade", "categoryId", "month", "week", "year", "title", "isDraft")
+       VALUES ($1, 6, 'konu', 5, 4, 2027, 'Saved draft', 1)`,
+      [weeklyId]
+    );
+    await insertEditor(weeklySlot, weeklyId, "konu", "Saved editor draft");
+    await insertEditor(protectedSlot, protectedId, "esma", "Protected snapshot");
+  });
+
+  afterAll(async () => {
+    await execute('DELETE FROM "curriculum_entries" WHERE "id" = $1', [weeklyId]);
+    await execute('DELETE FROM "curriculum_editor_content" WHERE "slot" IN ($1, $2)', [
+      weeklySlot,
+      protectedSlot,
+    ]);
+    await rm(tmpBackupDir, { recursive: true, force: true });
+  });
 
   it("creates a complete backup package in custom outDir", async () => {
     const { createCurriculumBackup } = await import("./curriculum-backup");
@@ -183,9 +220,51 @@ describe("curriculum backup and restore operations", () => {
     ).rejects.toThrow("manifest.json bulunamadı");
   });
 
-  it("cleans up temporary test backup folder", async () => {
-    const { rm } = await import("node:fs/promises");
-    await rm(tmpBackupDir, { recursive: true, force: true });
-    expect(await Bun.file(`${tmpBackupDir}/manifest.json`).exists()).toBe(false);
+  it("restores draft and editor revision together without touching the protected track", async () => {
+    const { restoreCurriculumBackup } = await import("./curriculum-backup");
+    await execute('UPDATE "curriculum_entries" SET "title" = $1, "isDraft" = 0 WHERE "id" = $2', [
+      "Changed draft",
+      weeklyId,
+    ]);
+    await execute(
+      'UPDATE "curriculum_editor_content" SET "revision" = 7 WHERE "slot" IN ($1, $2)',
+      [weeklySlot, protectedSlot]
+    );
+
+    const result = await restoreCurriculumBackup({ backupDir: tmpBackupDir, weekNumber: 36 });
+
+    expect(result).toEqual({ restoredWeeks: [36], entriesCount: 1, editorCount: 1 });
+    expect(
+      await queryOne('SELECT "title", "isDraft" FROM "curriculum_entries" WHERE "id" = $1', [
+        weeklyId,
+      ])
+    ).toEqual({ title: "Saved draft", isDraft: 1 });
+    expect(
+      await queryOne('SELECT "revision" FROM "curriculum_editor_content" WHERE "slot" = $1', [
+        weeklySlot,
+      ])
+    ).toEqual({ revision: 8 });
+    expect(
+      await queryOne('SELECT "revision" FROM "curriculum_editor_content" WHERE "slot" = $1', [
+        protectedSlot,
+      ])
+    ).toEqual({ revision: 7 });
+  });
+
+  it("rejects changed backup files before any write", async () => {
+    const { restoreCurriculumBackup } = await import("./curriculum-backup");
+    const path = join(tmpBackupDir, "database/curriculum_entries_weekly.json");
+    const before = await Bun.file(path).text();
+    await Bun.write(path, before.replace("Saved draft", "Other draft"));
+    try {
+      await expect(
+        restoreCurriculumBackup({ backupDir: tmpBackupDir, weekNumber: 36 })
+      ).rejects.toThrow("bütünlük kontrolünü geçemedi");
+      expect(
+        await queryOne('SELECT "title" FROM "curriculum_entries" WHERE "id" = $1', [weeklyId])
+      ).toEqual({ title: "Saved draft" });
+    } finally {
+      await Bun.write(path, before);
+    }
   });
 });

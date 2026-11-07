@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { curriculumYearForPeriod } from "@/lib/curriculum";
 import { curriculumVocabularyIssues } from "@/lib/curriculum-vocabulary";
+import { curriculumPdfUrl, curriculumResourceUrl } from "@/lib/curriculum-resource-url";
 
 export const WEEKLY_CONTENT_CATEGORIES = ["konu", "hocaefendi-dinleme"] as const;
 
@@ -21,18 +23,27 @@ export const monthSlugs: Record<number, string> = {
 };
 
 export function weekNumberToSlot(weekNumber: number) {
-  if (weekNumber < 1 || weekNumber > 48) {
+  if (!Number.isInteger(weekNumber) || weekNumber < 1 || weekNumber > 48) {
     throw new Error(`Week number must be between 1 and 48, received ${weekNumber}`);
   }
   const monthIndex = Math.floor((weekNumber - 1) / 4);
   const month = monthIndex < 4 ? 9 + monthIndex : monthIndex - 3;
-  const year = monthIndex < 4 ? 2026 : 2027;
+  const year = curriculumYearForPeriod(month);
   const week = ((weekNumber - 1) % 4) + 1;
   const monthSlug = monthSlugs[month];
   return { weekNumber, month, week, year, monthSlug };
 }
 
 export function slotToWeekNumber(month: number, week: number): number {
+  if (
+    !Number.isInteger(month) ||
+    month < 1 ||
+    month > 12 ||
+    !Number.isInteger(week) ||
+    week < 1 ||
+    week > 4
+  )
+    throw new Error("Invalid curriculum month/week slot.");
   const monthIndex = month >= 9 ? month - 9 : month + 3;
   return monthIndex * 4 + week;
 }
@@ -43,11 +54,14 @@ export const weeklyEntryInputSchema = z.object({
   categoryId: z.enum(WEEKLY_CONTENT_CATEGORIES),
   month: z.number().int().min(1).max(12),
   week: z.number().int().min(1).max(4),
-  year: z.number().int().default(2026),
+  year: z.number().int().optional(),
   title: z.string().min(3),
   body: z.string().min(20),
-  resourceUrl: z.string().url().optional(),
-  pdfUrl: z.string().optional(),
+  resourceUrl: z
+    .string()
+    .refine(curriculumResourceUrl, "Güvenli kaynak bağlantısı gerekli.")
+    .optional(),
+  pdfUrl: z.string().refine(curriculumPdfUrl, "Güvenli PDF bağlantısı gerekli.").optional(),
   pageCount: z.number().int().positive().optional(),
   isDraft: z.boolean().default(true),
 });
@@ -126,6 +140,13 @@ function createWeeklyPackageSchema(categories: readonly WeeklyContentCategory[])
           });
         }
 
+        if (entry.year !== undefined && entry.year !== slot.year) {
+          ctx.addIssue({
+            code: "custom",
+            message: `${entry.id}: ${val.weekNumber}. hafta için yıl ${slot.year} olmalıdır.`,
+          });
+        }
+
         if (entry.categoryId === "konu") {
           if (!entry.body.includes("# Bana Ne Söylüyor?")) {
             ctx.addIssue({
@@ -141,6 +162,10 @@ function createWeeklyPackageSchema(categories: readonly WeeklyContentCategory[])
           }
         }
       }
+    })
+    .transform((pkg) => {
+      const { year } = weekNumberToSlot(pkg.weekNumber);
+      return { ...pkg, entries: pkg.entries.map((entry) => ({ ...entry, year })) };
     });
 }
 

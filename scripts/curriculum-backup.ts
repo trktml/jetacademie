@@ -1,31 +1,43 @@
-import { mkdir, writeFile, readdir, rm } from "node:fs/promises";
+import { mkdir, writeFile, readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { format, resolveConfig } from "prettier";
-import { getPool, query } from "../src/lib/db";
+import { execute, query, readOnlyTransaction, transaction } from "../src/lib/db";
 import {
   ensureCurriculumEntriesTable,
-  getCurriculumEntriesFromDb,
+  resolveCurriculumCatalog,
   type CurriculumEntryRow,
 } from "../src/lib/curriculum-db";
-import { ensureEditorSchema } from "../src/lib/editor/schema";
+import { readEditorRecord, type ContentRow } from "../src/lib/editor/content";
+import {
+  CURRICULUM_LOCK_NAMESPACE,
+  lockCurriculumCategories,
+  saveSeedExclusions,
+  upsertCurriculumEntryRows,
+  withSeedExclusionsSuspended,
+  type SeedExclusionRow,
+} from "../src/lib/curriculum/repository";
 import {
   weekNumberToSlot,
+  slotToWeekNumber,
   WEEKLY_CONTENT_CATEGORIES,
 } from "../src/lib/validations/curriculum-entry";
 
-export interface EditorContentRow {
+interface EditorContentRow extends ContentRow {
   slot: string;
   grade: number;
   entryId: string;
-  entry: string;
-  revision: number;
-  updatedAt: string;
 }
 
-export interface SeedExclusionRow {
-  categoryId: string;
-  createdAt: string;
+function isWeeklyCategory(category: string): boolean {
+  return WEEKLY_CONTENT_CATEGORIES.some((id) => id === category);
+}
+
+function standardEditorWeek(slot: string): string | undefined {
+  const [, category, , period] = slot.split(":");
+  return category && isWeeklyCategory(category) && /^\d{1,2}-[1-4]$/.test(period ?? "")
+    ? period
+    : undefined;
 }
 
 export interface BackupManifest {
@@ -78,47 +90,42 @@ export async function createCurriculumBackup(options?: {
   const dbDir = join(targetDir, "database");
   const mdDir = join(targetDir, "markdown");
 
-  await mkdir(weeksDir, { recursive: true });
-  await mkdir(dbDir, { recursive: true });
-  await mkdir(mdDir, { recursive: true });
+  await mkdir(weeksDir, { recursive: true, mode: 0o700 });
+  await mkdir(dbDir, { recursive: true, mode: 0o700 });
+  await mkdir(mdDir, { recursive: true, mode: 0o700 });
 
   console.log(`📦 Müfredat yedeği başlatılıyor...`);
   console.log(`📁 Hedef dizin: ${targetDir}`);
 
   await ensureCurriculumEntriesTable();
-  await ensureEditorSchema();
 
-  // 1. Fetch tables
   console.log(`🔍 Veritabanı tabloları sorgulanıyor...`);
-
-  const categoryPlaceholders = WEEKLY_CONTENT_CATEGORIES.map((_, i) => `$${i + 1}`).join(", ");
-  const weeklyEntries = await query<CurriculumEntryRow>(
-    `SELECT * FROM "curriculum_entries"
-     WHERE "categoryId" IN (${categoryPlaceholders})
-     ORDER BY "month", "week", "grade", "categoryId"`,
-    [...WEEKLY_CONTENT_CATEGORIES]
+  const { allEntries, editorContent, seedExclusions } = await readOnlyTransaction(async () => ({
+    allEntries: await query<CurriculumEntryRow>(
+      'SELECT * FROM "curriculum_entries" ORDER BY "categoryId", "grade", "month", "week", "id"'
+    ),
+    editorContent: await query<EditorContentRow>(
+      'SELECT * FROM "curriculum_editor_content" ORDER BY "slot"'
+    ),
+    seedExclusions: await query<SeedExclusionRow>(
+      'SELECT * FROM "curriculum_seed_exclusions" ORDER BY "categoryId"'
+    ),
+  }));
+  const weeklyEntries = allEntries.filter(
+    (entry) => isWeeklyCategory(entry.categoryId) && !entry.isExtra
   );
-
-  const allEntries = await query<CurriculumEntryRow>(
-    `SELECT * FROM "curriculum_entries"
-     ORDER BY "categoryId", "grade", "month", "week"`
-  );
-
-  const editorContent = await query<EditorContentRow>(
-    `SELECT * FROM "curriculum_editor_content"
-     ORDER BY "slot"`
-  );
-
-  const seedExclusions = await query<SeedExclusionRow>(
-    `SELECT * FROM "curriculum_seed_exclusions"
-     ORDER BY "categoryId"`
+  const weeklyEditor = editorContent.filter(({ slot }) => standardEditorWeek(slot) !== undefined);
+  const effective = resolveCurriculumCatalog(
+    weeklyEntries,
+    weeklyEditor.map(readEditorRecord),
+    true
   );
 
   const manifestFiles: BackupManifest["files"] = [];
 
   async function writeTrackedFile(relativePath: string, content: string) {
     const fullPath = join(targetDir, relativePath);
-    await writeFile(fullPath, content, "utf-8");
+    await writeFile(fullPath, content, { encoding: "utf-8", mode: 0o600 });
     const sha256 = computeSha256(content);
     manifestFiles.push({
       relativePath,
@@ -148,15 +155,16 @@ export async function createCurriculumBackup(options?: {
 
   // 3. Identify weeks with entries
   const weekSet = new Set<number>();
+  function addWeek(month: number, week: number) {
+    const number = slotToWeekNumber(month, week);
+    if (number <= 36) weekSet.add(number);
+  }
   for (const entry of weeklyEntries) {
-    if (entry.month && entry.week) {
-      // Find week number 1-36
-      const monthIdx = entry.month >= 9 ? entry.month - 9 : entry.month + 3;
-      const wNum = monthIdx * 4 + entry.week;
-      if (wNum >= 1 && wNum <= 36) {
-        weekSet.add(wNum);
-      }
-    }
+    if (entry.month && entry.week) addWeek(entry.month, entry.week);
+  }
+  for (const { slot } of weeklyEditor) {
+    const [month, week] = standardEditorWeek(slot)!.split("-").map(Number);
+    addWeek(month, week);
   }
 
   const detectedWeeks = Array.from(weekSet).sort((a, b) => a - b);
@@ -174,23 +182,12 @@ export async function createCurriculumBackup(options?: {
     const rawWeekEntries = weeklyEntries.filter(
       (e) => e.month === slot.month && e.week === slot.week
     );
-    const weekEditorEntries = editorContent.filter((e) =>
-      e.slot.endsWith(`:${slot.month}-${slot.week}`)
+    const weekEditorEntries = weeklyEditor.filter(
+      ({ slot: editorSlot }) => standardEditorWeek(editorSlot) === `${slot.month}-${slot.week}`
     );
-
-    // Also get merged/effective entries as served to UI
-    const effectiveEntries = [];
-    for (let grade = 1; grade <= 6; grade++) {
-      const gradeEntries = await getCurriculumEntriesFromDb(grade, undefined, true);
-      const matches = gradeEntries.filter(
-        (e) =>
-          e.month === slot.month &&
-          e.week === slot.week &&
-          !e.isExtra &&
-          (e.categoryId === "konu" || e.categoryId === "hocaefendi-dinleme")
-      );
-      effectiveEntries.push(...matches);
-    }
+    const effectiveEntries = effective
+      .map(({ entry }) => entry)
+      .filter((entry) => !entry.isExtra && entry.month === slot.month && entry.week === slot.week);
 
     const weekPackagePayload = {
       weekNumber,
@@ -208,7 +205,7 @@ export async function createCurriculumBackup(options?: {
 
     // Export Markdown files
     const weekMdDir = join(mdDir, `hafta-${weekPad}`);
-    await mkdir(weekMdDir, { recursive: true });
+    await mkdir(weekMdDir, { recursive: true, mode: 0o700 });
 
     for (let grade = 1; grade <= 6; grade++) {
       const gradeMatches = effectiveEntries.filter((e) => e.grade === grade);
@@ -235,13 +232,20 @@ export async function createCurriculumBackup(options?: {
     `-- JetAcademie Curriculum Snapshot SQL Restore Script`,
     `-- Backup Timestamp: ${new Date().toISOString()}`,
     `-- Total Weekly Entries: ${weeklyEntries.length}`,
-    `-- Total Editor Overrides: ${editorContent.length}`,
+    `-- Total Weekly Editor Overrides: ${weeklyEditor.length}`,
     `-- ==============================================================================`,
     `BEGIN;`,
     ``,
-    `-- Temporarily bypass seed exclusion guard trigger for weekly content`,
-    `DELETE FROM "curriculum_seed_exclusions"`,
-    `WHERE "categoryId" IN ('konu', 'hocaefendi-dinleme');`,
+    `SET LOCAL standard_conforming_strings = on;`,
+    ...[...WEEKLY_CONTENT_CATEGORIES]
+      .sort()
+      .map(
+        (category) =>
+          `SELECT pg_advisory_xact_lock(hashtext('${CURRICULUM_LOCK_NAMESPACE}'), hashtext('${category}'));`
+      ),
+    `CREATE TEMP TABLE restore_seed_exclusions ON COMMIT DROP AS
+       SELECT * FROM "curriculum_seed_exclusions" WHERE "categoryId" IN ('konu', 'hocaefendi-dinleme');`,
+    `DELETE FROM "curriculum_seed_exclusions" WHERE "categoryId" IN ('konu', 'hocaefendi-dinleme');`,
     ``,
     `-- 1. Restore curriculum_entries`,
   ];
@@ -281,7 +285,7 @@ export async function createCurriculumBackup(options?: {
   }
 
   sqlLines.push(`-- 2. Restore curriculum_editor_content`);
-  for (const ed of editorContent) {
+  for (const ed of weeklyEditor) {
     sqlLines.push(
       `INSERT INTO "curriculum_editor_content" (`,
       `  "slot", "grade", "entryId", "entry", "revision", "updatedAt"`,
@@ -293,15 +297,18 @@ export async function createCurriculumBackup(options?: {
       `  ${escapeSqlNumber(ed.revision)},`,
       `  ${escapeSqlString(ed.updatedAt)}`,
       `) ON CONFLICT ("slot") DO UPDATE SET`,
+      `  "entryId" = EXCLUDED."entryId",`,
       `  "entry" = EXCLUDED."entry",`,
-      `  "revision" = EXCLUDED."revision",`,
+      `  "revision" = GREATEST("curriculum_editor_content"."revision", EXCLUDED."revision") + 1,`,
       `  "updatedAt" = EXCLUDED."updatedAt";`,
       ``
     );
   }
 
   sqlLines.push(`-- 3. Restore seed exclusions`);
-  for (const ex of seedExclusions) {
+  sqlLines.push(`INSERT INTO "curriculum_seed_exclusions" SELECT * FROM restore_seed_exclusions
+    ON CONFLICT ("categoryId") DO NOTHING;`);
+  for (const ex of seedExclusions.filter(({ categoryId }) => isWeeklyCategory(categoryId))) {
     sqlLines.push(
       `INSERT INTO "curriculum_seed_exclusions" ("categoryId", "createdAt")`,
       `VALUES (${escapeSqlString(ex.categoryId)}, ${escapeSqlString(ex.createdAt)})`,
@@ -333,9 +340,9 @@ export async function createCurriculumBackup(options?: {
 - \`database/\`:
   - \`curriculum_entries_weekly.json\`: Haftalık içeriklerin tam veritabanı satırları.
   - \`curriculum_editor_content.json\`: Web editöründe kaydedilmiş tüm aktif revizyonlar.
-  - \`curriculum_entries_all.json\`: Tüm 1392 müfredat kaydının tam güvenlik kopyası.
+  - \`curriculum_entries_all.json\`: Tüm müfredat kayıtlarının tam güvenlik kopyası.
   - \`curriculum_seed_exclusions.json\`: Kategori tohumlama muafiyetleri.
-  - \`restore.sql\`: PostgreSQL üzerinde tek adımda çalıştırılabilir transaction korumalı SQL betiği.
+  - \`restore.sql\`: PostgreSQL için haftalık kayıtları birleştiren SQL betiği. Bir haftayı yedekteki hâliyle değiştirmek için CLI kullanın.
 - \`markdown/\`: Her hafta ve her sınıf için üretilmiş Markdown çıktıları (\`M1-01.md\` ... \`M6-03.md\`).
 - \`manifest.json\`: Tüm yedeklenen dosyaların SHA-256 sağlama (checksum) kayıtları.
 
@@ -387,18 +394,19 @@ psql "$DATABASE_URL" -f "${join(targetDir, "database/restore.sql")}"
     files: manifestFiles,
   };
 
-  await writeFile(join(targetDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf-8");
+  await writeFile(join(targetDir, "manifest.json"), JSON.stringify(manifest, null, 2), {
+    encoding: "utf-8",
+    mode: 0o600,
+  });
 
   // 8. Update symlink / canonical pointer: backups/curriculum-backup-latest
-  const latestLink = join(baseBackupsDir, "curriculum-backup-latest");
   try {
-    await rm(latestLink, { recursive: true, force: true });
-    await mkdir(baseBackupsDir, { recursive: true });
+    await mkdir(baseBackupsDir, { recursive: true, mode: 0o700 });
     if (!options?.outDir || targetDir.startsWith(baseBackupsDir)) {
       await writeFile(
         join(baseBackupsDir, "curriculum-backup-latest.json"),
         JSON.stringify({ latestDir: targetDir, timestamp }, null, 2),
-        "utf-8"
+        { encoding: "utf-8", mode: 0o600 }
       );
     }
   } catch {
@@ -468,6 +476,14 @@ export async function restoreCurriculumBackup(options: {
   }
 
   const manifest: BackupManifest = await manifestFile.json();
+  if (
+    manifest.version !== 1 ||
+    !Array.isArray(manifest.files) ||
+    !Array.isArray(manifest.weeks) ||
+    manifest.weeks.some((week) => !Number.isInteger(week) || week < 1 || week > 36)
+  ) {
+    throw new Error("Geçersiz müfredat yedek manifesti.");
+  }
   const weekNum = options.weekNumber;
   const isDryRun = Boolean(options.dryRun);
 
@@ -487,40 +503,37 @@ export async function restoreCurriculumBackup(options: {
     );
   }
 
-  let totalEntriesToRestore = 0;
-  let totalEditorToRestore = 0;
-
-  // Read files to restore
-  const weeklyEntriesFile = Bun.file(join(targetDir, "database/curriculum_entries_weekly.json"));
-  const editorContentFile = Bun.file(join(targetDir, "database/curriculum_editor_content.json"));
-  const exclusionsFile = Bun.file(join(targetDir, "database/curriculum_seed_exclusions.json"));
-
-  if (
-    !(await weeklyEntriesFile.exists()) ||
-    !(await editorContentFile.exists()) ||
-    !(await exclusionsFile.exists())
-  ) {
-    throw new Error(`Yedek dosyaları eksik. Dizin: ${targetDir}`);
+  async function readSnapshotFile<T>(relativePath: string): Promise<T[]> {
+    const tracked = manifest.files.find((file) => file.relativePath === relativePath);
+    const file = Bun.file(join(targetDir, relativePath));
+    if (!tracked || !(await file.exists())) throw new Error(`Yedek dosyası eksik: ${relativePath}`);
+    const bytes = Buffer.from(await file.arrayBuffer());
+    if (bytes.length !== tracked.bytes || computeSha256(bytes) !== tracked.sha256)
+      throw new Error(`Yedek dosyası bütünlük kontrolünü geçemedi: ${relativePath}`);
+    const rows: unknown = JSON.parse(bytes.toString("utf-8"));
+    if (!Array.isArray(rows)) throw new Error(`Geçersiz yedek dosyası: ${relativePath}`);
+    return rows as T[];
   }
 
-  const allWeeklyEntries: CurriculumEntryRow[] = await weeklyEntriesFile.json();
-  const allEditorContent: EditorContentRow[] = await editorContentFile.json();
-  const allExclusions: SeedExclusionRow[] = await exclusionsFile.json();
+  const [allWeeklyEntries, allEditorContent, allExclusions] = await Promise.all([
+    readSnapshotFile<CurriculumEntryRow>("database/curriculum_entries_weekly.json"),
+    readSnapshotFile<EditorContentRow>("database/curriculum_editor_content.json"),
+    readSnapshotFile<SeedExclusionRow>("database/curriculum_seed_exclusions.json"),
+  ]);
 
-  // Filter if specific week
-  const entriesToRestore: CurriculumEntryRow[] = [];
-  const editorToRestore: EditorContentRow[] = [];
-
-  for (const w of targetWeeks) {
-    const slot = weekNumberToSlot(w);
-    const wEntries = allWeeklyEntries.filter((e) => e.month === slot.month && e.week === slot.week);
-    const wEditor = allEditorContent.filter((e) => e.slot.endsWith(`:${slot.month}-${slot.week}`));
-    entriesToRestore.push(...wEntries);
-    editorToRestore.push(...wEditor);
-  }
-
-  totalEntriesToRestore = entriesToRestore.length;
-  totalEditorToRestore = editorToRestore.length;
+  const slots = [...new Set(targetWeeks)].map(weekNumberToSlot);
+  const periods = new Set(slots.map(({ month, week }) => `${month}-${week}`));
+  const entriesToRestore = allWeeklyEntries.filter(
+    (entry) =>
+      isWeeklyCategory(entry.categoryId) &&
+      !entry.isExtra &&
+      periods.has(`${entry.month}-${entry.week}`)
+  );
+  const editorToRestore = allEditorContent.filter(({ slot }) =>
+    periods.has(standardEditorWeek(slot) ?? "")
+  );
+  const totalEntriesToRestore = entriesToRestore.length;
+  const totalEditorToRestore = editorToRestore.length;
 
   console.log(`📋 Planlanan geri yükleme özeti:`);
   console.log(` - Hedef haftalar: ${targetWeeks.map((w) => `Hafta ${w}`).join(", ") || "Yok"}`);
@@ -536,119 +549,50 @@ export async function restoreCurriculumBackup(options: {
     };
   }
 
-  await ensureCurriculumEntriesTable();
-  await ensureEditorSchema();
+  if (slots.length > 0) {
+    await ensureCurriculumEntriesTable();
+    await transaction(async () => {
+      await lockCurriculumCategories(WEEKLY_CONTENT_CATEGORIES);
+      await withSeedExclusionsSuspended(WEEKLY_CONTENT_CATEGORIES, async () => {
+        for (const { month, week } of slots) {
+          await execute(
+            `DELETE FROM "curriculum_entries" WHERE "month" = $1 AND "week" = $2 AND "isExtra" = 0
+             AND "categoryId" IN ($3, $4)`,
+            [month, week, ...WEEKLY_CONTENT_CATEGORIES]
+          );
+        }
+        const written = await upsertCurriculumEntryRows(entriesToRestore, "ignore");
+        if (written !== entriesToRestore.length)
+          throw new Error("Yedek kayıtlarının tamamı yazılamadı.");
 
-  // Execute restore in database transaction
-  const pool = getPool();
-  if (pool) {
-    const client = await pool.connect();
-    try {
-      await client.query("BEGIN");
-
-      // Temporarily bypass exclusion guard
-      const catPlaceholders = WEEKLY_CONTENT_CATEGORIES.map((_, i) => `$${i + 1}`).join(", ");
-      await client.query(
-        `DELETE FROM "curriculum_seed_exclusions" WHERE "categoryId" IN (${catPlaceholders})`,
-        [...WEEKLY_CONTENT_CATEGORIES]
-      );
-
-      for (const w of targetWeeks) {
-        const slot = weekNumberToSlot(w);
-
-        // Delete existing weekly records for this week
-        const catPlaceholdersOffset = WEEKLY_CONTENT_CATEGORIES.map((_, i) => `$${i + 3}`).join(
-          ", "
+        const restoredSlots = new Set(editorToRestore.map((row) => row.slot));
+        const currentEditor = await query<Pick<EditorContentRow, "slot">>(
+          'SELECT "slot" FROM "curriculum_editor_content"'
         );
-        await client.query(
-          `DELETE FROM "curriculum_entries"
-           WHERE "month" = $1 AND "week" = $2 AND "categoryId" IN (${catPlaceholdersOffset})`,
-          [slot.month, slot.week, ...WEEKLY_CONTENT_CATEGORIES]
-        );
-
-        // Delete editor overrides for this week slot
-        await client.query(`DELETE FROM "curriculum_editor_content" WHERE "slot" LIKE $1`, [
-          `%:${slot.month}-${slot.week}`,
-        ]);
-      }
-
-      // Re-insert curriculum_entries
-      for (const entry of entriesToRestore) {
-        await client.query(
-          `INSERT INTO "curriculum_entries" (
-            "id", "grade", "categoryId", "gender", "month", "week", "year",
-            "isExtra", "extraOrder", "isDraft", "title", "body", "resourceUrl",
-            "pdfUrl", "pageCount", "createdAt", "updatedAt"
-          ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
-          ON CONFLICT ("id") DO UPDATE SET
-            "title" = EXCLUDED."title",
-            "body" = EXCLUDED."body",
-            "resourceUrl" = EXCLUDED."resourceUrl",
-            "isDraft" = EXCLUDED."isDraft",
-            "updatedAt" = EXCLUDED."updatedAt"`,
-          [
-            entry.id,
-            entry.grade,
-            entry.categoryId,
-            entry.gender ?? null,
-            entry.month,
-            entry.week,
-            entry.year,
-            entry.isExtra ? 1 : 0,
-            entry.extraOrder ?? null,
-            entry.isDraft ? 1 : 0,
-            entry.title,
-            entry.body,
-            entry.resourceUrl ?? null,
-            entry.pdfUrl ?? null,
-            entry.pageCount ?? null,
-            entry.createdAt,
-            entry.updatedAt,
-          ]
+        for (const { slot } of currentEditor) {
+          if (periods.has(standardEditorWeek(slot) ?? "") && !restoredSlots.has(slot)) {
+            await execute('DELETE FROM "curriculum_editor_content" WHERE "slot" = $1', [slot]);
+          }
+        }
+        const restoredAt = new Date().toISOString();
+        for (const row of editorToRestore) {
+          await execute(
+            `INSERT INTO "curriculum_editor_content" ("slot", "grade", "entryId", "entry", "revision", "updatedAt")
+             VALUES ($1, $2, $3, $4, $5, $6)
+             ON CONFLICT ("slot") DO UPDATE SET "entryId" = EXCLUDED."entryId", "entry" = EXCLUDED."entry",
+               "revision" = CASE WHEN "curriculum_editor_content"."revision" >= EXCLUDED."revision"
+                 THEN "curriculum_editor_content"."revision" + 1 ELSE EXCLUDED."revision" END,
+               "updatedAt" = EXCLUDED."updatedAt"`,
+            [row.slot, row.grade, row.entryId, row.entry, row.revision + 1, restoredAt]
+          );
+        }
+      });
+      if (weekNum === undefined) {
+        await saveSeedExclusions(
+          allExclusions.filter(({ categoryId }) => isWeeklyCategory(categoryId))
         );
       }
-
-      // Re-insert curriculum_editor_content
-      for (const ed of editorToRestore) {
-        await client.query(
-          `INSERT INTO "curriculum_editor_content" (
-            "slot", "grade", "entryId", "entry", "revision", "updatedAt"
-          ) VALUES ($1,$2,$3,$4,$5,$6)
-          ON CONFLICT ("slot") DO UPDATE SET
-            "entry" = EXCLUDED."entry",
-            "revision" = EXCLUDED."revision",
-            "updatedAt" = EXCLUDED."updatedAt"`,
-          [ed.slot, ed.grade, ed.entryId, ed.entry, ed.revision, ed.updatedAt]
-        );
-      }
-
-      // Restore seed exclusions
-      for (const ex of allExclusions) {
-        await client.query(
-          `INSERT INTO "curriculum_seed_exclusions" ("categoryId", "createdAt")
-           VALUES ($1, $2)
-           ON CONFLICT ("categoryId") DO NOTHING`,
-          [ex.categoryId, ex.createdAt]
-        );
-      }
-
-      await client.query("COMMIT");
-    } catch (err) {
-      await client.query("ROLLBACK");
-      throw err;
-    } finally {
-      client.release();
-    }
-  } else {
-    // In-memory test fallback
-    const { bulkUpsertCurriculumEntries } = await import("../src/lib/curriculum-db");
-    await bulkUpsertCurriculumEntries(
-      entriesToRestore.map((e) => ({
-        ...e,
-        isExtra: e.isExtra ? 1 : 0,
-        isDraft: e.isDraft ? 1 : 0,
-      }))
-    );
+    });
   }
 
   console.log(`\n🎉 Geri yükleme başarıyla TAMAMLANDI!`);

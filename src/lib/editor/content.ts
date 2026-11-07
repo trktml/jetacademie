@@ -1,19 +1,31 @@
 import type { CurriculumEntry } from "@/lib/curriculum";
-import { isCurriculumCategoryId, makeEntryId, sortCurriculumEntries } from "@/lib/curriculum";
+import { curriculumYearForPeriod, isCurriculumCategoryId, makeEntryId } from "@/lib/curriculum";
+import { curriculumPdfUrl, curriculumResourceUrl } from "@/lib/curriculum-resource-url";
 import { query, queryOne } from "@/lib/db";
 import { ensureEditorSchema } from "./schema";
 import type { EditorEntryInput } from "./validation";
+import type { EditorRecord } from "./types";
 
-export interface EditorRecord {
-  entry: CurriculumEntry;
-  revision: number;
-  updatedAt: string | null;
-}
-interface ContentRow {
+export type { EditorRecord } from "./types";
+export interface ContentRow {
   entry: string;
   revision: number;
   updatedAt: string;
 }
+export function readEditorRecord({ entry, revision, updatedAt }: ContentRow): EditorRecord {
+  const data = JSON.parse(entry) as CurriculumEntry;
+  return {
+    entry: {
+      ...data,
+      year: data.year ?? curriculumYearForPeriod(data.month, data.isExtra),
+      resourceUrl: curriculumResourceUrl(data.resourceUrl),
+      pdfUrl: curriculumPdfUrl(data.pdfUrl) ?? curriculumPdfUrl(data.resourceUrl),
+    },
+    revision,
+    updatedAt,
+  };
+}
+
 export function contentSlot(
   entry: Pick<
     CurriculumEntry,
@@ -28,39 +40,32 @@ export async function getEditorOverrides(grade?: number): Promise<EditorRecord[]
     `SELECT "entry", "revision", "updatedAt" FROM "curriculum_editor_content"${grade ? ' WHERE "grade" = $1' : ""}`,
     grade ? [grade] : []
   );
-  return rows
-    .map((row) => ({
-      entry: JSON.parse(row.entry) as CurriculumEntry,
-      revision: row.revision,
-      updatedAt: row.updatedAt,
-    }))
-    .filter(({ entry }) => isCurriculumCategoryId(entry.categoryId));
+  return rows.map(readEditorRecord).filter(({ entry }) => isCurriculumCategoryId(entry.categoryId));
 }
-export async function mergeEditorContent(
+export function mergeEditorContent(
   entries: CurriculumEntry[],
-  grade?: number,
-  gender?: "erkek" | "bayan"
-): Promise<CurriculumEntry[]> {
-  const overrides = (await getEditorOverrides(grade)).filter(
-    ({ entry }) => !gender || !entry.gender || entry.gender === gender
-  );
-  const replacedIds = new Set(overrides.map((record) => record.entry.id));
-  const replacedSlots = new Set(overrides.map((record) => contentSlot(record.entry)));
-  return sortCurriculumEntries([
+  overrides: EditorRecord[]
+): CurriculumEntry[] {
+  const baseBySlot = new Map<string, CurriculumEntry>();
+  for (const entry of entries) {
+    const slot = contentSlot(entry);
+    // If a legacy duplicate remains, a published alias must not expose a draft slot.
+    if (!baseBySlot.has(slot) || entry.isDraft) baseBySlot.set(slot, entry);
+  }
+  const replacedSlots = new Set<string>();
+  const replacedIds = new Set<string>();
+  const edited = overrides.map(({ entry }) => {
+    const slot = contentSlot(entry);
+    replacedSlots.add(slot);
+    replacedIds.add(entry.id);
+    return { ...entry, isDraft: baseBySlot.get(slot)?.isDraft ?? entry.isDraft };
+  });
+  return [
     ...entries.filter(
       (entry) => !replacedIds.has(entry.id) && !replacedSlots.has(contentSlot(entry))
     ),
-    ...overrides.map((record) => record.entry),
-  ]);
-}
-export async function getEditorOverrideById(id: string): Promise<CurriculumEntry | null> {
-  await ensureEditorSchema();
-  const row = await queryOne<ContentRow>(
-    `SELECT "entry", "revision", "updatedAt" FROM "curriculum_editor_content" WHERE "entryId" = $1`,
-    [id]
-  );
-  const entry = row ? (JSON.parse(row.entry) as CurriculumEntry) : null;
-  return entry && isCurriculumCategoryId(entry.categoryId) ? entry : null;
+    ...edited,
+  ];
 }
 export async function saveEditorContent(
   input: EditorEntryInput,
@@ -87,7 +92,7 @@ export async function saveEditorContent(
     gender: input.gender,
     month: input.extraOrder ? 8 : input.month,
     week: input.extraOrder ? 4 : input.week,
-    year: existing?.year ?? (input.month >= 9 && !input.extraOrder ? 2026 : 2027),
+    year: existing?.year ?? curriculumYearForPeriod(input.month, Boolean(input.extraOrder)),
     isExtra: !!input.extraOrder,
     extraOrder: input.extraOrder,
     title: input.title,
@@ -112,7 +117,5 @@ export async function saveEditorContent(
           `UPDATE "curriculum_editor_content" SET "entry" = $1, "revision" = "revision" + 1, "updatedAt" = $2 WHERE "slot" = $3 AND "revision" = $4 RETURNING "entry", "revision", "updatedAt"`,
           [JSON.stringify(entry), now, slot, input.revision]
         );
-  return row
-    ? { entry: JSON.parse(row.entry), revision: row.revision, updatedAt: row.updatedAt }
-    : null;
+  return row ? readEditorRecord(row) : null;
 }
