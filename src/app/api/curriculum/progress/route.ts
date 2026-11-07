@@ -1,15 +1,16 @@
-import { NextResponse } from "next/server";
+import { privateJson } from "@/lib/http";
 import { headers } from "next/headers";
 import { getAuth } from "@/lib/auth";
 import { getCompletedEntryIds } from "@/lib/curriculum-progress";
-import { getUserGenderFromDb } from "@/lib/curriculum-db";
+import { getUserGenderFromDb } from "@/lib/user-preferences";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session?.user) {
-    return NextResponse.json({
+    return privateJson({
+      userId: null,
       isSignedIn: false,
       completedEntryIds: [],
       gender: null,
@@ -21,7 +22,8 @@ export async function GET() {
     getUserGenderFromDb(session.user.id),
   ]);
 
-  return NextResponse.json({
+  return privateJson({
+    userId: session.user.id,
     isSignedIn: true,
     completedEntryIds,
     gender,

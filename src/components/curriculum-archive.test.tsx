@@ -1,17 +1,23 @@
 import { describe, expect, it, mock } from "bun:test";
 import React from "react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { getQueryClient } from "@/lib/query-client";
 import { renderToString } from "react-dom/server";
 
 import {
   CurriculumArchive as CurriculumArchiveComponent,
-  UNDO_DURATION_SECONDS,
   scrollCategoryIntoView,
-  EntryContentRenderer,
 } from "./curriculum-archive";
+import { UNDO_DURATION_SECONDS } from "@/hooks/use-archive-feedback";
+import { EntryContentRenderer } from "./curriculum-entry-content";
 import { curriculumEntries } from "@/lib/curriculum-data";
 
 function CurriculumArchive(props: React.ComponentProps<typeof CurriculumArchiveComponent>) {
-  return <CurriculumArchiveComponent allEntries={curriculumEntries} {...props} />;
+  return (
+    <QueryClientProvider client={getQueryClient()}>
+      <CurriculumArchiveComponent allEntries={curriculumEntries} {...props} />
+    </QueryClientProvider>
+  );
 }
 
 describe("CurriculumArchive Component", () => {

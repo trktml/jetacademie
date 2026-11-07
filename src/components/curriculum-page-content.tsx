@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
 import { CurriculumArchive } from "@/components/curriculum-archive";
 import {
@@ -28,9 +29,12 @@ import {
   type CurriculumView,
 } from "@/lib/curriculum-view";
 
+const EMPTY_IDS: string[] = [];
+
 interface CurriculumPageContentProps {
   initialCompletedEntryIds: string[];
   isSignedIn: boolean;
+  initialUserId: string | null;
   initialGender: "erkek" | "bayan" | null;
   allEntries: readonly CurriculumEntry[];
   initialGrade: number;
@@ -39,10 +43,14 @@ interface CurriculumPageContentProps {
 export function CurriculumPageContent({
   initialCompletedEntryIds,
   isSignedIn,
+  initialUserId,
   initialGender,
   allEntries,
   initialGrade,
 }: CurriculumPageContentProps) {
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const ownerId = isSessionPending ? initialUserId : (session?.user.id ?? null);
+  const ownsInitialData = ownerId === initialUserId;
   const [selectedGrade, setSelectedGrade] = useState<BelgiumGrade>(initialGrade as BelgiumGrade);
   const setStoreGrade = useCurriculumStore((state) => state.setSelectedGrade);
 
@@ -52,18 +60,26 @@ export function CurriculumPageContent({
   });
 
   const progressQuery = useQuery({
-    ...curriculumProgressQueryOptions(),
-    initialData: {
-      isSignedIn,
-      completedEntryIds: initialCompletedEntryIds,
-      gender: initialGender,
-    },
+    ...curriculumProgressQueryOptions(ownerId),
+    initialData: ownsInitialData
+      ? {
+          userId: initialUserId,
+          isSignedIn,
+          completedEntryIds: initialCompletedEntryIds,
+          gender: initialGender,
+        }
+      : undefined,
   });
 
   const currentCompletedEntryIds =
-    progressQuery.data?.completedEntryIds ?? initialCompletedEntryIds;
-  const currentSignedIn = progressQuery.data?.isSignedIn ?? isSignedIn;
-  const currentGender = progressQuery.data?.gender ?? initialGender;
+    progressQuery.data?.completedEntryIds ??
+    (ownsInitialData ? initialCompletedEntryIds : EMPTY_IDS);
+  const currentSignedIn = progressQuery.data?.isSignedIn ?? Boolean(ownerId);
+  const currentGender = progressQuery.data
+    ? progressQuery.data.gender
+    : ownsInitialData
+      ? initialGender
+      : null;
 
   const [view, setView] = useState<CurriculumView>("sequential");
   const [period, setPeriod] = useState<CurriculumPeriod | null>(null);
@@ -187,13 +203,16 @@ export function CurriculumPageContent({
       setSelectedGrade(grade);
       setStoreGrade(grade);
 
-      if (typeof window !== "undefined") {
-        const url = new URL(window.location.href);
-        url.searchParams.set("sinif", String(grade));
-        window.history.pushState(null, "", url.toString());
-      }
+      const remembered = useCurriculumStore.getState().weeklyPeriods[grade];
+      const nextPeriod =
+        isCurriculumPeriod(remembered) && remembered.extra === undefined ? remembered : null;
+      setPeriod(nextPeriod);
+
+      const url = writeCurriculumView(new URL(window.location.href), view, nextPeriod);
+      url.searchParams.set("sinif", String(grade));
+      window.history.pushState(null, "", url.toString());
     },
-    [selectedGrade, setStoreGrade]
+    [selectedGrade, setStoreGrade, view]
   );
 
   const prevSignedIn = useRef(currentSignedIn);
@@ -237,6 +256,8 @@ export function CurriculumPageContent({
       />
       {initialized ? (
         <CurriculumArchive
+          key={ownerId ?? "guest"}
+          currentUserId={ownerId}
           initialCompletedEntryIds={currentCompletedEntryIds}
           isSignedIn={currentSignedIn}
           initialGender={currentGender}

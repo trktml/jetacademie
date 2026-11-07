@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getAuth } from "@/lib/auth";
 import { getCompletedEntryIds } from "@/lib/curriculum-progress";
-import { getCurriculumEntriesFromDb, getUserGenderFromDb } from "@/lib/curriculum-db";
+import { getCurriculumEntriesFromDb } from "@/lib/curriculum-db";
+import { getUserGenderFromDb } from "@/lib/user-preferences";
 import { CurriculumPageContent } from "@/components/curriculum-page-content";
 import { CurriculumGradeEntry } from "@/components/curriculum-grade-entry";
 import { parseCurriculumGrade } from "@/lib/curriculum";
@@ -41,6 +42,7 @@ export default async function CurriculumPage(props: CurriculumPageProps) {
       <CurriculumPageContent
         initialCompletedEntryIds={completedEntryIds}
         isSignedIn={Boolean(session?.user)}
+        initialUserId={session?.user.id ?? null}
         initialGender={initialGender}
         allEntries={entries}
         initialGrade={initialGrade}

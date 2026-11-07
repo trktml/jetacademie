@@ -9,12 +9,28 @@ import {
 describe("curriculum grade query", () => {
   it("requests only the selected grade and caches each grade separately", async () => {
     const originalFetch = globalThis.fetch;
-    const fetchMock = mock(async () => Response.json([{ id: "g4-ayet-eylul-1", grade: 4 }]));
+    const fetchMock = mock(async () =>
+      Response.json([
+        {
+          id: "g4-konu-eylul-1",
+          grade: 4,
+          categoryId: "konu",
+          title: "Test",
+          month: 9,
+          week: 1,
+          year: 2026,
+        },
+      ])
+    );
     globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     try {
       const entries = await fetchCurriculumGrade(4);
-      expect(fetchMock).toHaveBeenCalledWith("/api/curriculum?sinif=4");
+      expect(fetchMock).toHaveBeenCalledWith("/api/curriculum?sinif=4", {
+        signal: undefined,
+        credentials: "same-origin",
+        cache: "no-store",
+      });
       expect(entries).toHaveLength(1);
       expect(curriculumGradeQueryOptions(4).queryKey).not.toEqual(
         curriculumGradeQueryOptions(5).queryKey
@@ -39,9 +55,29 @@ describe("curriculum grade query", () => {
 });
 
 describe("curriculum progress query", () => {
+  it("isolates users and rejects responses belonging to another session", async () => {
+    expect(curriculumProgressQueryOptions("user-a").queryKey).not.toEqual(
+      curriculumProgressQueryOptions("user-b").queryKey
+    );
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = mock(async () =>
+      Response.json({
+        userId: "user-b",
+        isSignedIn: true,
+        completedEntryIds: ["private-progress"],
+        gender: null,
+      })
+    ) as unknown as typeof fetch;
+    try {
+      await expect(fetchCurriculumProgress("user-a")).rejects.toThrow("Oturum değişti.");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
   it("fetches progress from /api/curriculum/progress", async () => {
     const originalFetch = globalThis.fetch;
     const mockData = {
+      userId: "user-test",
       isSignedIn: true,
       completedEntryIds: ["g1-m1-konu-eylul-1"],
       gender: "erkek" as const,
@@ -51,9 +87,13 @@ describe("curriculum progress query", () => {
 
     try {
       const data = await fetchCurriculumProgress();
-      expect(fetchMock).toHaveBeenCalledWith("/api/curriculum/progress");
+      expect(fetchMock).toHaveBeenCalledWith("/api/curriculum/progress", {
+        cache: "no-store",
+        credentials: "same-origin",
+        signal: undefined,
+      });
       expect(data).toEqual(mockData);
-      expect([...curriculumProgressQueryOptions().queryKey]).toEqual(["curriculum-progress"]);
+      expect([...curriculumProgressQueryOptions().queryKey]).toEqual(["curriculum-progress", null]);
     } finally {
       globalThis.fetch = originalFetch;
     }

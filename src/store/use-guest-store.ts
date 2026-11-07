@@ -32,6 +32,8 @@ interface GuestState {
   enableGuest: () => void;
   /** Misafir modundan çık (veriyi sil) */
   disableGuest: () => void;
+  /** Aktarım başarısızsa ilerlemeyi silmeden misafir modunu kapat. */
+  suspendGuest: () => void;
   /** Cinsiyet belirle */
   setGender: (gender: "erkek" | "bayan") => void;
   /** Entry tamamla */
@@ -40,6 +42,7 @@ interface GuestState {
   uncompleteEntry: (entryId: string) => void;
   /** Tüm ilerlemeyi temizle (hesaba aktarıldıktan sonra) */
   clearProgress: () => void;
+  acknowledgeTransfer: (entryIds: readonly string[], gender: GuestState["gender"]) => void;
 }
 
 export const useGuestStore = create<GuestState>()(
@@ -49,6 +52,7 @@ export const useGuestStore = create<GuestState>()(
       completedEntryIds: [],
       gender: null,
       enableGuest: () => set({ isGuest: true }),
+      suspendGuest: () => set({ isGuest: false }),
       disableGuest: () => set({ isGuest: false, completedEntryIds: [], gender: null }),
       setGender: (gender) => set({ gender, isGuest: true }),
       completeEntry: (entryId) =>
@@ -62,6 +66,15 @@ export const useGuestStore = create<GuestState>()(
           completedEntryIds: state.completedEntryIds.filter((id) => id !== entryId),
         })),
       clearProgress: () => set({ completedEntryIds: [] }),
+      acknowledgeTransfer: (entryIds, gender) =>
+        set((state) => {
+          const transferred = new Set(entryIds);
+          return {
+            isGuest: false,
+            completedEntryIds: state.completedEntryIds.filter((id) => !transferred.has(id)),
+            gender: state.gender === gender ? null : state.gender,
+          };
+        }),
     }),
     {
       name: "jetacademie-guest",

@@ -25,3 +25,11 @@ export const editorRecordResponseSchema = z.object({
   revision: z.number().int().nonnegative(),
   updatedAt: z.string().nullable(),
 });
+export const curriculumProgressResponseSchema = z
+  .object({
+    userId: z.string().nullable(),
+    isSignedIn: z.boolean(),
+    completedEntryIds: z.array(z.string()),
+    gender: z.enum(["erkek", "bayan"]).nullable(),
+  })
+  .refine((data) => data.isSignedIn === (data.userId !== null), "Invalid session state.");

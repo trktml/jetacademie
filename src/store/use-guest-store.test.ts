@@ -2,6 +2,13 @@ import { describe, expect, it, beforeEach } from "bun:test";
 import { useGuestStore } from "./use-guest-store";
 
 describe("use-guest-store", () => {
+  it("keeps progress and a changed preference added during an account transfer", () => {
+    useGuestStore.setState({ isGuest: true, completedEntryIds: ["old", "new"], gender: "bayan" });
+    useGuestStore.getState().acknowledgeTransfer(["old"], "erkek");
+    expect(useGuestStore.getState().completedEntryIds).toEqual(["new"]);
+    expect(useGuestStore.getState().gender).toBe("bayan");
+    expect(useGuestStore.getState().isGuest).toBe(false);
+  });
   beforeEach(() => {
     // Reset store to initial state before each test
     useGuestStore.setState({
@@ -16,6 +23,17 @@ describe("use-guest-store", () => {
     expect(state.isGuest).toBe(false);
     expect(state.completedEntryIds).toEqual([]);
     expect(state.gender).toBe(null);
+  });
+
+  it("preserves progress for retry when account migration fails", () => {
+    useGuestStore.getState().enableGuest();
+    useGuestStore.getState().completeEntry("g1-konu-eylul-1");
+    useGuestStore.getState().setGender("bayan");
+    useGuestStore.getState().suspendGuest();
+    const state = useGuestStore.getState();
+    expect(state.isGuest).toBe(false);
+    expect(state.completedEntryIds).toEqual(["g1-konu-eylul-1"]);
+    expect(state.gender).toBe("bayan");
   });
 
   it("enableGuest sets isGuest to true", () => {

@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Cache-Control", value: "no-store" }],
       },
       {
+        source: "/api/curriculum/progress",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }],
+      },
+      {
         source: "/api/account/:path*",
         headers: [{ key: "Cache-Control", value: "no-store" }],
       },

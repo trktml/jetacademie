@@ -20,7 +20,7 @@ mock.module("@/lib/curriculum-progress", () => ({
   getCompletedEntryIds: async () => mockCompletedIds,
 }));
 
-mock.module("@/lib/curriculum-db", () => ({
+mock.module("@/lib/user-preferences", () => ({
   getUserGenderFromDb: async () => mockUserGender,
 }));
 
@@ -36,8 +36,10 @@ describe("curriculum progress API", () => {
   it("returns guest/empty state when unauthenticated", async () => {
     const response = await GET();
     expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toContain("no-store");
     const data = await response.json();
     expect(data).toEqual({
+      userId: null,
       isSignedIn: false,
       completedEntryIds: [],
       gender: null,
@@ -51,8 +53,10 @@ describe("curriculum progress API", () => {
 
     const response = await GET();
     expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toContain("no-store");
     const data = await response.json();
     expect(data).toEqual({
+      userId: "user_test",
       isSignedIn: true,
       completedEntryIds: ["g1-m1-konu-eylul-1", "g1-m1-konu-eylul-2"],
       gender: "bayan",

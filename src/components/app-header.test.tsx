@@ -1,6 +1,10 @@
 import { describe, expect, it, mock } from "bun:test";
 import React from "react";
-import { renderToString } from "react-dom/server";
+import { renderToString as renderMarkup } from "react-dom/server";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { getQueryClient } from "@/lib/query-client";
+const renderToString = (element: React.ReactNode) =>
+  renderMarkup(<QueryClientProvider client={getQueryClient()}>{element}</QueryClientProvider>);
 
 let drawerAutoFocus = false;
 let renderDrawerContent = false;

@@ -1,64 +1,29 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import { getAuth } from "@/lib/auth";
-import { canCompleteEntry, canUnmarkEntry, getCategoryEntries } from "@/lib/curriculum";
-import { curriculumEntries } from "@/lib/curriculum-data";
-import { getCurriculumEntriesFromDb, getCurriculumEntryByIdFromDb } from "@/lib/curriculum-db";
-import {
-  getCompletedEntryIds,
-  removeCompletedEntry,
-  saveCompletedEntry,
-} from "@/lib/curriculum-progress";
+import { ActionError } from "@/lib/action-result";
+import { runUserAction, requireActionUser } from "@/lib/action-user";
+import { entryIdSchema } from "@/lib/validations/curriculum-progress";
+import { updateEntryProgress } from "@/lib/curriculum-progress-service";
 
-const entryIdSchema = z.string().min(1).max(120);
-
-export async function markEntryAsRead(entryId: string) {
-  const parsedEntryId = entryIdSchema.safeParse(entryId);
-  if (!parsedEntryId.success) throw new Error("Geçersiz dosya.");
-
-  const session = await getAuth().api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("İlerlemenizi kaydetmek için giriş yapın.");
-
-  const entry =
-    (await getCurriculumEntryByIdFromDb(parsedEntryId.data)) ??
-    curriculumEntries.find((candidate) => candidate.id === parsedEntryId.data);
-  if (!entry) throw new Error("Dosya bulunamadı.");
-
-  const completedEntryIds = new Set(await getCompletedEntryIds(session.user.id));
-  const gradeEntries = await getCurriculumEntriesFromDb(entry.grade ?? 1);
-  const categoryEntries = getCategoryEntries(entry.categoryId, gradeEntries);
-  if (!canCompleteEntry(entry.id, categoryEntries, completedEntryIds)) {
-    throw new Error("Önce mevcut dersi tamamlayın.");
-  }
-
-  await saveCompletedEntry(session.user.id, entry.id);
+async function updateProgress(entryId: string, completed: boolean, expectedUserId?: string) {
+  const parsed = entryIdSchema.safeParse(entryId);
+  if (!parsed.success) throw new ActionError("Geçersiz dosya.");
+  const user = await requireActionUser(
+    completed
+      ? "İlerlemenizi kaydetmek için giriş yapın."
+      : "İlerlemenizi güncellemek için giriş yapın.",
+    expectedUserId
+  );
+  const result = await updateEntryProgress(user.id, parsed.data, completed);
   revalidatePath("/mufredat");
-  return { entryId: entry.id };
+  return { ...result, userId: user.id };
 }
 
-export async function unmarkEntryAsRead(entryId: string) {
-  const parsedEntryId = entryIdSchema.safeParse(entryId);
-  if (!parsedEntryId.success) throw new Error("Geçersiz dosya.");
+export async function markEntryAsRead(entryId: string, expectedUserId?: string) {
+  return runUserAction(() => updateProgress(entryId, true, expectedUserId));
+}
 
-  const session = await getAuth().api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("İlerlemenizi güncellemek için giriş yapın.");
-
-  const entry =
-    (await getCurriculumEntryByIdFromDb(parsedEntryId.data)) ??
-    curriculumEntries.find((candidate) => candidate.id === parsedEntryId.data);
-  if (!entry) throw new Error("Dosya bulunamadı.");
-
-  const completedEntryIds = new Set(await getCompletedEntryIds(session.user.id));
-  const gradeEntries = await getCurriculumEntriesFromDb(entry.grade ?? 1);
-  const categoryEntries = getCategoryEntries(entry.categoryId, gradeEntries);
-  if (!canUnmarkEntry(entry.id, categoryEntries, completedEntryIds)) {
-    throw new Error("Yalnızca en son tamamlanan dosya geri alınabilir.");
-  }
-
-  await removeCompletedEntry(session.user.id, entry.id);
-  revalidatePath("/mufredat");
-  return { entryId: entry.id };
+export async function unmarkEntryAsRead(entryId: string, expectedUserId?: string) {
+  return runUserAction(() => updateProgress(entryId, false, expectedUserId));
 }

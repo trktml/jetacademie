@@ -3,22 +3,23 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { getAuth } from "@/lib/auth";
-import { getUserGenderFromDb, setUserGenderInDb } from "@/lib/curriculum-db";
+import { ActionError } from "@/lib/action-result";
+import { runUserAction, requireActionUser } from "@/lib/action-user";
+import { getUserGenderFromDb, setUserGenderInDb } from "@/lib/user-preferences";
 import { type Gender } from "@/lib/data/ilmihal-curriculum";
 
-export async function updateUserGender(gender: Gender) {
-  if (gender !== "erkek" && gender !== "bayan") {
-    throw new Error("Geçersiz cinsiyet tercihi.");
-  }
+export async function updateUserGender(gender: Gender, expectedUserId?: string) {
+  return runUserAction(async () => {
+    if (gender !== "erkek" && gender !== "bayan") {
+      throw new ActionError("Geçersiz cinsiyet tercihi.");
+    }
 
-  const session = await getAuth().api.getSession({ headers: await headers() });
-  if (!session?.user) {
-    throw new Error("Tercihinizi kaydetmek için giriş yapın.");
-  }
+    const user = await requireActionUser("Tercihinizi kaydetmek için giriş yapın.", expectedUserId);
 
-  await setUserGenderInDb(session.user.id, gender);
-  revalidatePath("/mufredat");
-  return { success: true, gender };
+    await setUserGenderInDb(user.id, gender);
+    revalidatePath("/mufredat");
+    return { success: true, gender, userId: user.id };
+  });
 }
 
 export async function getUserGender(): Promise<Gender | null> {

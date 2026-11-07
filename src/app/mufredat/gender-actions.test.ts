@@ -4,14 +4,14 @@ let mockUser: { id: string; email: string; name: string } | null = null;
 let userPreferences: Record<string, string> = {};
 
 mock.module("next/headers", () => ({
-  headers: async () => new Headers(),
+  headers: async () => new Headers({ Origin: "http://localhost:3000" }),
 }));
 
 mock.module("next/cache", () => ({
   revalidatePath: mock(() => {}),
 }));
 
-mock.module("@/lib/curriculum-db", () => ({
+mock.module("@/lib/user-preferences", () => ({
   getUserGenderFromDb: (userId: string) => userPreferences[userId] ?? null,
   setUserGenderInDb: (userId: string, gender: string) => {
     userPreferences[userId] = gender;
@@ -35,25 +35,44 @@ describe("gender server actions", () => {
   });
 
   describe("updateUserGender", () => {
+    it("does not update a different account after a session change", async () => {
+      expect(await updateUserGender("bayan", "previous-user")).toEqual({
+        ok: false,
+        error: "Oturum değişti. İşlemi yeniden deneyin.",
+      });
+      expect(userPreferences).toEqual({});
+    });
     it("fails when user is not authenticated", async () => {
       mockUser = null;
-      expect(updateUserGender("erkek")).rejects.toThrow("Tercihinizi kaydetmek için giriş yapın.");
+      expect(await updateUserGender("erkek")).toEqual({
+        ok: false,
+        error: "Tercihinizi kaydetmek için giriş yapın.",
+      });
     });
 
     it("fails when gender is invalid", async () => {
       // @ts-expect-error - testing invalid input
-      expect(updateUserGender("invalid")).rejects.toThrow("Geçersiz cinsiyet tercihi.");
+      expect(await updateUserGender("invalid")).toEqual({
+        ok: false,
+        error: "Geçersiz cinsiyet tercihi.",
+      });
     });
 
     it("successfully sets gender to erkek", async () => {
       const result = await updateUserGender("erkek");
-      expect(result).toEqual({ success: true, gender: "erkek" });
+      expect(result).toEqual({
+        ok: true,
+        value: { success: true, gender: "erkek", userId: "user_test_1" },
+      });
       expect(userPreferences["user_test_1"]).toBe("erkek");
     });
 
     it("successfully sets gender to bayan", async () => {
       const result = await updateUserGender("bayan");
-      expect(result).toEqual({ success: true, gender: "bayan" });
+      expect(result).toEqual({
+        ok: true,
+        value: { success: true, gender: "bayan", userId: "user_test_1" },
+      });
       expect(userPreferences["user_test_1"]).toBe("bayan");
     });
   });

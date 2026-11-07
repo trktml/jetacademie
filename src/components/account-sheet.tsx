@@ -29,11 +29,21 @@ import {
 } from "@/lib/validations/auth";
 import { useUiStore } from "@/store/use-ui-store";
 import { useGuestStore } from "@/store/use-guest-store";
+import { unwrapActionResult } from "@/lib/action-result";
 import { migrateGuestProgress } from "@/app/mufredat/migrate-guest-progress";
-import { getQueryClient } from "@/lib/query-client";
+import { useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import { postJson } from "@/lib/client-http";
+
+const accountResponseSchema = z.object({ success: z.literal(true) });
+const authenticationResponseSchema = accountResponseSchema.extend({
+  username: z.string().min(1),
+  userId: z.string().min(1),
+});
 
 export function AccountSheet() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const isOpen = useUiStore((state) => state.isAccountOpen);
   const setOpen = useUiStore((state) => state.setAccountOpen);
   const {
@@ -68,7 +78,6 @@ export function AccountSheet() {
   const enableGuest = useGuestStore((s) => s.enableGuest);
   const disableGuest = useGuestStore((s) => s.disableGuest);
   const guestCompletedIds = useGuestStore((s) => s.completedEntryIds);
-  const guestGender = useGuestStore((s) => s.gender);
   const [showGuestLogoutConfirm, setShowGuestLogoutConfirm] = useState(false);
   const [showAuthFromGuest, setShowAuthFromGuest] = useState(false);
 
@@ -84,6 +93,31 @@ export function AccountSheet() {
     setShowDeleteConfirm(false);
     setShowGuestLogoutConfirm(false);
     setShowAuthFromGuest(false);
+  }
+
+  async function refreshAccountState() {
+    await queryClient.cancelQueries({ queryKey: ["curriculum-progress"] });
+    queryClient.removeQueries({ queryKey: ["curriculum-progress"] });
+    await refetchSession();
+    router.refresh();
+  }
+
+  async function transferGuestProgress(userId: string): Promise<boolean> {
+    const snapshot = useGuestStore.getState();
+    if (snapshot.completedEntryIds.length === 0 && !snapshot.gender) {
+      snapshot.suspendGuest();
+      return true;
+    }
+    try {
+      unwrapActionResult(
+        await migrateGuestProgress(userId, snapshot.completedEntryIds, snapshot.gender)
+      );
+      useGuestStore.getState().acknowledgeTransfer(snapshot.completedEntryIds, snapshot.gender);
+      return true;
+    } catch {
+      useGuestStore.getState().suspendGuest();
+      return false;
+    }
   }
 
   async function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
@@ -104,42 +138,23 @@ export function AccountSheet() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/auth/register-anonymous", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        setMessage(data.error || "Kayıt işlemi tamamlanamadı.");
-        return;
-      }
+      const data = await postJson(
+        "/api/auth/register-anonymous",
+        { password },
+        authenticationResponseSchema,
+        "Kayıt işlemi tamamlanamadı."
+      );
 
       setAssignedUsername(data.username);
       setPassword("");
       setConfirmPassword("");
 
-      // Misafir ilerlemesini ve tercihlerini yeni hesaba aktar
-      if (isGuest && (guestCompletedIds.length > 0 || guestGender)) {
-        try {
-          await migrateGuestProgress(guestCompletedIds, guestGender);
-        } catch {
-          // Aktarım başarısız olsa da kayıt başarılı
-        }
-      }
-
-      await refetchSession();
-      try {
-        const queryClient = getQueryClient();
-        await queryClient.refetchQueries({ queryKey: ["curriculum-progress"] });
-      } catch {
-        // Query refetch failover
-      }
-
-      if (isGuest) disableGuest();
-
-      router.refresh();
+      const transferred = await transferGuestProgress(data.userId);
+      await refreshAccountState();
+      if (!transferred)
+        setMessage(
+          "Hesabınız oluşturuldu. Misafir ilerlemesi bu cihazda korundu; sonraki girişte aktarım tekrar denenecek."
+        );
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Kayıt işlemi tamamlanamadı.");
     } finally {
@@ -160,40 +175,21 @@ export function AccountSheet() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/auth/sign-in-anonymous", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+      const data = await postJson(
+        "/api/auth/sign-in-anonymous",
+        result.data,
+        authenticationResponseSchema,
+        "Kullanıcı adı veya şifre hatalı."
+      );
 
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        setMessage(data.error || "Kullanıcı adı veya şifre hatalı.");
-        return;
-      }
-
-      // Misafir ilerlemesini ve tercihlerini mevcut hesaba aktar
-      if (isGuest && (guestCompletedIds.length > 0 || guestGender)) {
-        try {
-          await migrateGuestProgress(guestCompletedIds, guestGender);
-        } catch {
-          // Aktarım başarısız olsa da giriş başarılı
-        }
-      }
-
-      await refetchSession();
-      try {
-        const queryClient = getQueryClient();
-        await queryClient.refetchQueries({ queryKey: ["curriculum-progress"] });
-      } catch {
-        // Query refetch failover
-      }
-
-      if (isGuest) disableGuest();
-
+      const transferred = await transferGuestProgress(data.userId);
+      await refreshAccountState();
       resetForm();
-      setOpen(false);
-      router.refresh();
+      if (transferred) setOpen(false);
+      else
+        setMessage(
+          "Giriş başarılı. Misafir ilerlemesi bu cihazda korundu; sonraki girişte aktarım tekrar denenecek."
+        );
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Giriş işlemi tamamlanamadı.");
     } finally {
@@ -219,17 +215,12 @@ export function AccountSheet() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/account/change-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result.data),
-      });
-
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        setMessage(data.error || "Şifre güncellenemedi.");
-        return;
-      }
+      await postJson(
+        "/api/account/change-password",
+        result.data,
+        accountResponseSchema,
+        "Şifre güncellenemedi."
+      );
 
       setSuccessMessage("Şifreniz başarıyla güncellendi.");
       setNewPassword("");
@@ -252,28 +243,16 @@ export function AccountSheet() {
     setIsSubmitting(true);
     setMessage(null);
     try {
-      const response = await fetch("/api/account/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: deletePassword }),
-      });
+      await postJson(
+        "/api/account/delete",
+        { password: deletePassword },
+        accountResponseSchema,
+        "Hesap silinemedi."
+      );
 
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        setMessage(data.error || "Hesap silinemedi.");
-        return;
-      }
-
-      await refetchSession();
-      try {
-        const queryClient = getQueryClient();
-        await queryClient.refetchQueries({ queryKey: ["curriculum-progress"] });
-      } catch {
-        // Query refetch failover
-      }
+      await refreshAccountState();
       resetForm();
       setOpen(false);
-      router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Hesap silinemedi.");
     } finally {
@@ -284,16 +263,13 @@ export function AccountSheet() {
   async function signOut() {
     setIsSubmitting(true);
     try {
-      await authClient.signOut();
-      try {
-        const queryClient = getQueryClient();
-        await queryClient.refetchQueries({ queryKey: ["curriculum-progress"] });
-      } catch {
-        // Query refetch failover
-      }
+      const result = await authClient.signOut();
+      if (result.error) throw new Error("Çıkış işlemi tamamlanamadı.");
+      await refreshAccountState();
       resetForm();
       setOpen(false);
-      router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Çıkış işlemi tamamlanamadı.");
     } finally {
       setIsSubmitting(false);
     }
@@ -360,6 +336,11 @@ export function AccountSheet() {
             <div className="sheet-status">Oturum kontrol ediliyor…</div>
           ) : assignedUsername ? (
             <div className="account-created-card">
+              {message && (
+                <p className="form-message" role="alert">
+                  {message}
+                </p>
+              )}
               <div className="account-created-card__title">
                 <CheckCircle2 className="text-emerald-500" aria-hidden="true" />
                 <span>Hesabınız Oluşturuldu!</span>
@@ -635,7 +616,6 @@ export function AccountSheet() {
                           disableGuest();
                           resetForm();
                           setOpen(false);
-                          router.refresh();
                         }}
                       >
                         Evet, Sonlandır
@@ -769,7 +749,6 @@ export function AccountSheet() {
                 onClick={() => {
                   enableGuest();
                   setOpen(false);
-                  router.refresh();
                 }}
               >
                 <UserRound aria-hidden="true" />
