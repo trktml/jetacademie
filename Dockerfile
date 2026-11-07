@@ -1,5 +1,5 @@
-FROM oven/bun:1-alpine AS base
-RUN apk add --no-cache libc6-compat su-exec
+FROM oven/bun:1.4.4-alpine AS base
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # 1. Install dependencies only when needed
@@ -12,12 +12,6 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ARG NEXT_PUBLIC_APP_URL
-ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
-ENV BETTER_AUTH_URL=$NEXT_PUBLIC_APP_URL
-# Only build-time placeholders; runtime values come from the container environment.
-ENV BETTER_AUTH_SECRET=build-only-placeholder-never-use-for-sessions
-ENV DATABASE_URL=:memory:
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
@@ -40,9 +34,10 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Copy public, standalone build and static assets
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+RUN install -d -o nextjs -g nodejs -m 0700 /app/.next/cache
 
 USER nextjs
 

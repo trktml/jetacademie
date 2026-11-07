@@ -1,0 +1,5 @@
+# Optional override for tools that connect through an SSH local forward.
+services:
+  db:
+    ports:
+      - "127.0.0.1:${PG_HOST_PORT:-5433}:5432"

@@ -12,9 +12,9 @@ if [ "$NODE_ENV" = "production" ]; then
   fi
 fi
 
-# If the container runs as root, drop privileges to nextjs user
 if [ "$(id -u)" = '0' ]; then
-  exec su-exec nextjs "$@"
+  echo "JetAcademie must not run as root." >&2
+  exit 1
 fi
 
 exec "$@"

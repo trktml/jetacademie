@@ -1,32 +1,36 @@
 services:
   db:
-    image: postgres:16-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-jetacademie}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a strong POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-jetacademie}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:-}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./scripts/init-postgres-app.sh:/docker-entrypoint-initdb.d/10-app-role.sh:ro
     healthcheck:
-      test:
-        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jetacademie} -d ${POSTGRES_DB:-jetacademie}"]
+      test: ["CMD-SHELL", 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-    # Host port mapped to 5433 to avoid collision with existing PostgreSQL on port 5432.
-    # Security: Bound strictly to Tailscale IP (100.80.51.7) so it is NEVER exposed to public WAN.
-    ports:
-      - "${PG_BIND_IP:-100.80.51.7}:${PG_HOST_PORT:-5433}:5432"
-
   web:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?Set the external HTTPS URL}
     restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+      - /app/.next/cache:rw,noexec,nosuid,nodev,size=128m,uid=1001,gid=1001,mode=0700
     depends_on:
       db:
         condition: service_healthy
@@ -35,12 +39,12 @@ services:
     expose:
       - "3000"
     ports:
-      - "${HOST_BIND_IP:-127.0.0.1}:${HOST_PORT:-3001}:3000"
+      - "127.0.0.1:${HOST_PORT:-3001}:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
-      # Internal Docker network connection: db container listens on port 5432 (port 5433 is only for host/Tailscale)
-      - DATABASE_URL=postgres://${POSTGRES_USER:-jetacademie}:${POSTGRES_PASSWORD:?Set a strong POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-jetacademie}
+      # Prefer a dedicated application login; the fallback preserves existing installations.
+      - DATABASE_URL=${APP_DATABASE_URL:-postgres://${POSTGRES_USER:-jetacademie}:${POSTGRES_PASSWORD:?Set a strong POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-jetacademie}}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:?Set a random BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL:?Set the external HTTPS URL}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:?Set the external HTTPS URL}

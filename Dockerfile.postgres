@@ -1,0 +1,6 @@
+FROM postgres:16-alpine
+
+# The upstream entrypoint needs gosu only when started as root. Run directly as
+# the data volume owner and remove the unused helper and its compatibility link.
+RUN rm -f /usr/local/bin/gosu /usr/local/bin/su-exec
+USER postgres
