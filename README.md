@@ -166,6 +166,8 @@ bun run build
 
 Üretim derlemesi için veritabanı bağlantısı veya kimlik doğrulama sırrı gerekmez. Sunucu açılırken üretim ayarları doğrulanır ve veritabanı şeması hazırlanır. GitHub Actions aynı kontrolleri PostgreSQL 16 servisi, `bun audit` ve Git geçmişi için Gitleaks ile çalıştırır. Eylemler commit SHA'sına, sır tarama aracı sürüm ve SHA-256 özetine sabitlenmiştir. Dependabot, paketler, konteynerler ve Actions için haftalık güncelleme önerileri oluşturur. Yerel ortam, CI ve Docker Bun 1.4.4 sürümünü kullanır.
 
+`dev`, `build` ve `start` betikleri Next.js'i `bun --bun` ile başlatır. Böylece CI makinesinde Node.js kurulu olsa bile Next.js ve derleme alt süreçleri `bun:sqlite` modülüne erişebilir.
+
 ## Veritabanı & Veri Migrasyonu
 
 - **Birincil Veritabanı**: PostgreSQL 16 (`src/lib/db.ts` içindeki `pg.Pool` bağlantı havuzu aracılığıyla bağlanır).
@@ -226,12 +228,13 @@ Uygulamanız `https://<server-name>.<tailnet-name>.ts.net` adresinde yayında ol
   - `BETTER_AUTH_SECRET`: Rastgele 32+ karakterli gizli anahtar (`openssl rand -base64 32`)
   - `BETTER_AUTH_URL`: Kurallı URL (örn. `https://<tailnet>.ts.net` veya alan adı)
   - `NEXT_PUBLIC_APP_URL`: Kurallı URL
+  - `AUTH_TRUSTED_ORIGINS`: Aynı uygulamaya yönlenen ek HTTPS adresleri. Birden çok adres varsa virgülle ayırın.
 
 ### Güvenlik Ayarları
 
 - Kullanıcılar oturum açmadan önce `BETTER_AUTH_URL` ve `NEXT_PUBLIC_APP_URL` değişkenlerini aynı harici HTTPS kaynağına ayarlayın. `BETTER_AUTH_SECRET` değerini en az 32 rastgele karakter olarak tutun; üretim ortamı eksik veya örnek bir anahtarı reddeder.
-- Hesap işlemlerinde izin verilen kaynak yalnızca `BETTER_AUTH_URL` / `NEXT_PUBLIC_APP_URL` yapılandırmasından belirlenir; `Host` veya `X-Forwarded-*` başlıkları yeni bir kaynağı güvenilir yapmaz. Sunucu eylemleri de sabit kaynağı denetler. Ters proxy istemciden gelen yönlendirme başlıklarını temizlemeli, genel `Host` değerini korumalı veya doğru `X-Forwarded-Host` değerini sağlamalıdır. Kimlik doğrulama istemcisi mevcut tarayıcı kaynağını kullanır.
-- Anonim giriş ve kayıt uç noktaları yalnızca yapılandırılmış kaynaktan gelen JSON isteklerini kabul eder. Yeni parolalar en az 15, en fazla 128 karakter olmalıdır; mevcut kısa parolalarla giriş korunur. Parola değişikliği ve hesap silme mevcut parolayı gerektirir. Parola değişikliği diğer oturumları geçersiz kılar.
+- Hesap işlemleri ve sunucu eylemleri yalnızca kurallı adrese ve `AUTH_TRUSTED_ORIGINS` ile açıkça eklenen adreslere izin verir. Örneğin, kurallı adres `https://jet.hizmetod.com` ise `AUTH_TRUSTED_ORIGINS=https://jetacademie.be` ile iki adresten de giriş yapılabilir. `Host` ve `X-Forwarded-*` başlıkları izin listesini değiştirmez. Ters proxy istemciden gelen yönlendirme başlıklarını temizlemeli, genel `Host` değerini korumalı veya doğru `X-Forwarded-Host` değerini sağlamalıdır. Her adres kendi oturum çerezini kullanır.
+- Anonim giriş ve kayıt uç noktaları yalnızca izin verilen kaynaklardan gelen JSON isteklerini kabul eder. Yeni şifreler 4–128 karakter olabilir. Mevcut şifrelerle giriş devam eder. Şifre değişikliği ve hesap silme mevcut şifreyi gerektirir. Şifre değişikliği diğer oturumları geçersiz kılar.
 - Deneme bütçeleri veritabanında atomik olarak ayrılır ve uygulama örnekleri arasında paylaşılır. Var olmayan hesaplar dahil her kullanıcı adı için 15 dakikada 5 giriş denemesi; kullanıcı başına parola değişikliği ve hesap silme için ortak 5 yeniden doğrulama denemesi vardır. Başarılı giriş veya kayıt ilgili kullanıcı adının giriş bütçesini temizler. Her uygulama örneği kullanıcı adı başına bir, toplamda en fazla 8 giriş isteğini aynı anda işler. Kapasite dolduğunda `503` döner. Kayıt uç noktası 15 dakikada 60 istekle sınırlıdır. İstemci başına trafik sınırını güvenilen [ters proxy’de](docs/tailscale.md#dağıtım) uygulayın. `429` ve yoğunluk kaynaklı `503` yanıtları `Retry-After` içerir.
 - Hesap JSON gövdeleri gerçek akış boyutuyla 8 KiB sınırına tabidir. Editörün ayrı boyut sınırları vardır; her iki akış 10 saniyede tamamlanmayan JSON gövdelerini reddeder. Günlüklerde hesap mutasyonu hataları parola veya istek gövdesiyle birlikte yazılmaz.
 - Web konteyneri ayrıcalıksız kullanıcı, salt okunur kök dosya sistemi ve kapalı Linux yetkileriyle çalışır. Web portu yalnız döngü adresinde yayımlanır. Dokploy, web konteynerine kendi proxy ağı üzerinden bağlanabilir.

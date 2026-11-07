@@ -226,7 +226,7 @@ describe("Anonymous Auth & Slot Assignment", () => {
       expect(limited.status).toBe(429);
       expect(limited.headers.get("Retry-After")).toBe("900");
     });
-    it("allows existing short passwords to sign in while rejecting new short passwords", async () => {
+    it("does not apply the new-password minimum to an existing credential", async () => {
       const headers = { "Content-Type": "application/json", Origin: "http://localhost:3000" };
       const registration = await registerPOST(
         new Request("http://localhost:3000/api/auth/register-anonymous", {
@@ -237,14 +237,14 @@ describe("Anonymous Auth & Slot Assignment", () => {
       );
       expect(registration.status).toBe(200);
       db.query('UPDATE "account" SET "password" = ? WHERE "providerId" = ?').run(
-        await hashPassword("1234"),
+        await hashPassword("123"),
         "credential"
       );
       const signedIn = await signInPOST(
         new Request("http://localhost:3000/api/auth/sign-in-anonymous", {
           method: "POST",
           headers,
-          body: JSON.stringify({ username: "user1", password: "1234" }),
+          body: JSON.stringify({ username: "user1", password: "123" }),
         })
       );
       expect(signedIn.status).toBe(200);
@@ -252,7 +252,7 @@ describe("Anonymous Auth & Slot Assignment", () => {
         new Request("http://localhost:3000/api/auth/register-anonymous", {
           method: "POST",
           headers,
-          body: JSON.stringify({ password: "1234" }),
+          body: JSON.stringify({ password: "123" }),
         })
       );
       expect(weakRegistration.status).toBe(400);
@@ -337,20 +337,20 @@ describe("Anonymous Auth & Slot Assignment", () => {
       expect(res.headers.get("set-cookie")).toContain("better-auth.session_token");
     });
 
-    it("should sign in using username and password with case insensitivity", async () => {
+    it("registers and signs in with four characters and a case-insensitive username", async () => {
       // Register user1
       const regReq = new Request("http://localhost:3000/api/auth/register-anonymous", {
         method: "POST",
         headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
-        body: JSON.stringify({ password: "test-password-2468" }),
+        body: JSON.stringify({ password: "1234" }),
       });
-      await registerPOST(regReq);
+      expect((await registerPOST(regReq)).status).toBe(200);
 
       // Sign in with uppercase 'USER1'
       const signInReq = new Request("http://localhost:3000/api/auth/sign-in-anonymous", {
         method: "POST",
         headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
-        body: JSON.stringify({ username: "USER1", password: "test-password-2468" }),
+        body: JSON.stringify({ username: "USER1", password: "1234" }),
       });
 
       const signInRes = await signInPOST(signInReq);
@@ -449,7 +449,7 @@ describe("Anonymous Auth & Slot Assignment", () => {
           headers: { "Content-Type": "application/json", Origin: "http://localhost:3000", cookie },
           body: JSON.stringify({
             currentPassword: "test-password-2468",
-            newPassword: "test-password-1357",
+            newPassword: "1357",
           }),
         })
       );
@@ -462,7 +462,7 @@ describe("Anonymous Auth & Slot Assignment", () => {
       const signInReq = new Request("http://localhost:3000/api/auth/sign-in-anonymous", {
         method: "POST",
         headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
-        body: JSON.stringify({ username: "user1", password: "test-password-1357" }),
+        body: JSON.stringify({ username: "user1", password: "1357" }),
       });
       const signInRes = await signInPOST(signInReq);
       expect(signInRes.status).toBe(200);
