@@ -41,6 +41,8 @@ ssh "$TARGET_HOST" "bash -s '$TARGET_DIR'" <<'REMOTE'
       echo "Create a private .env with the external HTTPS origin (see .env.example)." >&2
       exit 1
     fi
+    ts_ip=$(tailscale ip -4 | head -n 1)
+    ts_ip="${ts_ip:-100.80.51.7}"
     auth_secret=$(openssl rand -hex 32)
     db_password=$(openssl rand -hex 32)
     app_password=$(openssl rand -hex 32)
@@ -52,6 +54,8 @@ NEXT_PUBLIC_APP_URL=https://$ts_dns
 BETTER_AUTH_SECRET=$auth_secret
 POSTGRES_PASSWORD=$db_password
 POSTGRES_APP_PASSWORD=$app_password
+PG_BIND_IP=$ts_ip
+PG_HOST_PORT=5433
 APP_DATABASE_URL=postgres://jetacademie_app:$app_password@db:5432/jetacademie
 ENV
     )

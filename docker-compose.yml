@@ -20,6 +20,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    # Host port mapped to 5433 to avoid collision with existing PostgreSQL on port 5432.
+    # Security: Bound strictly to Tailscale IP (100.80.51.7) so it is NEVER exposed to public WAN.
+    ports:
+      - "${PG_BIND_IP:-100.80.51.7}:${PG_HOST_PORT:-5433}:5432"
   web:
     build:
       context: .

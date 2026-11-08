@@ -48,7 +48,7 @@ test -f .env || cp .env.example .env
 Yerel PostgreSQL kurulumunuz yoksa aşağıdaki Compose komutuyla yalnızca veritabanını başlatın. `.env` içindeki `POSTGRES_USER`, `POSTGRES_PASSWORD` ve `POSTGRES_DB` değerlerini yerel `DATABASE_URL` ile eşleştirin. Örneğin varsayılan kullanıcı ve veritabanı adıyla bağlantı biçimi `postgres://jetacademie:PAROLA@127.0.0.1:5433/jetacademie` olur. `PAROLA` yerine `POSTGRES_PASSWORD` değerini URL kodlamasıyla yazın.
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.db-tunnel.yml up -d --wait db
+PG_BIND_IP=127.0.0.1 docker compose up -d --wait db
 ```
 
 ```bash
@@ -127,7 +127,7 @@ Ayrıntılar için [mimari ve güvenlik incelemesine](docs/mimari-guvenlik-incel
 
 [Docker Compose](docker-compose.yml), kalıcı `pgdata` hacmiyle PostgreSQL 16 ve bağımsız Next.js web servisini çalıştırır. Üretim derlemesi için veritabanı veya sır gerekmez; sunucu başlangıcı için PostgreSQL bağlantısı, rastgele bir `BETTER_AUTH_SECRET` ve aynı HTTPS kaynağını gösteren `BETTER_AUTH_URL` ile `NEXT_PUBLIC_APP_URL` gerekir. Ek erişim adresleri `AUTH_TRUSTED_ORIGINS` ile tanımlanır.
 
-Web servisi varsayılan olarak `127.0.0.1:3001` üzerinden Tailscale Serve veya yerel ters proxy'ye açılır. Dokploy web servisine iç ağdan bağlanabilir. PostgreSQL varsayılan olarak Compose ağında kalır. `scripts/deploy.sh` yalnızca Git'teki `HEAD` sürümünü gönderir; yerel `.env` dosyasını kopyalamaz. Kurulum, PostgreSQL rolleri ve SSH tüneli için [Tailscale ve Docker dağıtım kılavuzuna](docs/tailscale.md) bakın.
+Web servisi varsayılan olarak `127.0.0.1:3001` üzerinden Tailscale Serve veya yerel ters proxy'ye açılır. Dokploy web servisine iç ağdan bağlanabilir. PostgreSQL genel internete (`0.0.0.0`) açılmaz; varsayılan olarak yalnızca Tailscale IP adresinde (`${PG_BIND_IP:-100.80.51.7}:5433`) dinler. `scripts/deploy.sh` yalnızca Git'teki `HEAD` sürümünü gönderir; yerel `.env` dosyasını kopyalamaz. Kurulum ve PostgreSQL rolleri için [Tailscale ve Docker dağıtım kılavuzuna](docs/tailscale.md) bakın.
 
 - **Haftalık müfredat:** `bun run curriculum backup` haftalık paketleri, tablo anlık görüntülerini, Markdown çıktılarını ve SQL betiğini yerel olarak saklar. `bun run curriculum restore --dry-run` ile önizleyin. CLI geri yüklemesi seçili standart Konu ve Dinleme haftalarını editör revizyonlarıyla geri yükler; `--week N` ile tek hafta seçilebilir.
 - **Tam PostgreSQL yedeği:** `scripts/backup-db.sh` ve `scripts/restore-db.sh` kullanılır. Uygulama verilerini boş bir hedef veritabanına aktarmak için [tam yedek yönergesini](docs/tailscale.md#yedekleme) izleyin. Eski bir `auth.sqlite` veritabanından geçiş için `scripts/migrate-sqlite-to-pg.ts` bulunur.

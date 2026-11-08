@@ -1,6 +1,6 @@
 # Tailscale ve Docker ile dağıtım
 
-JetAcademie'nin web servisi varsayılan olarak ana makinenin yalnızca `127.0.0.1:3001` adresine bağlanır. Tailscale Serve veya yerel bir HTTPS ters proxy bu adrese bağlanabilir. PostgreSQL için varsayılan Compose yapılandırmasında ana makine portu yoktur; web konteyneri veritabanına Compose ağı üzerinden `db:5432` adresinde ulaşır.
+JetAcademie'nin web servisi varsayılan olarak ana makinenin yalnızca `127.0.0.1:3001` adresine bağlanır. Tailscale Serve veya yerel bir HTTPS ters proxy bu adrese bağlanabilir. PostgreSQL ise genel internete (`0.0.0.0`) açılmaz; varsayılan olarak yalnızca sunucunun Tailscale IP adresine (`${PG_BIND_IP:-100.80.51.7}:${PG_HOST_PORT:-5433}:5432`) bağlanır. Web konteyneri veritabanına Compose iç ağı üzerinden `db:5432` adresinde ulaşır.
 
 ## Dağıtım
 
@@ -27,19 +27,7 @@ Tailnet erişim kurallarında yalnız gerekli kullanıcı ve cihazlara izin veri
 
 ## Veritabanına yönetim erişimi
 
-Sunucudaki Compose dizininde doğrudan `docker compose exec db psql -U jetacademie -d jetacademie` çalıştırabilirsiniz. Harici bir istemci gerekiyorsa sunucuda isteğe bağlı döngü portunu açın:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.db-tunnel.yml up -d db
-```
-
-Kendi bilgisayarınızdan SSH tüneli oluşturun:
-
-```bash
-ssh -N -L 127.0.0.1:5433:127.0.0.1:5433 ubuntu@100.80.51.7
-```
-
-İstemciyi `127.0.0.1:5433` adresine bağlayın. İşiniz bitince tüneli kapatıp sunucuda yalnız temel dosyayla `docker compose -f docker-compose.yml up -d db` çalıştırın. Eski `PG_BIND_IP` ayarı kullanılmaz; önceki Tailnet PostgreSQL adresini kullanan istemciler SSH tüneline geçmelidir.
+PostgreSQL portu yalnızca Tailscale arayüzüne (`PG_BIND_IP=100.80.51.7`, port `5433`) bağlandığı için, Tailscale ağındaki yetkili geliştirici makinelerinden doğrudan `100.80.51.7:5433` üzerinden bağlanabilirsiniz (örn. `bun run curriculum list`, `save`, `publish`). Ayrıca sunucudaki Compose dizininde doğrudan `docker compose exec db psql -U jetacademie -d jetacademie` çalıştırabilirsiniz. Yerel geliştirme ortamında (Tailscale IP olmadan) yalnızca yerel döngü portuna bağlamak için `PG_BIND_IP=127.0.0.1` kullanabilirsiniz.
 
 Boş bir PostgreSQL hacminde `POSTGRES_APP_PASSWORD` tanımlanırsa başlangıç betiği `jetacademie_app` rolünü açar; bu rol uygulamanın tablolarını oluşturabilir, ancak süper kullanıcı değildir ve rol veya veritabanı oluşturamaz. Web'e verilen `APP_DATABASE_URL` bu rolü kullanmalıdır. Önceden başlatılmış hacimlerde başlangıç betiği yeniden çalışmaz. Mevcut kurulum ayrı role geçirilecekse önce yedek alın, rolü ve şema izinlerini oluşturun, uygulamaya ait mevcut tabloların sahipliğini aktarın ve yeni URL ile ayrı ortamda doğrulayın. Eski kurulumlar bu geçiş yapılana kadar mevcut bağlantılarıyla çalışır.
 
