@@ -61,6 +61,8 @@ Uygulama `http://localhost:3000` adresinde açılır. Sunucu başlangıcında ve
 
 Yıllık Markdown planları konu, ana soru, kazanım ve birincil kaynak için esas alınır. [Müfredat yazım kılavuzu](mufredat-docs/planlar/MUFREDAT-INSTRUCTIONS.md) anlatımı, kaynak doğrulamayı, dipnotları ve editoryal kabulü belirler. Her sınıfın dersi, öğrenci başka bir sınıfın dersini veya kaynak kitabı okumadan anlayabileceği bir bütün olmalıdır. Kaynak ve dil incelemesini ayrı yürütün; [müfredat editör döngüsünü](.agents/skills/mufredat-editor-dongusu/SKILL.md) uygulayın. CLI doğrulaması editoryal incelemenin yerini almaz.
 
+Editör döngüsü; önemli iddiaların kaynakla gerçekten desteklenmesini, öğrencinin kazanacağı belirli bilgi ve düşünceyi, gençlere uygun dili ve anlatının okuma isteğini ayrı kanıtlarla değerlendirir. Sadeleştirme sırasında gerekli gerekçeler korunur. İnceleme sonucu güncel metnin sürümüne bağlanır; değişen kısımlar yeniden denetlenir. Kaynak eşleştirmeleri, düzeltme kanıtları ve varsa gerçek öğrenci geri bildirimleri öğrenci metninden ayrı olarak `data/curriculum-preparation/` altında tutulur. Beceri değişiklikleri [sentetik davranış senaryolarıyla](.agents/skills/mufredat-editor-dongusu/references/deneme-senaryolari.md) denenir; bu denemeler gerçek öğrenci değerlendirmesi değildir.
+
 İlk dört hafta tanışma ve meraka ayrılır; bu haftalar için planlarda birincil kaynak belirlenmemiştir. Kullanılan alıntılar yine doğrulanır. Beşinci haftadan itibaren planın birincil kaynağı esas alınır. Dinleme içeriğinin üç dilli `Kelimeler` biçimi ve kaynak kuralları yazım kılavuzunda tanımlanır.
 
 ### Yerel kaynak arama

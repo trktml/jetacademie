@@ -124,6 +124,18 @@ Bu üç cevap başka bir haftaya neredeyse aynen taşınabiliyorsa ders yeterinc
 
 Bir derste yıllık planın hedefinden daha fazlasını öğretmeye çalışma. Araştırma sırasında bulunan ilginç bilgi, ek kavram veya ikinci bir tartışma ana soruya gerçek katkı sunmuyorsa bu derse ekleme. **Bir dersin başarısı ne kadar çok bilgi verdiğiyle değil, seçtiği meseleyi ne kadar doğru, anlaşılır, hatırlanabilir ve merak uyandırıcı hâle getirdiğiyle ölçülür.**
 
+### Bilgi bakımından doyurucu ders
+
+**Tek ana düşünce, yalnız bir öğüdü farklı sözlerle tekrarlamak demek değildir.** Hazırlık kaydında, planın hedefi ve öğrencinin bilinen ön bilgisiyle ilişkili olarak şu sorulara kısa cevap ver:
+
+- Öğrenci bu metinle hangi belirli bilgiyi, ilişkiyi veya ayrımı öğrenebilecek? Ön bilgisi bilinmiyorsa bunu gerçekten ilk kez öğrendiğini iddia etme.
+- Bu anlayışı hangi doğrulanmış ayrıntı, kaynak katkısı ve açıklama mümkün kılıyor? Sonucu bildirmekle yetinme; öğrencinin nedenini takip edebilmesini sağla.
+- Konuya ve profile göre hangi anlamlı farkı görebilecek, gerekçeyi açıklayabilecek veya daha belirli merak sorusunu kurabilecek? Cevabın dayanağını metinde göster.
+
+Bu cevaplar 18.3'teki plan/hedef ve düşünme beklentisini somutlaştırır; öğrenciye yeni bir bölüm veya cevap anahtarı oluşturmaz. İlk dört haftada bir insanı, eseri veya eserin ele aldığı soruyu somut ayrıntılarla tanımak ve yeni bir merak geliştirmek yeterli olabilir. Üst sınıflarda haftanın hedefi gerektiriyorsa iddiaların dayanakları, benzer görünen kavramların farkı, makul bir itiraz veya yorumun sınırı açılır. Her derse karşı görüş, yeni kavram veya uygulama kotası koyma.
+
+**Dili sadeleştirirken açıklama gücünü koru.** Zor kelimeleri azaltırken olayın bağlamını, neden–sonuç bağını veya gerekli ayrımı da çıkarıyorsan ders yoksullaşmıştır. “Sabır önemlidir” gibi bir sonuç, tek başına sabrın ilgili durumda ne anlama geldiğini öğretmez. Gereken örneği ve gerekçeyi geliştir; uzunluk, alıntı veya bilgi sayısını doyuruculuk ölçüsü yapma.
+
 ---
 
 # 2. KONU TEK BİR BÜTÜN OLARAK YAZILMALIDIR
@@ -351,6 +363,8 @@ Açılışta sorulan soruya anlatı boyunca yeni ayrıntılarla geri dön. Okuru
 Yazarın açıklamalarında açık özne, somut fiil ve gündelik Türkçe kullan. Gerekli kavramı açıkla, gereksiz zor kelimeyi çıkar. Öğrencinin anlayabildiği benzetme, tasvir ve duygusal yakınlık anlatının parçası olabilir. Örneğin bir kitabı dostun mektubuna benzetmek okura bir bakış önerir; bütün okuyucuların aynı ferahlığı hissettiğini söylemek ise doğrulanması gereken bir genellemedir. Yaş büyüdükçe düşünce derinleşsin; açıklamalar gereksiz yere ağırlaşmasın. Bu kurallar özgün alıntıyı değiştirme izni vermez.
 
 Bebeksi sesleniş, zoraki gençlik argosu, reklam dili ve sürekli emir veren nasihat kullanma. Öğrencinin duygu veya inancını onun adına kesinleştirme. Anlamamak veya soru sormak kusur gibi gösterilmemeli; samimi bir soru küçümsenmeden, gerekçesi açıklanarak ele alınmalıdır. Öğrenciyi kişisel yaşantısını, aile durumunu veya inancını grup önünde açıklamaya zorlayan sorular kurma; varsayımsal bir durum üzerinden düşünmeye alan bırak.
+
+**Genç okurun aklına güven.** Türkçesi sınırlı bir gencin düşünme kapasitesini küçük çocuk düzeyinde varsayma; yaşına uygun meseleyi anlaşılır dil ve yeterli bağlamla aç. Konunun içinden doğan makul bir soruyu veya itirazı ele alıyorsan en kolay çürütülecek biçime sokma, soruyu soranı utandırma ve kaynakta olmayan kesin bir cevap üretme. Bir okurun sorabileceği soruyu, gerçekten öğrencilerden alınmış geri bildirim gibi sunma.
 
 Aşağıdaki örnekler yalnız **yazarın anlatımına ilişkin editoryal karşılaştırmalardır**; kaynak alıntısı, öğrenci dersi veya tekrar kullanılacak hazır cümle değildir:
 
@@ -685,6 +699,22 @@ Farklı rivayet veya kaynaklar arasında ayrıntı farkı varsa bunları birleş
 
 Arama sonucu, özet, yapay zekâ cevabı veya önceki ders metni tek başına doğrulama değildir. Kaynağın ilgili sayfa veya bölümünü açıp karşılaştır. Hazırlık notlarında kullanılan kaynak yerini ve doğrulanan olay ayrıntılarını kaydet; bu denetim notlarını öğrenci anlatısına taşıma.
 
+### Kaynağın varlığı ile iddiayı desteklemesini ayır
+
+Doğrulama yalnız alıntı ve künye kontrolü değildir. Yazarın açıklamasındaki önemli olgusal iddiaları da incele: tarih ve sayılar, bilimsel açıklamalar, bir davranışın insanlar üzerindeki etkisi ve “herkes”, “daima”, “kesin olarak” gibi genellemeler buna dahildir. Bir cümlenin bir eserde bulunması, o cümlenin eser sahibine ait olduğunu gösterebilir; cümlenin içerdiği tarihî veya bilimsel iddiayı ayrıca doğrulama ihtiyacını kaldırmaz.
+
+18.3'ün **kaynak doğrulama** alanında kısa bir eşleştirme tut: **metindeki iddia → türü → açılıp incelenen kaynak ve tam yeri → ne ölçüde desteklediği → gerekiyorsa düzeltme**. Aynı pasajın desteklediği bağlantılı iddialar birlikte kaydedilebilir; her cümle için ayrı form üretme.
+
+| İfade türü                                          | Kontrolün odağı                                                                                                                                                                                           |
+| :-------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Doğrudan alıntı veya kaynağın düşüncesinin aktarımı | Sözler, bağlam ve anlam aynı mı? Açıklama veya çıkarım kaynak sahibinin sözüne dönüştürülmüş mü?                                                                                                          |
+| Tarihî bilgi veya rivayet                           | Kaynak bu kişi, olay ve ayrıntıyı gerçekten destekliyor mu? Bölüm 16 ve 19'daki özel doğrulama şartları karşılanmış mı?                                                                                   |
+| Bilimsel, sayısal veya güncel bilgi                 | İlgili özgün araştırma, resmî veri veya alanın yetkin kurum yayını incelendi mi? Sonucun hangi grup, zaman ve şartlarla sınırlı olduğu korunmuş mu? Güncel iddiada veri tarihi ve erişim tarihi belli mi? |
+| Yorum, benzetme veya uygulama çıkarımı              | Kaynağın söylediği ile yazarın çıkardığı sonuç ayrılıyor mu? Benzetme, bilimsel/tarihî kanıt veya kaynakta verilmiş hüküm gibi sunuluyor mu?                                                              |
+| Varsayımsal günlük örnek                            | Kurmaca olduğu anlaşılır mı? Gerçek kişi, yaşanmış olay veya öğrenciden alınmış geri bildirim diye sunulmuş mu?                                                                                           |
+
+Kaynağın başlığı, konuyla ilişkili olması veya bağlantısının açılması yeterli değildir; ilgili kısmın **bu iddiayı** desteklemesi gerekir. Alıntıyı doğrulayıp yanındaki kaynaklandırılmamış genellemeyi onaylama. Birbirinden kopyalanmış sayfaları bağımsız doğrulamalar sayma. Kaynağa erişilememesi iddianın yanlış olduğunu kanıtlamaz; doğrulanmış olduğunu da göstermez. Desteksiz iddiayı yalnız “olabilir” ekleyerek koruma; doğrula, kaynağın desteklediği sınırda yeniden yaz veya çıkar. Çözülemeyen durumun kabul sonucuna etkisini 18.4'e göre kaydet.
+
 ---
 
 # 17. ÇIKTI DÜZENİ
@@ -740,6 +770,7 @@ Her içeriği **iki ayrı geçişte** denetle: önce plan ve kaynak doğruluğu,
 - Âyet kullanılmışsa Arapça metni, sûre/âyet numarası ve Suat Yıldırım meali birbiriyle ve kaynakla uyuşuyor mu? Âyet veya başka bir destekleyici kaynak türünün bulunmaması tek başına eksik kabul edilmiş mi?
 - Hadisin Arapça lafzı, Türkçe tercümesi ve kaynak yeri kontrol edildi mi; kullanılan rivayetin **sahih** olduğu ve bu değerlendirmenin dayanağı kaydedildi mi? Diğer kategorilerdeki hadis kaynaklı olay/rivayetler de aynı şartı karşılıyor mu?
 - Siyer, sahabe ve diğer tarihî örneklerde şahıs, yer, meslek, zaman, olay sırası ve sözler kaynakla aynı mı? Farklı rivayetler birleştirilmiş veya kaynaksız ayrıntı eklenmiş mi?
+- Yazarın açıklamasındaki önemli olgusal iddialar da bölüm 16'ya göre kaynakla eşleştirilmiş mi? Kaynak bu iddiayı aynı kapsam ve kesinlikte destekliyor mu; olgu, yorum ve varsayımsal örnek ayrılıyor mu?
 - Dipnotlar, sayfalar ve alıntı işaretleri doğru mu?
 - Listedeki her kelime, yalnız Arapça metinde değil öğrencinin okuduğu Türkçe/Osmanlı Türkçesi metinde gerçekten bulunuyor mu? Metindeki işaretli biçim, listedeki madde ve açıklaması doğru eşleşiyor mu?
 - Plan ile doğrulanmış kaynak arasında çözülmemiş çelişki var mı?
@@ -752,6 +783,7 @@ Bölüm 9'daki merak ve ton, bölüm 10'daki sınıf/ay/dil ve bölüm 11'deki d
 
 - **Okuma isteği ve ana fikir:** İlk bölümde okumaya devam etmek için hangi somut sebep var? Anlatının ortasında merakı büyüten veya bakışı değiştiren hangi ayrıntı var? Son cümle hangi düşünceyi veya keşif isteğini bırakıyor? Bu noktaları metinden göster; yalnız “soru var”, “kısa” veya “dil sade” diye kabul etme. Büyük soru açık kalıyorsa o günkü anlam yine anlaşılır mı; metin genel öğütlere dönüşüyor mu?
 - **Kaynak katkısı ve zenginlik:** Her alıntı ana soruya somut katkı sunuyor mu? Öğrenci bağlamı, olayın veya düşüncenin gelişimini ve örneğin kaynakla bağını takip edebilecek desteğe sahip mi? Kaynaklar anlatının içinde ilerliyor mu, yoksa kopuk bloklar olarak mı kalıyor? Konuya katkı sunan mekân, insan ve emek ayrıntıları anlaşılır biçimde görünür mü? Gerekli ayrıntı ve açıklamalar kısalık uğruna çıkarılmış veya kaynak sayısı zenginlik sayılmış mı?
+- **Bilgi doyuruculuğu:** Bölüm 1'de belirlenen öğrenme katkısı gerçekten metinde var mı? Öğrencinin anlayabileceği belirli bilgi, ilişki veya ayrımı ve bunu taşıyan açıklamayı göster. Hazırlık amacı ile metnin sağladığı desteği karşılaştır; güzel bir sahne ya da doğru bir öğüt, eksik açıklamanın yerine geçmez. Sadeleştirmede gerekçe veya anlamlı bir ayrım kaybolmuş mu? İlk dört haftanın tanışma hedefi ve sınıfın düşünme beklentisi korunuyor mu?
 - **Sahne ve çıkarım bağı:** Sonuç cümlesini anlatıdaki hangi olay veya gerekçe taşıyor? Örnekten sonuca geçerken açıklanmamış bir düşünce adımı, belirsiz gönderme veya hazırlanmadan giren yeni bir öğüt var mı? Geçiş cümlesini güzelleştirmek yerine gerekli bağı kur; dayanağı olmayan çıkarımı kaldır.
 - **Anlaşılabilirlik:** Kim ne yapıyor açık mı; öğrenci ana fikri kendi sözüyle anlatabilecek mi? Alıntıdaki bütün zor ifadeler ve yazarın Türkçesi ayrı taranmış mı? Destek yükü ağırsa daha uygun pasaj veya örnek seçilmeli.
 - **Kaynağı önceden okumadan anlama:** Bölüm 1'deki kaynak kapalı okuma kontrolünü yap. Olaylar, kişiler, kavramlar ve seçilen gerekçe yalnız bu dersten anlaşılabiliyor mu? Kitabın akışını anlatan veya açıklamayı başka sayfaya bırakan cümleler var mı? Bağımsız anlatımın kanıtını kaydet; yalnız kaynak adlarını azaltmayı düzeltme sayma.
@@ -762,7 +794,7 @@ Bölüm 9'daki merak ve ton, bölüm 10'daki sınıf/ay/dil ve bölüm 11'deki d
 - **Kategori ve sunum:** Âyetin kendi içindeki sunumu, alıntı, kelime desteği ve dipnotlar ilgili kategoriye uyuyor mu (bölüm 17, 19)? Konu anlatısına kaldırılmış bir kaynak sırası, sabit kapanış veya madde kotası dayatılmış mı? Özgün metinler koyu mu? Türkçe metindeki işaretli kelimeyle açıklaması eşleşiyor mu; tıklama/dokunma, hover ve klavye erişimi III. bölümdeki teknik sunum şartlarını karşılıyor mu? Planlama ve doğrulama notları öğrenci anlatısına sızmış mı?
 - **Dinleme:** Kartın açıklaması ve seçilen ses bölümünün kendisi bu profile uygun mu? Bölüm 10'daki kayıt değerlendirmesi gerçekten yapıldı mı? Yalnız sayfada ses bağlantısı bulunması bu kontrolün geçtiğini göstermez.
 
-**Kabul eşiği:** Kaynakları doğru ve cümleleri anlaşılır olsa bile, okumaya devam etme sebebi gösterilemeyen veya alıntı–açıklama–görev dizisi gibi kalan metne **düzeltme gerekli** sonucu ver. Okuma keyfini değerlendirirken metnin tamamını sesli oku; ritmi, geçişleri ve sık sık görev verip vermediğini kontrol et. Bu editoryal yargıyı gerçek öğrenci geri bildirimi yerine sunma.
+**Kabul eşiği:** Kaynakları doğru ve cümleleri anlaşılır olsa bile, hedeflenen öğrenme katkısı veya okumaya devam etme sebebi gösterilemeyen ya da alıntı–açıklama–görev dizisi gibi kalan metne **düzeltme gerekli** sonucu ver. Okuma keyfini değerlendirirken metnin tamamını sesli oku; ritmi, geçişleri ve sık sık görev verip vermediğini kontrol et. Bu editoryal yargıyı gerçek öğrenci geri bildirimi yerine sunma.
 
 Sorun varsa yalnız kelimeleri cilalama; gerekirse örneği, pasajı ve anlatının sırasını yeniden kur. Değişen kısımları ilgili kaynak veya dil geçişinde yeniden değerlendir. Kaynak ve açıklık sorunları giderilmiş olsa da revizyonun metni kuru bir özete çevirdiği veya iyi çalışan merak ve canlandırma hattını kaybettirdiği görülüyorsa **düzeltme gerekli** sonucunu ver; anlatıdaki kaybı giderip yeniden denetle.
 
@@ -770,21 +802,24 @@ Sorun varsa yalnız kelimeleri cilalama; gerekirse örneği, pasajı ve anlatın
 
 Kayıt, öğrenci metninden ayrı olarak yerel, git tarafından dışlanan hazırlık dizininde tutulur; derslerin ikinci bir kaynak deposu veya öğretmen notu değildir. Biçim serbesttir; aşağıdaki alanlar her içerik için bulunmalıdır:
 
-| Alan                        | Kaydedilecek bilgi                                                                                                                                                                                                        |
-| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Kimlik ve profil            | İçerik kimliği, kategori, sınıf, hafta/ay, yaklaşık yaş, bilinen Türkçe okuma düzeyi ve ön bilgi varsayımı. Bilinmeyen bilgiyi varsayım olarak belirt.                                                                    |
-| Plan ve hedef               | İlgili yıllık plan, haftanın ana sorusu ve hedefi; bu içeriğin hedefe katkısı.                                                                                                                                            |
-| Kaynak doğrulama            | Kullanılan özgün dosya veya sayfa, baskı ve doğrulanan sayfa/bölüm; karşılaştırılan alıntı veya olay. Erişilemeyen kaynakları belirt.                                                                                     |
-| Destekleyici kaynak katkısı | Kullanılan kaynak türü ve ana soruya somut katkısı; değerlendirilip eklenmeyen aday varsa kısa gerekçesi. Kullanılmayan her tür için açıklama veya aday arama zorunluluğu yoktur.                                         |
-| Merak ve düşünce hattı      | Okumaya devam etme sebebi, ortada ilgiyi geliştiren ayrıntı, kapanışın düşüncesi/yeni merakı ve ana fikirle bağları; metinden kısa kanıt.                                                                                 |
-| Dil ve anlam desteği        | Zor ifadeler, verilen açıklamalar ve desteğin yeterliliğine ilişkin gerekçe; alıntı yükü ile yazarın dilini ayrı değerlendir.                                                                                             |
-| Kaynak kapalı okuma         | Kaynağı önceden okumayan öğrencinin kişi, olay, kavram ve seçilen gerekçeyi yalnız dersten takip edebilmesine ilişkin metin kanıtı; varsa dışarıya ertelenen açıklama ve düzeltmesi.                                      |
-| Düşünme beklentisi          | Sınıf ölçüsüne göre öğrenciden beklenen adım ve metindeki karşılığı; Konu için anlamlı düşünme sorusu/uygulaması.                                                                                                         |
-| Bulgular ve düzeltmeler     | Her geçişte bulunan sorun, ilgili metin örneği, yapılan düzeltme ve yeniden kontrol sonucu; revizyonda eski–yeni karşılaştırmasıyla korunan anlatı özellikleri ve varsa kayıplar. Sorun yoksa bu yargının dayanağını yaz. |
-| Kapsam ve denemeler         | Yakın hafta/kategori karşılaştırması, sunum kontrolü, öğrenci denemesi ve dinleme değerlendirmesi yapıldı mı? Yapılanın kapsamı ve yapılmayanın sınırı.                                                                   |
-| Kabul sonucu                | Aşağıdaki üç sonuçtan biri, gerekçesi ve varsa açık eksikler.                                                                                                                                                             |
+| Alan                        | Kaydedilecek bilgi                                                                                                                                                                                                                                     |
+| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kimlik ve profil            | İçerik kimliği, kategori, sınıf, hafta/ay, yaklaşık yaş, bilinen Türkçe okuma düzeyi ve ön bilgi varsayımı. Bilinmeyen bilgiyi varsayım olarak belirt.                                                                                                 |
+| İncelenen sürüm             | Güncel metni ayırt eden kayıt revizyonu veya içerik özeti (hash); bunlar yoksa kullanıcıdan gelen parçanın açık tanımı. İnceleme tarihi, kapsamı ve incelemeyi yapanın türü (öz inceleme, ayrı ajan veya insan). Yapılmayan inceleyici ataması üretme. |
+| Plan ve hedef               | İlgili yıllık plan, haftanın ana sorusu ve hedefi; bölüm 1'e göre öğrenilecek belirli bilgi/ilişki/ayrım, onu sağlayan açıklama ve metindeki kanıtı.                                                                                                   |
+| Kaynak doğrulama            | Bölüm 16'ya göre önemli iddia/alıntı ile açılıp incelenen özgün dosya, baskı ve sayfa/bölüm/zaman aralığının eşleştirmesi; desteğin kapsamı, varsa çelişki ve erişilemeyen kaynak.                                                                     |
+| Destekleyici kaynak katkısı | Kullanılan kaynak türü ve ana soruya somut katkısı; değerlendirilip eklenmeyen aday varsa kısa gerekçesi. Kullanılmayan her tür için açıklama veya aday arama zorunluluğu yoktur.                                                                      |
+| Merak ve düşünce hattı      | Okumaya devam etme sebebi, ortada ilgiyi geliştiren ayrıntı, kapanışın düşüncesi/yeni merakı ve ana fikirle bağları; metinden kısa kanıt.                                                                                                              |
+| Dil ve anlam desteği        | Zor ifadeler, verilen açıklamalar ve desteğin yeterliliğine ilişkin gerekçe; alıntı yükü ile yazarın dilini ayrı değerlendir.                                                                                                                          |
+| Kaynak kapalı okuma         | Kaynağı önceden okumayan öğrencinin kişi, olay, kavram ve seçilen gerekçeyi yalnız dersten takip edebilmesine ilişkin metin kanıtı; varsa dışarıya ertelenen açıklama ve düzeltmesi.                                                                   |
+| Düşünme beklentisi          | Sınıf ölçüsüne göre öğrenciden beklenen adım ve metindeki karşılığı; Konu için anlamlı düşünme sorusu/uygulaması.                                                                                                                                      |
+| Bulgular ve düzeltmeler     | Her geçişte bulunan sorun, ilgili metin örneği, yapılan düzeltme ve yeniden kontrol sonucu; revizyonda eski–yeni karşılaştırmasıyla korunan anlatı özellikleri ve varsa kayıplar. Sorun yoksa bu yargının dayanağını yaz.                              |
+| Kapsam ve denemeler         | Yakın hafta/kategori karşılaştırması, sunum kontrolü, öğrenci denemesi ve dinleme değerlendirmesi yapıldı mı? Yapılanın kapsamı ve yapılmayanın sınırı.                                                                                                |
+| Kabul sonucu                | Aşağıdaki üç sonuçtan biri, gerekçesi ve varsa açık eksikler.                                                                                                                                                                                          |
 
 Dinleme içeriğinde uygulanmayan alanı gerekçesiyle belirt; formu doldurmak için öğrenci metnine ek soru veya bölüm koyma. “Uygun”, “evet” veya “geçti” işareti tek başına kanıt değildir. Erişilmeyen kaynak, yapılmayan kontrol veya öğrenci denemesi yapılmış gibi kaydedilemez.
+
+**Kontrol sonucu sürüme bağlıdır.** Metin değiştiğinde önceki kaydı bütün dersin yeni onayı gibi kullanma. Değişen iddia, alıntı, açıklama, soru veya FR/NL karşılığının ilgili incelemesini yenile. Açıklamalar ve soru önkabulleri dâhil, anlamı, kapsamı, kesinlik derecesi veya kaynağa atfı değişen ifadelerin kaynak kontrolünü de yeniden aç. İddia, bağlam ve dayanak değişmemişse ilgili kaynak kanıtını koruyabilirsin. Son bütünlük okuması ve kabul sonucu teslim edilecek güncel sürüme ait olmalıdır.
 
 ### 4. Kabul sonucu ve haftalık bütünlük
 
@@ -821,9 +856,11 @@ Teknik veritabanı ve yayınlama akışı bu belgenin **III. Teknik Sunum ve Yay
 
 Geri bildirim notunda sınıfı, öğrencinin Türkçe/ön bilgi profilini kişisel kimlik bilgisi toplamadan, denenen kısmı, bağımsız veya destekli kullanım biçimini, takılma noktalarını ve düzeltmeleri belirt. Sorun çıkan açıklama veya soruyu yeniden yaz; mümkünse düzeltilen kısmı tekrar dene. İlgi çekiciliği yalnız editörün beğenisi veya okunmuş işaretinin verilmesiyle doğrulanmış sayma.
 
+**Gerçek geri bildirimi sonraki üretime bağla.** Erişilebilen önceki denemelerde aynı profildeki okurların takıldığı açıklama, aklında kalan ayrıntı ve işe yarayan destekleri yeni dersin hazırlığında değerlendir. Kabul edilmiş bir örnek varsa neden işlediğini ve kimlerle denendiğini kaydet; cümlelerini veya kurgusunu yeni haftalara kopyalama. Tek editör tercihini bütün gençlerin zevki, sınırlı gözlemi bütün sınıfın becerisi sayma. Beceri kurallarını tekrarlanan veya açıkça gösterilmiş bir soruna göre dar biçimde iyileştir; her geri bildirimi yeni bir evrensel yasağa dönüştürme.
+
 **Değerlendirme durumunu doğru bildir:** Kaynak ve editoryal kontroller gerçekten tamamlandıysa ve öğrenci denemesi yoksa “kaynak ve editoryal denetim yapıldı; öğrenci denemesi yapılmadı” de. Kontrol eksikse tamamlanmış gibi bildirme; eksik alanı ve kabul sonucunu belirt. Deneme varsa katılımcı kapsamını ve gözlemleri belirt; öğrencilerin tümünün anlayacağı veya ilgisini çekeceği garantisi verme. Öğrenci denemesinin bulunmaması tek başına editoryal kabulü engellemez; bilinen anlama sorunları ise düzeltilmeden metni yayıma hazır sayma.
 
-Pedagojik dayanak: Öğrenme hedefiyle ilişkili seçimler için [CAST — Optimize choice and autonomy](https://udlguidelines.cast.org/engagement/interests-identities/choice-autonomy/); okuma, konuşma ve kelime desteğini birlikte ele almak için [EEF — Improving Literacy in Secondary Schools](https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/literacy-ks3-ks4). Bu rehberler editoryal tasarıma destek olur; belirli bir JetAcademie dersinin öğrenciyle doğrulandığı anlamına gelmez.
+Pedagojik dayanak: Öğrenme hedefiyle ilişkili seçimler için [CAST — Optimize choice and autonomy](https://udlguidelines.cast.org/engagement/interests-identities/choice-autonomy/); düşünme beklentisini korurken uygun destek sunmak için [CAST — Optimize challenge and support](https://udlguidelines.cast.org/engagement/effort-persistence/challenge-support/); kelime ve cümle yapısı desteği için [CAST — Clarify vocabulary, symbols, and language structures](https://udlguidelines.cast.org/representation/language-symbols/vocabulary-symbols-structure/); okuma, konuşma ve kelime desteğini birlikte ele almak için [EEF — Improving Literacy in Secondary Schools](https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/literacy-ks3-ks4). Bu rehberlerden hareketle yapılan editoryal tasarım, belirli bir JetAcademie dersinin öğrenciyle doğrulandığı anlamına gelmez.
 
 ### 6. Özerk editör döngüsü — eleştir, düzelt, yeniden oku
 
@@ -836,9 +873,12 @@ Bu döngü, belgenin başındaki üretim akışının **iki kontrol ve düzeltme
 - Kaynağı okumamış biri kim ne yapıyor, örnek neyi gösteriyor ve sonuca neden varılıyor sorularını cevaplayabiliyor mu?
 - Başlangıçtaki merak gelişiyor mu; araya giren örnek ana soruya hizmet ediyor mu; olay sırası, nesneler, kişiler ve göndermeler takip edilebiliyor mu?
 - Hem alıntının hem yazarın Türkçesi bu sınıf/ay profiline uygun mu? Soyut isimler, rapor dili veya açıklanmamış kelime yüzünden anlam dışarıya mı kalıyor?
+- Öğrencinin öğrenmesi hedeflenen bilgi veya ayrım hangi cümlelerle kuruluyor? Anlatı sıcak olsa da düşünce yalnız genel bir öğüt düzeyinde mi kalıyor?
 - Sonuç, anlatıda verilmiş bir gerekçeye dayanıyor mu? Kapanışta gerçek bir düşünme alanı var mı; yoksa hazır cevabı tekrarlatan görevler mi birikmiş?
 
 Bu bakışlar farklı değerlendirme geçişleridir; ayrı model, kişi veya gerçek öğrenci denemesi yapıldığı anlamına gelmez. Hiçbirini yapılmış öğrenci geri bildirimi gibi sunma. Çok sınıflı pakette her kayıt için ayrı kanıt gerekir.
+
+**Yazarın bildiklerinin metindeki boşlukları örtmesini önle.** Öğrenci/anlatı geçişinde önce yalnız güncel metni, hedefi ve öğrenci profilini kullan; kaynak araştırması notlarıyla eksik açıklamayı zihninde tamamlama. Ayrı değerlendirici varsa yazarın savunmasını, önceki olumlu sonucu veya beklenen kararı verme. Kaynak geçişinde ise özgün kaynaklara erişim gerekir. İki değerlendirici anlaşsa bile kaynak ve metin kanıtı aranır; anlaşmazlıkta oy saymak yerine ilgili iddiayı veya anlatı bağını incele. Ayrı değerlendirme olanağı yoksa öz incelemenin sınırını doğru bildirerek aynı iki geçişi sürdür.
 
 **2. Eleştiriyi uygulanabilir öneriye çevir.** Her bulgu için kontrol kaydına şu kısa zinciri yaz:
 
@@ -848,7 +888,7 @@ Bu bakışlar farklı değerlendirme geçişleridir; ayrı model, kişi veya ger
 
 Kaynak/plan/bağımsız anlama sorunlarını önce çöz; ardından okuma isteği, ritim ve sunumu iyileştir. **Giderilmesi gereken kusurla yalnız başka bir söyleyiş tercihini ayır.** İyi çalışan parçaya kusur icat etme. Genel bir puan veya “güzel olmuş” yargısı metin kanıtının yerine geçmez.
 
-**3. Düzelt ve gerçekten düzeldiğini denetle.** Yetkili üretim/revizyon kapsamında önerileri kendin uygula; her rutin düzeltmede kullanıcıdan onay isteme. Özgün alıntıyı değiştirme veya kaynak olayına davranış ekleme yoluyla akıcılık sağlama. Değişen kaynak iddiasını özgün kaynağa, değişen açıklama veya soruyu öğrenci/dil ölçülerine karşı yeniden denetle. Bulguyu ancak yeni cümle veya paragrafın sorunu nasıl giderdiğini kısa kanıtla gösterdikten sonra kapat; tavsiye yazılmış olması uygulanmış olduğu anlamına gelmez.
+**3. Düzelt ve gerçekten düzeldiğini denetle.** Yetkili üretim/revizyon kapsamında önerileri kendin uygula; her rutin düzeltmede kullanıcıdan onay isteme. Özgün alıntıyı değiştirme veya kaynak olayına davranış ekleme yoluyla akıcılık sağlama. Değişen iddiayı, açıklama veya soru içindeki önkabuller dâhil, özgün kaynağa karşı yeniden denetle; değişen anlatımı öğrenci/dil ölçüleriyle de kontrol et. Kaynak kontrolünün yeni sürüme aktarılma şartını 18.3'e göre uygula. Bulguyu ancak yeni cümle veya paragrafın sorunu nasıl giderdiğini kısa kanıtla gösterdikten sonra kapat; tavsiye yazılmış olması uygulanmış olduğu anlamına gelmez.
 
 Önce düzeltilen yeri komşu paragraflarıyla, ardından **metnin tamamını** yeniden oku. Eski sorun giderilirken girişin merakı, sahnenin anlaşılabilirliği, insan ve emek ayrıntıları, düşünce derinliği veya kapanış kaybolmuş mu? Daha kuru veya kopuk hâle geldiyse eski metnin çalışan kısmını geri al ya da başka bir düzeltme seç. Yeni sürüm sırf son yazılan olduğu için daha iyi kabul edilmez. Kaynak kapalı okuma, sesli okuma ve teknik sunum şartları kendi kapsamlarında geçerliliğini korur.
 
