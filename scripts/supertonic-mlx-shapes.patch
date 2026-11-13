@@ -1,0 +1,44 @@
+diff --git a/src/supertonic_3_mlx/pipeline.py b/src/supertonic_3_mlx/pipeline.py
+index 3867ec5..315db5a 100644
+--- a/src/supertonic_3_mlx/pipeline.py
++++ b/src/supertonic_3_mlx/pipeline.py
+@@ -624,9 +624,10 @@ class SupertonicMLXPipeline:
+
+         # Tokenize
+         text_ids_np = _encode_text(text, self.unicode_indexer, lang)
+-        text_ids = mx.array(text_ids_np[None, :])                     # (1, T_text)
+-        T_text = text_ids.shape[1]
+-        text_mask = mx.ones((1, 1, T_text), dtype=self.dtype)
++        T_text = len(text_ids_np)
++        text_bucket = ((T_text + 31) // 32) * 32
++        text_ids = mx.array(np.pad(text_ids_np, (0, text_bucket-T_text))[None, :])
++        text_mask = (mx.arange(text_bucket) < T_text).astype(self.dtype).reshape(1, 1, -1)
+
+         # Style — accept either a preset name (str) or a custom voice descriptor
+         # (dict returned by ``create_voice``).
+@@ -650,8 +651,9 @@ class SupertonicMLXPipeline:
+
+         # Initial noise — fixed seed for reproducibility
+         key = mx.random.key(seed)
+-        noise = mx.random.normal((1, 144, T_lat), key=key).astype(self.dtype)
+-        latent_mask = mx.ones((1, 1, T_lat), dtype=self.dtype)
++        latent_bucket = ((T_lat + 31) // 32) * 32
++        latent_mask = (mx.arange(latent_bucket) < T_lat).astype(self.dtype).reshape(1, 1, -1)
++        noise = mx.random.normal((1, 144, latent_bucket), key=key).astype(self.dtype) * latent_mask
+
+         # T.5.3 — build the (2B) CFG conditioning tensors once and pre-project
+         # K/V for every text_attn / style_attn block. ``kv_flat`` is the 16
+@@ -702,11 +704,11 @@ class SupertonicMLXPipeline:
+             mx.eval(x)
+
+         # Decode latent → waveform
+-        wav = self._voc_compiled(x)
++        wav = self._voc_compiled(x * latent_mask)
+         mx.eval(wav)
+         if wav.dtype != mx.float32:
+             wav = wav.astype(mx.float32)
+-        return np.array(wav)[0]      # (T_lat × 6 × 512,)
++        return np.array(wav)[0, : T_lat * SAMPLES_PER_LATENT_STEP]
+
+     # ── Streaming ────────────────────────────────────────────────────
+     @staticmethod

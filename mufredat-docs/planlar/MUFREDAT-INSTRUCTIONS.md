@@ -1024,6 +1024,15 @@ Haftalık paket **6 sınıf × 2 kategori (`konu`, `hocaefendi-dinleme`) = 12 ka
 
 **CLI şema doğrulaması editoryal kontrollerin yerine geçmez.** Yönerge değişikliği mevcut dersleri kendiliğinden düzeltmez.
 
+## D. Haftanın Konusu seslendirmesi
+
+- Seslendirme, `konu` kategorisindeki her sınıfın kendi ders metninden üretilir. Kaynak metni güncel veritabanından al. Ses üretimi için öğrenci metnini değiştirme; başlığı, anlatıyı, alıntıları, kapanışı ve varsa kelime açıklamalarını oku. Dipnot işaretlerini ve bibliyografik künyeleri seslendirme.
+- [Supertonic 3](https://huggingface.co/Supertone/supertonic-3) modelini yerelde çalıştır. Konu derslerinde seçilen anlatıcı **M2**'dir; yeni derslerde ve yeniden üretimlerde aynı sesi kullan. Türkçe bölümleri `tr`, Arapça pasajları `ar` ile üret. Arapça pasajları ayrı incele; ses kaydındaki kelimeleri özgün metinle karşılaştır ve belirsiz kalan telaffuzu yeniden üretip kontrol et.
+- Karşılaştırma örneğinde onaylanan sesin yanında üretim motorunu ve okuma ayarlarını da kaydet; toplu üretimde aynı motoru ve ayarları kullan. Bunlardan biri değişirse önce aynı metinden yeni örnek üret. Türkçe metni paragraf halinde seslendir; cümleleri tek tek okutma. Çok uzun paragraflar gerekiyorsa doğal duraklardan bölünebilir; ekranda yine tek paragraf olarak izlenir. Mac üzerinde üretimi hızlandırmak için Supertonic 3 ağırlıklarını kullanan MLX çalıştırıcısı kullanılabilir.
+- Ses dosyasıyla paragraf zamanlarını birlikte üret. İlk, orta ve son bölümleri metinden izleyerek atlanan veya tekrarlanan yerleri, özel isimleri, telaffuzu, durakları ve ses seviyesi farklarını kontrol et. Ayrıca ileri sarınca vurgunun doğru paragrafa geçtiğini doğrula. Yazıya dökme kontrolü eksik veya tekrarlanan sözleri bulmaya yardımcı olur; doğal telaffuz, vurgu ve akıcılık için ayrıca dinleme kontrolü yap. Sorunlu kaydı düzeltip tekrar dinlemeden öğrenciye sunma.
+- İncelenen kaydı metnin başındaki **Dinle** oynatıcısına ekle. Oynatıcı görünümden çıkınca duraklatma ve devam denetimi ekranda sabit kalır. Okunan paragraf vurgulanır; **Paragrafı takip et** seçildiğinde görünüm okunan paragrafa gider.
+- Ders metni değiştiğinde eski ses ve zaman eşlemesi geçersizdir. Yeni sürümü aynı seçili sesle üret ve yeniden kontrol et. [README'deki seslendirme komutlarını](../../README.md#haftanın-konusu-seslendirmesi) kullan; seslendirme kayıtları dersin yayında/taslak durumunu değiştirmez.
+
 ---
 
 # TEMEL PRENSİP

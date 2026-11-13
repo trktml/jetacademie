@@ -19,7 +19,8 @@
     "editor:setup": "bun scripts/setup-curriculum-editor.ts",
     "assets:pdf": "bun scripts/prepare-pdf-assets.ts",
     "check": "bun run test && bun run lint && bun run format:check && bun run build",
-    "test:postgres": "bun scripts/verify-postgres.ts"
+    "test:postgres": "bun scripts/verify-postgres.ts",
+    "curriculum:narration": "bun scripts/konu-narration.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.105.3",
@@ -36,6 +37,9 @@
     "rehype-sanitize": "^6.0.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5",
     "vaul": "^1.1.2",
     "zod": "^4.6.7",
     "zustand": "^5.0.16"

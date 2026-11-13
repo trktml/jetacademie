@@ -19,7 +19,7 @@ import {
   type KonuVocabItem,
 } from "@/lib/data/konu-curriculum";
 import type { CurriculumEntry } from "@/lib/curriculum";
-import { MarkdownContent } from "@/components/markdown-content";
+import { KonuNarratedMarkdown } from "@/components/konu-narrated-markdown";
 
 export interface KonuLessonReaderProps {
   entry: CurriculumEntry;
@@ -184,7 +184,12 @@ export function KonuLessonReader({ entry, item: explicitItem, onClose }: KonuLes
             </button>
           )}
         </div>
-        <MarkdownContent vocabulary={item.vocab}>{item.body}</MarkdownContent>
+        <KonuNarratedMarkdown
+          key={entry.id}
+          entryId={entry.id}
+          body={item.body}
+          vocabulary={item.vocab}
+        />
       </div>
     );
   }

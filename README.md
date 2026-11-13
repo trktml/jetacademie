@@ -103,6 +103,41 @@ bun run curriculum export --week 3
 
 `bun run curriculum delete --week 3` yalnızca belirtilen standart haftanın Konu ve Dinleme kayıtlarını, ilgili editör kayıtlarını ve bunlara bağlı öğrenci ilerlemesini siler. Âdâb, İlmihal, Esmâ ve Tefekkür bu komutun kapsamı dışındadır.
 
+### Haftanın Konusu seslendirmesi
+
+Seslendirme yalnız yayındaki `konu` kayıtlarını kullanır. Üretim makinesinde Python 3, FFmpeg (`libmp3lame` ile) ve Supertonic SDK gerekir. İlk çalıştırmada [Supertonic 3](https://huggingface.co/Supertone/supertonic-3) model dosyaları indirilir; ders metni yerelde işlenir.
+
+```bash
+python3 -m venv data/supertonic-venv
+data/supertonic-venv/bin/python -m pip install supertonic==1.3.1
+export SUPERTONIC_PYTHON="$PWD/data/supertonic-venv/bin/python"
+
+# Ekim 1. hafta, 1. sınıf: modelin beş erkek sesiyle karşılaştırma
+bun run curriculum:narration --samples --week 5 --grade 1
+
+# Seçilen M2 sesiyle ilk 10 haftayı üret.
+bun run curriculum:narration --through 10 --voice M2
+
+# MP3 ve paragraf zamanları incelendikten sonra uygulamaya ekle.
+bun run curriculum:narration --through 10 --voice M2 --install
+```
+
+Mac üzerinde M2 üretimini hızlandırmak için [Supertonic 3 MLX uyarlamasını](https://github.com/ambassadia/supertonic-3-mlx) kullanabilirsiniz. Önce yukarıdaki örnek komutuyla orijinal model dosyalarını indirin, ardından aşağıdaki komutlarla üretimde kullanılan MLX sürümünü hazırlayın:
+
+```bash
+git clone https://github.com/ambassadia/supertonic-3-mlx.git data/supertonic-mlx
+git -C data/supertonic-mlx checkout --detach 82e8d8e912791546d833fd6499e1d040c84fa593
+git -C data/supertonic-mlx apply "$PWD/scripts/supertonic-mlx-shapes.patch"
+data/supertonic-venv/bin/python -m pip install onnx ./data/supertonic-mlx
+
+bun run curriculum:narration --through 10 --voice M2 --engine mlx
+bun run curriculum:narration --through 10 --voice M2 --engine mlx --install
+```
+
+MLX orijinal model ağırlıklarını `~/.cache/supertonic3` dizininden okur; farklı bir dizini `SUPERTONIC_MODEL_DIR` ile belirtebilirsiniz. Varsayılan `--engine onnx` resmî SDK'yı kullanır.
+
+Tek hafta için `--week N`, tek sınıf için ayrıca `--grade N` kullanın. Üretim dosyaları `exports/konu-ses/` altına yazılır. `--install`, incelenmiş MP3 ve zaman dosyasını veritabanına kaydeder; ders metnini ve yayın durumunu değiştirmez. Metin değiştiğinde eski kayıt gizlenir; üretim ve incelemeyi yeni metin için yineleyin. Tam PostgreSQL yedeği sesleri de içerir. Müfredat metinlerini taşıyan JSON paketlerinden ses geri yüklenmez; gerekirse üretim dosyalarından yeniden ekleyin.
+
 ### Müfredat editörü
 
 `bun run editor:setup` ile editör hesabını oluşturun ve sunucuyu yeniden başlatın. Komut parolayı terminalde bir kez gösterir; `.env` dosyasında kullanıcı adı, parola özeti ve oturum sırrı tutulur. `bun run editor:setup -- --rotate` parolayı ve sırrı yenileyip eski editör oturumlarını geçersiz kılar.

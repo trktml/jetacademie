@@ -7,6 +7,8 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import type { Element, Root } from "hast";
+import { normalizeMarkdown } from "@/lib/curriculum-markdown";
+import { rehypeNarration } from "@/lib/konu-narration";
 import { readCurriculumVocabulary } from "@/lib/curriculum-vocabulary";
 import "./markdown-content.css";
 
@@ -57,7 +59,11 @@ function rehypeFootnoteAnchors(prefix: string) {
   };
 }
 
-function VocabularyTerm({ word, definition }: VocabularyItem) {
+function VocabularyTerm({
+  word,
+  definition,
+  children,
+}: VocabularyItem & { children?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const tooltipId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -129,7 +135,7 @@ function VocabularyTerm({ word, definition }: VocabularyItem) {
           if (event.key === "Escape") setOpen(false);
         }}
       >
-        {word}
+        {children ?? word}
       </button>
       {open &&
         typeof document !== "undefined" &&
@@ -149,18 +155,7 @@ function VocabularyTerm({ word, definition }: VocabularyItem) {
   );
 }
 
-/**
- * Normalizes input text for CommonMark rendering:
- * 1. Normalizes CRLF (\r\n) to LF (\n).
- * 2. Converts unicode bullet characters (•, ●, ○, ⁃) at line starts to standard Markdown list syntax (- ).
- * 3. Ensures an empty line before a list if it is preceded by a non-list text line (CommonMark requirement).
- */
-export function normalizeMarkdown(text?: string | null): string {
-  if (!text) return "";
-  const normalizedBullets = text.replace(/\r\n/g, "\n").replace(/^(\s*)[•●○⁃]\s*/gm, "$1- ");
-
-  return normalizedBullets.replace(/(^[^\s\-*#\d].*)\n(\s*([*+-]|\d+\.)\s)/gm, "$1\n\n$2");
-}
+export { normalizeMarkdown } from "@/lib/curriculum-markdown";
 
 /**
  * Strips the leading markdown heading (e.g. "# Title") from the body if it matches
@@ -205,10 +200,12 @@ export function MarkdownContent({
   children,
   stripTitle,
   vocabulary,
+  narration = false,
 }: {
   children?: string | null;
   stripTitle?: string;
   vocabulary?: readonly VocabularyItem[];
+  narration?: boolean;
 }) {
   const footnotePrefix = `footnotes-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const effectiveVocabulary = useMemo(
@@ -232,14 +229,25 @@ export function MarkdownContent({
       <Markdown
         skipHtml
         remarkPlugins={[remarkGfm, remarkBreaks]}
-        rehypePlugins={[rehypeSanitize, rehypeFootnoteAnchors(footnotePrefix)]}
+        rehypePlugins={[
+          rehypeSanitize,
+          rehypeFootnoteAnchors(footnotePrefix),
+          ...(narration ? [rehypeNarration] : []),
+        ]}
         disallowedElements={["img"]}
         components={{
           a: ({ children, href, id, "aria-describedby": describedBy }) => {
             const match = href?.match(/^#curriculum-vocabulary-(\d+)$/);
             const item = match ? effectiveVocabulary[Number(match[1])] : undefined;
             if (item) {
-              return <VocabularyTerm word={String(children)} definition={item.definition} />;
+              return (
+                <VocabularyTerm
+                  word={typeof children === "string" ? children : item.word}
+                  definition={item.definition}
+                >
+                  {children}
+                </VocabularyTerm>
+              );
             }
             if (href?.startsWith("#")) {
               return (
@@ -254,7 +262,11 @@ export function MarkdownContent({
               </a>
             );
           },
-          p: ({ children }) => <p dir="auto">{children}</p>,
+          p: ({ children, node }) => (
+            <p dir="auto" data-narration-cue={node?.properties.dataNarrationCue}>
+              {children}
+            </p>
+          ),
           blockquote: ({ children }) => <blockquote dir="auto">{children}</blockquote>,
         }}
       >

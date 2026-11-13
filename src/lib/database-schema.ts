@@ -95,6 +95,16 @@ export const SCHEMA_SQL = `
     "updatedAt" timestamp not null default current_timestamp
   );
 
+  CREATE TABLE IF NOT EXISTS "curriculum_konu_narration" (
+    "entryId" TEXT PRIMARY KEY,
+    "bodyHash" TEXT NOT NULL,
+    "audioHash" TEXT NOT NULL,
+    "version" INTEGER NOT NULL,
+    "voice" TEXT NOT NULL,
+    "cues" TEXT NOT NULL,
+    "audio" BYTEA NOT NULL
+  );
+
   CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_idx"
     on "curriculum_entries" ("grade", "categoryId", "isExtra", "month", "week");
   CREATE INDEX IF NOT EXISTS "curriculum_entries_grade_category_gender_idx"

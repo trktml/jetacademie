@@ -131,3 +131,20 @@
     scroll-margin-top: calc(9.75rem + env(safe-area-inset-top, 0px));
   }
 }
+
+.curriculum-markdown [data-narration-active] {
+  border-radius: 0.25em;
+  outline: 0.15em solid #fde68a;
+  background: #fde68a;
+  color: #3d2800;
+}
+
+:root[data-theme="dark"] .curriculum-markdown [data-narration-active] {
+  outline-color: #754816;
+  background: #754816;
+  color: #fff3ce;
+}
+
+.curriculum-markdown [data-narration-cue] {
+  scroll-margin-top: calc(6rem + env(safe-area-inset-top, 0px));
+}
