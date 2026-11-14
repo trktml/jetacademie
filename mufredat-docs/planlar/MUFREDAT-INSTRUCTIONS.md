@@ -167,6 +167,17 @@ hissinden çok:
 
 hissini taşımalıdır.
 
+### Örnekten düşünceye doğal geçiş
+
+Örnek, pasaj ve açıklama aynı düşünceyi adım adım geliştirsin. “Yukarıdaki örneğe göre…”, “Bu metinden hareketle…” veya “Az önceki pasajda da belirtildiği üzere…” gibi ifadelerle öğrenciyi yazının başka bir yerine gönderme. Sonraki cümleyi örnekteki kişinin seçimine, olayın sonucuna veya alıntının açtığı fikre bağla. Kalıbı “Burada görüyoruz ki…” ile değiştirmek yetmez; anlatılan ayrıntının neden önemli olduğunu göster.
+
+Örneğin, yağmurda şemsiyesini arkadaşıyla paylaşan Ece'yi düşün:
+
+- **Kopuk geçiş:** “Yukarıdaki örnekte de görüldüğü üzere paylaşmak için büyük imkânlara sahip olmak gerekmez.”
+- **Olayın içinden geçiş:** “Ece şemsiyesini arkadaşına doğru kaydırdı. İkisine biraz dar geldi ama durağa kadar yan yana yürüdüler. Paylaşmak bazen şemsiyenin altında bir kişiye daha yer açmak kadar basit.”
+
+Haftanın kazanımı doğrudan bir pasajı incelemekse öğrencinin dikkatini alıntıdaki belirli bir söze çekebilirsin. O sözü açıkça an ve neden üzerinde durduğunu göster. Kaynak adı, özgün alıntı ve dipnot düzeni korunur.
+
 ### Tekrar filtresi
 
 Aynı düşünceyi katkı sağlamadan yalnız farklı kelimelerle yeniden anlatma. Olay anlatımı, kaynak pasajı, açıklama ve kapanış bilgi, gerekçe, bağlantı, bakış veya hatırlanabilir ayrıntı sunabilir; anlamı pekiştirebilir, olayın ağırlığını hissettirebilir, ritim kurabilir ya da açılışla kapanışı bağlayabilir. Yeni bilgi vermemesi tek başına bir parçayı çıkarma sebebi değildir.
@@ -359,6 +370,8 @@ Açılışta sorulan soruya anlatı boyunca yeni ayrıntılarla geri dön. Okuru
 **Merakı beslemek, daha fazla soru işareti eklemek değildir.** Öğrencinin bildiği bir durumdaki beklenmedik farkı görünür kıl; kaynağın bu farkı anlamaya ne kattığını adım adım aç. Soruyu sorduktan hemen sonra bütün cevabı verme; öğrenciye bir ayrıntıyı fark etme, nedenini düşünme veya kendi örneğini bulma alanı bırak. Her paragrafı soru listesine çevirme; ana soruyu ilerleten açık sorulara yer ver. Tarihî olaylara heyecan için kaynaksız ayrıntı ekleme. Açılışın merakı metin boyunca ilerlemeli; kapanışta yalnız nasihat kalmamalıdır.
 
 ### Sade ve saygılı üslup
+
+**Genç okurla sıcak ve doğal bir dille konuş.** 12–18 yaşındaki okurla bir meseleyi birlikte düşünür gibi yaz. “Bu bağlamda değerlendirildiğinde…” gibi makale kalıpları yerine ne olduğunu ve bunun neyi değiştirdiğini söyle. Bir soru gerekiyorsa “Yukarıdaki paragrafa göre…” diye başlamak yerine soruyu olayın, seçimin veya fikrin içinden kur. Samimiyet, okurun merakını ciddiye almakla ve meseleyi onun anlayabileceği yerden açmakla kurulur.
 
 Yazarın açıklamalarında açık özne, somut fiil ve gündelik Türkçe kullan. Gerekli kavramı açıkla, gereksiz zor kelimeyi çıkar. Öğrencinin anlayabildiği benzetme, tasvir ve duygusal yakınlık anlatının parçası olabilir. Örneğin bir kitabı dostun mektubuna benzetmek okura bir bakış önerir; bütün okuyucuların aynı ferahlığı hissettiğini söylemek ise doğrulanması gereken bir genellemedir. Yaş büyüdükçe düşünce derinleşsin; açıklamalar gereksiz yere ağırlaşmasın. Bu kurallar özgün alıntıyı değiştirme izni vermez.
 
@@ -784,7 +797,7 @@ Bölüm 9'daki merak ve ton, bölüm 10'daki sınıf/ay/dil ve bölüm 11'deki d
 - **Okuma isteği ve ana fikir:** İlk bölümde okumaya devam etmek için hangi somut sebep var? Anlatının ortasında merakı büyüten veya bakışı değiştiren hangi ayrıntı var? Son cümle hangi düşünceyi veya keşif isteğini bırakıyor? Bu noktaları metinden göster; yalnız “soru var”, “kısa” veya “dil sade” diye kabul etme. Büyük soru açık kalıyorsa o günkü anlam yine anlaşılır mı; metin genel öğütlere dönüşüyor mu?
 - **Kaynak katkısı ve zenginlik:** Her alıntı ana soruya somut katkı sunuyor mu? Öğrenci bağlamı, olayın veya düşüncenin gelişimini ve örneğin kaynakla bağını takip edebilecek desteğe sahip mi? Kaynaklar anlatının içinde ilerliyor mu, yoksa kopuk bloklar olarak mı kalıyor? Konuya katkı sunan mekân, insan ve emek ayrıntıları anlaşılır biçimde görünür mü? Gerekli ayrıntı ve açıklamalar kısalık uğruna çıkarılmış veya kaynak sayısı zenginlik sayılmış mı?
 - **Bilgi doyuruculuğu:** Bölüm 1'de belirlenen öğrenme katkısı gerçekten metinde var mı? Öğrencinin anlayabileceği belirli bilgi, ilişki veya ayrımı ve bunu taşıyan açıklamayı göster. Hazırlık amacı ile metnin sağladığı desteği karşılaştır; güzel bir sahne ya da doğru bir öğüt, eksik açıklamanın yerine geçmez. Sadeleştirmede gerekçe veya anlamlı bir ayrım kaybolmuş mu? İlk dört haftanın tanışma hedefi ve sınıfın düşünme beklentisi korunuyor mu?
-- **Sahne ve çıkarım bağı:** Sonuç cümlesini anlatıdaki hangi olay veya gerekçe taşıyor? Örnekten sonuca geçerken açıklanmamış bir düşünce adımı, belirsiz gönderme veya hazırlanmadan giren yeni bir öğüt var mı? Geçiş cümlesini güzelleştirmek yerine gerekli bağı kur; dayanağı olmayan çıkarımı kaldır.
+- **Geçişler ve çıkarım bağı:** Örnekten, pasajdan veya bir paragraftan sonraki düşünceye geçişi hangi ayrıntı taşıyor? Konu metninden bir geçiş örneği kaydet. “Yukarıdaki örneğe göre” gibi bir ifade eksik bağlantıyı örtüyor mu; sonuç aradaki düşünce adımı verilmeden mi açıklanıyor? Gerekli bağı kişinin seçimi, olayın sonucu veya pasajın getirdiği fikir üzerinden kur; dayanağı olmayan çıkarımı kaldır.
 - **Anlaşılabilirlik:** Kim ne yapıyor açık mı; öğrenci ana fikri kendi sözüyle anlatabilecek mi? Alıntıdaki bütün zor ifadeler ve yazarın Türkçesi ayrı taranmış mı? Destek yükü ağırsa daha uygun pasaj veya örnek seçilmeli.
 - **Kaynağı önceden okumadan anlama:** Bölüm 1'deki kaynak kapalı okuma kontrolünü yap. Olaylar, kişiler, kavramlar ve seçilen gerekçe yalnız bu dersten anlaşılabiliyor mu? Kitabın akışını anlatan veya açıklamayı başka sayfaya bırakan cümleler var mı? Bağımsız anlatımın kanıtını kaydet; yalnız kaynak adlarını azaltmayı düzeltme sayma.
 - **Sınıf ve ay:** Türkçe okuma düzeyi yaşından çıkarılmış mı? İlk ay için gerekli ön bilgi veriliyor mu? İlerleyen aylarda önceki kelimeler erişilebilen derslerden kontrol edilerek ve gerektiğinde hatırlatılarak mı kullanılıyor?
@@ -794,7 +807,7 @@ Bölüm 9'daki merak ve ton, bölüm 10'daki sınıf/ay/dil ve bölüm 11'deki d
 - **Kategori ve sunum:** Âyetin kendi içindeki sunumu, alıntı, kelime desteği ve dipnotlar ilgili kategoriye uyuyor mu (bölüm 17, 19)? Konu anlatısına kaldırılmış bir kaynak sırası, sabit kapanış veya madde kotası dayatılmış mı? Özgün metinler koyu mu? Türkçe metindeki işaretli kelimeyle açıklaması eşleşiyor mu; tıklama/dokunma, hover ve klavye erişimi III. bölümdeki teknik sunum şartlarını karşılıyor mu? Planlama ve doğrulama notları öğrenci anlatısına sızmış mı?
 - **Dinleme:** Kartın açıklaması ve seçilen ses bölümünün kendisi bu profile uygun mu? Bölüm 10'daki kayıt değerlendirmesi gerçekten yapıldı mı? Yalnız sayfada ses bağlantısı bulunması bu kontrolün geçtiğini göstermez.
 
-**Kabul eşiği:** Kaynakları doğru ve cümleleri anlaşılır olsa bile, hedeflenen öğrenme katkısı veya okumaya devam etme sebebi gösterilemeyen ya da alıntı–açıklama–görev dizisi gibi kalan metne **düzeltme gerekli** sonucu ver. Okuma keyfini değerlendirirken metnin tamamını sesli oku; ritmi, geçişleri ve sık sık görev verip vermediğini kontrol et. Bu editoryal yargıyı gerçek öğrenci geri bildirimi yerine sunma.
+**Kabul eşiği:** Kaynakları doğru ve cümleleri anlaşılır olsa bile, hedeflenen öğrenme katkısı veya okumaya devam etme sebebi gösterilemeyen ya da alıntı–açıklama–görev dizisi gibi kalan metne **düzeltme gerekli** sonucu ver. Örnek ve açıklamalar arasındaki düşünce bağı kurulmamışsa veya makale ve sınav dili Konu anlatısına hâkimse aynı sonucu uygula. Okuma keyfini değerlendirirken metnin tamamını sesli oku; ritmi, geçişleri ve sık sık görev verip vermediğini kontrol et. Bu editoryal yargıyı gerçek öğrenci geri bildirimi yerine sunma.
 
 Sorun varsa yalnız kelimeleri cilalama; gerekirse örneği, pasajı ve anlatının sırasını yeniden kur. Değişen kısımları ilgili kaynak veya dil geçişinde yeniden değerlendir. Kaynak ve açıklık sorunları giderilmiş olsa da revizyonun metni kuru bir özete çevirdiği veya iyi çalışan merak ve canlandırma hattını kaybettirdiği görülüyorsa **düzeltme gerekli** sonucunu ver; anlatıdaki kaybı giderip yeniden denetle.
 
